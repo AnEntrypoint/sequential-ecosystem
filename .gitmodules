@@ -1,0 +1,9 @@
+[submodule "packages/sequential-fetch"]
+	path = packages/sequential-fetch
+	url = https://github.com/AnEntrypoint/sequential-fetch.git
+[submodule "packages/sequential-flow"]
+	path = packages/sequential-flow
+	url = https://github.com/AnEntrypoint/sequential-flow.git
+[submodule "packages/tasker-sequential"]
+	path = packages/tasker-sequential
+	url = https://github.com/AnEntrypoint/tasker-sequential.git
