@@ -7,3 +7,9 @@
 [submodule "packages/tasker-sequential"]
 	path = packages/tasker-sequential
 	url = https://github.com/AnEntrypoint/tasker-sequential.git
+[submodule "packages/sdk-http-wrapper"]
+	path = packages/sdk-http-wrapper
+	url = https://github.com/AnEntrypoint/sdk-http-wrapper.git
+[submodule "packages/tasker-adaptor-supabase"]
+	path = packages/tasker-adaptor-supabase
+	url = https://github.com/AnEntrypoint/tasker-adaptor-supabase.git
