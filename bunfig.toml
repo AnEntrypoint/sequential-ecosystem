@@ -1,0 +1,11 @@
+# Bun configuration for linked packages
+
+[install]
+# Registry to use for packages
+registry = "https://registry.npmjs.org/"
+
+# Use Bun's native linking system
+linkPackageRoot = true
+
+# Cache directory
+cacheDir = ".bun-cache"

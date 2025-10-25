@@ -5,12 +5,16 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "nodemon --exec node dev-server.js --sqlite",
-    "dev:sqlite": "nodemon --exec node dev-server.js --sqlite",
-    "dev:supabase": "nodemon --exec node dev-server.js --supabase",
-    "dev:port": "node dev-server.js --sqlite --port",
+    "dev": "bun --watch dev-bun.ts --sqlite",
+    "dev:sqlite": "bun --watch dev-bun.ts --sqlite",
+    "dev:supabase": "bun --watch dev-bun.ts --supabase",
+    "dev:port": "bun --watch dev-bun.ts --sqlite --port",
+    "dev:node": "nodemon --exec node dev-server.js --sqlite",
+    "dev:node:supabase": "nodemon --exec node dev-server.js --supabase",
+    "test": "bun test",
+    "test:tasker": "bun test packages/tasker-sequential",
     "health": "curl http://localhost:3000/health",
-    "test": "echo 'Run tests in individual packages'",
+    "link": "bash setup-npm-links.sh",
     "lint": "echo 'Linting...'"
   },
   "keywords": [
