@@ -286,6 +286,70 @@ async function handler(req: Request): Promise<Response> {
       );
     }
 
+    // Keystore - get credential
+    if (url.pathname.startsWith("/task/keystore/") && req.method === "GET") {
+      const key = url.pathname.split("/").pop();
+
+      let adapter: any;
+      if (config.backend === "sqlite") {
+        adapter = new SQLiteAdapter(config.dbPath);
+      } else {
+        adapter = new SupabaseAdapter(
+          process.env.SUPABASE_URL || "",
+          process.env.SUPABASE_SERVICE_KEY || "",
+          process.env.SUPABASE_ANON_KEY || ""
+        );
+      }
+
+      await adapter.init();
+      const value = await adapter.getKeystore(key);
+      await adapter.close();
+
+      if (!value) {
+        return new Response(
+          JSON.stringify({ success: false, error: "Key not found", key }),
+          { status: 404, headers: { ...headers, "Content-Type": "application/json" } }
+        );
+      }
+
+      return new Response(
+        JSON.stringify({ success: true, key, value }),
+        { status: 200, headers: { ...headers, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Keystore - set credential
+    if (url.pathname === "/task/keystore" && req.method === "POST") {
+      const { key, value } = await req.json() as any;
+
+      if (!key || !value) {
+        return new Response(
+          JSON.stringify({ error: "key and value are required" }),
+          { status: 400, headers: { ...headers, "Content-Type": "application/json" } }
+        );
+      }
+
+      let adapter: any;
+      if (config.backend === "sqlite") {
+        adapter = new SQLiteAdapter(config.dbPath);
+      } else {
+        adapter = new SupabaseAdapter(
+          process.env.SUPABASE_URL || "",
+          process.env.SUPABASE_SERVICE_KEY || "",
+          process.env.SUPABASE_ANON_KEY || ""
+        );
+      }
+
+      await adapter.init();
+      await adapter.setKeystore(key, value);
+      await adapter.close();
+
+      return new Response(
+        JSON.stringify({ success: true, message: `Stored ${key}` }),
+        { status: 200, headers: { ...headers, "Content-Type": "application/json" } }
+      );
+    }
+
     // List available endpoints
     if (url.pathname === "/") {
       return new Response(
@@ -299,7 +363,9 @@ async function handler(req: Request): Promise<Response> {
             "POST /task/store-function": "Store task code/function",
             "POST /task/execute/:id": "Execute or resume a task",
             "POST /task/process": "Process pending stack runs (service calls)",
-            "GET /task/status/:id": "Get task status"
+            "GET /task/status/:id": "Get task status",
+            "GET /task/keystore/:key": "Get credential from keystore",
+            "POST /task/keystore": "Set credential in keystore"
           }
         }),
         {
