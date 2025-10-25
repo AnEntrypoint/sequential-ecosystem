@@ -182,6 +182,110 @@ async function handler(req: Request): Promise<Response> {
       });
     }
 
+    // Store task function/code
+    if (url.pathname === "/task/store-function" && req.method === "POST") {
+      const { task_identifier, code, metadata } = await req.json() as any;
+
+      let adapter: any;
+      if (config.backend === "sqlite") {
+        adapter = new SQLiteAdapter(config.dbPath);
+      } else {
+        adapter = new SupabaseAdapter(
+          process.env.SUPABASE_URL || "",
+          process.env.SUPABASE_SERVICE_KEY || "",
+          process.env.SUPABASE_ANON_KEY || ""
+        );
+      }
+
+      await adapter.init();
+      await adapter.storeTaskFunction({
+        identifier: task_identifier,
+        code,
+        metadata
+      });
+      await adapter.close();
+
+      return new Response(
+        JSON.stringify({ success: true, message: "Function stored" }),
+        { status: 200, headers: { ...headers, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Execute or resume a task
+    if (url.pathname.startsWith("/task/execute/") && req.method === "POST") {
+      const taskId = parseInt(url.pathname.split("/").pop() || "0");
+
+      let adapter: any;
+      if (config.backend === "sqlite") {
+        adapter = new SQLiteAdapter(config.dbPath);
+      } else {
+        adapter = new SupabaseAdapter(
+          process.env.SUPABASE_URL || "",
+          process.env.SUPABASE_SERVICE_KEY || "",
+          process.env.SUPABASE_ANON_KEY || ""
+        );
+      }
+
+      await adapter.init();
+      const taskRun = await adapter.getTaskRun(taskId);
+      if (!taskRun) {
+        await adapter.close();
+        return new Response(
+          JSON.stringify({ error: "Task not found" }),
+          { status: 404, headers: { ...headers, "Content-Type": "application/json" } }
+        );
+      }
+
+      const taskFunction = await adapter.getTaskFunction(taskRun.task_identifier);
+      if (!taskFunction) {
+        await adapter.close();
+        return new Response(
+          JSON.stringify({ error: "Task function not found" }),
+          { status: 404, headers: { ...headers, "Content-Type": "application/json" } }
+        );
+      }
+
+      const executor = new TaskExecutor(adapter);
+      let result;
+
+      if (taskRun.status === "pending") {
+        result = await executor.execute(taskRun, taskFunction.code);
+      } else {
+        result = await executor.resume(taskRun, taskRun.input, taskFunction.code);
+      }
+
+      await adapter.close();
+
+      return new Response(
+        JSON.stringify(result),
+        { status: 200, headers: { ...headers, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Process pending stack runs (external service calls)
+    if (url.pathname === "/task/process" && req.method === "POST") {
+      let adapter: any;
+      if (config.backend === "sqlite") {
+        adapter = new SQLiteAdapter(config.dbPath);
+      } else {
+        adapter = new SupabaseAdapter(
+          process.env.SUPABASE_URL || "",
+          process.env.SUPABASE_SERVICE_KEY || "",
+          process.env.SUPABASE_ANON_KEY || ""
+        );
+      }
+
+      await adapter.init();
+      const processor = new StackProcessor(adapter);
+      await processor.processPending();
+      await adapter.close();
+
+      return new Response(
+        JSON.stringify({ success: true, message: "Processed pending stack runs" }),
+        { status: 200, headers: { ...headers, "Content-Type": "application/json" } }
+      );
+    }
+
     // List available endpoints
     if (url.pathname === "/") {
       return new Response(
@@ -192,6 +296,9 @@ async function handler(req: Request): Promise<Response> {
           endpoints: {
             "GET /health": "Health check",
             "POST /task/submit": "Submit a new task",
+            "POST /task/store-function": "Store task code/function",
+            "POST /task/execute/:id": "Execute or resume a task",
+            "POST /task/process": "Process pending stack runs (service calls)",
             "GET /task/status/:id": "Get task status"
           }
         }),
