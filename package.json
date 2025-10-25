@@ -1,0 +1,29 @@
+{
+  "name": "sequential-ecosystem",
+  "version": "1.0.0",
+  "description": "Sequential task execution ecosystem with Deno/Bun native support",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon --exec node dev-server.js --sqlite",
+    "dev:sqlite": "nodemon --exec node dev-server.js --sqlite",
+    "dev:supabase": "nodemon --exec node dev-server.js --supabase",
+    "dev:port": "node dev-server.js --sqlite --port",
+    "health": "curl http://localhost:3000/health",
+    "test": "echo 'Run tests in individual packages'",
+    "lint": "echo 'Linting...'"
+  },
+  "keywords": [
+    "tasker",
+    "sequential",
+    "task-execution",
+    "deno",
+    "bun"
+  ],
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}
