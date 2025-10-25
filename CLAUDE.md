@@ -12,7 +12,12 @@ The sequential ecosystem is a modular task execution platform supporting both Su
 2. **sequential-flow** - Flow state management library
 3. **sdk-http-wrapper** - Lightweight SDK wrapper for client-server calls
 4. **tasker-sequential** - Task execution engine (core logic)
-5. **tasker-adaptor-supabase** - Storage and service adaptor (new!)
+
+### Storage Adaptor Layer (NEW!)
+
+5. **tasker-adaptor** - Base interfaces and core execution logic
+6. **tasker-adaptor-supabase** - Supabase PostgreSQL backend (production)
+7. **tasker-adaptor-sqlite** - SQLite file-based backend (development)
 
 ### Key Separation
 
@@ -20,48 +25,72 @@ The sequential ecosystem is a modular task execution platform supporting both Su
 - tasker-sequential had direct Supabase dependencies
 - Edge functions were tightly coupled to Supabase
 - Required Supabase infrastructure for development
+- SQLite bundled with Supabase adapter
 
 **After:**
 - tasker-sequential contains core task execution logic only
-- tasker-adaptor-supabase provides storage abstraction
+- tasker-adaptor provides pluggable storage interfaces
+- tasker-adaptor-supabase for production (managed Supabase)
+- tasker-adaptor-sqlite for development (file-based, no server)
 - Can use SQLite for rapid local development
 - Can use Supabase for production deployment
 - Generic code works on Deno, Bun, and Node.js
+- Each backend can be developed independently
 
-## Storage Adaptor
+## Storage Adaptor Layer
 
-The `tasker-adaptor-supabase` package provides pluggable storage:
+The tasker-adaptor packages provide pluggable storage with a unified interface:
 
+### Base Package (tasker-adaptor)
+
+Contains the abstract interfaces and core execution logic:
+- `StorageAdapter` - Abstract base class all backends implement
+- `TaskExecutor` - Executes task code with suspend/resume
+- `StackProcessor` - Processes pending service calls
+- `ServiceClient` - Calls wrapped services
+
+### Backend Implementations
+
+Choose one based on your needs:
+
+**Development (SQLite):**
 ```javascript
-import { SupabaseAdapter, SQLiteAdapter, TaskExecutor } from 'tasker-adaptor-supabase';
+import { SQLiteAdapter } from 'tasker-adaptor-sqlite';
+import { TaskExecutor } from 'tasker-adaptor';
 
-// Development: SQLite
 const adapter = new SQLiteAdapter('./tasks.db');
-
-// Production: Supabase
-const adapter = new SupabaseAdapter(url, serviceKey, anonKey);
-
 await adapter.init();
 
-// Core execution logic (adapter-agnostic)
+const executor = new TaskExecutor(adapter);
+const result = await executor.execute(taskRun, taskCode);
+```
+
+**Production (Supabase):**
+```javascript
+import { SupabaseAdapter } from 'tasker-adaptor-supabase';
+import { TaskExecutor } from 'tasker-adaptor';
+
+const adapter = new SupabaseAdapter(url, serviceKey, anonKey);
+await adapter.init();
+
 const executor = new TaskExecutor(adapter);
 const result = await executor.execute(taskRun, taskCode);
 ```
 
 ### Storage Interface
 
-All storage adapters implement:
+All backends implement:
 - `createTaskRun()` / `getTaskRun()` / `updateTaskRun()` / `queryTaskRuns()`
 - `createStackRun()` / `getStackRun()` / `updateStackRun()` / `queryStackRuns()` / `getPendingStackRuns()`
 - `storeTaskFunction()` / `getTaskFunction()`
 - `setKeystore()` / `getKeystore()` / `deleteKeystore()`
 
-## Service Client
+### Service Client
 
 The `ServiceClient` calls wrapped services (gapi, keystore, database, etc):
 
 ```javascript
-import { ServiceClient } from 'tasker-adaptor-supabase';
+import { ServiceClient } from 'tasker-adaptor';
 
 const client = new ServiceClient({
   type: 'http',
@@ -90,7 +119,8 @@ npm run dev:port 3001
 
 Server watches:
 - `packages/tasker-sequential/supabase/functions/` - Task code
-- `packages/tasker-adaptor-supabase/src/` - Adaptor code
+- `packages/tasker-adaptor/src/` - Base adaptor code
+- `packages/tasker-adaptor-sqlite/src/` - SQLite backend code
 
 Automatically reloads on file changes.
 
@@ -186,18 +216,18 @@ CREATE TABLE keystore (
 
 ## Testing
 
+### SQLite Backend
+```bash
+npm run test:sqlite
+# or in tasker-adaptor-sqlite:
+npm run test
+```
+
 ### Supabase Backend
 ```bash
 npm run test:supabase
 # or in tasker-adaptor-supabase:
-npm run test:supabase
-```
-
-### SQLite Backend
-```bash
-npm run test:sqlite
-# or in tasker-adaptor-supabase:
-npm run test:sqlite
+npm run test
 ```
 
 ### Full Integration
@@ -216,22 +246,24 @@ curl http://localhost:3000/task/status/1
 
 ## Environment Variables
 
-### Development
+### SQLite Development
 ```bash
-# SQLite dev (no env vars needed)
-DB_PATH=./tasks.db
+# No env vars needed - file-based
+SQLITE_DB_PATH=./tasks.db
+```
 
-# Supabase dev
-SUPABASE_URL=http://127.0.0.1:54321
-SUPABASE_SERVICE_KEY=...
-SUPABASE_ANON_KEY=...
+### Supabase Production
+```bash
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_KEY=your-service-key
+SUPABASE_ANON_KEY=your-anon-key
 ```
 
 ### Service Client
 ```bash
 SERVICE_CLIENT_TYPE=http
 SERVICE_CLIENT_BASE_URL=http://localhost:54321
-SERVICE_CLIENT_AUTH_TOKEN=...
+SERVICE_CLIENT_AUTH_TOKEN=your-token
 ```
 
 ## File Structure
@@ -243,23 +275,27 @@ sequential-ecosystem/
 ├── nodemon.json               # Auto-reload configuration
 ├── package.json               # Root monorepo
 ├── deno.json                  # Deno configuration
+├── CLAUDE.md                  # This file
 ├── packages/
 │   ├── sequential-fetch/      # HTTP client
 │   ├── sequential-flow/       # Flow state management
 │   ├── sdk-http-wrapper/      # SDK wrapper
 │   ├── tasker-sequential/     # Task executor (core)
-│   └── tasker-adaptor-supabase/   # Storage adaptor (NEW)
-│       ├── src/
-│       │   ├── adapters/
-│       │   │   ├── supabase.js
-│       │   │   └── sqlite.js
-│       │   ├── core/
-│       │   │   ├── storage-adapter.js
-│       │   │   ├── service-client.js
-│       │   │   ├── task-executor.js
-│       │   │   └── stack-processor.js
-│       │   └── index.js
-│       └── ...
+│   ├── tasker-adaptor/        # Base adaptor (NEW!)
+│   │   ├── src/
+│   │   │   ├── interfaces/
+│   │   │   │   └── storage-adapter.js
+│   │   │   └── core/
+│   │   │       ├── service-client.js
+│   │   │       ├── task-executor.js
+│   │   │       └── stack-processor.js
+│   ├── tasker-adaptor-supabase/   # Supabase backend (NEW!)
+│   │   └── src/
+│   │       └── adapters/
+│   │           └── supabase.js
+│   └── tasker-adaptor-sqlite/     # SQLite backend (NEW!)
+│       └── src/
+│           └── sqlite.js
 ```
 
 ## Migration from Supabase-Only
@@ -274,7 +310,8 @@ const { data } = await supabase.from('task_runs').select('*');
 
 ### New Pattern (Adaptor-independent)
 ```javascript
-import { SQLiteAdapter } from 'tasker-adaptor-supabase';
+import { SQLiteAdapter } from 'tasker-adaptor-sqlite';
+import { TaskExecutor } from 'tasker-adaptor';
 
 const adapter = new SQLiteAdapter('./tasks.db');
 await adapter.init();
@@ -284,7 +321,7 @@ const taskRuns = await adapter.queryTaskRuns({ status: 'pending' });
 ## Next Steps
 
 1. **Integrate with tasker-sequential**
-   - Update CLI to use SQLiteAdapter/SupabaseAdapter
+   - Update CLI to use adaptor layer
    - Remove direct Supabase imports
    - Use TaskExecutor and StackProcessor
 
@@ -323,13 +360,15 @@ curl http://localhost:3000/task/status/1 | jq '.stack_runs'
 
 ## Performance Notes
 
-- SQLite is ideal for development (file-based, no network)
-- Supabase is ideal for production (managed, scalable)
+- **SQLite** is ideal for development (file-based, no network)
+- **Supabase** is ideal for production (managed, scalable)
 - Both backends share identical interface
 - Hot reload works seamlessly with both
 
 ## Resources
 
+- [tasker-adaptor README](./packages/tasker-adaptor/README.md)
 - [tasker-adaptor-supabase README](./packages/tasker-adaptor-supabase/README.md)
+- [tasker-adaptor-sqlite README](./packages/tasker-adaptor-sqlite/README.md)
 - [tasker-sequential docs](./packages/tasker-sequential/CLAUDE.md)
 - [sequential-flow docs](./packages/sequential-flow/README.md)
