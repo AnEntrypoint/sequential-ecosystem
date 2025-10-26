@@ -1,0 +1,41 @@
+# Local development databases
+tasks-dev.db
+tasks-dev.db-*
+*.db
+*.db-wal
+*.db-shm
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+.bun/
+
+# Build artifacts
+dist/
+build/
+.turbo/
+
+# IDE and editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Development tools
+.vexify.db
+.next/
