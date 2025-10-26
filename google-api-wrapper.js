@@ -24,7 +24,7 @@ export class GoogleAPIWrapper {
       return this.accessToken;
     }
 
-    const key = JSON.parse(this.keyContent);
+    const key = typeof this.keyContent === 'string' ? JSON.parse(this.keyContent) : this.keyContent;
     const now = Math.floor(Date.now() / 1000);
     const expiry = now + 3600; // 1 hour
 

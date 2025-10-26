@@ -264,26 +264,36 @@ async function handler(req: Request): Promise<Response> {
 
     // Process pending stack runs (external service calls)
     if (url.pathname === "/task/process" && req.method === "POST") {
-      let adapter: any;
-      if (config.backend === "sqlite") {
-        adapter = new SQLiteAdapter(config.dbPath);
-      } else {
-        adapter = new SupabaseAdapter(
-          process.env.SUPABASE_URL || "",
-          process.env.SUPABASE_SERVICE_KEY || "",
-          process.env.SUPABASE_ANON_KEY || ""
+      try {
+        let adapter: any;
+        if (config.backend === "sqlite") {
+          adapter = new SQLiteAdapter(config.dbPath);
+        } else {
+          adapter = new SupabaseAdapter(
+            process.env.SUPABASE_URL || "",
+            process.env.SUPABASE_SERVICE_KEY || "",
+            process.env.SUPABASE_ANON_KEY || ""
+          );
+        }
+
+        await adapter.init();
+        const processor = new StackProcessor(adapter);
+        await processor.processPending();
+        await adapter.close();
+
+        return new Response(
+          JSON.stringify({ success: true, message: "Processed pending stack runs" }),
+          { status: 200, headers: { ...headers, "Content-Type": "application/json" } }
+        );
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        console.error("Stack processing error:", errorMsg);
+        console.error("Stack trace:", error instanceof Error ? error.stack : "");
+        return new Response(
+          JSON.stringify({ error: errorMsg }),
+          { status: 500, headers: { ...headers, "Content-Type": "application/json" } }
         );
       }
-
-      await adapter.init();
-      const processor = new StackProcessor(adapter);
-      await processor.processPending();
-      await adapter.close();
-
-      return new Response(
-        JSON.stringify({ success: true, message: "Processed pending stack runs" }),
-        { status: 200, headers: { ...headers, "Content-Type": "application/json" } }
-      );
     }
 
     // Google API wrapper - execute Google Admin/Gmail API calls
