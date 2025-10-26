@@ -277,8 +277,10 @@ async function handler(req: Request): Promise<Response> {
         }
 
         await adapter.init();
+        console.log("Processing pending stack runs...");
         const processor = new StackProcessor(adapter);
         await processor.processPending();
+        console.log("Stack processing completed");
         await adapter.close();
 
         return new Response(
@@ -341,6 +343,7 @@ async function handler(req: Request): Promise<Response> {
         let result: any = null;
         for (const call of chain) {
           const { property, args } = call;
+          console.log(`[Google API] Executing property: "${property}"`);
 
           if (property === "admin.domains.list") {
             result = await wrapper.listDomains(args[0]?.customer || "my_customer");
