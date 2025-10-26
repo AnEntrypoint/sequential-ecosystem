@@ -286,6 +286,101 @@ async function handler(req: Request): Promise<Response> {
       );
     }
 
+    // Google API wrapper - execute Google Admin/Gmail API calls
+    if ((url.pathname === "/wrappedgapi" || url.pathname === "/functions/v1/wrappedgapi") && req.method === "POST") {
+      try {
+        const { chain } = await req.json() as any;
+
+        if (!chain || !Array.isArray(chain)) {
+          return new Response(
+            JSON.stringify({ error: "Invalid request: chain array required" }),
+            { status: 400, headers: { ...headers, "Content-Type": "application/json" } }
+          );
+        }
+
+        let adapter: any;
+        if (config.backend === "sqlite") {
+          adapter = new SQLiteAdapter(config.dbPath);
+        } else {
+          adapter = new SupabaseAdapter(
+            process.env.SUPABASE_URL || "",
+            process.env.SUPABASE_SERVICE_KEY || "",
+            process.env.SUPABASE_ANON_KEY || ""
+          );
+        }
+
+        await adapter.init();
+
+        // Get credentials from keystore
+        const gapiKey = await adapter.getKeystore("GAPI_KEY");
+        const adminEmail = await adapter.getKeystore("GAPI_ADMIN_EMAIL");
+
+        if (!gapiKey) {
+          await adapter.close();
+          return new Response(
+            JSON.stringify({ error: "Google API credentials (GAPI_KEY) not found in keystore" }),
+            { status: 401, headers: { ...headers, "Content-Type": "application/json" } }
+          );
+        }
+
+        // Import Google API wrapper
+        const { GoogleAPIWrapper } = await import("./google-api-wrapper.js");
+        const wrapper = new GoogleAPIWrapper(gapiKey, adminEmail);
+
+        // Execute the chain of API calls
+        let result: any = null;
+        for (const call of chain) {
+          const { property, args } = call;
+
+          if (property === "admin.domains.list") {
+            result = await wrapper.listDomains(args[0]?.customer || "my_customer");
+          } else if (property === "admin.users.list") {
+            const params = args[0] || {};
+            result = await wrapper.listUsers(
+              params.customer || "my_customer",
+              params.domain,
+              params.maxResults || 500,
+              params.pageToken
+            );
+          } else if (property === "gmail.users.messages.list") {
+            const params = args[0] || {};
+            result = await wrapper.listMessages(
+              params.userId || "me",
+              params.q || "",
+              params.maxResults || 10,
+              params.pageToken
+            );
+          } else if (property === "gmail.users.messages.get") {
+            const params = args[0] || {};
+            result = await wrapper.getMessage(
+              params.userId || "me",
+              params.messageId
+            );
+          } else {
+            await adapter.close();
+            return new Response(
+              JSON.stringify({ error: `Unknown API method: ${property}` }),
+              { status: 400, headers: { ...headers, "Content-Type": "application/json" } }
+            );
+          }
+        }
+
+        await adapter.close();
+
+        return new Response(
+          JSON.stringify({ result }),
+          { status: 200, headers: { ...headers, "Content-Type": "application/json" } }
+        );
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        console.error("Google API error:", errorMsg);
+        return new Response(
+          JSON.stringify({ error: errorMsg }),
+          { status: 500, headers: { ...headers, "Content-Type": "application/json" } }
+        );
+      }
+    }
+
     // Keystore - get credential
     if (url.pathname.startsWith("/task/keystore/") && req.method === "GET") {
       const key = url.pathname.split("/").pop();
