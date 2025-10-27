@@ -144,8 +144,11 @@ async function handler(req: Request): Promise<Response> {
 
 // Watch for file changes
 const watchDirs = [
-  "./packages/tasker-sequential/supabase/functions",
-  "./packages/tasker-adaptor-supabase/src"
+  "./packages/tasker-sequential",
+  "./packages/tasker-adaptor/src",
+  config.backend === "sqlite"
+    ? "./packages/tasker-adaptor-sqlite/src"
+    : "./packages/tasker-adaptor-supabase/src"
 ];
 
 for (const dir of watchDirs) {

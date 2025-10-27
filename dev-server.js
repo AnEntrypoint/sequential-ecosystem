@@ -25,7 +25,7 @@ const args = process.argv.slice(2);
 const config = {
   backend: 'sqlite',
   port: 3000,
-  watchDirs: ['packages/tasker-sequential/supabase/functions', 'packages/tasker-adaptor-supabase/src'],
+  watchDirs: ['packages/tasker-sequential', 'packages/tasker-adaptor/src'],
   dbPath: './tasks-dev.db'
 };
 
@@ -121,7 +121,7 @@ const server = http.createServer(async (req, res) => {
           // Dynamic import based on backend
           let adapter;
           if (config.backend === 'sqlite') {
-            const { SQLiteAdapter } = await import('./packages/tasker-adaptor-supabase/src/adapters/sqlite.js');
+            const { SQLiteAdapter } = await import('./packages/tasker-adaptor-sqlite/src/index.js');
             adapter = new SQLiteAdapter(config.dbPath);
           } else {
             const { SupabaseAdapter } = await import('./packages/tasker-adaptor-supabase/src/adapters/supabase.js');
@@ -166,7 +166,7 @@ const server = http.createServer(async (req, res) => {
 
       let adapter;
       if (config.backend === 'sqlite') {
-        const { SQLiteAdapter } = await import('./packages/tasker-adaptor-supabase/src/adapters/sqlite.js');
+        const { SQLiteAdapter } = await import('./packages/tasker-adaptor-sqlite/src/index.js');
         adapter = new SQLiteAdapter(config.dbPath);
       } else {
         const { SupabaseAdapter } = await import('./packages/tasker-adaptor-supabase/src/adapters/supabase.js');

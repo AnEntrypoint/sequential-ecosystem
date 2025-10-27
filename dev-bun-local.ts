@@ -44,7 +44,7 @@ console.log(`🎯 Runtime: Bun ${Bun.version}`);
 
 // Watch directories for changes
 const watchDirs = [
-  "packages/tasker-sequential/supabase/functions",
+  "packages/tasker-sequential",
   "packages/tasker-adaptor/src",
   config.backend === "sqlite"
     ? "packages/tasker-adaptor-sqlite/src"
