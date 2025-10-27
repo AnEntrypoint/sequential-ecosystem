@@ -416,5 +416,11 @@ curl http://localhost:3000/task/status/1 | jq '.stack_runs'
 - [tasker-adaptor docs](./packages/tasker-adaptor/README.md) - Storage adaptor interface
 - [tasker-adaptor-supabase docs](./packages/tasker-adaptor-supabase/CLAUDE.md) - Supabase backend
 - [tasker-adaptor-sqlite docs](./packages/tasker-adaptor-sqlite/README.md) - SQLite backend
-- [tasker-wrapped-services docs](./packages/tasker-wrapped-services/CLAUDE.md) - HTTP services
+- [tasker-wrapped-services README](./packages/tasker-wrapped-services/README.md) - HTTP services
 - [sequential-flow docs](./packages/sequential-flow/README.md) - Flow state management
+
+## Git Submodules & Deployment
+
+- [SUBMODULE_SETUP.md](./SUBMODULE_SETUP.md) - Complete submodule setup guide
+- [GITHUB_PUSH_INSTRUCTIONS.md](./GITHUB_PUSH_INSTRUCTIONS.md) - Step-by-step GitHub push instructions
+- [.gitmodules](./.gitmodules) - Git submodule configuration
