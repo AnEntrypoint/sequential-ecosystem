@@ -11,31 +11,44 @@ The sequential ecosystem is a modular task execution platform supporting both Su
 1. **sequential-fetch** - HTTP client for sequential operations
 2. **sequential-flow** - Flow state management library
 3. **sdk-http-wrapper** - Lightweight SDK wrapper for client-server calls
-4. **tasker-sequential** - Task execution engine (core logic)
+4. **tasker-sequential** - Task execution engine (deployment-agnostic)
 
-### Storage Adaptor Layer (NEW!)
+### Storage Adaptor Layer
 
 5. **tasker-adaptor** - Base interfaces and core execution logic
 6. **tasker-adaptor-supabase** - Supabase PostgreSQL backend (production)
 7. **tasker-adaptor-sqlite** - SQLite file-based backend (development)
 
-### Key Separation
+### Service Layer
 
-**Before:**
-- tasker-sequential had direct Supabase dependencies
-- Edge functions were tightly coupled to Supabase
-- Required Supabase infrastructure for development
-- SQLite bundled with Supabase adapter
+8. **tasker-wrapped-services** - Runtime-agnostic HTTP services (deno-executor, task-executor, wrapped APIs)
 
-**After:**
-- tasker-sequential contains core task execution logic only
-- tasker-adaptor provides pluggable storage interfaces
-- tasker-adaptor-supabase for production (managed Supabase)
-- tasker-adaptor-sqlite for development (file-based, no server)
-- Can use SQLite for rapid local development
-- Can use Supabase for production deployment
-- Generic code works on Deno, Bun, and Node.js
-- Each backend can be developed independently
+### Three-Layer Architecture
+
+**Layer 1: Core Task Execution** (tasker-sequential)
+- Deployment-agnostic task execution
+- No storage dependencies
+- Pure JavaScript/TypeScript
+
+**Layer 2: Storage Adapters** (tasker-adaptor + implementations)
+- tasker-adaptor: Interface definitions
+- tasker-adaptor-supabase: PostgreSQL backend
+- tasker-adaptor-sqlite: File-based backend
+- Pluggable - add new backends without changing core
+
+**Layer 3: HTTP Services** (tasker-wrapped-services)
+- Runtime-agnostic service implementations
+- Runs on Deno, Node.js, or Bun
+- Dynamic service discovery and startup
+- Can be wrapped as Supabase edge functions
+- Or run as standalone HTTP services
+
+**Result:**
+- Core logic has zero deployment dependencies
+- Storage backend is pluggable
+- Services run on any runtime
+- Complete decoupling of concerns
+- Services can be deployed separately
 
 ## Storage Adaptor Layer
 
@@ -283,12 +296,13 @@ sequential-ecosystem/
 │   ├── sequential-fetch/      # HTTP client
 │   ├── sequential-flow/       # Flow state management
 │   ├── sdk-http-wrapper/      # SDK wrapper
-│   ├── tasker-sequential/     # Task executor (core, no Supabase deps)
-│   │   ├── CLAUDE.md          # tasker-sequential docs
+│   │
+│   ├── tasker-sequential/     # Task executor (core, deployment-agnostic)
+│   │   ├── CLAUDE.md
 │   │   ├── package.json
-│   │   ├── taskcode/          # Task implementations
-│   │   └── (no supabase/ dir) # Moved to tasker-adaptor-supabase
-│   ├── tasker-adaptor/        # Base adaptor interface
+│   │   └── taskcode/          # Task implementations
+│   │
+│   ├── tasker-adaptor/        # Storage adaptor interface
 │   │   ├── src/
 │   │   │   ├── interfaces/
 │   │   │   │   └── storage-adapter.js
@@ -296,25 +310,37 @@ sequential-ecosystem/
 │   │   │       ├── service-client.js
 │   │   │       ├── task-executor.js
 │   │   │       └── stack-processor.js
-│   ├── tasker-adaptor-supabase/   # Supabase backend + edge functions
-│   │   ├── CLAUDE.md              # tasker-adaptor-supabase docs
+│   │
+│   ├── tasker-adaptor-supabase/   # Supabase storage backend
+│   │   ├── CLAUDE.md              # Deployment guide
 │   │   ├── src/
 │   │   │   └── adapters/
-│   │   │       └── supabase.js
-│   │   ├── edge-functions/        # Supabase edge functions (moved from tasker-sequential)
-│   │   │   ├── tasks/
-│   │   │   ├── deno-executor/
-│   │   │   ├── simple-stack-processor/
-│   │   │   ├── wrappedgapi/
-│   │   │   ├── wrappedkeystore/
-│   │   │   ├── wrappedsupabase/
-│   │   │   └── ...
-│   │   ├── migrations/            # PostgreSQL migrations (moved from tasker-sequential)
-│   │   └── config.toml            # Supabase config (moved from tasker-sequential)
-│   └── tasker-adaptor-sqlite/     # SQLite backend
-│       ├── src/
-│       │   └── sqlite.js
-│       └── CLAUDE.md
+│   │   │       └── supabase.js    # PostgreSQL adaptor
+│   │   ├── migrations/            # PostgreSQL schema
+│   │   └── config.toml            # Supabase project config
+│   │
+│   ├── tasker-adaptor-sqlite/     # SQLite storage backend
+│   │   ├── src/
+│   │   │   ├── index.js
+│   │   │   └── sqlite.js
+│   │   └── CLAUDE.md
+│   │
+│   └── tasker-wrapped-services/   # Runtime-agnostic HTTP services
+│       ├── CLAUDE.md              # Service docs
+│       ├── cli.js                 # Service discovery & startup
+│       ├── package.json
+│       ├── services/
+│       │   ├── deno-executor/     # Task runtime
+│       │   ├── simple-stack-processor/
+│       │   ├── task-executor/
+│       │   ├── gapi/              # Google APIs
+│       │   ├── keystore/          # Credentials
+│       │   ├── supabase/          # Database ops
+│       │   ├── openai/            # OpenAI API
+│       │   ├── websearch/         # Web search
+│       │   └── admin-debug/       # Debugging
+│       └── shared/
+│           └── core/              # Shared utilities
 ```
 
 ## Migration from Supabase-Only
@@ -386,8 +412,9 @@ curl http://localhost:3000/task/status/1 | jq '.stack_runs'
 
 ## Resources
 
-- [tasker-adaptor README](./packages/tasker-adaptor/README.md)
-- [tasker-adaptor-supabase README](./packages/tasker-adaptor-supabase/README.md)
-- [tasker-adaptor-sqlite README](./packages/tasker-adaptor-sqlite/README.md)
-- [tasker-sequential docs](./packages/tasker-sequential/CLAUDE.md)
-- [sequential-flow docs](./packages/sequential-flow/README.md)
+- [tasker-sequential docs](./packages/tasker-sequential/CLAUDE.md) - Core task execution
+- [tasker-adaptor docs](./packages/tasker-adaptor/README.md) - Storage adaptor interface
+- [tasker-adaptor-supabase docs](./packages/tasker-adaptor-supabase/CLAUDE.md) - Supabase backend
+- [tasker-adaptor-sqlite docs](./packages/tasker-adaptor-sqlite/README.md) - SQLite backend
+- [tasker-wrapped-services docs](./packages/tasker-wrapped-services/CLAUDE.md) - HTTP services
+- [sequential-flow docs](./packages/sequential-flow/README.md) - Flow state management
