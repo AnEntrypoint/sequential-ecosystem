@@ -19,3 +19,7 @@
 [submodule "packages/tasker-adaptor-sqlite"]
 	path = packages/tasker-adaptor-sqlite
 	url = https://github.com/AnEntrypoint/tasker-adaptor-sqlite.git
+[submodule "packages/tasker-wrapped-services"]
+	path = packages/tasker-wrapped-services
+	url = https://github.com/AnEntrypoint/tasker-wrapped-services.git
+	branch = main
