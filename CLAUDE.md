@@ -118,11 +118,13 @@ npm run dev:port 3001
 ```
 
 Server watches:
-- `packages/tasker-sequential/supabase/functions/` - Task code
 - `packages/tasker-adaptor/src/` - Base adaptor code
 - `packages/tasker-adaptor-sqlite/src/` - SQLite backend code
+- `packages/tasker-sequential/` - Core task execution logic
 
 Automatically reloads on file changes.
+
+Note: Supabase edge functions are in `packages/tasker-adaptor-supabase/edge-functions/` and require `supabase start` + `supabase functions serve` for local development.
 
 ### Hot Reload with Deno
 
@@ -272,6 +274,7 @@ SERVICE_CLIENT_AUTH_TOKEN=your-token
 sequential-ecosystem/
 ├── dev-server.js              # Node.js hot reload server
 ├── dev-deno.ts                # Deno hot reload server
+├── dev-bun-local.ts           # Bun hot reload server
 ├── nodemon.json               # Auto-reload configuration
 ├── package.json               # Root monorepo
 ├── deno.json                  # Deno configuration
@@ -280,8 +283,12 @@ sequential-ecosystem/
 │   ├── sequential-fetch/      # HTTP client
 │   ├── sequential-flow/       # Flow state management
 │   ├── sdk-http-wrapper/      # SDK wrapper
-│   ├── tasker-sequential/     # Task executor (core)
-│   ├── tasker-adaptor/        # Base adaptor (NEW!)
+│   ├── tasker-sequential/     # Task executor (core, no Supabase deps)
+│   │   ├── CLAUDE.md          # tasker-sequential docs
+│   │   ├── package.json
+│   │   ├── taskcode/          # Task implementations
+│   │   └── (no supabase/ dir) # Moved to tasker-adaptor-supabase
+│   ├── tasker-adaptor/        # Base adaptor interface
 │   │   ├── src/
 │   │   │   ├── interfaces/
 │   │   │   │   └── storage-adapter.js
@@ -289,13 +296,25 @@ sequential-ecosystem/
 │   │   │       ├── service-client.js
 │   │   │       ├── task-executor.js
 │   │   │       └── stack-processor.js
-│   ├── tasker-adaptor-supabase/   # Supabase backend (NEW!)
-│   │   └── src/
-│   │       └── adapters/
-│   │           └── supabase.js
-│   └── tasker-adaptor-sqlite/     # SQLite backend (NEW!)
-│       └── src/
-│           └── sqlite.js
+│   ├── tasker-adaptor-supabase/   # Supabase backend + edge functions
+│   │   ├── CLAUDE.md              # tasker-adaptor-supabase docs
+│   │   ├── src/
+│   │   │   └── adapters/
+│   │   │       └── supabase.js
+│   │   ├── edge-functions/        # Supabase edge functions (moved from tasker-sequential)
+│   │   │   ├── tasks/
+│   │   │   ├── deno-executor/
+│   │   │   ├── simple-stack-processor/
+│   │   │   ├── wrappedgapi/
+│   │   │   ├── wrappedkeystore/
+│   │   │   ├── wrappedsupabase/
+│   │   │   └── ...
+│   │   ├── migrations/            # PostgreSQL migrations (moved from tasker-sequential)
+│   │   └── config.toml            # Supabase config (moved from tasker-sequential)
+│   └── tasker-adaptor-sqlite/     # SQLite backend
+│       ├── src/
+│       │   └── sqlite.js
+│       └── CLAUDE.md
 ```
 
 ## Migration from Supabase-Only
