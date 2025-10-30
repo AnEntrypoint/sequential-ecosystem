@@ -1,166 +1,193 @@
-# Sequential Ecosystem Monorepo
+# Sequential Ecosystem
 
-A comprehensive monorepo containing sequential-fetch, sequential-flow, and tasker-sequential - a complete ecosystem for cross-runtime JavaScript execution with automatic pause/resume on fetch calls.
+A task execution system with automatic suspend/resume capabilities, built for modern Node.js environments.
 
-## 📦 Packages
+## 🚀 Quick Start
 
-### 1. sequential-fetch
-Pure JavaScript VM that pauses on every fetch() call. Works in Node.js, Bun, Deno, and Google Apps Script.
+### Installation via npx (Recommended)
 
-- **Location**: `packages/sequential-fetch`
-- **GitHub**: https://github.com/AnEntrypoint/sequential-fetch
-- **NPM**: https://www.npmjs.com/package/sequential-fetch
-- **Size**: 197 lines, 5.2 KB
-- **Dependencies**: 0
-
-### 2. sequential-flow
-Production-grade execution library with task management and pluggable storage (In-Memory, Redis, SQL, Firestore).
-
-- **Location**: `packages/sequential-flow`
-- **GitHub**: https://github.com/AnEntrypoint/sequential-flow
-- **NPM**: https://www.npmjs.com/package/sequential-flow
-- **Size**: 5.9 KB
-- **Dependencies**: sequential-fetch
-
-### 3. tasker-sequential
-Gmail search tasker with automatic pause/resume execution using sequential-flow instead of flowstate.
-
-- **Location**: `packages/tasker-sequential`
-- **GitHub**: https://github.com/AnEntrypoint/tasker-sequential
-- **Built with**: sequential-flow
-
-## 🚀 Getting Started
-
-### Clone the monorepo
 ```bash
-git clone --recursive https://github.com/AnEntrypoint/sequential-ecosystem.git
+npx sequential-ecosystem init
+npx sequential-ecosystem start
+```
+
+### Local Development
+
+```bash
+# Clone and setup
+git clone <repository>
 cd sequential-ecosystem
-```
-
-### Install dependencies
-```bash
 npm install
+
+# Start the system
+npm run start
 ```
 
-### Use in your project
+## 📚 Features
 
-#### Option 1: Use published NPM packages
+- **Automatic Suspend/Resume**: Tasks automatically pause on HTTP calls and resume when complete
+- **HTTP-based Architecture**: All tools and tasks communicate via HTTP endpoints
+- **Task Management**: Create, manage, and execute tasks dynamically
+- **Tool Integration**: External services are integrated as HTTP-callable tools
+- **State Management**: Automatic state saving and loading for long-running tasks
+
+## 🛠️ Usage
+
+### Starting the System
+
 ```bash
-npm install sequential-fetch sequential-flow
+# Start with default port 3000
+npx sequential-ecosystem start
+
+# Start with custom port
+npx sequential-ecosystem start --port 8080
+
+# Enable debug logging
+npx sequential-ecosystem start --debug
 ```
 
-#### Option 2: Use local monorepo packages
-```javascript
-// Import from local monorepo
-const { SequentialFetchVM } = require('./packages/sequential-fetch/lib/sequential-fetch-vm-lib.cjs');
-const { SequentialFlow } = require('./packages/sequential-flow/lib/edge-functions.cjs');
+### Creating Tasks
+
+```bash
+# Create a new task
+npx sequential-ecosystem create-task my-task
+
+# Create with description
+npx sequential-ecosystem create-task my-task --description "My custom task"
 ```
 
-## 📋 Architecture
+### Setting up GAPI Integration
+
+```bash
+# Set up Gmail search task
+npx sequential-ecosystem setup-gapi
+
+# Add your service account key to /mnt/c/dev/smtp/service-account-key.json
+```
+
+## 🌐 API Endpoints
+
+Once the system is running, these endpoints are available:
+
+### System Endpoints
+
+- `GET /` - API information
+- `GET /status` - System status
+
+### Task Execution
+
+- `POST /tasks/{task-name}` - Execute a specific task
+
+Example:
+```bash
+curl -X POST http://localhost:3000/tasks/comprehensive-gmail-search \
+  -H "Content-Type: application/json" \
+  -d '{
+    "gmailSearchQuery": "from:important",
+    "maxResultsPerUser": 5,
+    "maxUsersPerDomain": 10
+  }'
+```
+
+### Tool Calls
+
+- `POST /tools/{tool-name}` - Call external tools
+
+## 📁 Project Structure
 
 ```
-sequential-ecosystem (monorepo)
+sequential-ecosystem/
+├── cli.ts                    # Main CLI entry point
+├── system/                   # System modules
+│   ├── start.js             # System startup logic
+│   ├── create-task.js       # Task creation utilities
+│   └── setup-gapi.js        # GAPI setup utilities
 ├── packages/
-│   ├── sequential-fetch
-│   │   └── Pure JavaScript VM with pause/resume
-│   ├── sequential-flow
-│   │   └── Task management + storage (uses sequential-fetch)
-│   └── tasker-sequential
-│       └── Gmail search tasker (uses sequential-flow)
-└── docs/
+│   ├── tasker-adaptor/      # Core task execution engine
+│   ├── tasker-sequential/   # Sequential task runner
+│   │   └── taskcode/
+│   │       └── endpoints/   # Task definitions
+│   └── tasker-wrapped-services/  # External service integrations
+└── dist/                    # Built distribution files
 ```
 
-## 🔄 Package Dependencies
+## 🔄 How It Works
 
+1. **Task Loading**: Tasks are automatically loaded from `packages/tasker-sequential/taskcode/endpoints/`
+2. **HTTP Communication**: All external calls go through HTTP endpoints
+3. **Automatic Pause/Resume**: When a task makes an HTTP call, it automatically:
+   - Pauses execution
+   - Saves current state
+   - Makes the HTTP request
+   - Resumes execution with results
+4. **State Management**: Task state is preserved across HTTP calls
+
+## 📝 Task Development
+
+Tasks are simple JavaScript modules that export a function:
+
+```javascript
+module.exports = async function({ parameter1, parameter2 }) {
+  console.log('🚀 Starting task');
+  
+  try {
+    // Make HTTP call - automatically pauses/resumes
+    const response = await fetch('http://localhost:3000/tools/some-tool', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: 'value' })
+    });
+    
+    const result = await response.json();
+    
+    return {
+      success: true,
+      data: result
+    };
+    
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+};
 ```
-sequential-fetch (zero deps)
-        ↓
-sequential-flow (depends on sequential-fetch)
-        ↓
-tasker-sequential (depends on sequential-flow)
-```
 
-## 🔗 Git Submodules
+## 🔧 GAPI Integration
 
-This monorepo uses git submodules to link the main packages:
+The system includes a comprehensive Gmail search task:
 
-- `sequential-fetch` → https://github.com/AnEntrypoint/sequential-fetch
-- `sequential-flow` → https://github.com/AnEntrypoint/sequential-flow
-- `tasker-sequential` → https://github.com/AnEntrypoint/tasker-sequential
+1. **Setup**: Run `npx sequential-ecosystem setup-gapi`
+2. **Configure**: Add your Google Workspace service account key to `/mnt/c/dev/smtp/service-account-key.json`
+3. **Execute**: Call the task via HTTP POST to `/tasks/comprehensive-gmail-search`
 
-Changes made in any package folder automatically reflect in the linked repository.
+## 🐛 Debugging
 
-## 📦 Quick Install All Packages Locally
-
+Enable debug mode:
 ```bash
-npm install sequential-fetch sequential-flow
+npx sequential-ecosystem start --debug
 ```
 
-Or use from this monorepo:
+Check system status:
 ```bash
-npm install ./packages/sequential-fetch ./packages/sequential-flow
+curl http://localhost:3000/status
 ```
-
-## 🧪 Testing
-
-Each package has its own tests:
-
-```bash
-# Test sequential-fetch
-npm --prefix packages/sequential-fetch test
-
-# Test sequential-flow
-npm --prefix packages/sequential-flow test
-
-# Test tasker-sequential
-npm --prefix packages/tasker-sequential test
-```
-
-## 📚 Documentation
-
-- **sequential-fetch**: [packages/sequential-fetch/README.md](packages/sequential-fetch/README.md)
-- **sequential-flow**: [packages/sequential-flow/README.md](packages/sequential-flow/README.md)
-- **tasker-sequential**: [packages/tasker-sequential/README.md](packages/tasker-sequential/README.md)
-
-## 🤝 Contributing
-
-All packages are open source under MIT license. Contributions welcome!
-
-1. Clone the monorepo with submodules
-2. Make changes in the appropriate package folder
-3. Submit PRs to individual package repositories
 
 ## 📄 License
 
-MIT - See LICENSE files in each package
+MIT License - see LICENSE file for details
 
-## 🔗 Links
+## 🤝 Contributing
 
-- **Monorepo**: https://github.com/AnEntrypoint/sequential-ecosystem
-- **sequential-fetch**: https://github.com/AnEntrypoint/sequential-fetch
-- **sequential-flow**: https://github.com/AnEntrypoint/sequential-flow
-- **tasker-sequential**: https://github.com/AnEntrypoint/tasker-sequential
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
-## ✨ Features
+## 🆘 Support
 
-### Cross-Runtime Compatibility
-- ✅ Node.js (v18+)
-- ✅ Bun
-- ✅ Deno
-- ✅ Google Apps Script
-
-### Zero Dependencies
-Core library uses only JavaScript built-ins (no external npm packages required)
-
-### Production Ready
-- Full test coverage
-- Complete documentation
-- Storage integrations included
-- Edge function ready
-
-## 📞 Support
-
-For issues with specific packages, file issues in their respective repositories:
-- sequential-fetch: https://github.com/AnEntrypoint/sequential-fetch/issues
-- sequential-flow: https://github.com/AnEntrypoint/sequential-flow/issues
-- tasker-sequential: https://github.com/AnEntrypoint/tasker-sequential/issues
+For issues and questions:
+- Check the existing tasks in `packages/tasker-sequential/taskcode/endpoints/`
+- Review the system logs when running with `--debug`
+- Ensure all HTTP calls use the correct endpoint format
