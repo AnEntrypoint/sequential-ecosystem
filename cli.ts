@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import chalk from 'chalk';
 import { startSystem } from './lib/system-services.js';
 import { createTask, setupGapi } from './lib/task-manager.js';
 import { showHelp, init } from './lib/utils.js';

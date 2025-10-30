@@ -32,14 +32,13 @@
   },
   "files": [
     "cli.ts",
-    "system/**/*",
+    "lib/**/*",
     "packages/**/src/**/*",
     "packages/**/taskcode/**/*",
     "README.md"
   ],
   "dependencies": {
-    "commander": "^11.0.0",
-    "chalk": "^5.3.0"
+    "commander": "^11.0.0"
   },
   "engines": {
     "node": ">=14.0.0"
