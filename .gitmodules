@@ -23,3 +23,6 @@
 	path = packages/tasker-wrapped-services
 	url = https://github.com/AnEntrypoint/tasker-wrapped-services.git
 	branch = main
+[submodule "packages/admin-gui"]
+	path = packages/admin-gui
+	url = https://github.com/AnEntrypoint/admin-gui.git
