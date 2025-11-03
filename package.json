@@ -1,23 +1,30 @@
 {
   "name": "sequential-ecosystem",
   "version": "1.0.0",
-  "description": "Sequential task execution ecosystem with Deno/Bun native support",
+  "description": "Infinite-length task execution with automatic suspend/resume and xstate integration",
   "type": "module",
   "private": true,
   "scripts": {
     "build": "bun build cli.ts --outdir ./dist --target node",
-    "dev": "bun run cli.ts",
-    "start": "bun run cli.ts start",
-    "create-task": "bun run cli.ts create-task",
-    "setup-gapi": "bun run cli.ts setup-gapi",
-    "init": "bun run cli.ts init"
+    "dev": "node --loader ts-node/esm cli.ts",
+    "start": "node cli.js",
+    "cli": "node cli.js",
+    "init": "node cli.js init",
+    "create": "node cli.js create-task",
+    "run": "node cli.js run",
+    "list": "node cli.js list",
+    "sync": "node cli.js sync-tasks"
   },
   "keywords": [
     "tasker",
     "sequential",
     "task-execution",
+    "xstate",
+    "suspend-resume",
     "deno",
-    "bun"
+    "bun",
+    "node",
+    "infinite-tasks"
   ],
   "devDependencies": {
     "@types/node": "^20.0.0",
@@ -28,19 +35,28 @@
     "packages/*"
   ],
   "bin": {
-    "sequential-ecosystem": "./dist/cli.js"
+    "sequential-ecosystem": "./cli.js",
+    "seq": "./cli.js"
   },
   "files": [
     "cli.ts",
-    "lib/**/*",
+    "cli.js",
+    "tools/**/*",
+    "tasks/**/*",
     "packages/**/src/**/*",
+    "packages/**/lib/**/*",
     "packages/**/taskcode/**/*",
+    "CLAUDE.md",
+    "CHANGELOG.md",
     "README.md"
   ],
   "dependencies": {
-    "commander": "^11.0.0"
+    "commander": "^11.0.0",
+    "tasker-adaptor": "file:./packages/tasker-adaptor",
+    "sequential-flow": "file:./packages/sequential-flow",
+    "sequential-fetch": "file:./packages/sequential-fetch"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=18.0.0"
   }
 }
