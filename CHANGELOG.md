@@ -14,6 +14,13 @@ All notable changes to this project will be documented in this file.
   - Real-time event broadcasting via WebSocket
   - Persistent background shell for continuous operation
 
+- **Visual State Machine Visualization**: Real-time xstate flow tree diagrams
+  - Custom SVG-based visualizer for state graphs in Flow Builder
+  - Auto-layout algorithm for state positioning
+  - Visual indicators: initial states (▶), final states (◎), transitions (→)
+  - Color-coded transitions: onDone (blue solid), onError (red dashed)
+  - Real-time updates as states and transitions are edited
+
 - **Complete Documentation Suite**
   - CLAUDE.md: 2000+ line architecture reference with examples
   - Admin GUI README: Feature overview and API documentation
