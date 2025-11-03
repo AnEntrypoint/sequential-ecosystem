@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] - 2025-11-04
+
+### Added
+
+- **Comprehensive Admin GUI**: Full web-based dashboard and management system
+  - Integrated as git submodule in `packages/admin-gui`
+  - Built with React 18, Express.js, Vite, and WebSocket
+  - Features: task runs observability, debug runner, task editor, tools explorer, flow builder
+  - REST API with 14+ endpoints
+  - Real-time event broadcasting via WebSocket
+  - Persistent background shell for continuous operation
+
+- **Complete Documentation Suite**
+  - CLAUDE.md: 2000+ line architecture reference with examples
+  - Admin GUI README: Feature overview and API documentation
+  - Admin GUI DEPLOYMENT.md: Docker, Kubernetes, Nginx configurations
+  - Updated git status and cleanup procedures
+
+### Changed
+
+- Migrated from TypeScript source (cli.ts) to JavaScript executable (cli.js)
+- Updated package.json scripts from Bun to Node.js compatibility
+- Cleaned up test data and ephemeral files
+- Reset submodules to clean state after integration testing
+
+### Fixed
+
+- Routing issues in admin-gui Task Runner and Flow Builder pages
+- Submodule content synchronization
+- Git repository cleanup and garbage collection
+
 ## [1.0.0] - 2025-11-03
 
 ### Added
