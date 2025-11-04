@@ -886,3 +886,70 @@ ls -la tasks/
 6. **Production-ready**: No fallbacks or mocks - only real implementations
 
 **For a new team member**: Read this file first, then create a simple task and run it. That's the fastest way to understand the system.
+
+---
+
+## GUI Enhancements (Flow Builder)
+
+The admin GUI includes a beautiful, user-friendly **Flow Builder** for designing explicit xstate workflows.
+
+### Key Features
+
+**Visual Design**:
+- Modern glassmorphism panels with gradient backgrounds
+- Smooth animations and hover effects
+- Dark theme with blue/purple/pink accent colors
+- Responsive grid layout (3 columns → 1 column on mobile)
+
+**Tree Editor UX**:
+- **Drag-and-drop reordering**: Grab and move states to reorganize flow
+- **Input validation**: Real-time validation for state names (alphanumeric + underscore)
+- **Live error messages**: Clear, actionable error feedback
+- **State count indicator**: Shows total states in panel header
+- **Visual state indicators**: Hover effects, active state highlighting, initial state markers
+
+**State Machine Visualization**:
+- Auto-layout SVG diagram with state positions
+- Color-coded transitions (success = blue, error = red)
+- Interactive hover effects on transitions
+- Animated initial state indicator
+- Pulsing final state indicator
+
+**Editor Panel**:
+- Context-sensitive editing (shows state name in header)
+- Descriptive labels and placeholders
+- Success/Error transition dropdowns with next-state options
+- Final state checkbox
+- Keyboard-friendly (Enter to add state)
+
+**Technical Improvements**:
+- Custom scrollbar styling for state lists
+- CSS transitions for smooth interactions
+- Form input states (hover, focus, error)
+- Semantic HTML with proper accessibility attributes
+
+### Component Structure
+
+```
+packages/admin-gui/packages/web/src/
+├── pages/
+│   └── FlowBuilder.jsx          # Main editor component
+├── components/
+│   └── StateMachineVisualizer.jsx   # SVG visualization
+└── styles/
+    ├── FlowBuilder.css          # Editor styles (350+ lines)
+    └── StateMachineVisualizer.css   # Visualizer styles
+```
+
+### How to Use
+
+1. **Start Flow Builder**: Click on a task with explicit xstate config
+2. **Add State**: Enter state name, press Enter or click "+ Add"
+3. **Edit State**: Click state in left panel, configure in center
+4. **Reorder States**: Drag-drop states in left panel
+5. **Configure Transitions**: Set onDone/onError next states
+6. **Mark Final**: Check checkbox to mark state as terminal
+7. **View Diagram**: See real-time visualization on right
+8. **Save**: Click "💾 Save Flow" button
+
+All changes auto-validate and provide instant feedback.

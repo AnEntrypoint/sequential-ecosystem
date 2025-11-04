@@ -2,6 +2,46 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.0] - 2025-11-04
+
+### GUI Enhancements (Flow Builder)
+
+**Visual Design Overhaul**:
+- Modern glassmorphism panels with gradient backgrounds and backdrop blur
+- Smooth cubic-bezier animations for all interactions
+- Enhanced dark theme with blue/purple/pink accents
+- Responsive grid layout: 3 columns (desktop) → 1 column (mobile)
+- Custom styled scrollbars for state lists
+
+**Tree Editor Improvements**:
+- Full drag-and-drop support for reordering states
+- Real-time input validation with clear error messages
+- State count indicator in panel header
+- Active state highlighting with gradient left border
+- Initial state visual indicators (play icon marker)
+- Improved hover effects and visual feedback
+
+**State Machine Visualization**:
+- Color-coded transitions (blue=success, red=error)
+- Interactive hover effects on arrows
+- Animated final state indicators (pulsing)
+- Enhanced SVG rendering with proper shadows
+- Better transition labels with improved styling
+
+**Editor Panel UX**:
+- Context-sensitive state name display
+- Emoji icons for better visual hierarchy (✓ ✗ 👈 📊)
+- Improved form labels and placeholders
+- Enhanced checkbox styling and layout
+- Better visual separation between form groups
+
+**Code Quality**:
+- Added state name validation (alphanumeric + underscore)
+- Better error handling in fetch calls
+- Improved CSS organization (350+ lines, well-structured)
+- No hardcoded colors (all use CSS variables)
+- Fully responsive design with media queries
+
 ## [1.2.0] - 2025-11-04
 
 ### Architectural Improvements
