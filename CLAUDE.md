@@ -283,6 +283,38 @@ export SUPABASE_KEY="your-api-key"
 npx sequential-ecosystem run my-task
 ```
 
+### Extending with Custom Adapters (Advanced)
+
+The adapter system uses a registry pattern that allows registering custom storage backends without modifying the framework:
+
+```javascript
+import { registerAdapter, createAdapter } from 'tasker-adaptor';
+import { MyCustomAdapter } from './my-adapter.js';
+
+// Register custom adapter
+registerAdapter('mongodb', (config) => new MyCustomAdapter(
+  config.mongoUrl || process.env.MONGO_URL,
+  config.database || 'tasks'
+));
+
+// Use it like any built-in adapter
+const adapter = await createAdapter('mongodb', {
+  mongoUrl: 'mongodb://localhost:27017',
+  database: 'workflow'
+});
+```
+
+**Built-in adapters** are automatically registered:
+- `sqlite` - SQLite database
+- `supabase` - PostgreSQL via Supabase
+
+**Creating custom adapters**:
+1. Implement `StorageAdapter` interface (methods: init, createTaskRun, getTaskRun, etc.)
+2. Register with `registerAdapter(name, factoryFunction)`
+3. Use via `createAdapter(name, config)`
+
+This design allows production deployments to add specialized adapters (Redis, DynamoDB, etc.) without touching the core framework.
+
 ---
 
 ## Task Execution Flow
