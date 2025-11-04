@@ -1,5 +1,7 @@
 # Sequential Ecosystem - Complete Architecture & xstate Integration
 
+---
+
 ## Project Overview
 
 **sequential-ecosystem** is a monorepo for building **infinite-length task execution systems** with automatic suspend/resume on HTTP calls. It uses xstate for state management in two distinct patterns:

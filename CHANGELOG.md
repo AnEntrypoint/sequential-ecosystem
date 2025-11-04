@@ -2,6 +2,45 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2025-11-04
+
+### Architectural Improvements
+
+- **Design-Implementation Alignment**: Fixed critical gap where CLI bypassed StorageAdapter pattern
+  - CLI now uses StorageAdapter (FolderAdapter) for all task execution
+  - Enables seamless swapping between folder/SQLite/Supabase backends
+  - Single source of truth for storage operations
+
+- **Created FolderAdapter**: Implements StorageAdapter interface wrapping folder-based storage
+  - Manages task runs, stack runs, keystores in folder structure
+  - Compatible with existing folder organization (tasks/*.json)
+  - Enables future storage backend migration without code changes
+
+- **Refactored run-task.js**: Now integrates with architectural layers
+  - Uses createAdapter('folder') for storage initialization
+  - Cleaner separation: execution logic ↔ storage adapter ↔ persistence
+  - Maintains backward compatibility with all CLI commands
+
+- **Lazy-Load Optional Adapters**: SQLite and Supabase are optional dependencies
+  - adapter-factory gracefully handles missing packages
+  - FolderAdapter always available (zero database setup)
+  - Production deployments can add SQLite/Supabase as needed
+
+- **Code Cleanup**: Removed non-permanent structures
+  - Deleted orphaned lib/ directory (unused utilities)
+  - Removed ARCHITECTURE.md analysis file
+  - Reduced technical debt, improved clarity
+
+### Key Outcomes
+
+- ✓ All features preserved and verified working: FetchFlow pause/resume, implicit xstate, explicit xstate, CLI commands
+- ✓ Zero breaking changes to user-facing API
+- ✓ Simplified architecture: transparent code flow CLI → StorageAdapter → Backend
+- ✓ Forward-thinking design: extensible adapter system for future backends
+- ✓ Production-ready: no fallbacks, no mocks, only real implementations
+
+---
+
 ## [1.1.0] - 2025-11-04
 
 ### Added

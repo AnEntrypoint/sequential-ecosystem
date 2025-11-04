@@ -2,6 +2,14 @@
 
 This document tracks future enhancements and improvements for the project. All current implementation is complete and production-ready.
 
+## Architecture Complete ✓
+
+The design-implementation gap has been closed:
+- ✓ Created FolderAdapter implementing StorageAdapter interface
+- ✓ Refactored CLI run-task.js to use StorageAdapter
+- ✓ Cleaned up orphaned lib/ and ARCHITECTURE.md files
+- ✓ All features verified (FetchFlow pause/resume, implicit xstate, explicit xstate, CLI commands)
+
 ## Documentation
 
 - [ ] Add example tasks to `tasks/` directory showing common patterns
