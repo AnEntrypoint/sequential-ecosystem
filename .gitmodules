@@ -26,3 +26,18 @@
 [submodule "packages/admin-gui"]
 	path = packages/admin-gui
 	url = https://github.com/AnEntrypoint/admin-gui.git
+[submodule "packages/tasker-http-utils"]
+	path = packages/tasker-http-utils
+	url = https://github.com/AnEntrypoint/tasker-http-utils.git
+[submodule "packages/tasker-logging"]
+	path = packages/tasker-logging
+	url = https://github.com/AnEntrypoint/tasker-logging.git
+[submodule "packages/tasker-storage-utils"]
+	path = packages/tasker-storage-utils
+	url = https://github.com/AnEntrypoint/tasker-storage-utils.git
+[submodule "packages/tasker-utils"]
+	path = packages/tasker-utils
+	url = https://github.com/AnEntrypoint/tasker-utils.git
+[submodule "packages/tasker-validators"]
+	path = packages/tasker-validators
+	url = https://github.com/AnEntrypoint/tasker-validators.git
