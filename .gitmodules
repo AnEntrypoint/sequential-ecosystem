@@ -7,9 +7,9 @@
 [submodule "packages/sequential-runner"]
 	path = packages/sequential-runner
 	url = https://github.com/AnEntrypoint/sequential-runner.git
-[submodule "packages/sdk-http-wrapper"]
-	path = packages/sdk-http-wrapper
-	url = https://github.com/AnEntrypoint/sdk-http-wrapper.git
+[submodule "packages/sequential-wrapper"]
+	path = packages/sequential-wrapper
+	url = https://github.com/AnEntrypoint/sequential-wrapper.git
 [submodule "packages/sequential-adaptor"]
 	path = packages/sequential-adaptor
 	url = https://github.com/AnEntrypoint/sequential-adaptor.git
@@ -23,9 +23,9 @@
 	path = packages/sequential-wrapped-services
 	url = https://github.com/AnEntrypoint/sequential-wrapped-services.git
 	branch = main
-[submodule "packages/admin-gui"]
-	path = packages/admin-gui
-	url = https://github.com/AnEntrypoint/admin-gui.git
+[submodule "packages/sequential-gui"]
+	path = packages/sequential-gui
+	url = https://github.com/AnEntrypoint/sequential-gui.git
 [submodule "packages/sequential-http-utils"]
 	path = packages/sequential-http-utils
 	url = https://github.com/AnEntrypoint/sequential-http-utils.git
