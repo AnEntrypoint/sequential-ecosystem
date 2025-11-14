@@ -1,0 +1,15 @@
+{
+  "id": "1bc01364-5004-40bf-befc-45334385a631",
+  "taskName": "example-api",
+  "status": "success",
+  "input": {},
+  "output": {
+    "success": true,
+    "input": {}
+  },
+  "error": null,
+  "startedAt": "2025-11-11T14:29:33.477Z",
+  "completedAt": "2025-11-11T14:29:33.481Z",
+  "createdAt": "2025-11-11T14:29:33.477Z",
+  "updatedAt": "2025-11-11T14:29:33.477Z"
+}

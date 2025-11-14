@@ -4,40 +4,40 @@
 [submodule "packages/sequential-flow"]
 	path = packages/sequential-flow
 	url = https://github.com/AnEntrypoint/sequential-flow.git
-[submodule "packages/tasker-sequential"]
-	path = packages/tasker-sequential
-	url = https://github.com/AnEntrypoint/tasker-sequential.git
+[submodule "packages/sequential-runner"]
+	path = packages/sequential-runner
+	url = https://github.com/AnEntrypoint/sequential-runner.git
 [submodule "packages/sdk-http-wrapper"]
 	path = packages/sdk-http-wrapper
 	url = https://github.com/AnEntrypoint/sdk-http-wrapper.git
-[submodule "packages/tasker-adaptor"]
-	path = packages/tasker-adaptor
-	url = https://github.com/AnEntrypoint/tasker-adaptor.git
-[submodule "packages/tasker-adaptor-supabase"]
-	path = packages/tasker-adaptor-supabase
-	url = https://github.com/AnEntrypoint/tasker-adaptor-supabase.git
-[submodule "packages/tasker-adaptor-sqlite"]
-	path = packages/tasker-adaptor-sqlite
-	url = https://github.com/AnEntrypoint/tasker-adaptor-sqlite.git
-[submodule "packages/tasker-wrapped-services"]
-	path = packages/tasker-wrapped-services
-	url = https://github.com/AnEntrypoint/tasker-wrapped-services.git
+[submodule "packages/sequential-adaptor"]
+	path = packages/sequential-adaptor
+	url = https://github.com/AnEntrypoint/sequential-adaptor.git
+[submodule "packages/sequential-adaptor-supabase"]
+	path = packages/sequential-adaptor-supabase
+	url = https://github.com/AnEntrypoint/sequential-adaptor-supabase.git
+[submodule "packages/sequential-adaptor-sqlite"]
+	path = packages/sequential-adaptor-sqlite
+	url = https://github.com/AnEntrypoint/sequential-adaptor-sqlite.git
+[submodule "packages/sequential-wrapped-services"]
+	path = packages/sequential-wrapped-services
+	url = https://github.com/AnEntrypoint/sequential-wrapped-services.git
 	branch = main
 [submodule "packages/admin-gui"]
 	path = packages/admin-gui
 	url = https://github.com/AnEntrypoint/admin-gui.git
-[submodule "packages/tasker-http-utils"]
-	path = packages/tasker-http-utils
-	url = https://github.com/AnEntrypoint/tasker-http-utils.git
-[submodule "packages/tasker-logging"]
-	path = packages/tasker-logging
-	url = https://github.com/AnEntrypoint/tasker-logging.git
-[submodule "packages/tasker-storage-utils"]
-	path = packages/tasker-storage-utils
-	url = https://github.com/AnEntrypoint/tasker-storage-utils.git
-[submodule "packages/tasker-utils"]
-	path = packages/tasker-utils
-	url = https://github.com/AnEntrypoint/tasker-utils.git
-[submodule "packages/tasker-validators"]
-	path = packages/tasker-validators
-	url = https://github.com/AnEntrypoint/tasker-validators.git
+[submodule "packages/sequential-http-utils"]
+	path = packages/sequential-http-utils
+	url = https://github.com/AnEntrypoint/sequential-http-utils.git
+[submodule "packages/sequential-logging"]
+	path = packages/sequential-logging
+	url = https://github.com/AnEntrypoint/sequential-logging.git
+[submodule "packages/sequential-storage-utils"]
+	path = packages/sequential-storage-utils
+	url = https://github.com/AnEntrypoint/sequential-storage-utils.git
+[submodule "packages/sequential-utils"]
+	path = packages/sequential-utils
+	url = https://github.com/AnEntrypoint/sequential-utils.git
+[submodule "packages/sequential-validators"]
+	path = packages/sequential-validators
+	url = https://github.com/AnEntrypoint/sequential-validators.git

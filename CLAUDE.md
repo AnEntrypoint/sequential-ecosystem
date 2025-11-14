@@ -24,10 +24,10 @@ sequential-ecosystem/
 └── packages/
     ├── sequential-fetch/              # Implicit xstate VM (FetchFlow)
     ├── sequential-flow/               # Explicit xstate VM (FlowState)
-    ├── tasker-sequential/             # Task execution engine
-    ├── tasker-adaptor{-sqlite,-supabase}/  # Storage backends
+    ├── sequential-runner/             # Task execution engine
+    ├── sequential-adaptor{-sqlite,-supabase}/  # Storage backends
     ├── sdk-http-wrapper/              # HTTP client
-    └── tasker-wrapped-services/       # Pre-wrapped APIs
+    └── sequential-wrapped-services/       # Pre-wrapped APIs
 ```
 
 ## xstate Patterns
@@ -93,7 +93,7 @@ export async function handleError(error) {
 
 ## Storage Backends
 
-Pluggable storage via adapter pattern: `tasker-sequential` → `StorageAdapter` → Backend
+Pluggable storage via adapter pattern: `sequential-runner` → `StorageAdapter` → Backend
 
 ### Default: Folder Storage (Zero Setup)
 
@@ -119,7 +119,7 @@ export SUPABASE_KEY="your-key"
 ### Custom Adapters
 
 ```javascript
-import { registerAdapter, createAdapter } from 'tasker-adaptor';
+import { registerAdapter, createAdapter } from 'sequential-adaptor';
 
 registerAdapter('mongodb', (config) => new MongoAdapter(config));
 const adapter = await createAdapter('mongodb', {uri: '...'});
@@ -210,16 +210,16 @@ TASK_MAX_RETRIES=3                           # Retry count
 **Execution Layer**
 - `sequential-fetch` - Implicit xstate VM (auto-pause on `fetch()`)
 - `sequential-flow` - Explicit xstate VM (state graph execution)
-- `tasker-sequential` - Task runner, handles `__callHostTool__()`, NPX entry
+- `sequential-runner` - Task runner, handles `__callHostTool__()`, NPX entry
 
 **Storage Layer**
-- `tasker-adaptor` - Storage interface contract
-- `tasker-adaptor-sqlite` - SQLite implementation
-- `tasker-adaptor-supabase` - PostgreSQL/Supabase implementation
+- `sequential-adaptor` - Storage interface contract
+- `sequential-adaptor-sqlite` - SQLite implementation
+- `sequential-adaptor-supabase` - PostgreSQL/Supabase implementation
 
 **Utilities**
 - `sdk-http-wrapper` - HTTP client with retry logic
-- `tasker-wrapped-services` - Pre-wrapped APIs (Google, OpenAI, Supabase)
+- `sequential-wrapped-services` - Pre-wrapped APIs (Google, OpenAI, Supabase)
 
 ## Design Decisions
 

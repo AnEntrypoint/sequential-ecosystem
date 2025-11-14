@@ -103,17 +103,17 @@ sequential-ecosystem/
 │   ├── create-task.js       # Task creation utilities
 │   └── setup-gapi.js        # GAPI setup utilities
 ├── packages/
-│   ├── tasker-adaptor/      # Core task execution engine
-│   ├── tasker-sequential/   # Sequential task runner
+│   ├── sequential-adaptor/      # Core task execution engine
+│   ├── sequential-runner/   # Sequential task runner
 │   │   └── taskcode/
 │   │       └── endpoints/   # Task definitions
-│   └── tasker-wrapped-services/  # External service integrations
+│   └── sequential-wrapped-services/  # External service integrations
 └── dist/                    # Built distribution files
 ```
 
 ## 🔄 How It Works
 
-1. **Task Loading**: Tasks are automatically loaded from `packages/tasker-sequential/taskcode/endpoints/`
+1. **Task Loading**: Tasks are automatically loaded from `packages/sequential-runner/taskcode/endpoints/`
 2. **HTTP Communication**: All external calls go through HTTP endpoints
 3. **Automatic Pause/Resume**: When a task makes an HTTP call, it automatically:
    - Pauses execution
@@ -188,6 +188,6 @@ MIT License - see LICENSE file for details
 ## 🆘 Support
 
 For issues and questions:
-- Check the existing tasks in `packages/tasker-sequential/taskcode/endpoints/`
+- Check the existing tasks in `packages/sequential-runner/taskcode/endpoints/`
 - Review the system logs when running with `--debug`
 - Ensure all HTTP calls use the correct endpoint format

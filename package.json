@@ -16,7 +16,7 @@
     "sync": "node cli.js sync-tasks"
   },
   "keywords": [
-    "tasker",
+    "sequential",
     "sequential",
     "task-execution",
     "xstate",
@@ -52,7 +52,7 @@
   ],
   "dependencies": {
     "commander": "^11.0.0",
-    "tasker-adaptor": "file:./packages/tasker-adaptor",
+    "sequential-adaptor": "file:./packages/sequential-adaptor",
     "sequential-flow": "file:./packages/sequential-flow",
     "sequential-fetch": "file:./packages/sequential-fetch"
   },
