@@ -7,9 +7,6 @@
 [submodule "packages/sequential-runner"]
 	path = packages/sequential-runner
 	url = https://github.com/AnEntrypoint/sequential-runner.git
-[submodule "packages/sequential-wrapper"]
-	path = packages/sequential-wrapper
-	url = https://github.com/AnEntrypoint/sequential-wrapper.git
 [submodule "packages/sequential-adaptor"]
 	path = packages/sequential-adaptor
 	url = https://github.com/AnEntrypoint/sequential-adaptor.git
