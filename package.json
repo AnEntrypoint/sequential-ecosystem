@@ -1,12 +1,9 @@
 {
   "name": "sequential-ecosystem",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "description": "Infinite-length task execution with automatic suspend/resume and xstate integration",
   "type": "module",
-  "private": true,
   "scripts": {
-    "build": "bun build cli.ts --outdir ./dist --target node",
-    "dev": "node --loader ts-node/esm cli.ts",
     "start": "node cli.js",
     "cli": "node cli.js",
     "init": "node cli.js init",
@@ -17,44 +14,41 @@
   },
   "keywords": [
     "sequential",
-    "sequential",
     "task-execution",
     "xstate",
     "suspend-resume",
     "deno",
     "bun",
     "node",
-    "infinite-tasks"
+    "infinite-tasks",
+    "workflow",
+    "state-machine"
   ],
-  "devDependencies": {
-    "@types/node": "^20.0.0",
-    "typescript": "^5.0.0",
-    "bun-types": "latest"
+  "author": "lanmower",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-ecosystem.git"
   },
-  "workspaces": [
-    "packages/*"
-  ],
+  "bugs": {
+    "url": "https://github.com/AnEntrypoint/sequential-ecosystem/issues"
+  },
+  "homepage": "https://github.com/AnEntrypoint/sequential-ecosystem#readme",
   "bin": {
     "sequential-ecosystem": "./cli.js",
     "seq": "./cli.js"
   },
   "files": [
-    "cli.ts",
     "cli.js",
-    "tools/**/*",
-    "tasks/**/*",
-    "packages/**/src/**/*",
-    "packages/**/lib/**/*",
-    "packages/**/taskcode/**/*",
+    "tools",
     "CLAUDE.md",
     "CHANGELOG.md",
     "README.md"
   ],
   "dependencies": {
     "commander": "^11.0.0",
-    "sequential-adaptor": "file:./packages/sequential-adaptor",
-    "sequential-flow": "file:./packages/sequential-flow",
-    "sequential-fetch": "file:./packages/sequential-fetch"
+    "sequential-adaptor": "^1.0.6",
+    "sequential-flow": "^1.0.0"
   },
   "engines": {
     "node": ">=18.0.0"
