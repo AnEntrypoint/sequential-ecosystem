@@ -54,3 +54,6 @@
 	path = packages/sequential-validators
 	url = https://github.com/AnEntrypoint/sequential-validators.git
 	branch = main
+[submodule "packages/osjs-webdesktop"]
+	path = packages/osjs-webdesktop
+	url = https://github.com/AnEntrypoint/osjs-webdesktop.git
