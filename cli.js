@@ -316,6 +316,51 @@ program
     }
   });
 
+program
+  .command('gui')
+  .description('Launch admin GUI')
+  .option('-p, --port <port>', 'Server port', '3001')
+  .option('--desktop', 'Use OS.js desktop interface')
+  .action(async (options) => {
+    try {
+      const { spawn } = await import('child_process');
+      const guiPath = options.desktop 
+        ? path.join(__dirname, 'packages/osjs-webdesktop')
+        : path.join(__dirname, 'packages/sequential-gui');
+
+      if (!fs.existsSync(guiPath)) {
+        throw new Error(`GUI not found at ${guiPath}`);
+      }
+
+      process.env.PORT = options.port;
+      process.env.ECOSYSTEM_PATH = process.cwd();
+
+      const serverPath = options.desktop
+        ? path.join(guiPath, 'src/server/index.js')
+        : path.join(guiPath, 'packages/server/src/index.js');
+
+      console.log(`Starting GUI on http://localhost:${options.port}`);
+      console.log(`Using ${options.desktop ? 'OS.js Desktop' : 'Sequential GUI'}`);
+
+      const proc = spawn('node', [serverPath], {
+        cwd: guiPath,
+        stdio: 'inherit',
+        env: { ...process.env }
+      });
+
+      proc.on('exit', (code) => {
+        process.exit(code || 0);
+      });
+
+      process.on('SIGINT', () => {
+        proc.kill('SIGINT');
+      });
+    } catch (e) {
+      console.error('Error:', e instanceof Error ? e.message : String(e));
+      process.exit(1);
+    }
+  });
+
 program.parse(process.argv);
 
 if (!process.argv.slice(2).length) {
