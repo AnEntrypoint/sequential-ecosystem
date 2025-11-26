@@ -1,0 +1,13 @@
+{
+  "id": "filesystem-demo",
+  "name": "Filesystem Demo",
+  "description": "Demonstrates task filesystem with run/task/global scopes",
+  "inputs": [
+    {
+      "name": "items",
+      "type": "number",
+      "description": "Number of items to process",
+      "default": 10
+    }
+  ]
+}
