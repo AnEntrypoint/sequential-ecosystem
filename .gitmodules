@@ -57,3 +57,6 @@
 [submodule "packages/osjs-webdesktop"]
 	path = packages/osjs-webdesktop
 	url = https://github.com/AnEntrypoint/osjs-webdesktop.git
+[submodule "packages/zellous"]
+	path = packages/zellous
+	url = https://github.com/AnEntrypoint/zellous.git
