@@ -1,193 +1,127 @@
 # Sequential Ecosystem
 
-A task execution system with automatic suspend/resume capabilities, built for modern Node.js environments.
+Infinite-length task execution with automatic suspend/resume on HTTP calls.
 
-## 🚀 Quick Start
+## Patterns
 
-### Installation via npx (Recommended)
+1. **Implicit xstate (FetchFlow)**: Auto-pause on every `fetch()` - zero config
+2. **Explicit xstate (FlowState)**: State graphs for complex workflows
+3. **Container (StateKit)**: Content-addressable layers for shell commands
+
+## Quick Start
 
 ```bash
 npx sequential-ecosystem init
-npx sequential-ecosystem start
-```
-
-### Local Development
-
-```bash
-# Clone and setup
-git clone <repository>
-cd sequential-ecosystem
-npm install
-
-# Start the system
-npm run start
-```
-
-## 📚 Features
-
-- **Automatic Suspend/Resume**: Tasks automatically pause on HTTP calls and resume when complete
-- **HTTP-based Architecture**: All tools and tasks communicate via HTTP endpoints
-- **Task Management**: Create, manage, and execute tasks dynamically
-- **Tool Integration**: External services are integrated as HTTP-callable tools
-- **State Management**: Automatic state saving and loading for long-running tasks
-
-## 🛠️ Usage
-
-### Starting the System
-
-```bash
-# Start with default port 3000
-npx sequential-ecosystem start
-
-# Start with custom port
-npx sequential-ecosystem start --port 8080
-
-# Enable debug logging
-npx sequential-ecosystem start --debug
-```
-
-### Creating Tasks
-
-```bash
-# Create a new task
 npx sequential-ecosystem create-task my-task
-
-# Create with description
-npx sequential-ecosystem create-task my-task --description "My custom task"
+npx sequential-ecosystem run my-task --input '{}'
 ```
 
-### Setting up GAPI Integration
-
-```bash
-# Set up Gmail search task
-npx sequential-ecosystem setup-gapi
-
-# Add your service account key to /mnt/c/dev/smtp/service-account-key.json
-```
-
-## 🌐 API Endpoints
-
-Once the system is running, these endpoints are available:
-
-### System Endpoints
-
-- `GET /` - API information
-- `GET /status` - System status
-
-### Task Execution
-
-- `POST /tasks/{task-name}` - Execute a specific task
-
-Example:
-```bash
-curl -X POST http://localhost:3000/tasks/comprehensive-gmail-search \
-  -H "Content-Type: application/json" \
-  -d '{
-    "gmailSearchQuery": "from:important",
-    "maxResultsPerUser": 5,
-    "maxUsersPerDomain": 10
-  }'
-```
-
-### Tool Calls
-
-- `POST /tools/{tool-name}` - Call external tools
-
-## 📁 Project Structure
+## Structure
 
 ```
 sequential-ecosystem/
-├── cli.ts                    # Main CLI entry point
-├── system/                   # System modules
-│   ├── start.js             # System startup logic
-│   ├── create-task.js       # Task creation utilities
-│   └── setup-gapi.js        # GAPI setup utilities
-├── packages/
-│   ├── sequential-adaptor/      # Core task execution engine
-│   ├── sequential-runner/   # Sequential task runner
-│   │   └── taskcode/
-│   │       └── endpoints/   # Task definitions
-│   └── sequential-wrapped-services/  # External service integrations
-└── dist/                    # Built distribution files
+├── cli.js                             # NPX entry point
+├── tools/
+│   ├── commands/                      # Pluggable CLI commands
+│   └── *.js                           # CLI utilities
+├── tasks/                             # Default folder storage
+└── packages/
+    ├── sequential-fetch/              # Implicit xstate VM
+    ├── sequential-flow/               # Explicit xstate VM
+    ├── sequential-adaptor/            # Plugin registry + adapters
+    ├── sequential-adaptor-sqlite/     # SQLite storage
+    ├── sequential-adaptor-supabase/   # Supabase storage
+    ├── sequential-runner/             # Task execution engine
+    └── sequential-wrapped-services/   # Pre-wrapped APIs
 ```
 
-## 🔄 How It Works
-
-1. **Task Loading**: Tasks are automatically loaded from `packages/sequential-runner/taskcode/endpoints/`
-2. **HTTP Communication**: All external calls go through HTTP endpoints
-3. **Automatic Pause/Resume**: When a task makes an HTTP call, it automatically:
-   - Pauses execution
-   - Saves current state
-   - Makes the HTTP request
-   - Resumes execution with results
-4. **State Management**: Task state is preserved across HTTP calls
-
-## 📝 Task Development
-
-Tasks are simple JavaScript modules that export a function:
+## Plugin Registry
 
 ```javascript
-module.exports = async function({ parameter1, parameter2 }) {
-  console.log('🚀 Starting task');
-  
-  try {
-    // Make HTTP call - automatically pauses/resumes
-    const response = await fetch('http://localhost:3000/tools/some-tool', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ data: 'value' })
-    });
-    
-    const result = await response.json();
-    
-    return {
-      success: true,
-      data: result
-    };
-    
-  } catch (error) {
-    return {
-      success: false,
-      error: error.message
-    };
+import { register, create, list, createAdapter, createRunner } from 'sequential-adaptor';
+
+register('adapter', 'mydb', (config) => new MyDBAdapter(config));
+register('runner', 'custom', (config) => new CustomRunner(config));
+register('service', 'alias', () => 'endpoint-name');
+
+const adapter = await createAdapter('folder', { basePath: './tasks' });
+const runner = await createRunner('fetch', {});
+```
+
+Registry types: `adapter`, `runner`, `service`, `command`, `loader`
+
+## Writing Tasks
+
+### Implicit (80% of tasks)
+
+```javascript
+export async function myTask(input) {
+  const data = await fetch(`https://api.com/users/${input.userId}`);
+  return data.json();
+}
+```
+
+### Explicit (complex workflows)
+
+```javascript
+export const graph = {
+  id: 'workflow',
+  initial: 'fetchData',
+  states: {
+    fetchData: { onDone: 'process', onError: 'handleError' },
+    process: { onDone: 'complete' },
+    handleError: { type: 'final' },
+    complete: { type: 'final' }
   }
 };
+
+export async function fetchData(input) {
+  return await __callHostTool__('database', 'getUsers', {});
+}
 ```
 
-## 🔧 GAPI Integration
+## CLI Commands
 
-The system includes a comprehensive Gmail search task:
-
-1. **Setup**: Run `npx sequential-ecosystem setup-gapi`
-2. **Configure**: Add your Google Workspace service account key to `/mnt/c/dev/smtp/service-account-key.json`
-3. **Execute**: Call the task via HTTP POST to `/tasks/comprehensive-gmail-search`
-
-## 🐛 Debugging
-
-Enable debug mode:
 ```bash
-npx sequential-ecosystem start --debug
+create-task <name> [--with-graph] [--inputs x,y]
+run <task> --input '{}' [--save] [--dry-run] [--verbose]
+list [-v]
+describe <task>
+history <task> [--limit n]
+show <task> <runId>
+delete <task> [--force]
+sync-tasks [--adaptor sqlite]
+config show|get|set
+init
+gui [--port 3001] [--desktop]
 ```
 
-Check system status:
+## Storage Backends
+
 ```bash
-curl http://localhost:3000/status
+# Folder (default, zero setup)
+npx sequential-ecosystem run my-task
+
+# SQLite
+export DATABASE_URL="sqlite:./workflow.db"
+
+# Supabase
+export SUPABASE_URL="https://project.supabase.co"
+export SUPABASE_SERVICE_KEY="your-key"
 ```
 
-## 📄 License
+## Packages
 
-MIT License - see LICENSE file for details
+| Package | Description |
+|---------|-------------|
+| `sequential-adaptor` | Plugin registry, storage interface, service client |
+| `sequential-fetch` | Implicit xstate VM (auto-pause on fetch) |
+| `sequential-flow` | Explicit xstate VM (state graphs) |
+| `sequential-runner` | Task execution engine |
+| `sequential-adaptor-sqlite` | SQLite storage backend |
+| `sequential-adaptor-supabase` | Supabase storage backend |
+| `sequential-wrapped-services` | Pre-wrapped APIs |
 
-## 🤝 Contributing
+## License
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-## 🆘 Support
-
-For issues and questions:
-- Check the existing tasks in `packages/sequential-runner/taskcode/endpoints/`
-- Review the system logs when running with `--debug`
-- Ensure all HTTP calls use the correct endpoint format
+MIT

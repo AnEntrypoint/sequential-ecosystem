@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0] - 2025-11-27
+
+### Plugin Registry System
+
+- **Unified Registry**: Central plugin system at `sequential-adaptor/src/core/registry.js`
+  - Types: `adapter`, `runner`, `service`, `command`, `loader`
+  - `register(type, name, factory)` - register plugins dynamically
+  - `create(type, name, config)` - create instances with auto-init
+  - `loadPlugins(paths)` - load external plugin files
+
+- **Runner Abstraction**: New runner factory for multiple execution backends
+  - `createRunner('fetch', {})` - implicit xstate VM
+  - `createRunner('flow', {})` - explicit xstate VM
+  - `createRunner('container', {})` - StateKit/containerbuilder support
+  - `registerRunner(name, factory)` - custom runner registration
+
+- **Service Registry**: ServiceClient now uses registry instead of hardcoded map
+  - `ServiceClient.registerService(alias, endpoint)` - register service mappings
+  - `ServiceClient.getServiceEndpoint(alias)` - resolve service names
+  - No fallback defaults - explicit configuration required
+
+- **Command Plugin System**: CLI commands loadable from `tools/commands/`
+  - Each command exports `{ name, description, options, action }`
+  - `loadCommands()` auto-discovers and registers commands
+  - Extensible CLI without modifying core cli.js
+
+- **Agent Guidelines**: New `AGENTS.md` file for agentic coding
+  - Build commands, code style, testing, and git guidelines
+  - Reference for AI agents working on the codebase
+
+### Fixes
+
+- Fixed wrong package names in adapter-factory (`tasker-adaptor-*` → `sequential-adaptor-*`)
+- Removed fallback defaults in config.js - errors now explicit
+- Cleaned up storage-adapter.js - removed comments, fixed unused params
+
 ## [1.3.0] - 2025-11-04
 
 ### GUI Enhancements (Flow Builder)

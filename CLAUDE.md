@@ -4,8 +4,9 @@
 
 **sequential-ecosystem** builds infinite-length task execution systems with automatic suspend/resume on HTTP calls using xstate:
 
-1. **Implicit xstate (FetchFlow)**: Auto-pause on every `fetch()` - zero config, write normal code
-2. **Explicit xstate (FlowState)**: State graphs for complex workflows with branches/retries
+1. **Implicit xstate (FetchFlow)**: Auto-pause on every `fetch()` - zero config
+2. **Explicit xstate (FlowState)**: State graphs for complex workflows
+3. **Container (StateKit)**: Content-addressable layers for shell commands
 
 Deployment-agnostic: works on Node.js, Deno, and Bun without changes.
 
@@ -13,22 +14,43 @@ Deployment-agnostic: works on Node.js, Deno, and Bun without changes.
 
 ```
 sequential-ecosystem/
-├── cli.{ts,js}                        # NPX entry point
-├── tools/                             # CLI utilities (create-task, sync-tasks)
+├── cli.js                             # NPX entry point
+├── tools/
+│   ├── commands/                      # Pluggable CLI commands
+│   └── *.js                           # CLI utilities
 ├── tasks/                             # Default folder storage
 │   └── task-name/
 │       ├── code.js                    # Task implementation
 │       ├── config.json                # Metadata + inputs
-│       ├── graph.json                 # State machine (explicit only)
 │       └── runs/*.json                # Execution history
 └── packages/
-    ├── sequential-fetch/              # Implicit xstate VM (FetchFlow)
-    ├── sequential-flow/               # Explicit xstate VM (FlowState)
+    ├── sequential-fetch/              # Implicit xstate VM
+    ├── sequential-flow/               # Explicit xstate VM
     ├── sequential-runner/             # Task execution engine
-    ├── sequential-adaptor{-sqlite,-supabase}/  # Storage backends
-    ├── sdk-http-wrapper/              # HTTP client
-    └── sequential-wrapped-services/       # Pre-wrapped APIs
+    ├── sequential-adaptor/            # Plugin registry + adapters
+    ├── sequential-adaptor-{sqlite,supabase}/
+    └── sequential-wrapped-services/   # Pre-wrapped APIs
 ```
+
+## Plugin Registry
+
+Unified registry at `sequential-adaptor/src/core/registry.js`:
+
+```javascript
+import { register, create, list, loadPlugins } from 'sequential-adaptor';
+
+register('adapter', 'mydb', (config) => new MyDBAdapter(config));
+register('runner', 'custom', (config) => new CustomRunner(config));
+register('service', 'alias', () => 'endpoint-name');
+register('command', 'mycmd', () => myCommandDef);
+
+const adapter = await create('adapter', 'mydb', {});
+const runner = await create('runner', 'custom', {});
+
+await loadPlugins(['./my-plugin.js']);
+```
+
+Registry types: `adapter`, `runner`, `service`, `command`, `loader`
 
 ## xstate Patterns
 
@@ -39,15 +61,10 @@ sequential-ecosystem/
 **Use when**: Writing normal async code with HTTP calls.
 
 ```javascript
-// tasks/my-task/code.js
 export async function myTask(input) {
-  // VM pauses here automatically
   const emails = await fetch(`https://api.com/users/${input.userId}/emails`);
   const data = await emails.json();
-
-  // Another auto-pause point
   const threads = await fetch('...').then(r => r.json());
-
   return {success: true, count: data.length};
 }
 ```
@@ -61,26 +78,23 @@ export async function myTask(input) {
 **Use when**: Need conditional branches, error handling paths, or explicit control flow.
 
 ```javascript
-// tasks/workflow/graph.json
-{
-  "id": "workflow",
-  "initial": "fetchData",
-  "states": {
-    "fetchData": {"onDone": "process", "onError": "handleError"},
-    "process": {"onDone": "complete"},
-    "handleError": {"type": "final"},
-    "complete": {"type": "final"}
+export const graph = {
+  id: 'workflow',
+  initial: 'fetchData',
+  states: {
+    fetchData: {onDone: 'process', onError: 'handleError'},
+    process: {onDone: 'complete'},
+    handleError: {type: 'final'},
+    complete: {type: 'final'}
   }
-}
+};
 
-// tasks/workflow/code.js
 export async function fetchData(input) {
   const data = await __callHostTool__('database', 'getUsers', {});
   return {status: 'success', data};
 }
 
 export async function process(result) {
-  // Process data from previous state
   return {status: 'success', processed: result.data.length};
 }
 
@@ -126,6 +140,20 @@ const adapter = await createAdapter('mongodb', {uri: '...'});
 ```
 
 Built-in: `folder` (default), `sqlite`, `supabase`
+
+### Runner Selection
+
+```javascript
+import { createRunner, registerRunner } from 'sequential-adaptor';
+
+const fetchRunner = await createRunner('fetch', {});
+const flowRunner = await createRunner('flow', {});
+const containerRunner = await createRunner('container', {stateDir: '.statekit'});
+
+registerRunner('custom', (config) => new CustomRunner(config));
+```
+
+Built-in: `fetch` (implicit), `flow` (explicit), `container` (StateKit)
 
 ## Execution Flow
 
@@ -234,6 +262,11 @@ TASK_MAX_RETRIES=3                           # Retry count
 **Why storage adaptor pattern?**
 - Deployment flexibility, testing simplicity, scalability, vendor independence
 
+**Why containerbuilder integration?**
+- Shell command execution with content-addressable caching
+- Reproducible builds with layer-based snapshots
+- Git-like workflow for command state management
+
 ## Common Patterns
 
 **Retry Logic (Implicit)**
@@ -284,6 +317,35 @@ npx sequential-ecosystem run my-task --input '{}' # Run task
 | Task won't run | `run my-task --dry-run --verbose` to check syntax |
 | State not saving | Check `config show` and `ls -la tasks/` permissions |
 | HTTP not pausing | Use `fetch()` (implicit) or `__callHostTool__()` (explicit) |
+
+## Plugin Registry
+
+The plugin registry (`packages/sequential-adaptor/src/core/registry.js`) provides a unified system for registering and loading plugins:
+
+```javascript
+const { registry } = require('sequential-adaptor');
+
+// Register plugins
+registry.register('adapter', 'sqlite', {
+  factory: () => require('sequential-adaptor-sqlite'),
+  config: { database: 'tasks.db' }
+});
+
+registry.register('runner', 'flow', {
+  factory: () => require('sequential-flow'),
+  config: { mode: 'explicit' }
+});
+
+// Create instances
+const sqliteAdapter = registry.create('adapter', 'sqlite', config);
+const flowRunner = registry.create('runner', 'flow', config);
+```
+
+Supported plugin types: `adapter`, `runner`, `service`, `command`, `loader`
+
+## Agent Guidelines
+
+See `AGENTS.md` for build commands, code style, testing, and git guidelines for agentic coding.
 
 ## Key Takeaways
 

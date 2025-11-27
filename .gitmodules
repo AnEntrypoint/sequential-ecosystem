@@ -60,3 +60,6 @@
 [submodule "packages/zellous"]
 	path = packages/zellous
 	url = https://github.com/AnEntrypoint/zellous.git
+[submodule "packages/statekit"]
+	path = packages/sequential-machine
+	url = https://github.com/AnEntrypoint/statekit.git

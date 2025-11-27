@@ -5,21 +5,9 @@ const CONFIG_FILE = path.join(process.cwd(), '.sequentialrc.json');
 
 export function loadConfig() {
   if (!fs.existsSync(CONFIG_FILE)) {
-    return {
-      adaptor: 'default',
-      defaults: {}
-    };
+    throw new Error(`Config file not found: ${CONFIG_FILE}. Run 'sequential-ecosystem init' first.`);
   }
-
-  try {
-    return JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf-8'));
-  } catch (e) {
-    console.error('Error loading config:', e instanceof Error ? e.message : String(e));
-    return {
-      adaptor: 'default',
-      defaults: {}
-    };
-  }
+  return JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf-8'));
 }
 
 export function saveConfig(config) {

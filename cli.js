@@ -18,13 +18,14 @@ const pkg = JSON.parse(
 
 program
   .name('sequential-ecosystem')
-  .description('Sequential task execution with xstate integration')
+  .description('Sequential task execution with flow and machine runners')
   .version(pkg.version || '1.0.0');
 
 program
   .command('create-task <name>')
   .description('Create a new task')
   .option('--with-graph', 'Create with explicit state graph (xstate FlowState)')
+  .option('--runner <type>', 'Runner type: flow or machine', 'flow')
   .option('--inputs <inputs>', 'Comma-separated input parameters')
   .option('--description <desc>', 'Task description')
   .action(async (name, options) => {
@@ -32,6 +33,7 @@ program
       await createTask({
         name,
         withGraph: options.withGraph || false,
+        runner: options.runner || 'flow',
         inputs: options.inputs ? options.inputs.split(',') : [],
         description: options.description || ''
       });

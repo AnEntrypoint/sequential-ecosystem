@@ -41,10 +41,17 @@ export async function runTask(options) {
   const runStartTime = new Date().toISOString();
 
   try {
-    const adapter = await createAdapter('folder', { basePath: tasksDir });
+    // Check task runner type from config
+    const taskModule = await import(taskFile);
+    const config = taskModule.config || {};
+    const runner = config.runner || 'sequential-flow';
 
-    try {
-      const taskModule = await import(taskFile);
+    if (runner === 'sequential-machine') {
+      // Use Sequential Machine runner
+      if (verbose) {
+        console.log(`Using Sequential Machine runner`);
+      }
+
       const funcName = taskName.replace(/-/g, '_');
       const taskFunction = taskModule[funcName] || taskModule[taskName] || taskModule.default;
 
@@ -52,19 +59,13 @@ export async function runTask(options) {
         throw new Error(`No default export or '${funcName}' export found in ${taskFile}`);
       }
 
-      const taskRun = await adapter.createTaskRun({
-        id: runId,
-        taskName,
-        status: 'running',
-        input,
-        startedAt: runStartTime
-      });
-
+      // Execute task function directly - it will handle its own filesystem operations
       const result = await taskFunction(input);
 
       const runData = {
         id: runId,
         taskName,
+        runner: 'sequential-machine',
         status: 'success',
         input,
         output: result,
@@ -72,21 +73,60 @@ export async function runTask(options) {
         completedAt: new Date().toISOString()
       };
 
-      if (save) {
-        await adapter.updateTaskRun(runId, {
-          status: 'success',
-          output: result,
-          completedAt: new Date().toISOString()
-        });
-      }
-
       if (verbose) {
         console.log('Result:', result);
       }
 
       return runData;
-    } finally {
-      await adapter.close();
+    } else {
+      // Use Sequential Flow runner (default)
+      const adapter = await createAdapter('folder', { basePath: tasksDir });
+
+      try {
+        const funcName = taskName.replace(/-/g, '_');
+        const taskFunction = taskModule[funcName] || taskModule[taskName] || taskModule.default;
+
+        if (typeof taskFunction !== 'function') {
+          throw new Error(`No default export or '${funcName}' export found in ${taskFile}`);
+        }
+
+        const taskRun = await adapter.createTaskRun({
+          id: runId,
+          taskName,
+          status: 'running',
+          input,
+          startedAt: runStartTime
+        });
+
+        const result = await taskFunction(input);
+
+        const runData = {
+          id: runId,
+          taskName,
+          runner: 'sequential-flow',
+          status: 'success',
+          input,
+          output: result,
+          startedAt: runStartTime,
+          completedAt: new Date().toISOString()
+        };
+
+        if (save) {
+          await adapter.updateTaskRun(runId, {
+            status: 'success',
+            output: result,
+            completedAt: new Date().toISOString()
+          });
+        }
+
+        if (verbose) {
+          console.log('Result:', result);
+        }
+
+        return runData;
+      } finally {
+        await adapter.close();
+      }
     }
   } catch (e) {
     const error = e instanceof Error ? e.message : String(e);
