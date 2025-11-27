@@ -310,7 +310,7 @@ program
       }
 
       console.log('\n✓ Initialized sequential-ecosystem');
-      console.log('Create a task: npx sequential-ecosystem create-task <name>');
+      console.log('Create a task: npx sequential-ecosystem create-task <name> [--runner flow|machine]');
       console.log('Run a task: npx sequential-ecosystem run <name> --input \'{}\'');
     } catch (e) {
       console.error('Error:', e instanceof Error ? e.message : String(e));

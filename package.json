@@ -19,13 +19,17 @@
     "sequential",
     "task-execution",
     "xstate",
+    "sequential-machine",
+    "sequential-flow",
     "suspend-resume",
     "deno",
     "bun",
     "node",
     "infinite-tasks",
     "workflow",
-    "state-machine"
+    "state-machine",
+    "filesystem-layers",
+    "checkpoints"
   ],
   "author": "lanmower",
   "license": "MIT",
