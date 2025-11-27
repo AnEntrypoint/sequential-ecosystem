@@ -1,5 +1,10 @@
 # Sequential Ecosystem - Architecture Reference
 
+## Status
+**Last Updated**: Nov 28, 2025
+**State**: Clean working directory, all ephemeral files removed, submodules verified
+**Key Files**: CLAUDE.md (architecture), CHANGELOG.md (changes), cli.js (entry point)
+
 ## Overview
 
 **sequential-ecosystem** builds infinite-length task execution systems with automatic suspend/resume on HTTP calls using xstate:

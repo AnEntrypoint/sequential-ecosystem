@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.0] - 2025-11-28
+
+### Codebase Cleanup
+
+- **Removed Ephemeral Files**: Deleted all temporary task run JSON files, example tasks, documentation drafts, and test projects
+  - Removed: `tasks/task-run-*.json`, `tasks/example-*.js`, `tasks/storage-test.js`
+  - Removed: `docs/`, `examples/`, `test-project/`, `test-npx.js`
+  - Removed: `playwright.config.ts`, `tests/`, untracked tool files
+
+- **Clean Submodule State**: Verified and restored all submodules to clean working directory
+  - `sequential-adaptor`, `sequential-machine`, `zellous`, `sequential-gui`
+  - Removed untracked development files from `sequential-gui`
+
+- **Documentation Update**: Added status section to CLAUDE.md with current architecture state
+
 ## [1.5.0] - 2025-11-27
 
 ### Runner Renaming
