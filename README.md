@@ -6,13 +6,14 @@ Infinite-length task execution with automatic suspend/resume on HTTP calls.
 
 1. **Implicit xstate (FetchFlow)**: Auto-pause on every `fetch()` - zero config
 2. **Explicit xstate (FlowState)**: State graphs for complex workflows
-3. **Container (StateKit)**: Content-addressable layers for shell commands
+3. **Container (Sequential Machine)**: Content-addressable layers for shell commands and service calls
 
 ## Quick Start
 
 ```bash
 npx sequential-ecosystem init
-npx sequential-ecosystem create-task my-task
+npx sequential-ecosystem create-task my-task                    # Create flow task
+npx sequential-ecosystem create-task my-task --runner machine  # Create machine task
 npx sequential-ecosystem run my-task --input '{}'
 ```
 
@@ -83,7 +84,7 @@ export async function fetchData(input) {
 ## CLI Commands
 
 ```bash
-create-task <name> [--with-graph] [--inputs x,y]
+create-task <name> [--with-graph] [--runner flow|machine] [--inputs x,y]
 run <task> --input '{}' [--save] [--dry-run] [--verbose]
 list [-v]
 describe <task>
@@ -117,6 +118,7 @@ export SUPABASE_SERVICE_KEY="your-key"
 | `sequential-adaptor` | Plugin registry, storage interface, service client |
 | `sequential-fetch` | Implicit xstate VM (auto-pause on fetch) |
 | `sequential-flow` | Explicit xstate VM (state graphs) |
+| `sequential-machine` | Content-addressable layers for shell commands and service calls |
 | `sequential-runner` | Task execution engine |
 | `sequential-adaptor-sqlite` | SQLite storage backend |
 | `sequential-adaptor-supabase` | Supabase storage backend |
