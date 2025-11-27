@@ -11,7 +11,7 @@ export const command = {
     ['--save', 'Save execution result'],
     ['--dry-run', 'Check syntax without executing'],
     ['-v, --verbose', 'Verbose output'],
-    ['--runner <type>', 'Runner type (fetch, flow, container)']
+    ['--runner <type>', 'Runner type (sequential-js, flow, sequential-os)']
   ],
   action: async (taskName, options) => {
     const input = options.input ? JSON.parse(options.input) : {};

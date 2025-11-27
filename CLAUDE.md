@@ -4,9 +4,9 @@
 
 **sequential-ecosystem** builds infinite-length task execution systems with automatic suspend/resume on HTTP calls using xstate:
 
-1. **Implicit xstate (FetchFlow)**: Auto-pause on every `fetch()` - zero config
+1. **Implicit xstate (Sequential-JS)**: Auto-pause on every `fetch()` - zero config
 2. **Explicit xstate (FlowState)**: State graphs for complex workflows
-3. **Container (StateKit)**: Content-addressable layers for shell commands
+3. **Container (Sequential-OS)**: Content-addressable layers for shell commands
 
 Deployment-agnostic: works on Node.js, Deno, and Bun without changes.
 
@@ -146,14 +146,14 @@ Built-in: `folder` (default), `sqlite`, `supabase`
 ```javascript
 import { createRunner, registerRunner } from 'sequential-adaptor';
 
-const fetchRunner = await createRunner('fetch', {});
+const jsRunner = await createRunner('sequential-js', {});
 const flowRunner = await createRunner('flow', {});
-const containerRunner = await createRunner('container', {stateDir: '.statekit'});
+const osRunner = await createRunner('sequential-os', {stateDir: '.statekit'});
 
 registerRunner('custom', (config) => new CustomRunner(config));
 ```
 
-Built-in: `fetch` (implicit), `flow` (explicit), `container` (StateKit)
+Built-in: `sequential-js` (implicit), `flow` (explicit), `sequential-os` (StateKit)
 
 ## Execution Flow
 

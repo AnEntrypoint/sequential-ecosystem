@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.0] - 2025-11-27
+
+### Runner Renaming
+
+- **Better Descriptive Names**: Renamed runners for clarity
+  - `fetch` → `sequential-js` (implicit xstate VM)
+  - `container` → `sequential-os` (StateKit/containerbuilder)
+  - `flow` remains unchanged (explicit xstate VM)
+
+- **Updated Documentation**: All references updated across:
+  - CLAUDE.md architecture reference
+  - README.md quick start guide
+  - Package READMEs and examples
+  - CLI help text and documentation
+
+- **Backward Compatibility**: Runner factory maintains same API, only names changed
+
 ## [1.4.0] - 2025-11-27
 
 ### Plugin Registry System
@@ -13,9 +30,9 @@ All notable changes to this project will be documented in this file.
   - `loadPlugins(paths)` - load external plugin files
 
 - **Runner Abstraction**: New runner factory for multiple execution backends
-  - `createRunner('fetch', {})` - implicit xstate VM
+  - `createRunner('sequential-js', {})` - implicit xstate VM
   - `createRunner('flow', {})` - explicit xstate VM
-  - `createRunner('container', {})` - StateKit/containerbuilder support
+  - `createRunner('sequential-os', {})` - StateKit/containerbuilder support
   - `registerRunner(name, factory)` - custom runner registration
 
 - **Service Registry**: ServiceClient now uses registry instead of hardcoded map
