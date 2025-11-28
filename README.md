@@ -11,11 +11,31 @@ Infinite-length task execution with automatic suspend/resume on HTTP calls.
 ## Quick Start
 
 ```bash
-npx sequential-ecosystem init
+npx sequential-ecosystem init                                   # Initialize with comprehensive examples
 npx sequential-ecosystem create-task my-task                    # Create flow task
+npx sequential-ecosystem create-task my-task --with-graph      # Create flow task with state graph
 npx sequential-ecosystem create-task my-task --runner machine  # Create machine task
 npx sequential-ecosystem run my-task --input '{}'
+
+npx sequential-ecosystem run example-simple-flow --input '{"message":"hello"}'
 ```
+
+## Example Tasks
+
+The `init` command creates comprehensive example tasks demonstrating all features:
+
+- **example-simple-flow**: Basic async operations with `fetch()` auto-pause
+- **example-complex-flow**: State machine with retry logic and error handling
+- **example-api-integration**: API integration patterns with retry and headers
+- **example-batch-processing**: Batch processing with concurrency control
+
+Each example includes:
+- Real-world patterns (error handling, retry logic, validation)
+- Comprehensive documentation
+- Working HTTP calls for testing
+- Best practices implementation
+
+See `tasks/EXAMPLES.md` for detailed usage guide.
 
 ## Structure
 
@@ -84,6 +104,7 @@ export async function fetchData(input) {
 ## CLI Commands
 
 ```bash
+init [--no-examples]                                            # Initialize project with examples (use --no-examples to skip)
 create-task <name> [--with-graph] [--runner flow|machine] [--inputs x,y]
 run <task> --input '{}' [--save] [--dry-run] [--verbose]
 list [-v]
@@ -93,8 +114,7 @@ show <task> <runId>
 delete <task> [--force]
 sync-tasks [--adaptor sqlite]
 config show|get|set
-init
-gui [--port 3001] [--desktop]
+gui
 ```
 
 ## Storage Backends

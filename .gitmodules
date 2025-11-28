@@ -30,10 +30,6 @@
 	path = packages/sequential-wrapped-services
 	url = https://github.com/AnEntrypoint/sequential-wrapped-services.git
 	branch = main
-[submodule "packages/sequential-gui"]
-	path = packages/sequential-gui
-	url = https://github.com/AnEntrypoint/sequential-gui.git
-	branch = main
 [submodule "packages/sequential-http-utils"]
 	path = packages/sequential-http-utils
 	url = https://github.com/AnEntrypoint/sequential-http-utils.git

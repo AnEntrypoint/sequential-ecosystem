@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.7.0] - 2025-11-28
+
+### Rich Boilerplate & Examples
+
+- **Comprehensive Init**: `npx sequential-ecosystem init` now creates rich example tasks by default
+  - `example-simple-flow`: Basic async operations with fetch() auto-pause
+  - `example-complex-flow`: State machine with retry logic and error handling
+  - `example-api-integration`: API integration patterns with retry and headers
+  - `example-batch-processing`: Batch processing with concurrency control
+  - `EXAMPLES.md`: Detailed usage guide for all examples
+  - Use `--no-examples` flag to skip example creation
+
+- **Enhanced Task Templates**: Richer boilerplate for `create-task` command
+  - Simple flow tasks include error handling, logging, and HTTP examples
+  - Graph-based tasks include retry logic, state transitions, and error recovery
+  - All templates demonstrate best practices and real-world patterns
+
+- **Example Features**:
+  - Real HTTP calls (using httpbin.org) for testing
+  - Comprehensive error handling with try/catch
+  - Retry logic with exponential backoff
+  - Input validation and defaults
+  - Performance metrics (duration, timestamps)
+  - Structured result objects
+
 ## [1.6.0] - 2025-11-28
 
 ### Codebase Cleanup

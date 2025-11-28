@@ -285,8 +285,9 @@ program
 
 program
   .command('init')
-  .description('Initialize sequential-ecosystem in current directory')
-  .action(() => {
+  .description('Initialize sequential-ecosystem with comprehensive examples')
+  .option('--no-examples', 'Skip creating example tasks')
+  .action(async (options) => {
     try {
       const paths = [
         path.join(process.cwd(), 'tasks'),
@@ -309,9 +310,22 @@ program
         console.log(`✓ Created ${configFile}`);
       }
 
+      if (options.examples !== false) {
+        const { createExamples } = await import('./tools/create-examples.js');
+        await createExamples();
+      }
+
       console.log('\n✓ Initialized sequential-ecosystem');
       console.log('Create a task: npx sequential-ecosystem create-task <name> [--runner flow|machine]');
       console.log('Run a task: npx sequential-ecosystem run <name> --input \'{}\'');
+      if (options.examples !== false) {
+        console.log('\n📚 Example tasks created in ./tasks/:');
+        console.log('  - example-simple-flow: Basic async operations');
+        console.log('  - example-complex-flow: State machine with error handling');
+        console.log('  - example-api-integration: Service integration patterns');
+        console.log('  - example-batch-processing: Retry and batch patterns');
+        console.log('\nRun examples: npx sequential-ecosystem run example-simple-flow --input \'{"message":"hello"}\'');
+      }
     } catch (e) {
       console.error('Error:', e instanceof Error ? e.message : String(e));
       process.exit(1);
@@ -320,43 +334,57 @@ program
 
 program
   .command('gui')
-  .description('Launch admin GUI')
-  .option('-p, --port <port>', 'Server port', '3001')
-  .option('--desktop', 'Use OS.js desktop interface')
-  .action(async (options) => {
+  .description('Launch Sequential Desktop GUI')
+  .action(async () => {
     try {
       const { spawn } = await import('child_process');
-      const guiPath = options.desktop 
-        ? path.join(__dirname, 'packages/osjs-webdesktop')
-        : path.join(__dirname, 'packages/sequential-gui');
+      const osjsPath = path.join(__dirname, 'packages/osjs-webdesktop');
+      const zellousPath = path.join(__dirname, 'packages/zellous');
 
-      if (!fs.existsSync(guiPath)) {
-        throw new Error(`GUI not found at ${guiPath}`);
+      if (!fs.existsSync(osjsPath)) {
+        throw new Error(`OS.js not found at ${osjsPath}`);
       }
 
-      process.env.PORT = options.port;
+      if (!fs.existsSync(zellousPath)) {
+        throw new Error(`Zellous not found at ${zellousPath}`);
+      }
+
       process.env.ECOSYSTEM_PATH = process.cwd();
 
-      const serverPath = options.desktop
-        ? path.join(guiPath, 'src/server/index.js')
-        : path.join(guiPath, 'packages/server/src/index.js');
+      const osjsServerPath = path.join(osjsPath, 'src/server/index.js');
+      const zellousServerPath = path.join(zellousPath, 'server.js');
 
-      console.log(`Starting GUI on http://localhost:${options.port}`);
-      console.log(`Using ${options.desktop ? 'OS.js Desktop' : 'Sequential GUI'}`);
+      console.log('Starting Sequential Desktop on http://localhost:8003');
+      console.log('Zellous services on ws://localhost:3003');
 
-      const proc = spawn('node', [serverPath], {
-        cwd: guiPath,
+      // Start OS.js server
+      const osjsProc = spawn('node', [osjsServerPath], {
+        cwd: osjsPath,
         stdio: 'inherit',
         env: { ...process.env }
       });
 
-      proc.on('exit', (code) => {
+      // Start Zellous server
+      const zellousProc = spawn('node', [zellousServerPath], {
+        cwd: zellousPath,
+        stdio: 'inherit',
+        env: { ...process.env }
+      });
+
+      const shutdown = () => {
+        osjsProc.kill('SIGINT');
+        zellousProc.kill('SIGINT');
+      };
+
+      osjsProc.on('exit', (code) => {
         process.exit(code || 0);
       });
 
-      process.on('SIGINT', () => {
-        proc.kill('SIGINT');
+      zellousProc.on('exit', (code) => {
+        process.exit(code || 0);
       });
+
+      process.on('SIGINT', shutdown);
     } catch (e) {
       console.error('Error:', e instanceof Error ? e.message : String(e));
       process.exit(1);
