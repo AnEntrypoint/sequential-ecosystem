@@ -86,3 +86,12 @@
 [submodule "packages/zellous-client-sdk"]
 	path = packages/zellous-client-sdk
 	url = https://github.com/AnEntrypoint/zellous-client-sdk
+[submodule "packages/desktop-theme"]
+	path = packages/desktop-theme
+	url = https://github.com/AnEntrypoint/desktop-theme
+[submodule "packages/desktop-ui-components"]
+	path = packages/desktop-ui-components
+	url = https://github.com/AnEntrypoint/desktop-ui-components
+[submodule "packages/desktop-api-client"]
+	path = packages/desktop-api-client
+	url = https://github.com/AnEntrypoint/desktop-api-client
