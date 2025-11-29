@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] - 2025-11-29
 
+### Testing & Bug Fixes - Comprehensive GUI Testing Complete
+
+**All Desktop Apps Tested**
+- ✅ Desktop Shell: Window management, multi-window support, settings, themes, taskbar
+- ✅ Terminal: Command execution, branch management, layer system, tabs, History/Status buttons
+- ✅ Flow Editor: Grid snapping (20px), visual state machine, drag-drop nodes
+- ✅ Debugger: Layer history, timestamps, status dashboard, checkout/compare
+- ✅ Task Editor: Runner selection (Sequential-JS, FlowState, Sequential-OS), code editor
+- ✅ Code Editor: File tree navigation, tab management, multi-file editing
+
+**Bug Fixes**
+- Fixed port 8003 conflict: Disabled Zellous server spawning (desktop already serves static files)
+- Fixed Debugger "Invalid Date" bug: Changed layer.timestamp → layer.time to match Sequential-Machine API
+
+**Existing Features Verified**
+- Global keyboard shortcuts: Alt+Tab, Ctrl+W, Win+Arrows, F1, Escape, Ctrl+,
+- Window snapping with visual preview overlay
+- Theme system with 6 color schemes
+- localStorage persistence for window positions and settings
+- Help panel with keyboard shortcut reference
+
 ### Refactor - Modular Desktop Architecture with Git Submodules
 
 **Plugin-Based App System**
