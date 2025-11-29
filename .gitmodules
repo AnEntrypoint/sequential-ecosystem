@@ -59,3 +59,30 @@
 [submodule "packages/statekit"]
 	path = packages/sequential-machine
 	url = https://github.com/AnEntrypoint/statekit.git
+[submodule "packages/desktop-server"]
+	path = packages/desktop-server
+	url = https://github.com/AnEntrypoint/desktop-server
+[submodule "packages/desktop-shell"]
+	path = packages/desktop-shell
+	url = https://github.com/AnEntrypoint/desktop-shell
+[submodule "packages/app-terminal"]
+	path = packages/app-terminal
+	url = https://github.com/AnEntrypoint/app-terminal
+[submodule "packages/app-debugger"]
+	path = packages/app-debugger
+	url = https://github.com/AnEntrypoint/app-debugger
+[submodule "packages/app-flow-editor"]
+	path = packages/app-flow-editor
+	url = https://github.com/AnEntrypoint/app-flow-editor
+[submodule "packages/app-task-editor"]
+	path = packages/app-task-editor
+	url = https://github.com/AnEntrypoint/app-task-editor
+[submodule "packages/app-code-editor"]
+	path = packages/app-code-editor
+	url = https://github.com/AnEntrypoint/app-code-editor
+[submodule "packages/app-tool-editor"]
+	path = packages/app-tool-editor
+	url = https://github.com/AnEntrypoint/app-tool-editor
+[submodule "packages/zellous-client-sdk"]
+	path = packages/zellous-client-sdk
+	url = https://github.com/AnEntrypoint/zellous-client-sdk
