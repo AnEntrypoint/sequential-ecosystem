@@ -37,6 +37,13 @@ All notable changes to this project will be documented in this file.
 - Notification/toast system already functional (window snapping, always-on-top, etc.)
 - All notification animations and auto-dismissal working correctly
 
+**Flow Editor Enhancements**
+- Added drag-to-resize functionality for state nodes with corner resize handles
+- Resize handles visible on hover with grid-snapping (20px grid)
+- Dynamic connection routing that adapts to variable node sizes
+- Minimum size constraints prevent nodes from becoming too small
+- Resize operations integrated with undo/redo history system
+
 ### Testing & Bug Fixes - Comprehensive GUI Testing Complete
 
 **All Desktop Apps Tested**
