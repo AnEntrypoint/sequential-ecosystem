@@ -4,6 +4,39 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] - 2025-11-29
 
+### Codebase Cleanup - File Splitting & Comment Removal
+
+**File Splitting (Priority 2)**
+- `tools/create-examples.js`: 607→25 lines (split into tools/examples/*.js)
+- `tools/create-task.js`: 382→49 lines (split into tools/task-templates/*.js)
+- All modules now under 200-line limit
+
+**Comment Removal**
+- `packages/sequential-machine/lib/adapter.js`: removed 20 redundant comments
+- Comments duplicated function names, provided no value
+- Function names are explicit and self-documenting
+
+**Documentation**
+- Updated ARCHITECTURE_REVIEW.md with cleanup summary
+
+### GUI Improvements - Enhanced User Experience
+
+**Code Editor Enhancements**
+- Added real-time syntax highlighting with dual-pane system (transparent textarea over highlighted background)
+- Support for JavaScript/TypeScript, JSON, and Markdown with VSCode color scheme
+- Zero dependencies - pure regex-based tokenization
+- Synchronized scrolling between editor and highlight layers
+
+**Desktop Shell Enhancements**
+- Added loading overlay with spinner for async operations
+- Loading states for app launches and app list fetching
+- Visual feedback during app initialization with customizable messages
+- Smooth fade-in/fade-out animations for loading overlay
+
+**Verified Existing Features**
+- Notification/toast system already functional (window snapping, always-on-top, etc.)
+- All notification animations and auto-dismissal working correctly
+
 ### Testing & Bug Fixes - Comprehensive GUI Testing Complete
 
 **All Desktop Apps Tested**

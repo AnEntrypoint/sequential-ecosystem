@@ -1,0 +1,104 @@
+export function generateMachineTemplate(name, taskId, timestamp, inputs, description) {
+  const funcName = name.replace(/-/g, '_');
+  const inputsDoc = inputs.length > 0
+    ? inputs.map(i => `  * @param {*} input.${i} - ${i}`).join('\n')
+    : '  * @param {*} input - Input parameters';
+
+  return `/**
+ * Task: ${name}
+ * @description ${description || `Task: ${name}`}
+ * @id ${taskId}
+ * @created ${timestamp}
+ * @inputs ${inputs.join(', ')}
+ * @runner sequential-machine
+ */
+
+export const config = {
+  name: '${name}',
+  description: '${description || `Task: ${name}`}',
+  id: '${taskId}',
+  created: '${timestamp}',
+  runner: 'sequential-machine',
+  inputs: ${JSON.stringify(inputs.map(input => ({
+    name: input,
+    type: 'string',
+    description: `Parameter: ${input}`
+  })), null, 2).split('\n').map((line, i) => i === 0 ? line : '  ' + line).join('\n')}
+};
+
+/**
+ * Main task implementation for Sequential Machine
+ * ${inputsDoc}
+ * @returns {Promise<*>} Task result
+ */
+export async function ${funcName}(input) {
+  const serviceCall = \`node -e "
+const fs = require('fs');
+const path = require('path');
+
+async function callService() {
+  try {
+    const response = await fetch('http://localhost:3101/call', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        method: 'getData',
+        params: ${JSON.stringify(inputs.length > 0 ? `{${inputs.map(i => `${i}: input.${i}`).join(', ')}}` : '{}')},
+        timestamp: new Date().toISOString()
+      })
+    });
+
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(\`Service error: \${result.error || 'Unknown error'}\`);
+    }
+
+    const resultFile = 'service-result-' + Date.now() + '.json';
+    fs.writeFileSync(resultFile, JSON.stringify({
+      service: 'database',
+      method: 'getData',
+      params: ${JSON.stringify(inputs.length > 0 ? `{${inputs.map(i => `${i}: input.${i}`).join(', ')}}` : '{}')},
+      result: result,
+      timestamp: new Date().toISOString(),
+      success: true
+    }, null, 2));
+
+    console.log('💾 Service result written to: ' + resultFile);
+  } catch (error) {
+    console.error('❌ Service call failed:', error.message);
+    process.exit(1);
+  }
+}
+
+callService();
+"\`;
+
+  console.log('🔧 Calling database service...');
+  const { execSync } = require('child_process');
+  execSync(serviceCall, { stdio: 'inherit', cwd: process.cwd() });
+
+  const fs = require('fs');
+  const files = fs.readdirSync('.').filter(f => f.startsWith('service-result-'));
+
+  console.log(\`📄 Found \${files.length} service result files\`);
+
+  const outputFile = 'task-output.json';
+  fs.writeFileSync(outputFile, JSON.stringify({
+    success: true,
+    input,
+    serviceResults: files.length,
+    completedAt: new Date().toISOString()
+  }, null, 2));
+
+  console.log(\`✅ Task completed - output written to \${outputFile}\`);
+
+  return {
+    success: true,
+    input,
+    serviceResults: files.length,
+    outputFile
+  };
+}
+`;
+}
