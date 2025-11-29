@@ -334,59 +334,103 @@ program
 
 program
   .command('gui')
-  .description('Launch Sequential Desktop GUI')
-  .action(async () => {
+  .description('Launch Sequential Desktop GUI with full OS environment')
+  .option('--port <port>', 'Server port', '8003')
+  .option('--skip-setup', 'Skip setup check')
+  .option('--no-zellous', 'Start without Zellous')
+  .action(async (options) => {
     try {
-      const { spawn } = await import('child_process');
+      const { spawn, execSync } = await import('child_process');
       const osjsPath = path.join(__dirname, 'packages/osjs-webdesktop');
       const zellousPath = path.join(__dirname, 'packages/zellous');
+      const setupScript = path.join(osjsPath, 'setup-gui.sh');
+      const serverPath = path.join(osjsPath, 'src/server/standalone.js');
+
+      console.log('\n🚀 Sequential Desktop - Startup\n');
 
       if (!fs.existsSync(osjsPath)) {
-        throw new Error(`OS.js not found at ${osjsPath}`);
+        throw new Error(`Sequential Desktop not found at ${osjsPath}`);
       }
 
-      if (!fs.existsSync(zellousPath)) {
-        throw new Error(`Zellous not found at ${zellousPath}`);
+      if (!fs.existsSync(serverPath)) {
+        throw new Error(`Server not found at ${serverPath}\nRun setup: cd ${osjsPath} && ./setup-gui.sh`);
+      }
+
+      if (!options.skipSetup) {
+        if (fs.existsSync(setupScript)) {
+          const distPath = path.join(osjsPath, 'dist/index.html');
+          if (!fs.existsSync(distPath)) {
+            console.log('Running initial setup...\n');
+            try {
+              execSync('./setup-gui.sh', {
+                cwd: osjsPath,
+                stdio: 'inherit'
+              });
+              console.log('');
+            } catch (setupError) {
+              console.error('Setup failed. Continuing anyway...\n');
+            }
+          }
+        }
       }
 
       process.env.ECOSYSTEM_PATH = process.cwd();
+      process.env.PORT = options.port;
 
-      const osjsServerPath = path.join(osjsPath, 'src/server/index.js');
-      const zellousServerPath = path.join(zellousPath, 'server.js');
+      const procs = [];
 
-      console.log('Starting Sequential Desktop on http://localhost:8003');
-      console.log('Zellous services on ws://localhost:3003');
-
-      // Start OS.js server
-      const osjsProc = spawn('node', [osjsServerPath], {
+      console.log('Starting Sequential Desktop server...');
+      const osjsProc = spawn('node', [serverPath], {
         cwd: osjsPath,
         stdio: 'inherit',
         env: { ...process.env }
       });
+      procs.push({ name: 'Sequential Desktop', proc: osjsProc });
 
-      // Start Zellous server
-      const zellousProc = spawn('node', [zellousServerPath], {
-        cwd: zellousPath,
-        stdio: 'inherit',
-        env: { ...process.env }
-      });
+      if (options.zellous !== false && fs.existsSync(zellousPath)) {
+        const zellousServerPath = path.join(zellousPath, 'server.js');
+        if (fs.existsSync(zellousServerPath)) {
+          console.log('Starting Zellous services...');
+          const zellousProc = spawn('node', [zellousServerPath], {
+            cwd: zellousPath,
+            stdio: 'inherit',
+            env: { ...process.env }
+          });
+          procs.push({ name: 'Zellous', proc: zellousProc });
+        }
+      }
 
-      const shutdown = () => {
-        osjsProc.kill('SIGINT');
-        zellousProc.kill('SIGINT');
+      const shutdown = (signal) => {
+        console.log(`\n\nShutting down (${signal})...`);
+        procs.forEach(({name, proc}) => {
+          console.log(`  Stopping ${name}...`);
+          proc.kill('SIGINT');
+        });
+        setTimeout(() => process.exit(0), 1000);
       };
 
-      osjsProc.on('exit', (code) => {
-        process.exit(code || 0);
+      procs.forEach(({name, proc}) => {
+        proc.on('exit', (code) => {
+          console.error(`\n${name} exited with code ${code}`);
+          shutdown('process exit');
+        });
+
+        proc.on('error', (error) => {
+          console.error(`\n${name} error:`, error.message);
+          shutdown('process error');
+        });
       });
 
-      zellousProc.on('exit', (code) => {
-        process.exit(code || 0);
-      });
+      process.on('SIGINT', () => shutdown('SIGINT'));
+      process.on('SIGTERM', () => shutdown('SIGTERM'));
 
-      process.on('SIGINT', shutdown);
     } catch (e) {
-      console.error('Error:', e instanceof Error ? e.message : String(e));
+      console.error('\n✗ Failed to start Sequential Desktop');
+      console.error(`  ${e instanceof Error ? e.message : String(e)}\n`);
+      console.error('Troubleshooting:');
+      console.error('  1. Run setup: cd packages/osjs-webdesktop && ./setup-gui.sh');
+      console.error('  2. Check dependencies: npm install');
+      console.error('  3. Read docs: packages/osjs-webdesktop/GUI_README.md\n');
       process.exit(1);
     }
   });
