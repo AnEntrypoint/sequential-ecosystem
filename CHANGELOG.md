@@ -4,6 +4,29 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] - 2025-11-30
 
+### Security Hardening & Feature Completion (Nov 30, 2025)
+
+**Critical Security Fixes**:
+- Path traversal vulnerability: Replaced naive `startsWith()` checks with `path.relative()` based validation across all file endpoints
+- Code injection vulnerability: Added `executeTaskWithTimeout()` wrapper with 30-second timeout to prevent hanging tasks
+- Input validation: Implemented `validateInput()` function supporting JSON schema validation (string, number, boolean, object, array types)
+- Rate limiting: Added middleware protecting against DoS (100 requests/minute per IP) with proper 429 status responses
+- Error response standardization: Created `createErrorResponse()` for consistent error format across all 40+ endpoints
+
+**Features Completed**:
+- Task repair mode: Implemented interactive repair UI with resume/retry/debug actions for failed task recovery
+- Task cancellation: Added `POST /api/tasks/:runId/cancel` endpoint for cancelling running tasks
+- Structured logging: Implemented request logger with unique IDs for correlation, duration tracking, and 1000-entry in-memory log
+- Observability: Added `GET /api/logs` endpoint for viewing request history and performance metrics
+- WebSocket improvements: Standardized connection state checks for consistency
+
+**Technical Improvements**:
+- Request IDs for distributed tracing across system
+- Performance metrics (request duration) for bottleneck identification
+- Debug mode support via DEBUG environment variable
+- Rate limit enforcement with per-IP tracking and sliding window
+- Comprehensive input validation preventing malformed requests
+
 ### Phase 4: Extended Features Complete (Nov 30, 2025)
 
 **Run Observer Enhancements**:
