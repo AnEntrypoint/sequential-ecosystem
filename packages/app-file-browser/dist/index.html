@@ -336,11 +336,16 @@
 
     function selectFile(name) {
       selectedFile = fileTree[name];
+      if (!selectedFile) return;
       document.querySelectorAll('.file-item').forEach(el => el.classList.remove('selected'));
-      event.target.closest('.file-item').classList.add('selected');
-      document.getElementById('deleteBtn').style.display = 'inline-block';
-      document.getElementById('renameBtn').style.display = 'inline-block';
-      document.getElementById('copyBtn').style.display = 'inline-block';
+      const el = event?.target?.closest?.('.file-item');
+      if (el) el.classList.add('selected');
+      const deleteBtn = document.getElementById('deleteBtn');
+      const renameBtn = document.getElementById('renameBtn');
+      const copyBtn = document.getElementById('copyBtn');
+      if (deleteBtn) deleteBtn.style.display = 'inline-block';
+      if (renameBtn) renameBtn.style.display = 'inline-block';
+      if (copyBtn) copyBtn.style.display = 'inline-block';
     }
 
     function highlightCode(content, filename) {
@@ -370,7 +375,7 @@
     async function preview(name, event) {
       if (event) event.stopPropagation();
 
-      const file = fileTree[name];
+      const file = fileTree?.[name];
       if (!file || file.isDirectory) return;
 
       const filePath = currentPath === '/' ? `/${name}` : `${currentPath}/${name}`;
