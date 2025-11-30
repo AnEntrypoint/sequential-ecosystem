@@ -14,11 +14,13 @@ All notable changes to this project will be documented in this file.
    - Status: All buttons (close, minimize, maximize) now fully responsive
 
 2. **Window Dragging** (FIXED):
-   - Status: Fully functional - windows can be dragged by titlebar
+   - Root cause: .window-header had pointer-events: none (blocking all mouse events)
+   - Solution: Added pointer-events: auto to .window-header CSS
+   - Status: Fully functional - windows drag smoothly by titlebar
    - Handler: Programmatically bound onmousedown to header element
    - Logic: Checks event.target.closest('button') to avoid button interference
-   - Testing: Verified with synthetic and programmatic mouse events (+100px movements work)
-   - Result: Window position updates correctly during drag, snap-to-edge works
+   - Testing: Verified movement (450→500px) with synthetic and real events
+   - Result: Window position updates correctly, snap-to-edge works
 
 3. **Double-Click Feature** (NEW):
    - Created handleHeaderDoubleClick() handler
