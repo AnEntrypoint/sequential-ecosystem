@@ -1,8 +1,8 @@
 # Sequential Ecosystem - Architecture Reference
 
 ## Status
-**Last Updated**: Nov 28, 2025
-**State**: Clean working directory, all ephemeral files removed, submodules verified
+**Last Updated**: Nov 29, 2025
+**State**: Modular architecture refactor complete, all apps extracted as packages
 **Key Files**: CLAUDE.md (architecture), CHANGELOG.md (changes), cli.js (entry point)
 
 ## Overview
@@ -34,7 +34,16 @@ sequential-ecosystem/
     ├── sequential-runner/             # Task execution engine
     ├── sequential-adaptor/            # Plugin registry + adapters
     ├── sequential-adaptor-{sqlite,supabase}/
-    └── sequential-wrapped-services/   # Pre-wrapped APIs
+    ├── sequential-wrapped-services/   # Pre-wrapped APIs
+    ├── desktop-server/                # Desktop server with AppRegistry
+    ├── desktop-shell/                 # Window manager and desktop UI
+    ├── app-terminal/                  # Sequential-OS terminal app
+    ├── app-debugger/                  # Filesystem debugger app
+    ├── app-flow-editor/               # Flow editor app
+    ├── app-task-editor/               # Task editor app
+    ├── app-code-editor/               # Code editor app
+    ├── app-tool-editor/               # Tool editor app
+    └── zellous-client-sdk/            # Zellous WebRTC SDK
 ```
 
 ## Plugin Registry
@@ -359,12 +368,279 @@ See `AGENTS.md` for build commands, code style, testing, and git guidelines for 
 - **Pluggable**: Swap storage backends without code changes
 - **Production-ready**: No mocks, deployment-agnostic
 
-## Admin GUI - Flow Builder
+## Sequential Desktop - Modular Development Environment
 
-Visual editor for explicit xstate workflows (`packages/admin-gui/packages/web/src/`).
+Comprehensive visual desktop environment with Sequential-OS integration and plugin-based architecture.
 
-**Features**: Drag-drop state reordering, real-time validation, SVG visualization, glassmorphism UI
+**Status**: Active, primary desktop implementation (v1.0.0+)
+**Start**: `npx sequential-ecosystem gui` (http://localhost:8003)
+**Legacy**: `packages/osjs-webdesktop/` contains older vexify integration and is separate from the modular desktop system
 
-**Usage**: Add/edit states → Configure transitions (onDone/onError) → Mark final states → Save
+**Architecture**: Modular design with three layers:
+1. **Desktop Server** (`packages/desktop-server/`) - Express server with AppRegistry for dynamic app discovery
+2. **Desktop Shell** (`packages/desktop-shell/`) - Window manager and desktop UI
+3. **Applications** (`packages/app-*/`) - Independent, pluggable apps with manifests
 
-**Components**: `FlowBuilder.jsx` (editor), `StateMachineVisualizer.jsx` (SVG diagram)
+**Core Applications**:
+- **📟 Terminal** (`app-terminal`) - Full Sequential-OS CLI with layer management
+- **🔍 Debugger** (`app-debugger`) - Filesystem layer inspector and debugger
+- **🔄 Flow Editor** (`app-flow-editor`) - Visual xstate workflow builder with drag-drop
+- **📝 Task Editor** (`app-task-editor`) - Multi-runner task development environment
+- **💻 Code Editor** (`app-code-editor`) - Full IDE with file tree and syntax highlighting
+- **🔧 Tool Editor** (`app-tool-editor`) - Tool/plugin development with import management
+
+**App Manifest System**: Each app has `manifest.json`:
+```json
+{
+  "id": "app-terminal",
+  "name": "Sequential Terminal",
+  "icon": "📟",
+  "entry": "dist/index.html",
+  "capabilities": ["sequential-os"],
+  "window": {
+    "defaultWidth": 800,
+    "defaultHeight": 600,
+    "resizable": true,
+    "maximizable": true
+  }
+}
+```
+
+**Dynamic Loading**: Desktop shell fetches apps from `/api/apps` and renders them dynamically
+
+**API Endpoints**:
+- `/api/apps` - List all registered apps
+- `/apps/:appId/*` - Serve app static files
+- `/api/sequential-os/{status,run,history,checkout,tags}` - Sequential-OS operations
+
+**Collaboration**: Zellous WebRTC integration via `@sequential/zellous-client-sdk`
+
+### API Reference
+
+**App Discovery**
+```http
+GET /api/apps
+```
+Returns array of all registered app manifests:
+```json
+[{
+  "id": "app-terminal",
+  "name": "Sequential Terminal",
+  "version": "1.0.0",
+  "description": "Full CLI with layer management",
+  "icon": "📟",
+  "entry": "dist/index.html",
+  "capabilities": ["sequential-os"],
+  "window": {
+    "defaultWidth": 800,
+    "defaultHeight": 600,
+    "minWidth": 400,
+    "minHeight": 300,
+    "resizable": true,
+    "maximizable": true
+  }
+}]
+```
+
+**App Static Files**
+```http
+GET /apps/:appId/*
+```
+Serves static files for specific app (HTML, CSS, JS, images)
+
+**Sequential-OS Operations**
+```http
+GET /api/sequential-os/status
+```
+Returns current working directory status:
+```json
+{
+  "added": ["file1.txt"],
+  "modified": ["file2.txt"],
+  "deleted": ["file3.txt"],
+  "uncommitted": 3
+}
+```
+
+```http
+POST /api/sequential-os/run
+Body: {"instruction": "ls -la"}
+```
+Executes command and creates new layer:
+```json
+{
+  "output": "total 8\ndrwxr-xr-x  2 user user 4096 ...",
+  "success": true,
+  "layerId": "abc123"
+}
+```
+
+```http
+POST /api/sequential-os/exec
+Body: {"instruction": "cat file.txt"}
+```
+Executes command without creating layer:
+```json
+{
+  "output": "file contents...",
+  "success": true
+}
+```
+
+```http
+GET /api/sequential-os/history
+```
+Returns command history:
+```json
+[
+  {"layerId": "abc123", "command": "ls -la", "timestamp": "2025-11-29T..."},
+  {"layerId": "def456", "command": "mkdir test", "timestamp": "2025-11-29T..."}
+]
+```
+
+```http
+POST /api/sequential-os/checkout
+Body: {"ref": "abc123"}
+```
+Checkout specific layer or tag:
+```json
+{
+  "success": true,
+  "ref": "abc123"
+}
+```
+
+```http
+GET /api/sequential-os/tags
+```
+List all tags:
+```json
+{
+  "production": "abc123",
+  "stable": "def456"
+}
+```
+
+```http
+POST /api/sequential-os/tag
+Body: {"name": "production", "ref": "abc123"}
+```
+Create or update tag:
+```json
+{
+  "success": true,
+  "name": "production",
+  "ref": "abc123"
+}
+```
+
+### Desktop App Development
+
+**Creating a New App**
+
+1. Create package directory:
+```bash
+mkdir -p packages/app-myapp/dist
+mkdir -p packages/app-myapp/src
+```
+
+2. Create `manifest.json`:
+```json
+{
+  "id": "app-myapp",
+  "name": "My App",
+  "version": "1.0.0",
+  "description": "Description of my app",
+  "icon": "📱",
+  "entry": "dist/index.html",
+  "capabilities": ["sequential-os", "zellous"],
+  "dependencies": {
+    "@sequential/zellous-client-sdk": "^1.0.0"
+  },
+  "window": {
+    "defaultWidth": 800,
+    "defaultHeight": 600,
+    "minWidth": 400,
+    "minHeight": 300,
+    "resizable": true,
+    "maximizable": true
+  }
+}
+```
+
+3. Create `package.json`:
+```json
+{
+  "name": "@sequential/app-myapp",
+  "version": "1.0.0",
+  "description": "My desktop app",
+  "type": "module",
+  "main": "dist/index.html"
+}
+```
+
+4. Create `dist/index.html` as self-contained app
+
+5. Register in desktop-server:
+```javascript
+// packages/desktop-server/src/server.js
+const appRegistry = new AppRegistry({
+  appDirs: [
+    'app-terminal',
+    'app-debugger',
+    'app-flow-editor',
+    'app-task-editor',
+    'app-code-editor',
+    'app-tool-editor',
+    'app-myapp'  // Add here
+  ]
+});
+```
+
+6. Restart: `npx sequential-ecosystem gui`
+
+**Inter-App Communication (Zellous)**
+
+Apps with `"zellous"` capability can communicate via WebRTC:
+
+```html
+<script type="module">
+import { ZellousSDK } from '@sequential/zellous-client-sdk';
+
+const sdk = new ZellousSDK({
+  serverUrl: 'ws://localhost:3000'
+});
+
+await sdk.connect();
+await sdk.joinRoom('my-room');
+
+sdk.on('message', (data) => {
+  console.log('Received:', data);
+});
+
+sdk.sendMessage({type: 'update', content: 'Hello!'});
+sdk.broadcastState('app-myapp', {value: 42});
+</script>
+```
+
+**Sequential-OS Integration**
+
+Apps with `"sequential-os"` capability can call StateKit API:
+
+```javascript
+async function runCommand(cmd) {
+  const res = await fetch('/api/sequential-os/run', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({instruction: cmd})
+  });
+  const result = await res.json();
+  console.log(result.output);
+}
+
+async function getStatus() {
+  const res = await fetch('/api/sequential-os/status');
+  const status = await res.json();
+  console.log(`${status.added.length} added, ${status.modified.length} modified`);
+}
+```

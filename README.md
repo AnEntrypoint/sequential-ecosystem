@@ -7,10 +7,17 @@ Infinite-length task execution with automatic suspend/resume on HTTP calls.
 1. **Implicit xstate (Sequential-JS)**: Auto-pause on every `fetch()` - zero config
 2. **Explicit xstate (FlowState)**: State graphs for complex workflows
 3. **Container (Sequential-OS)**: Content-addressable layers for shell commands and service calls
+4. **Sequential Desktop (GUI)**: Full OS environment with debuggers and filesystem access
 
 ## Quick Start
 
 ```bash
+# Full OS GUI (Sequential Desktop)
+npx sequential-ecosystem gui
+# Access at http://localhost:8003
+# Includes: Terminal, Filesystem Debugger, VFS, Zellous
+
+# CLI Task Management
 npx sequential-ecosystem init                                   # Initialize with comprehensive examples
 npx sequential-ecosystem create-task my-task                    # Create flow task
 npx sequential-ecosystem create-task my-task --with-graph      # Create flow task with state graph
@@ -19,6 +26,18 @@ npx sequential-ecosystem run my-task --input '{}'
 
 npx sequential-ecosystem run example-simple-flow --input '{"message":"hello"}'
 ```
+
+## Sequential Desktop (GUI)
+
+Full development environment with content-addressable filesystem:
+
+- **Sequential Terminal** - Complete CLI with layer management
+- **Filesystem Debugger** - Visual inspector with history
+- **VFS Mountpoints** - `osjs://` (traditional) + `sequential-machine://` (content-addressable)
+- **REST API** - `/api/sequential-os/*` for automation
+- **Zellous** - WebRTC collaboration (separate service)
+
+See `packages/osjs-webdesktop/GUI_README.md` and `SEQUENTIAL_OS_GUI.md` for details.
 
 ## Example Tasks
 

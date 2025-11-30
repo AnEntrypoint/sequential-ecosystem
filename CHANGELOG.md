@@ -2,7 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased] - 2025-11-29
+## [Unreleased] - 2025-11-30
+
+### CLI Architecture - Command Module System
+
+**File Splitting for Maintainability**
+- Refactored cli.js (418 lines → 193 lines) to meet 200-line guideline
+- Extracted 7 command modules into tools/commands/
+  - init-command.js (48 lines) - Project initialization
+  - gui-command.js (77 lines) - Desktop GUI launcher
+  - list-command.js (43 lines) - Task listing
+  - describe-command.js (32 lines) - Task details
+  - history-command.js (40 lines) - Execution history
+  - show-command.js (19 lines) - Run results viewer
+  - delete-command.js (24 lines) - Task deletion
+- All commands fully tested and functional
+- Modular design enables easier maintenance and testing
 
 ### Codebase Cleanup - File Splitting & Comment Removal
 
