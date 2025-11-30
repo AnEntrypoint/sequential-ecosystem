@@ -32,8 +32,9 @@
     button:hover { background: #3ab896; }
     button.secondary { background: #666; }
     button.secondary:hover { background: #777; }
-    .preview { padding: 20px; }
+    .preview { padding: 20px; display: flex; flex-direction: column; }
     .preview-content { background: #2d2d30; padding: 20px; border-radius: 6px; font-family: 'Consolas', monospace; font-size: 13px; line-height: 1.6; max-height: 500px; overflow: auto; white-space: pre-wrap; word-break: break-all; }
+    .preview-image { max-width: 100%; max-height: 500px; border-radius: 6px; object-fit: contain; }
     .empty { color: #666; text-align: center; padding: 40px; font-size: 13px; }
     .error { color: #f48771; }
     .toolbar { display: flex; gap: 8px; }
@@ -274,21 +275,27 @@
       if (!file || file.isDirectory) return;
 
       const filePath = currentPath === '/' ? `/${name}` : `${currentPath}/${name}`;
+      const ext = name.split('.').pop().toLowerCase();
+      const imageExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'bmp'];
 
       try {
-        const res = await fetch(`/api/files/read?path=${encodeURIComponent(filePath)}`);
-
-        if (!res.ok) {
-          showError('Failed to preview file');
-          return;
-        }
-
-        const data = await res.json();
         const panel = document.getElementById('preview');
-        const highlighted = highlightCode(data.content, name);
-        panel.innerHTML = `
-          <div class="preview-content">${highlighted}</div>
-        `;
+
+        if (imageExtensions.includes(ext)) {
+          const validPath = filePath.startsWith('/') ? filePath : `/${filePath}`;
+          panel.innerHTML = `<div style="text-align: center;"><img class="preview-image" src="file://${validPath}" alt="${escapeHtml(name)}" onerror="this.src='';"><p style="margin-top: 10px; color: #8b92b0; font-size: 12px;">${escapeHtml(name)}</p></div>`;
+        } else {
+          const res = await fetch(`/api/files/read?path=${encodeURIComponent(filePath)}`);
+
+          if (!res.ok) {
+            showError('Failed to preview file');
+            return;
+          }
+
+          const data = await res.json();
+          const highlighted = highlightCode(data.content, name);
+          panel.innerHTML = `<div class="preview-content">${highlighted}</div>`;
+        }
 
         if (zellous) {
           zellous.broadcastState('file-browser', { selectedFile: filePath, timestamp: Date.now() });
