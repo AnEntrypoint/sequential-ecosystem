@@ -23,10 +23,20 @@
 - [x] Collaborator presence indicators (directory browsing)
 - [x] WebSocket error handling with auto-reconnect
 
+### Phase 4 - Extended Features Complete ✅
+- [x] Run Details Panel with JSON syntax highlighting (app-run-observer)
+- [x] Performance Metrics Dashboard with task breakdown (app-run-observer)
+- [x] Search and filter for task names and status (app-run-observer)
+- [x] Syntax highlighting for 15+ programming languages (app-file-browser)
+- [x] Image preview support for 6 image formats (app-file-browser)
+- [x] File operation buttons (create, delete, rename, copy) (app-file-browser)
+- [x] Rename and copy operations with backend API endpoints
+- [x] Real-time file sync via WebSocket (all file operations broadcast to connected clients)
+
 ### In Progress 🔄
 - [ ] Advanced collaboration features (shared cursor, live editing)
 - [ ] Performance optimization (caching, batching)
-- [ ] Extended file operations (rename, delete, create)
+- [ ] Audit logging for all file operations
 
 ### Planned 📋
 - [ ] Monitoring and observability

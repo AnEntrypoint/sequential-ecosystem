@@ -1,9 +1,10 @@
 # Sequential Ecosystem - Architecture Reference
 
 ## Status
-**Last Updated**: Nov 30, 2025
-**State**: Phase 3 Complete - Real-time collaborative desktop with 10 production apps
-**Phase 3 Completion**: WebSocket real-time metrics, safe file APIs, collaborative selection sync
+**Last Updated**: Nov 30, 2025 (Phase 4 Complete)
+**State**: Phase 4 Complete - Extended features with run details, metrics dashboard, file operations, real-time sync
+**Phase 3**: WebSocket real-time metrics, safe file APIs, collaborative selection sync
+**Phase 4**: Run Details Panel, Performance Dashboard, File ops (rename/copy), Real-time file sync via WebSocket
 **Key Files**: CLAUDE.md (architecture), CHANGELOG.md (changes), cli.js (entry point), TODO.md (roadmap)
 
 ## Overview

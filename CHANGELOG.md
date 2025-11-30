@@ -4,6 +4,31 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] - 2025-11-30
 
+### Phase 4: Extended Features Complete (Nov 30, 2025)
+
+**Run Observer Enhancements**:
+- Added Run Details Panel modal with comprehensive run information
+- JSON syntax highlighting for input/output data
+- Error trace display with stack traces
+- Execution metadata (timestamps, duration, status)
+- Performance Metrics Dashboard with 8 key metrics
+- Task breakdown showing per-task statistics
+- Throughput analysis for last-hour performance
+
+**File Browser Enhancements**:
+- Syntax highlighting for 15+ programming languages (JavaScript, Python, Java, C++, HTML, CSS, etc.)
+- Image preview support for PNG, JPG, JPEG, GIF, WEBP, SVG, BMP
+- Rename operation with smart filename preservation
+- Copy operation with automatic copy naming
+- Real-time file sync via WebSocket (all operations broadcast)
+- File operation events: create, modify, delete, rename, copy, directory creation
+
+**Backend API Additions**:
+- `POST /api/files/rename` - Rename files with path traversal protection
+- `POST /api/files/copy` - Copy files/directories recursively
+- `WebSocket /api/files/subscribe` - Real-time file operation broadcasts
+- File operation event types: file-created, file-modified, file-deleted, file-renamed, file-copied, directory-created
+
 ### COMPLETE - All 10 Desktop Apps at 100% Functionality (Nov 30, 2025)
 
 **Comprehensive App Completion Audit and Implementation**
