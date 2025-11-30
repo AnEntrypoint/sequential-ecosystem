@@ -95,3 +95,23 @@
 [submodule "packages/desktop-api-client"]
 	path = packages/desktop-api-client
 	url = https://github.com/AnEntrypoint/desktop-api-client
+[submodule "packages/app-file-browser"]
+	path = packages/app-file-browser
+	url = https://github.com/AnEntrypoint/app-file-browser.git
+	branch = main
+[submodule "packages/app-flow-debugger"]
+	path = packages/app-flow-debugger
+	url = https://github.com/AnEntrypoint/app-flow-debugger.git
+	branch = main
+[submodule "packages/app-run-observer"]
+	path = packages/app-run-observer
+	url = https://github.com/AnEntrypoint/app-run-observer.git
+	branch = main
+[submodule "packages/app-task-debugger"]
+	path = packages/app-task-debugger
+	url = https://github.com/AnEntrypoint/app-task-debugger.git
+	branch = main
+[submodule "packages/chat-component"]
+	path = packages/chat-component
+	url = https://github.com/AnEntrypoint/chat-component.git
+	branch = main
