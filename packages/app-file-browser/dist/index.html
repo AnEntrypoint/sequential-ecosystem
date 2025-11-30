@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>File Browser</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: #1e1e1e; color: #d4d4d4; height: 100vh; display: flex; flex-direction: column; }
+    .header { background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); padding: 12px 20px; color: white; display: flex; justify-content: space-between; align-items: center; }
+    .header h2 { font-size: 18px; font-weight: 500; }
+    .path { background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 4px; font-size: 12px; font-family: monospace; }
+    .main { flex: 1; display: grid; grid-template-columns: 250px 1fr 300px; gap: 1px; background: #333; overflow: hidden; }
+    .panel { background: #252526; overflow: auto; }
+    .panel-header { background: #3c3c3c; padding: 10px 15px; border-bottom: 1px solid #444; font-weight: 500; font-size: 13px; }
+    .tree { padding: 10px; }
+    .tree-item { padding: 6px 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px; user-select: none; }
+    .tree-item:hover { background: #2d2d30; }
+    .tree-item.selected { background: #37373d; border-left: 2px solid #43cea2; }
+    .tree-item.folder { font-weight: 500; }
+    .tree-indent { width: 16px; }
+    .tree-icon { width: 16px; text-align: center; }
+    .file-list { padding: 15px; }
+    .file-item { display: flex; align-items: center; gap: 12px; padding: 10px; background: #2d2d30; border-radius: 4px; margin-bottom: 8px; cursor: pointer; }
+    .file-item:hover { background: #37373d; }
+    .file-item.selected { background: #37373d; border-left: 2px solid #43cea2; }
+    .file-icon { font-size: 24px; }
+    .file-info { flex: 1; }
+    .file-name { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+    .file-meta { font-size: 11px; color: #858585; }
+    .actions { display: flex; gap: 8px; }
+    button { padding: 6px 12px; background: #43cea2; border: none; border-radius: 4px; color: white; cursor: pointer; font-size: 12px; font-weight: 500; }
+    button:hover { background: #3ab896; }
+    button.secondary { background: #666; }
+    button.secondary:hover { background: #777; }
+    .preview { padding: 20px; }
+    .preview-content { background: #2d2d30; padding: 20px; border-radius: 6px; font-family: 'Consolas', monospace; font-size: 13px; line-height: 1.6; max-height: 500px; overflow: auto; white-space: pre-wrap; word-break: break-all; }
+    .empty { color: #666; text-align: center; padding: 40px; font-size: 13px; }
+    .error { color: #f48771; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>📁 File Browser</h2>
+    <div class="path" id="currentPath">/</div>
+  </div>
+  <div class="main">
+    <div class="panel">
+      <div class="panel-header">Directory Tree</div>
+      <div class="tree" id="tree"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-header">
+        <span>Files</span>
+        <div class="actions" style="display: inline; float: right;">
+          <button onclick="refresh()">🔄</button>
+        </div>
+      </div>
+      <div class="file-list" id="fileList"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-header">Preview</div>
+      <div class="preview" id="preview">
+        <div class="empty">Select a file to preview</div>
+      </div>
+    </div>
+  </div>
+  <script type="module">
+    let zellous = null;
+    let currentPath = '/home/user/sequential-ecosystem';
+    let selectedFile = null;
+    let fileTree = {};
+
+    async function init() {
+      try {
+        const { ZellousSDK } = await import('@sequential/zellous-client-sdk');
+        const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${wsProtocol}//${window.location.host}`;
+        zellous = new ZellousSDK({ serverUrl: wsUrl });
+        await zellous.connect();
+        await zellous.joinRoom('file-browser');
+
+        zellous.on('message', handleMessage);
+        zellous.on('user-joined', () => loadFiles());
+      } catch (e) {
+        console.error('Zellous failed:', e);
+      }
+
+      await loadFiles();
+    }
+
+    async function loadFiles() {
+      try {
+        const res = await fetch(`/api/files/list?dir=${encodeURIComponent(currentPath)}`);
+
+        if (!res.ok) {
+          showError('Failed to load files');
+          return;
+        }
+
+        const data = await res.json();
+        fileTree = {};
+        data.files.forEach(file => {
+          fileTree[file.name] = {
+            name: file.name,
+            isDirectory: file.isDirectory,
+            size: file.size,
+            modified: new Date(file.modified).toLocaleDateString(),
+            type: file.type
+          };
+        });
+
+        renderFileList();
+        renderTree();
+
+        if (zellous) {
+          zellous.broadcastState('file-browser', { path: currentPath, timestamp: Date.now() });
+        }
+      } catch (e) {
+        console.error('Failed to load files:', e);
+        showError('Error: ' + e.message);
+      }
+    }
+
+    function renderFileList() {
+      const panel = document.getElementById('fileList');
+      const files = Object.values(fileTree);
+
+      if (files.length === 0) {
+        panel.innerHTML = '<div class="empty">No files</div>';
+        return;
+      }
+
+      panel.innerHTML = files.map(f => `
+        <div class="file-item" onclick="selectFile('${f.name.replace(/'/g, "\\'")}')">
+          <div class="file-icon">${f.isDirectory ? '📁' : '📄'}</div>
+          <div class="file-info">
+            <div class="file-name">${escapeHtml(f.name)}</div>
+            <div class="file-meta">${f.size} • ${f.modified}</div>
+          </div>
+          <div class="actions">
+            ${f.isDirectory ? `<button onclick="navigate('${f.name.replace(/'/g, "\\'")}', event)">Open</button>` : `<button class="secondary" onclick="preview('${f.name.replace(/'/g, "\\'")}', event)">View</button>`}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderTree() {
+      const panel = document.getElementById('tree');
+      const parts = currentPath.split('/').filter(Boolean);
+
+      let html = '<div class="tree-item folder" onclick="navigate(\'/\', event)">📁 /</div>';
+      let path = '';
+
+      parts.forEach((part, i) => {
+        path += '/' + part;
+        const indent = '&nbsp;'.repeat(i * 4);
+        html += `<div class="tree-item folder" onclick="navigate('${path}', event)">${indent}📁 ${part}</div>`;
+      });
+
+      panel.innerHTML = html;
+    }
+
+    async function navigate(path, event) {
+      if (event) event.stopPropagation();
+
+      if (path === '/') {
+        currentPath = '/';
+      } else if (path.startsWith('/')) {
+        currentPath = path;
+      } else {
+        currentPath = currentPath === '/' ? `/${path}` : `${currentPath}/${path}`;
+      }
+
+      document.getElementById('currentPath').textContent = currentPath;
+      await loadFiles();
+    }
+
+    function selectFile(name) {
+      selectedFile = fileTree[name];
+      document.querySelectorAll('.file-item').forEach(el => el.classList.remove('selected'));
+      event.target.closest('.file-item').classList.add('selected');
+    }
+
+    async function preview(name, event) {
+      if (event) event.stopPropagation();
+
+      const file = fileTree[name];
+      if (!file || file.isDirectory) return;
+
+      const filePath = currentPath === '/' ? `/${name}` : `${currentPath}/${name}`;
+
+      try {
+        const res = await fetch(`/api/files/read?path=${encodeURIComponent(filePath)}`);
+
+        if (!res.ok) {
+          showError('Failed to preview file');
+          return;
+        }
+
+        const data = await res.json();
+        const panel = document.getElementById('preview');
+        panel.innerHTML = `
+          <div class="preview-content">${escapeHtml(data.content)}</div>
+        `;
+
+        if (zellous) {
+          zellous.broadcastState('file-browser', { selectedFile: filePath, timestamp: Date.now() });
+        }
+      } catch (e) {
+        console.error('Preview failed:', e);
+        showError('Error: ' + e.message);
+      }
+    }
+
+    function showError(message) {
+      const panel = document.getElementById('fileList');
+      panel.innerHTML = `<div class="empty error">${escapeHtml(message)}</div>`;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function handleMessage(data) {
+      if (data.type === 'collaborator-browsing') {
+        const elem = document.getElementById('collabStatus');
+        if (elem) {
+          elem.title = `Collaborator viewing: ${data.path}`;
+        }
+      }
+    }
+
+    function notifyCollaboratorNavigation() {
+      if (zellous) {
+        zellous.broadcastState('file-browser', {
+          path: currentPath,
+          action: 'browsing',
+          timestamp: Date.now()
+        });
+      }
+    }
+
+    window.navigate = navigate;
+    window.selectFile = selectFile;
+    window.preview = preview;
+    window.refresh = loadFiles;
+
+    init();
+  </script>
+</body>
+</html>

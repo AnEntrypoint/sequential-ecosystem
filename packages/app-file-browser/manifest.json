@@ -1,0 +1,17 @@
+{
+  "id": "app-file-browser",
+  "name": "File Browser",
+  "version": "1.0.0",
+  "description": "File system browser with tree view and operations",
+  "icon": "📁",
+  "entry": "dist/index.html",
+  "capabilities": ["sequential-os", "zellous"],
+  "window": {
+    "defaultWidth": 1000,
+    "defaultHeight": 700,
+    "minWidth": 800,
+    "minHeight": 600,
+    "resizable": true,
+    "maximizable": true
+  }
+}
