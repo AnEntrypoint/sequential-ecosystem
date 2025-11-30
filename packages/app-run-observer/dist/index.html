@@ -38,6 +38,10 @@
     .collab-avatar { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
     .collab-name { font-size: 12px; flex: 1; }
     .collab-viewing { font-size: 10px; color: #8b92b0; }
+    .filter-bar { padding: 10px; background: #1a2035; border-bottom: 1px solid #2a3550; display: flex; gap: 8px; }
+    .filter-bar input, .filter-bar select { padding: 6px 10px; background: #252535; border: 1px solid #3a4550; color: #e0e0e0; border-radius: 4px; font-size: 12px; }
+    .filter-bar input::placeholder { color: #8b92b0; }
+    .filter-bar input:focus, .filter-bar select:focus { outline: none; border-color: #667eea; }
   </style>
 </head>
 <body>
@@ -85,6 +89,15 @@
     </div>
     <div class="panel">
       <div class="panel-header">Recent Runs</div>
+      <div class="filter-bar">
+        <input type="text" id="searchInput" placeholder="Search by task name..." onkeyup="filterRuns()">
+        <select id="statusFilter" onchange="filterRuns()">
+          <option value="">All Status</option>
+          <option value="success">✓ Success</option>
+          <option value="error">✗ Error</option>
+          <option value="pending">⏳ Running</option>
+        </select>
+      </div>
       <div class="section" id="recentRuns">
         <div class="empty">No runs yet</div>
       </div>
@@ -201,14 +214,24 @@
         .map(([userId]) => userId);
     }
 
-    function updateRecentRuns() {
+    function filterRuns() {
+      const searchText = document.getElementById('searchInput').value.toLowerCase();
+      const statusFilter = document.getElementById('statusFilter').value;
+
+      const filtered = runs.filter(r => {
+        const taskName = (r.taskName || 'Unknown Task').toLowerCase();
+        const matchesSearch = searchText === '' || taskName.includes(searchText);
+        const matchesStatus = statusFilter === '' || r.status === statusFilter;
+        return matchesSearch && matchesStatus;
+      });
+
       const panel = document.getElementById('recentRuns');
-      if (runs.length === 0) {
-        panel.innerHTML = '<div class="empty">No runs yet</div>';
+      if (filtered.length === 0) {
+        panel.innerHTML = '<div class="empty">No matching runs</div>';
         return;
       }
 
-      panel.innerHTML = runs.slice(0, 10).map(r => {
+      panel.innerHTML = filtered.slice(0, 10).map(r => {
         const statusClass = r.status === 'error' ? 'error' : (r.status === 'pending' ? 'pending' : '');
         const taskName = r.taskName || 'Unknown Task';
         const timestamp = new Date(r.timestamp).toLocaleTimeString();
@@ -224,6 +247,14 @@
           </div>
         `;
       }).join('');
+    }
+
+    function updateRecentRuns() {
+      if (runs.length === 0) {
+        document.getElementById('recentRuns').innerHTML = '<div class="empty">No runs yet</div>';
+        return;
+      }
+      filterRuns();
     }
 
     function updateTimeline() {
@@ -323,6 +354,7 @@
     }
 
     window.selectRun = selectRun;
+    window.filterRuns = filterRuns;
     init();
   </script>
 </body>
