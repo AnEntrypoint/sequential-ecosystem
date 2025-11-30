@@ -36,12 +36,28 @@
     .preview-content { background: #2d2d30; padding: 20px; border-radius: 6px; font-family: 'Consolas', monospace; font-size: 13px; line-height: 1.6; max-height: 500px; overflow: auto; white-space: pre-wrap; word-break: break-all; }
     .empty { color: #666; text-align: center; padding: 40px; font-size: 13px; }
     .error { color: #f48771; }
+    .toolbar { display: flex; gap: 8px; }
+    button.delete { background: #f48771; }
+    button.delete:hover { background: #d4453e; }
+    .input-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+    .input-modal.active { display: flex; }
+    .input-modal-content { background: #252526; padding: 20px; border-radius: 6px; border: 1px solid #3c3c3c; }
+    .input-modal-content input { width: 300px; padding: 8px 12px; background: #3c3c3c; border: 1px solid #444; color: #d4d4d4; border-radius: 4px; font-size: 13px; margin-bottom: 15px; }
+    .input-modal-content input:focus { outline: none; border-color: #43cea2; }
+    .modal-buttons { display: flex; gap: 8px; justify-content: flex-end; }
   </style>
 </head>
 <body>
   <div class="header">
     <h2>📁 File Browser</h2>
-    <div class="path" id="currentPath">/</div>
+    <div style="display: flex; align-items: center; gap: 20px;">
+      <div class="path" id="currentPath">/</div>
+      <div class="toolbar">
+        <button onclick="showCreateFileModal()">+ File</button>
+        <button onclick="showCreateDirModal()">+ Folder</button>
+        <button class="delete" id="deleteBtn" onclick="deleteSelected()" style="display: none;">🗑️ Delete</button>
+      </div>
+    </div>
   </div>
   <div class="main">
     <div class="panel">
@@ -61,6 +77,26 @@
       <div class="panel-header">Preview</div>
       <div class="preview" id="preview">
         <div class="empty">Select a file to preview</div>
+      </div>
+    </div>
+  </div>
+  <div class="input-modal" id="createFileModal">
+    <div class="input-modal-content">
+      <h3 style="margin-bottom: 10px; color: #d4d4d4;">Create File</h3>
+      <input type="text" id="createFileName" placeholder="filename.txt" onkeypress="if(event.key==='Enter') createFile()">
+      <div class="modal-buttons">
+        <button class="secondary" onclick="closeCreateFileModal()">Cancel</button>
+        <button onclick="createFile()">Create</button>
+      </div>
+    </div>
+  </div>
+  <div class="input-modal" id="createDirModal">
+    <div class="input-modal-content">
+      <h3 style="margin-bottom: 10px; color: #d4d4d4;">Create Folder</h3>
+      <input type="text" id="createDirName" placeholder="folder-name" onkeypress="if(event.key==='Enter') createDir()">
+      <div class="modal-buttons">
+        <button class="secondary" onclick="closeCreateDirModal()">Cancel</button>
+        <button onclick="createDir()">Create</button>
       </div>
     </div>
   </div>
@@ -197,6 +233,7 @@
       selectedFile = fileTree[name];
       document.querySelectorAll('.file-item').forEach(el => el.classList.remove('selected'));
       event.target.closest('.file-item').classList.add('selected');
+      document.getElementById('deleteBtn').style.display = 'inline-block';
     }
 
     async function preview(name, event) {
@@ -260,10 +297,124 @@
       }
     }
 
+    function showCreateFileModal() {
+      document.getElementById('createFileModal').classList.add('active');
+      document.getElementById('createFileName').focus();
+    }
+
+    function closeCreateFileModal() {
+      document.getElementById('createFileModal').classList.remove('active');
+      document.getElementById('createFileName').value = '';
+    }
+
+    function showCreateDirModal() {
+      document.getElementById('createDirModal').classList.add('active');
+      document.getElementById('createDirName').focus();
+    }
+
+    function closeCreateDirModal() {
+      document.getElementById('createDirModal').classList.remove('active');
+      document.getElementById('createDirName').value = '';
+    }
+
+    async function createFile() {
+      const name = document.getElementById('createFileName').value.trim();
+      if (!name) {
+        alert('Please enter a filename');
+        return;
+      }
+
+      try {
+        const filePath = currentPath === '/' ? `/${name}` : `${currentPath}/${name}`;
+        const res = await fetch('/api/files/write', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path: filePath, content: '' })
+        });
+
+        if (!res.ok) {
+          const error = await res.json();
+          alert('Error creating file: ' + (error.error || 'Unknown error'));
+          return;
+        }
+
+        closeCreateFileModal();
+        await loadFiles();
+      } catch (e) {
+        alert('Error: ' + e.message);
+      }
+    }
+
+    async function createDir() {
+      const name = document.getElementById('createDirName').value.trim();
+      if (!name) {
+        alert('Please enter a folder name');
+        return;
+      }
+
+      try {
+        const dirPath = currentPath === '/' ? `/${name}` : `${currentPath}/${name}`;
+        const res = await fetch('/api/files/mkdir', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path: dirPath })
+        });
+
+        if (!res.ok) {
+          const error = await res.json();
+          alert('Error creating folder: ' + (error.error || 'Unknown error'));
+          return;
+        }
+
+        closeCreateDirModal();
+        await loadFiles();
+      } catch (e) {
+        alert('Error: ' + e.message);
+      }
+    }
+
+    async function deleteSelected() {
+      if (!selectedFile) {
+        alert('Please select a file or folder');
+        return;
+      }
+
+      const confirmed = confirm(`Delete "${selectedFile.name}"?`);
+      if (!confirmed) return;
+
+      try {
+        const filePath = currentPath === '/' ? `/${selectedFile.name}` : `${currentPath}/${selectedFile.name}`;
+        const res = await fetch('/api/files', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path: filePath, confirm: true })
+        });
+
+        if (!res.ok) {
+          const error = await res.json();
+          alert('Error deleting: ' + (error.error || 'Unknown error'));
+          return;
+        }
+
+        selectedFile = null;
+        document.getElementById('deleteBtn').style.display = 'none';
+        await loadFiles();
+      } catch (e) {
+        alert('Error: ' + e.message);
+      }
+    }
+
     window.navigate = navigate;
     window.selectFile = selectFile;
     window.preview = preview;
     window.refresh = loadFiles;
+    window.showCreateFileModal = showCreateFileModal;
+    window.closeCreateFileModal = closeCreateFileModal;
+    window.showCreateDirModal = showCreateDirModal;
+    window.closeCreateDirModal = closeCreateDirModal;
+    window.createFile = createFile;
+    window.createDir = createDir;
+    window.deleteSelected = deleteSelected;
 
     init();
   </script>
