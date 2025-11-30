@@ -53,9 +53,18 @@
     .input-modal-content input { width: 300px; padding: 8px 12px; background: #3c3c3c; border: 1px solid #444; color: #d4d4d4; border-radius: 4px; font-size: 13px; margin-bottom: 15px; }
     .input-modal-content input:focus { outline: none; border-color: #43cea2; }
     .modal-buttons { display: flex; gap: 8px; justify-content: flex-end; }
+    .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 2000; }
+    .toast { padding: 12px 16px; margin-bottom: 8px; border-radius: 4px; font-size: 13px; max-width: 300px; word-wrap: break-word; animation: slideIn 0.3s ease-out; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+    @keyframes slideIn { from { transform: translateX(350px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes slideOut { to { transform: translateX(350px); opacity: 0; } }
+    .toast.success { background: #4caf50; color: white; }
+    .toast.error { background: #f48771; color: white; }
+    .toast.warning { background: #ff9800; color: white; }
+    .toast.info { background: #2196F3; color: white; }
   </style>
 </head>
 <body>
+  <div class="toast-container" id="toastContainer"></div>
   <div class="header">
     <h2>📁 File Browser</h2>
     <div style="display: flex; align-items: center; gap: 20px;">
@@ -140,6 +149,22 @@
     let fileWs = null;
     let wsRetryCount = 0;
     let wsMaxRetries = 10;
+
+    function showToast(message, type = 'info', duration = 3000) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease-out forwards';
+        setTimeout(() => toast.remove(), 300);
+      }, duration);
+    }
+
+    function showError(message) { showToast(message, 'error'); }
+    function showSuccess(message) { showToast(message, 'success'); }
+    function showWarning(message) { showToast(message, 'warning'); }
 
     function connectToFileSync() {
       const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -434,7 +459,7 @@
     async function createFile() {
       const name = document.getElementById('createFileName').value.trim();
       if (!name) {
-        alert('Please enter a filename');
+        showError('Please enter a filename');
         return;
       }
 
@@ -448,21 +473,22 @@
 
         if (!res.ok) {
           const error = await res.json();
-          alert('Error creating file: ' + (error.error || 'Unknown error'));
+          showError('Error creating file: ' + (error.error?.message || error.error || 'Unknown error'));
           return;
         }
 
+        showSuccess('File created successfully');
         closeCreateFileModal();
         await loadFiles();
       } catch (e) {
-        alert('Error: ' + e.message);
+        showError('Error: ' + e.message);
       }
     }
 
     async function createDir() {
       const name = document.getElementById('createDirName').value.trim();
       if (!name) {
-        alert('Please enter a folder name');
+        showError('Please enter a folder name');
         return;
       }
 
@@ -476,20 +502,21 @@
 
         if (!res.ok) {
           const error = await res.json();
-          alert('Error creating folder: ' + (error.error || 'Unknown error'));
+          showError('Error creating folder: ' + (error.error?.message || error.error || 'Unknown error'));
           return;
         }
 
+        showSuccess('Folder created successfully');
         closeCreateDirModal();
         await loadFiles();
       } catch (e) {
-        alert('Error: ' + e.message);
+        showError('Error: ' + e.message);
       }
     }
 
     async function deleteSelected() {
       if (!selectedFile) {
-        alert('Please select a file or folder');
+        showError('Please select a file or folder');
         return;
       }
 
@@ -506,23 +533,24 @@
 
         if (!res.ok) {
           const error = await res.json();
-          alert('Error deleting: ' + (error.error || 'Unknown error'));
+          showError('Error deleting: ' + (error.error?.message || error.error || 'Unknown error'));
           return;
         }
 
+        showSuccess('Deleted successfully');
         selectedFile = null;
         document.getElementById('deleteBtn').style.display = 'none';
         document.getElementById('renameBtn').style.display = 'none';
         document.getElementById('copyBtn').style.display = 'none';
         await loadFiles();
       } catch (e) {
-        alert('Error: ' + e.message);
+        showError('Error: ' + e.message);
       }
     }
 
     function showRenameModal() {
       if (!selectedFile) {
-        alert('Please select a file or folder');
+        showError('Please select a file or folder');
         return;
       }
       document.getElementById('renameName').value = selectedFile.name;
@@ -537,7 +565,7 @@
 
     function showCopyModal() {
       if (!selectedFile) {
-        alert('Please select a file or folder');
+        showError('Please select a file or folder');
         return;
       }
       const ext = selectedFile.name.lastIndexOf('.') > -1 ? selectedFile.name.substring(selectedFile.name.lastIndexOf('.')) : '';
@@ -554,13 +582,13 @@
 
     async function renameFile() {
       if (!selectedFile) {
-        alert('Please select a file or folder');
+        showError('Please select a file or folder');
         return;
       }
 
       const newName = document.getElementById('renameName').value.trim();
       if (!newName) {
-        alert('Please enter a new name');
+        showError('Please enter a new name');
         return;
       }
 
@@ -579,10 +607,11 @@
 
         if (!res.ok) {
           const error = await res.json();
-          alert('Error renaming: ' + (error.error || 'Unknown error'));
+          showError('Error renaming: ' + (error.error?.message || error.error || 'Unknown error'));
           return;
         }
 
+        showSuccess('Renamed successfully');
         closeRenameModal();
         selectedFile = null;
         document.getElementById('renameBtn').style.display = 'none';
@@ -590,19 +619,19 @@
         document.getElementById('deleteBtn').style.display = 'none';
         await loadFiles();
       } catch (e) {
-        alert('Error: ' + e.message);
+        showError('Error: ' + e.message);
       }
     }
 
     async function copyFile() {
       if (!selectedFile) {
-        alert('Please select a file or folder');
+        showError('Please select a file or folder');
         return;
       }
 
       const newName = document.getElementById('copyName').value.trim();
       if (!newName) {
-        alert('Please enter a copy name');
+        showError('Please enter a copy name');
         return;
       }
 
@@ -617,10 +646,11 @@
 
         if (!res.ok) {
           const error = await res.json();
-          alert('Error copying: ' + (error.error || 'Unknown error'));
+          showError('Error copying: ' + (error.error?.message || error.error || 'Unknown error'));
           return;
         }
 
+        showSuccess('Copied successfully');
         closeCopyModal();
         selectedFile = null;
         document.getElementById('renameBtn').style.display = 'none';
@@ -628,7 +658,7 @@
         document.getElementById('deleteBtn').style.display = 'none';
         await loadFiles();
       } catch (e) {
-        alert('Error: ' + e.message);
+        showError('Error: ' + e.message);
       }
     }
 
