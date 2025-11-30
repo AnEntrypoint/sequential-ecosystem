@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] - 2025-11-30
 
+### Desktop GUI - Hot Reload
+
+**Development Experience**
+- Implemented hot reload using Server-Sent Events + fs.watch
+- Server watches desktop-shell/dist and all app dist folders
+- Client auto-reloads browser on file changes (.html, .js, .css)
+- Only enabled on localhost for development
+- 7 file watchers: desktop-shell + 6 apps
+- Console shows 🔥 emoji when changes detected
+
 ### Desktop GUI - OS.js-Style Window Management
 
 **Overlapping Windows**
