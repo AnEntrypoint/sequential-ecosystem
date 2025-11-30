@@ -5,6 +5,13 @@ import { createTask } from './tools/create-task.js';
 import { syncTasks } from './tools/sync-tasks.js';
 import { runTask } from './tools/run-task.js';
 import { getConfig, setConfig, showConfig } from './tools/config.js';
+import { initCommand } from './tools/commands/init-command.js';
+import { guiCommand } from './tools/commands/gui-command.js';
+import { listCommand } from './tools/commands/list-command.js';
+import { describeCommand } from './tools/commands/describe-command.js';
+import { historyCommand } from './tools/commands/history-command.js';
+import { showCommand } from './tools/commands/show-command.js';
+import { deleteCommand } from './tools/commands/delete-command.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -75,73 +82,14 @@ program
   .description('List all tasks')
   .option('-v, --verbose', 'Show detailed info')
   .action(async (options) => {
-    try {
-      const tasksDir = path.join(process.cwd(), 'tasks');
-      if (!fs.existsSync(tasksDir)) {
-        console.log('No tasks found');
-        return;
-      }
-
-      const tasks = fs.readdirSync(tasksDir)
-        .filter(f => f.endsWith('.js'))
-        .map(f => f.replace('.js', ''));
-
-      if (tasks.length === 0) {
-        console.log('No tasks found');
-        return;
-      }
-
-      console.log('Tasks:');
-      for (const task of tasks) {
-        const taskFile = path.join(tasksDir, `${task}.js`);
-        try {
-          const taskModule = await import(`file://${taskFile}`);
-          const config = taskModule.config || {};
-          if (options.verbose) {
-            console.log(`\n${task}:`);
-            console.log(`  Description: ${config.description || 'N/A'}`);
-            console.log(`  Inputs: ${config.inputs?.length || 0}`);
-          } else {
-            console.log(`  - ${task}`);
-          }
-        } catch {
-          console.log(`  - ${task}`);
-        }
-      }
-    } catch (e) {
-      console.error('Error:', e instanceof Error ? e.message : String(e));
-      process.exit(1);
-    }
+    await listCommand(options);
   });
 
 program
   .command('describe <taskName>')
   .description('Show task details')
   .action(async (taskName) => {
-    try {
-      const taskFile = path.join(process.cwd(), 'tasks', `${taskName}.js`);
-
-      if (!fs.existsSync(taskFile)) {
-        throw new Error(`Task '${taskName}' not found at ${taskFile}`);
-      }
-
-      const taskModule = await import(`file://${taskFile}`);
-      const config = taskModule.config || {};
-
-      console.log(`Task: ${taskName}`);
-      console.log(`Description: ${config.description || 'N/A'}`);
-      console.log(`Created: ${config.created || 'N/A'}`);
-      console.log(`ID: ${config.id || 'N/A'}`);
-      if (config.inputs?.length > 0) {
-        console.log('Inputs:');
-        for (const input of config.inputs) {
-          console.log(`  - ${input.name} (${input.type}): ${input.description}`);
-        }
-      }
-    } catch (e) {
-      console.error('Error:', e instanceof Error ? e.message : String(e));
-      process.exit(1);
-    }
+    await describeCommand(taskName);
   });
 
 program
@@ -149,59 +97,14 @@ program
   .description('View execution history')
   .option('--limit <n>', 'Show last N runs', '10')
   .action((taskName, options) => {
-    try {
-      const taskFile = path.join(process.cwd(), 'tasks', `${taskName}.js`);
-      const runsDir = path.join(process.cwd(), 'tasks', taskName, 'runs');
-
-      if (!fs.existsSync(taskFile)) {
-        throw new Error(`Task '${taskName}' not found`);
-      }
-
-      if (!fs.existsSync(runsDir)) {
-        console.log('No execution history');
-        return;
-      }
-
-      const runs = fs.readdirSync(runsDir)
-        .filter(f => f.endsWith('.json'))
-        .map(f => {
-          const data = JSON.parse(fs.readFileSync(path.join(runsDir, f), 'utf-8'));
-          return {
-            id: data.id,
-            status: data.status,
-            completedAt: data.completedAt
-          };
-        })
-        .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
-        .slice(0, parseInt(options.limit));
-
-      console.log(`Execution history for ${taskName}:`);
-      for (const run of runs) {
-        console.log(`  ${run.id.substring(0, 8)}... [${run.status}] ${run.completedAt}`);
-      }
-    } catch (e) {
-      console.error('Error:', e instanceof Error ? e.message : String(e));
-      process.exit(1);
-    }
+    historyCommand(taskName, options);
   });
 
 program
   .command('show <taskName> <runId>')
   .description('View a specific run result')
   .action((taskName, runId) => {
-    try {
-      const runPath = path.join(process.cwd(), 'tasks', taskName, 'runs', `${runId}.json`);
-
-      if (!fs.existsSync(runPath)) {
-        throw new Error(`Run '${runId}' not found`);
-      }
-
-      const runData = JSON.parse(fs.readFileSync(runPath, 'utf-8'));
-      console.log(JSON.stringify(runData, null, 2));
-    } catch (e) {
-      console.error('Error:', e instanceof Error ? e.message : String(e));
-      process.exit(1);
-    }
+    showCommand(taskName, runId);
   });
 
 program
@@ -209,25 +112,7 @@ program
   .description('Delete a task')
   .option('--force', 'Skip confirmation')
   .action((taskName, options) => {
-    try {
-      const taskDir = path.join(process.cwd(), 'tasks', taskName);
-
-      if (!fs.existsSync(taskDir)) {
-        throw new Error(`Task '${taskName}' not found`);
-      }
-
-      if (!options.force) {
-        console.log(`Delete task '${taskName}'? This cannot be undone.`);
-        console.log('Use --force to skip confirmation');
-        return;
-      }
-
-      fs.rmSync(taskDir, { recursive: true });
-      console.log(`✓ Task '${taskName}' deleted`);
-    } catch (e) {
-      console.error('Error:', e instanceof Error ? e.message : String(e));
-      process.exit(1);
-    }
+    deleteCommand(taskName, options);
   });
 
 program
@@ -288,48 +173,7 @@ program
   .description('Initialize sequential-ecosystem with comprehensive examples')
   .option('--no-examples', 'Skip creating example tasks')
   .action(async (options) => {
-    try {
-      const paths = [
-        path.join(process.cwd(), 'tasks'),
-        path.join(process.cwd(), 'tools')
-      ];
-
-      for (const p of paths) {
-        if (!fs.existsSync(p)) {
-          fs.mkdirSync(p, { recursive: true });
-          console.log(`✓ Created ${p}`);
-        }
-      }
-
-      const configFile = path.join(process.cwd(), '.sequentialrc.json');
-      if (!fs.existsSync(configFile)) {
-        fs.writeFileSync(configFile, JSON.stringify({
-          adaptor: 'default',
-          defaults: {}
-        }, null, 2));
-        console.log(`✓ Created ${configFile}`);
-      }
-
-      if (options.examples !== false) {
-        const { createExamples } = await import('./tools/create-examples.js');
-        await createExamples();
-      }
-
-      console.log('\n✓ Initialized sequential-ecosystem');
-      console.log('Create a task: npx sequential-ecosystem create-task <name> [--runner flow|machine]');
-      console.log('Run a task: npx sequential-ecosystem run <name> --input \'{}\'');
-      if (options.examples !== false) {
-        console.log('\n📚 Example tasks created in ./tasks/:');
-        console.log('  - example-simple-flow: Basic async operations');
-        console.log('  - example-complex-flow: State machine with error handling');
-        console.log('  - example-api-integration: Service integration patterns');
-        console.log('  - example-batch-processing: Retry and batch patterns');
-        console.log('\nRun examples: npx sequential-ecosystem run example-simple-flow --input \'{"message":"hello"}\'');
-      }
-    } catch (e) {
-      console.error('Error:', e instanceof Error ? e.message : String(e));
-      process.exit(1);
-    }
+    await initCommand(options);
   });
 
 program
@@ -339,75 +183,7 @@ program
   .option('--skip-setup', 'Skip setup check')
   .option('--no-zellous', 'Start without Zellous')
   .action(async (options) => {
-    try {
-      const { spawn, execSync } = await import('child_process');
-      const desktopServerPath = path.join(__dirname, 'packages/desktop-server');
-      const zellousPath = path.join(__dirname, 'packages/zellous');
-      const serverPath = path.join(desktopServerPath, 'src/server.js');
-
-      console.log('\n🚀 Sequential Desktop - Startup\n');
-
-      if (!fs.existsSync(desktopServerPath)) {
-        throw new Error(`Desktop server not found at ${desktopServerPath}`);
-      }
-
-      if (!fs.existsSync(serverPath)) {
-        throw new Error(`Server not found at ${serverPath}`);
-      }
-
-      process.env.ECOSYSTEM_PATH = process.cwd();
-      process.env.PORT = options.port;
-
-      const procs = [];
-
-      console.log('Starting Sequential Desktop server...');
-      const desktopProc = spawn('node', [serverPath], {
-        cwd: desktopServerPath,
-        stdio: 'inherit',
-        env: { ...process.env }
-      });
-      procs.push({ name: 'Sequential Desktop', proc: desktopProc });
-
-      if (options.zellous !== false && fs.existsSync(zellousPath)) {
-        const zellousServerPath = path.join(zellousPath, 'server.js');
-        if (fs.existsSync(zellousServerPath)) {
-          console.log('[Zellous] Static files served via desktop server, WebSocket on port 8004');
-        }
-      }
-
-      const shutdown = (signal) => {
-        console.log(`\n\nShutting down (${signal})...`);
-        procs.forEach(({name, proc}) => {
-          console.log(`  Stopping ${name}...`);
-          proc.kill('SIGINT');
-        });
-        setTimeout(() => process.exit(0), 1000);
-      };
-
-      procs.forEach(({name, proc}) => {
-        proc.on('exit', (code) => {
-          console.error(`\n${name} exited with code ${code}`);
-          shutdown('process exit');
-        });
-
-        proc.on('error', (error) => {
-          console.error(`\n${name} error:`, error.message);
-          shutdown('process error');
-        });
-      });
-
-      process.on('SIGINT', () => shutdown('SIGINT'));
-      process.on('SIGTERM', () => shutdown('SIGTERM'));
-
-    } catch (e) {
-      console.error('\n✗ Failed to start Sequential Desktop');
-      console.error(`  ${e instanceof Error ? e.message : String(e)}\n`);
-      console.error('Troubleshooting:');
-      console.error('  1. Check dependencies: cd packages/desktop-server && npm install');
-      console.error('  2. Verify apps are installed');
-      console.error('  3. Check logs above for specific errors\n');
-      process.exit(1);
-    }
+    await guiCommand(options, __dirname);
   });
 
 program.parse(process.argv);
