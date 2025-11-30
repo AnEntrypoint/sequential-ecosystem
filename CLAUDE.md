@@ -1,14 +1,70 @@
 # Sequential Ecosystem - Architecture Reference
 
 ## Status
-**Last Updated**: Nov 30, 2025 (Phase 7 Complete - Testing, Observability & State Persistence)
-**State**: Phase 7 Complete - Automated testing, storage observability, localStorage state persistence
-**Phase 3**: WebSocket real-time metrics, safe file APIs, collaborative selection sync
-**Phase 4**: Run Details Panel, Performance Dashboard, File ops (rename/copy), Real-time file sync via WebSocket
-**Phase 5**: Exhaustive testing of all 10 desktop apps, error message handling fix in app-terminal
+**Last Updated**: Dec 1, 2025 (Phase 8 Complete - Comprehensive Security Audit & Hardening)
+**State**: Phase 8 Complete - Critical security fixes, input validation, observability improvements
 **Phase 6**: Desktop-server refactoring (1284→228 lines), Worker sandbox (security), config centralization
 **Phase 7**: Comprehensive error logging, localStorage persistence (10 apps), test suite with CI/CD, storage observability
+**Phase 8**: Critical security audit, 10 high/critical fixes, observability enhancements, request tracing
 **Key Files**: CLAUDE.md (architecture), CHANGELOG.md (changes), cli.js (entry point), TODO.md (roadmap)
+
+## Phase 8: Comprehensive Security Audit & Hardening (Dec 1, 2025)
+
+### Critical Fixes (10 Issues Resolved)
+
+**Security Fixes:**
+1. **eval() Code Injection** → Replaced with new Function() (task-worker.js)
+   - Prevents access to closure scope and arbitrary code execution
+   - Safer execution context for untrusted task code
+
+2. **JSON Parsing Crashes** → Added try-catch handling (tasks.js)
+   - Graceful 400 errors instead of 500 exceptions
+   - Prevents DoS via corrupted JSON files
+
+3. **Worker Cleanup Race Condition** → Implemented proper cleanup (task-executor.js)
+   - Remove event listeners to prevent memory leaks
+   - Prevent delayed messages after timeout
+
+4. **Path Traversal via Symlinks** → Added fs.realpathSync() validation (lib/utils.js)
+   - Resolves symlinks before path validation
+   - Prevents symlink attacks pointing outside allowed directories
+
+5. **Rate Limiter Memory Leak** → Added periodic cleanup (middleware/rate-limit.js)
+   - Purges expired IP entries from rate limit map
+   - Prevents unbounded memory growth
+
+6. **Task Cancellation** → Force timeout=0 on cancel (routes/tasks.js)
+   - Marks tasks as 'cancelled' in status
+   - Allows proper worker cleanup and termination
+
+7. **Storage Manager** → Removed unused server-side version
+   - Only client-side version valid (uses localStorage)
+   - Eliminates dead code confusion
+
+8. **Task Directory Race Condition** → Added validation checks
+   - Validates task name and checks path traversal on all accesses
+   - Prevents TOCTOU (time-of-check to time-of-use) vulnerabilities
+
+9. **Task Input Validation** → Implemented schema validation (lib/utils.js, routes/tasks.js)
+   - Load config.json schema for each task
+   - Validate input types: string, number, boolean, array, object
+   - Return detailed validation errors before execution
+
+10. **CORS & Request Size** → Added middleware with configuration
+    - Configurable CORS_ORIGIN env var
+    - 50MB JSON request size limit (prevents memory exhaustion)
+    - Proper OPTIONS preflight handling
+
+**Observability Improvements:**
+- Request ID middleware: Unique tracing ID on all requests
+- Enhanced error factory: 7 consistent error types (Validation, NotFound, Forbidden, Conflict, Unprocessable, BadRequest, Server)
+- Improved metrics: Failure rate, cancellation rate, duration statistics (min/avg/median/max)
+- Hot reload cleanup: Proper file watcher cleanup on shutdown
+
+### Commits
+- **ac4348b**: Critical security and stability issues (6 fixes)
+- **7c5e3be**: Additional security hardening and input validation (4 fixes)
+- **261f7d5**: Observability, metrics, and error handling improvements (4 features)
 
 ## Phase 7: Comprehensive Testing, Observability & State Persistence (Nov 30, 2025)
 
