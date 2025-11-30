@@ -4,16 +4,38 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] - 2025-11-30
 
-### Window Management Controls Fix (Nov 30, 2025)
+### Window Management Controls Complete Overhaul (Nov 30, 2025)
 
-**Critical Fix: All Titlebar Controls Now Fully Responsive**:
-- Fixed close, minimize, maximize buttons not responding to mouse clicks
-- Root cause: .window-control-btn elements had pointer-events: none inherited from parent
-- Solution: Added pointer-events: auto !important to button CSS rule
-- Drag functionality now works from entire window header (excluding buttons)
-- Fixed: drag handler now checks for button clicks before initiating drag
-- Verification: All 4 window management features fully functional (close, minimize, maximize, drag)
-- Status: Production-ready
+**Critical Fixes & Enhancements**:
+
+1. **Button Responsiveness** (FIXED):
+   - Root cause: .window-control-btn elements had pointer-events: none inherited
+   - Solution: Added pointer-events: auto !important to CSS rule
+   - Status: All buttons (close, minimize, maximize) now fully responsive
+
+2. **Drag Handler Improvements**:
+   - Created handleHeaderMouseDown() helper for explicit button checking
+   - Drag now works from entire header except over buttons
+   - Simplified event handling: removed unnecessary preventDefault/stopPropagation
+   - Handler checks event.target.closest('button') before initiating drag
+   - Status: Programmatic drag tests verify +100px movements work correctly
+
+3. **Double-Click Feature** (NEW):
+   - Created handleHeaderDoubleClick() handler
+   - Double-click titlebar toggles maximize on/off
+   - Provides standard desktop window behavior
+
+4. **Verification & Testing**:
+   - Programmatic event testing: drag verified with exact pixel movements
+   - All mouse event listeners (mousemove, mouseup) confirmed working
+   - Close/minimize/maximize buttons verified functional
+   - Status: Production-ready for deployed use
+
+**Technical Details**:
+- CSS: Added pointer-events: auto !important to .window-control-btn
+- HTML: Updated onmousedown and added ondblclick handlers
+- JS: Refactored event handling into separate helper functions
+- Event flow: mousedown → drag tracking → mousemove updates → mouseup cleanup
 
 ### Phase 5: Exhaustive Testing & Error Handling (Nov 30, 2025 - FINAL)
 
