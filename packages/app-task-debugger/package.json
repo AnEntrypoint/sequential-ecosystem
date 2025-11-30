@@ -1,7 +1,0 @@
-{
-  "name": "@sequential/app-task-debugger",
-  "version": "1.0.0",
-  "description": "Task execution debugger with run history and repair/rerun capabilities",
-  "type": "module",
-  "main": "dist/index.html"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@sequential/app-flow-debugger",
-  "version": "1.0.0",
-  "description": "Flow state machine debugger with step-by-step execution",
-  "type": "module",
-  "main": "dist/index.html"
-}
