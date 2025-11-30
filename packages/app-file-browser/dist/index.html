@@ -63,6 +63,8 @@
       <div class="toolbar">
         <button onclick="showCreateFileModal()">+ File</button>
         <button onclick="showCreateDirModal()">+ Folder</button>
+        <button id="renameBtn" onclick="showRenameModal()" style="display: none;">✏️ Rename</button>
+        <button id="copyBtn" onclick="showCopyModal()" style="display: none;">📋 Copy</button>
         <button class="delete" id="deleteBtn" onclick="deleteSelected()" style="display: none;">🗑️ Delete</button>
       </div>
     </div>
@@ -105,6 +107,26 @@
       <div class="modal-buttons">
         <button class="secondary" onclick="closeCreateDirModal()">Cancel</button>
         <button onclick="createDir()">Create</button>
+      </div>
+    </div>
+  </div>
+  <div class="input-modal" id="renameModal">
+    <div class="input-modal-content">
+      <h3 style="margin-bottom: 10px; color: #d4d4d4;">Rename</h3>
+      <input type="text" id="renameName" placeholder="new-name" onkeypress="if(event.key==='Enter') renameFile()">
+      <div class="modal-buttons">
+        <button class="secondary" onclick="closeRenameModal()">Cancel</button>
+        <button onclick="renameFile()">Rename</button>
+      </div>
+    </div>
+  </div>
+  <div class="input-modal" id="copyModal">
+    <div class="input-modal-content">
+      <h3 style="margin-bottom: 10px; color: #d4d4d4;">Copy</h3>
+      <input type="text" id="copyName" placeholder="copy-name" onkeypress="if(event.key==='Enter') copyFile()">
+      <div class="modal-buttons">
+        <button class="secondary" onclick="closeCopyModal()">Cancel</button>
+        <button onclick="copyFile()">Copy</button>
       </div>
     </div>
   </div>
@@ -242,6 +264,8 @@
       document.querySelectorAll('.file-item').forEach(el => el.classList.remove('selected'));
       event.target.closest('.file-item').classList.add('selected');
       document.getElementById('deleteBtn').style.display = 'inline-block';
+      document.getElementById('renameBtn').style.display = 'inline-block';
+      document.getElementById('copyBtn').style.display = 'inline-block';
     }
 
     function highlightCode(content, filename) {
@@ -437,6 +461,120 @@
 
         selectedFile = null;
         document.getElementById('deleteBtn').style.display = 'none';
+        document.getElementById('renameBtn').style.display = 'none';
+        document.getElementById('copyBtn').style.display = 'none';
+        await loadFiles();
+      } catch (e) {
+        alert('Error: ' + e.message);
+      }
+    }
+
+    function showRenameModal() {
+      if (!selectedFile) {
+        alert('Please select a file or folder');
+        return;
+      }
+      document.getElementById('renameName').value = selectedFile.name;
+      document.getElementById('renameModal').classList.add('active');
+      document.getElementById('renameName').select();
+    }
+
+    function closeRenameModal() {
+      document.getElementById('renameModal').classList.remove('active');
+      document.getElementById('renameName').value = '';
+    }
+
+    function showCopyModal() {
+      if (!selectedFile) {
+        alert('Please select a file or folder');
+        return;
+      }
+      const ext = selectedFile.name.lastIndexOf('.') > -1 ? selectedFile.name.substring(selectedFile.name.lastIndexOf('.')) : '';
+      const baseName = ext ? selectedFile.name.substring(0, selectedFile.name.lastIndexOf('.')) : selectedFile.name;
+      document.getElementById('copyName').value = `${baseName}-copy${ext}`;
+      document.getElementById('copyModal').classList.add('active');
+      document.getElementById('copyName').select();
+    }
+
+    function closeCopyModal() {
+      document.getElementById('copyModal').classList.remove('active');
+      document.getElementById('copyName').value = '';
+    }
+
+    async function renameFile() {
+      if (!selectedFile) {
+        alert('Please select a file or folder');
+        return;
+      }
+
+      const newName = document.getElementById('renameName').value.trim();
+      if (!newName) {
+        alert('Please enter a new name');
+        return;
+      }
+
+      if (newName === selectedFile.name) {
+        closeRenameModal();
+        return;
+      }
+
+      try {
+        const filePath = currentPath === '/' ? `/${selectedFile.name}` : `${currentPath}/${selectedFile.name}`;
+        const res = await fetch('/api/files/rename', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path: filePath, newName: newName })
+        });
+
+        if (!res.ok) {
+          const error = await res.json();
+          alert('Error renaming: ' + (error.error || 'Unknown error'));
+          return;
+        }
+
+        closeRenameModal();
+        selectedFile = null;
+        document.getElementById('renameBtn').style.display = 'none';
+        document.getElementById('copyBtn').style.display = 'none';
+        document.getElementById('deleteBtn').style.display = 'none';
+        await loadFiles();
+      } catch (e) {
+        alert('Error: ' + e.message);
+      }
+    }
+
+    async function copyFile() {
+      if (!selectedFile) {
+        alert('Please select a file or folder');
+        return;
+      }
+
+      const newName = document.getElementById('copyName').value.trim();
+      if (!newName) {
+        alert('Please enter a copy name');
+        return;
+      }
+
+      try {
+        const filePath = currentPath === '/' ? `/${selectedFile.name}` : `${currentPath}/${selectedFile.name}`;
+        const copyPath = currentPath === '/' ? `/${newName}` : `${currentPath}/${newName}`;
+        const res = await fetch('/api/files/copy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path: filePath, newPath: copyPath })
+        });
+
+        if (!res.ok) {
+          const error = await res.json();
+          alert('Error copying: ' + (error.error || 'Unknown error'));
+          return;
+        }
+
+        closeCopyModal();
+        selectedFile = null;
+        document.getElementById('renameBtn').style.display = 'none';
+        document.getElementById('copyBtn').style.display = 'none';
+        document.getElementById('deleteBtn').style.display = 'none';
         await loadFiles();
       } catch (e) {
         alert('Error: ' + e.message);
@@ -454,6 +592,12 @@
     window.createFile = createFile;
     window.createDir = createDir;
     window.deleteSelected = deleteSelected;
+    window.showRenameModal = showRenameModal;
+    window.closeRenameModal = closeRenameModal;
+    window.renameFile = renameFile;
+    window.showCopyModal = showCopyModal;
+    window.closeCopyModal = closeCopyModal;
+    window.copyFile = copyFile;
 
     init();
   </script>
