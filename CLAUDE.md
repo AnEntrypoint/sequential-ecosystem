@@ -1,13 +1,95 @@
 # Sequential Ecosystem - Architecture Reference
 
 ## Status
-**Last Updated**: Nov 30, 2025 (Phase 6 Complete - Major Refactoring & Hardening)
-**State**: Phase 6 Complete - Comprehensive backend refactoring, security hardening, code cleanup
+**Last Updated**: Nov 30, 2025 (Phase 7 Complete - Testing, Observability & State Persistence)
+**State**: Phase 7 Complete - Automated testing, storage observability, localStorage state persistence
 **Phase 3**: WebSocket real-time metrics, safe file APIs, collaborative selection sync
 **Phase 4**: Run Details Panel, Performance Dashboard, File ops (rename/copy), Real-time file sync via WebSocket
 **Phase 5**: Exhaustive testing of all 10 desktop apps, error message handling fix in app-terminal
 **Phase 6**: Desktop-server refactoring (1284→228 lines), Worker sandbox (security), config centralization
+**Phase 7**: Comprehensive error logging, localStorage persistence (10 apps), test suite with CI/CD, storage observability
 **Key Files**: CLAUDE.md (architecture), CHANGELOG.md (changes), cli.js (entry point), TODO.md (roadmap)
+
+## Phase 7: Comprehensive Testing, Observability & State Persistence (Nov 30, 2025)
+
+### Features Completed
+
+**1. Comprehensive Error Logging (error-logger.js)**
+- 9 error categories: FILE_NOT_FOUND, PERMISSION_DENIED, PATH_TRAVERSAL, INVALID_INPUT, FILE_TOO_LARGE, ENCODING_ERROR, DISK_SPACE, OPERATION_FAILED, UNKNOWN
+- Auto-categorization by error code and message patterns
+- User-friendly error messages vs detailed DEBUG output
+- Severity levels: critical, error, warning, info
+- Stack trace capture (limited to 5 lines)
+- Integrated into all 7 file operation endpoints
+- Performance timing for each operation
+
+**2. localStorage State Persistence (All 10 Apps)**
+- Injected storage manager into all desktop apps
+- Automatic state save/restore on load/unload
+- App-specific state variables tracked:
+  - app-code-editor: openFiles, currentFile
+  - app-terminal: currentTab, sessions
+  - app-flow-editor: currentFlow, editingFlow
+  - app-file-browser: currentDirectory, selectedFile
+  - app-task-editor: selectedTask, selectedRunner
+  - app-debugger: selectedLayer, expandedLayers
+  - app-flow-debugger: selectedFlow, stepPosition
+  - app-task-debugger: selectedTask, selectedRun
+  - app-run-observer: timeRange, sortOrder
+  - app-tool-editor: selectedTool, editingTool
+- Uses beforeunload events for save (terminal uses 5s interval)
+- TTL-based expiry support (optional)
+
+**3. Automated Test Suite with CI/CD**
+- Created test files for file operations, task execution, error logging
+- Tests using Node.js built-in test runner
+- Test scripts: `npm test`, `npm run test:watch`, `npm run test:coverage`
+- GitHub Actions workflow for automated testing
+- Runs on Node 18.x and 20.x
+- Security audit and hardcoded secrets detection
+- Build verification on every commit
+
+**4. Comprehensive Storage Observability API**
+- /api/storage/status - metrics and memory usage
+- /api/storage/runs - list all stored runs
+- /api/storage/tasks - list all stored tasks
+- /api/storage/flows - list all stored flows
+- /api/storage/tools - list all stored tools
+- /api/storage/app-state - list all app state
+- /api/storage/export - export all stored data as JSON
+- /api/storage/clear/:type - clear storage by type or all
+- /api/storage/store/:type/:id - store arbitrary data
+- Storage timestamp and metadata tracking
+
+### Implementation Details
+
+**Error Logging Integration**
+- Added try-catch blocks to 7 file operation endpoints
+- logFileSuccess() for successful operations with timing
+- logFileOperation() for errors with categorization
+- createDetailedErrorResponse() for client-friendly messages
+- DEBUG environment variable for verbose output
+
+**State Persistence Script**
+- inject-persistence.js automates injection into all apps
+- Handles both `<script>` and `<script type="module">` tags
+- Injects storage manager utility
+- Adds initialization hooks for each app
+- Injects save/restore logic
+
+**Test Coverage**
+- Path validation (safe operations, traversal protection)
+- Worker sandbox isolation (prevents Node API access)
+- Error categorization and messaging
+- Timeout handling for long-running tasks
+- Graceful error handling
+
+**Storage Observer**
+- Maps for runs, tasks, flows, tools, appState
+- Timestamp tracking for all stored items
+- Memory profiling per request
+- Full JSON export capability
+- Type-safe storage operations
 
 ## Phase 5: Exhaustive Testing & Quality Improvements
 
