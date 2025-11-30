@@ -22,12 +22,19 @@ All notable changes to this project will be documented in this file.
    - Testing: Verified movement (450→500px) with synthetic and real events
    - Result: Window position updates correctly, snap-to-edge works
 
-3. **Double-Click Feature** (NEW):
-   - Created handleHeaderDoubleClick() handler
-   - Double-click titlebar toggles maximize on/off
+3. **Resize Capability** (FIXED):
+   - Root cause: .window-resize-handle had pointer-events: none (blocking all mouse events)
+   - Solution: Added pointer-events: auto to .window-resize-handle CSS
+   - Status: Fully functional - 8 resize handles (e, s, se, n, w, nw, ne, sw) work correctly
+   - Testing: Verified resize works with synthetic events
+
+4. **Double-Click Maximize/Restore** (FIXED):
+   - Status: Fully functional - double-click titlebar toggles maximize on/off
+   - Handler: ondblclick bound to header element
+   - Testing: Verified maximized state toggles correctly
    - Provides standard desktop window behavior
 
-4. **Verification & Testing**:
+5. **Verification & Testing**:
    - Programmatic event testing: drag verified with exact pixel movements
    - All mouse event listeners (mousemove, mouseup) confirmed working
    - Close/minimize/maximize buttons verified functional
