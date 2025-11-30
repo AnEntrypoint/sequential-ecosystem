@@ -1,11 +1,12 @@
 # Sequential Ecosystem - Architecture Reference
 
 ## Status
-**Last Updated**: Nov 30, 2025 (Phase 5 Complete - Exhaustive Testing & Error Handling)
-**State**: Phase 5 Complete - Comprehensive app testing with error handling improvements
+**Last Updated**: Nov 30, 2025 (Phase 6 Complete - Major Refactoring & Hardening)
+**State**: Phase 6 Complete - Comprehensive backend refactoring, security hardening, code cleanup
 **Phase 3**: WebSocket real-time metrics, safe file APIs, collaborative selection sync
 **Phase 4**: Run Details Panel, Performance Dashboard, File ops (rename/copy), Real-time file sync via WebSocket
 **Phase 5**: Exhaustive testing of all 10 desktop apps, error message handling fix in app-terminal
+**Phase 6**: Desktop-server refactoring (1284→228 lines), Worker sandbox (security), config centralization
 **Key Files**: CLAUDE.md (architecture), CHANGELOG.md (changes), cli.js (entry point), TODO.md (roadmap)
 
 ## Phase 5: Exhaustive Testing & Quality Improvements
@@ -73,6 +74,53 @@ Comprehensive exhaustive testing of all 10 desktop applications completed:
 ✅ Graceful degradation for optional features
 ✅ Real-time features working (WebSocket)
 ✅ File operations safe and validated
+
+## Phase 6: Backend Refactoring & Security Hardening (Nov 30, 2025)
+
+### Major Improvements
+
+**1. Desktop Server Refactoring (1284 → 228 lines, 82% reduction)**
+- Split monolithic server.js into 15 focused, single-responsibility modules:
+  - 3 middleware files (rate-limit, request-logger, error-handler)
+  - 8 route files (sequential-os, files, tasks, flows, tools, runs, apps, debug)
+  - 4 utility files (error-factory, cache, ws-broadcaster, task-executor)
+- All modules <200 lines, improving maintainability and testability
+
+**2. Security Hardening (CRITICAL FIXES)**
+- ✅ Replaced vulnerable `new Function()` with isolated Worker threads for task execution
+- ✅ Created task-worker.js for secure, sandboxed code execution
+- ✅ Proper timeout management and error propagation
+- ✅ WebSocket per-IP rate limiting already implemented and verified
+
+**3. Code Cleanup**
+- Removed 8 completely unused functions from utils.js
+- Reduced utils.js from 147 → 68 lines (54% reduction)
+- Kept only actively used validation functions
+
+**4. Configuration Centralization**
+- New config/defaults.js with 15 environment variables for all settings
+- All hardcoded values now configurable without code changes:
+  - Rate limiting parameters (HTTP & WebSocket)
+  - Request logging thresholds
+  - File size limits & naming constraints
+  - Task execution timeouts
+  - Cache TTL and log retention
+- Easy deployment flexibility for different environments
+
+### Architecture Benefits
+
+✅ **Maintainability**: Clear separation of concerns, single-file focus
+✅ **Testability**: Each route/middleware can be tested independently
+✅ **Scalability**: Easy to add new endpoints or modify existing ones
+✅ **Security**: Worker thread isolation prevents code injection
+✅ **Configurability**: All tunable parameters in one place
+✅ **Consistency**: Uniform error handling across all routes
+
+### Commits
+
+1. `refactor: Modularize server.js` - 1284→228 lines with full route reorganization
+2. `fix: Remove dead code` - Cleaned up 8 unused utility functions
+3. `refactor: Centralize configuration` - Environment variable configuration system
 
 ## Overview
 
