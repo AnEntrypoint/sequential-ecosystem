@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] - 2025-11-30
 
+### Desktop GUI - OS.js-Style Window Management
+
+**Overlapping Windows**
+- Fixed windows to properly overlap instead of acting as tabs
+- All windows now visible simultaneously with z-index layering
+- Active window: colored header + enhanced shadow
+- Inactive windows: gray header for visual distinction
+- Proper focus handling with click events
+- True desktop OS experience like OS.js
+
+**Before**: Only one window visible at a time (tab-based UI)
+**After**: Multiple windows overlapping with proper stacking
+
 ### Comprehensive Example System
 
 **Enhanced Init Command**
