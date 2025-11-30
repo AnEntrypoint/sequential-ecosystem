@@ -535,6 +535,15 @@
       const errorRateHour = runs.filter(r => new Date(r.timestamp).getTime() > oneHourAgo && r.status === 'error').length;
       const errorRateHourPercent = runsLastHour > 0 ? Math.round((errorRateHour / runsLastHour) * 100) : 0;
 
+      const hourMap = {};
+      runs.forEach(r => {
+        const hour = new Date(r.timestamp).getHours();
+        hourMap[hour] = (hourMap[hour] || 0) + 1;
+      });
+      const peakHour = Object.keys(hourMap).length > 0
+        ? Object.entries(hourMap).reduce((a, b) => b[1] > a[1] ? b : a)[0]
+        : '-';
+
       const taskMap = {};
       runs.forEach(r => {
         const task = r.taskName || 'Unknown Task';
@@ -558,6 +567,7 @@
       document.getElementById('metLastHour').textContent = runsLastHour;
       document.getElementById('metAvgPerMin').textContent = avgPerMin;
       document.getElementById('metErrorRateHour').textContent = errorRateHourPercent + '%';
+      document.getElementById('metPeakHour').textContent = peakHour !== '-' ? peakHour + ':00' : '-';
 
       const taskBreakdown = document.getElementById('taskBreakdown');
       taskBreakdown.innerHTML = Object.entries(taskMap)

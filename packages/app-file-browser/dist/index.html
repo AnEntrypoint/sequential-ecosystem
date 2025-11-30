@@ -132,12 +132,14 @@
   </div>
   <script type="module">
     let zellous = null;
-    let currentPath = '/home/user/sequential-ecosystem';
+    let currentPath = '/';
     let selectedFile = null;
     let fileTree = {};
     let collaboratorPaths = new Map();
     let myUserId = null;
     let fileWs = null;
+    let wsRetryCount = 0;
+    let wsMaxRetries = 10;
 
     function connectToFileSync() {
       const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -148,6 +150,7 @@
           const data = JSON.parse(event.data);
           if (data.type === 'connected') {
             console.log('Connected to file sync');
+            wsRetryCount = 0;
           } else if (['file-created', 'file-modified', 'file-deleted', 'file-renamed', 'file-copied', 'directory-created'].includes(data.type)) {
             loadFiles();
           }
@@ -159,11 +162,32 @@
       fileWs.onerror = () => {
         console.warn('File sync connection lost');
         fileWs = null;
-        setTimeout(connectToFileSync, 3000);
+        if (wsRetryCount >= wsMaxRetries) {
+          console.error('Max WebSocket retries exceeded');
+          return;
+        }
+        const delay = Math.min(1000 * Math.pow(2, wsRetryCount), 30000);
+        wsRetryCount++;
+        setTimeout(connectToFileSync, delay);
       };
     }
 
+    async function initializePath() {
+      try {
+        const res = await fetch('/api/files/current-path');
+        if (res.ok) {
+          const data = await res.json();
+          currentPath = data.path || '/';
+        }
+      } catch (e) {
+        console.warn('Failed to load initial path:', e);
+        currentPath = '/';
+      }
+    }
+
     async function init() {
+      await initializePath();
+
       try {
         const { ZellousSDK } = await import('@sequential/zellous-client-sdk');
         const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -330,19 +354,20 @@
 
       try {
         const panel = document.getElementById('preview');
+        const res = await fetch(`/api/files/read?path=${encodeURIComponent(filePath)}`);
+
+        if (!res.ok) {
+          showError('Failed to preview file');
+          return;
+        }
+
+        const data = await res.json();
 
         if (imageExtensions.includes(ext)) {
           const validPath = filePath.startsWith('/') ? filePath : `/${filePath}`;
-          panel.innerHTML = `<div style="text-align: center;"><img class="preview-image" src="file://${validPath}" alt="${escapeHtml(name)}" onerror="this.src='';"><p style="margin-top: 10px; color: #8b92b0; font-size: 12px;">${escapeHtml(name)}</p></div>`;
+          const dataUrl = `data:image/${ext === 'jpg' ? 'jpeg' : ext};base64,${btoa(data.content)}`;
+          panel.innerHTML = `<div style="text-align: center;"><img class="preview-image" src="${dataUrl}" alt="${escapeHtml(name)}" onerror="this.parentElement.innerHTML='<div style=\"color:#f48771;padding:20px;\">Failed to load image</div>';"><p style="margin-top: 10px; color: #8b92b0; font-size: 12px;">${escapeHtml(name)}</p></div>`;
         } else {
-          const res = await fetch(`/api/files/read?path=${encodeURIComponent(filePath)}`);
-
-          if (!res.ok) {
-            showError('Failed to preview file');
-            return;
-          }
-
-          const data = await res.json();
           const highlighted = highlightCode(data.content, name);
           panel.innerHTML = `<div class="preview-content">${highlighted}</div>`;
         }

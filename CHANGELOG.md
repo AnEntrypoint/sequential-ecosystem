@@ -4,7 +4,35 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] - 2025-11-30
 
-### Security Hardening & Feature Completion (Nov 30, 2025)
+### Comprehensive Codebase Audit & Critical Fixes (Nov 30, 2025 PM)
+
+**Critical Issues Fixed** (8):
+1. **Hardcoded File Path**: Removed hardcoded `/home/user/sequential-ecosystem` path in file browser, now dynamically fetches from `/api/files/current-path`
+2. **WebSocket Constant Inconsistency**: Changed magic number `1` to `WebSocket.OPEN` constant in `broadcastToFileSubscribers()` for consistency
+3. **Unreachable Promise**: Removed dead code in `/api/metrics` that created unresolved Promise
+4. **Incomplete Peak Hour Metrics**: Implemented peak hour calculation tracking most active execution hour across all runs
+5. **Image Preview XSS Vulnerability**: Changed from unsafe `file://` URLs to base64-encoded data URLs via `/api/files/read` API
+6. **WebSocket Reconnection**: Added exponential backoff (up to 30s) with max retry limit (10 retries) for file sync connection loss
+7. **Path Validation in Rename**: Added validation for `newName` parameter to prevent path traversal (no `/`, `\`, or leading `.`)
+8. **Error Response Consistency**: Standardized error response format for file operation endpoints
+
+**Audit Results**: 32 issues identified across 7 severity categories
+- 4 CRITICAL (now fixed)
+- 6 HIGH (path validation complete, refactoring planned)
+- 9 MEDIUM (identified for future sprints)
+- 13 LOW (documentation and optimization)
+
+**Issues Documented For Future Work**:
+- Server.js refactoring (1027 lines → modular routes)
+- Alert() replacement (47 instances → toast notifications)
+- Null safety guards in file operations
+- Rate limiting for WebSocket connections
+- Comprehensive test coverage for file operations
+- Environment variable documentation
+- Manifest schema validation
+- Type validation and CORS headers
+
+### Security Hardening & Feature Completion (Nov 30, 2025 AM)
 
 **Critical Security Fixes**:
 - Path traversal vulnerability: Replaced naive `startsWith()` checks with `path.relative()` based validation across all file endpoints
