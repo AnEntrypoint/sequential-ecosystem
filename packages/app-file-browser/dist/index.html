@@ -137,6 +137,31 @@
     let fileTree = {};
     let collaboratorPaths = new Map();
     let myUserId = null;
+    let fileWs = null;
+
+    function connectToFileSync() {
+      const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      fileWs = new WebSocket(`${wsProtocol}//${window.location.host}/api/files/subscribe`);
+
+      fileWs.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.type === 'connected') {
+            console.log('Connected to file sync');
+          } else if (['file-created', 'file-modified', 'file-deleted', 'file-renamed', 'file-copied', 'directory-created'].includes(data.type)) {
+            loadFiles();
+          }
+        } catch (e) {
+          console.error('File sync error:', e);
+        }
+      };
+
+      fileWs.onerror = () => {
+        console.warn('File sync connection lost');
+        fileWs = null;
+        setTimeout(connectToFileSync, 3000);
+      };
+    }
 
     async function init() {
       try {
@@ -154,6 +179,7 @@
         console.error('Zellous failed:', e);
       }
 
+      connectToFileSync();
       await loadFiles();
     }
 
