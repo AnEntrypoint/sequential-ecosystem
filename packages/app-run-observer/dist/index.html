@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Run Observer</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0a0e27; color: #e0e0e0; height: 100vh; display: flex; flex-direction: column; }
+    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 12px 20px; color: white; display: flex; justify-content: space-between; align-items: center; }
+    .header h2 { font-size: 18px; font-weight: 500; }
+    .collab { display: flex; gap: 8px; align-items: center; font-size: 12px; }
+    .collab-status { width: 8px; height: 8px; border-radius: 50%; background: #4caf50; }
+    .collab-status.offline { background: #666; }
+    .main { flex: 1; display: grid; grid-template-columns: 300px 1fr 300px; gap: 1px; background: #1a1f3a; overflow: hidden; }
+    .panel { background: #0f1729; overflow: auto; }
+    .panel-header { background: #1a2035; padding: 10px 15px; border-bottom: 1px solid #2a3550; font-weight: 500; font-size: 13px; }
+    .section { padding: 15px; }
+    .metric { background: #1a2035; padding: 12px; border-radius: 6px; margin-bottom: 10px; border-left: 3px solid #667eea; }
+    .metric-label { color: #8b92b0; font-size: 11px; margin-bottom: 4px; }
+    .metric-value { font-size: 24px; font-weight: 600; color: #fff; }
+    .run-entry { background: #1a2035; padding: 10px; border-radius: 4px; margin-bottom: 8px; cursor: pointer; border-left: 3px solid #4caf50; }
+    .run-entry:hover { background: #1f2640; }
+    .run-entry.error { border-left-color: #f44336; }
+    .run-entry.pending { border-left-color: #ff9800; }
+    .run-title { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+    .run-meta { font-size: 11px; color: #8b92b0; }
+    .timeline { position: relative; padding: 20px 0; }
+    .timeline-item { position: relative; padding-left: 30px; margin-bottom: 20px; }
+    .timeline-item::before { content: ''; position: absolute; left: 8px; top: 0; bottom: -20px; width: 2px; background: #2a3550; }
+    .timeline-dot { position: absolute; left: 0; top: 5px; width: 18px; height: 18px; border-radius: 50%; background: #667eea; border: 3px solid #0f1729; }
+    .timeline-content { background: #1a2035; padding: 10px; border-radius: 4px; }
+    .timeline-time { font-size: 11px; color: #8b92b0; margin-bottom: 4px; }
+    .timeline-text { font-size: 13px; }
+    .chart { height: 200px; background: #1a2035; border-radius: 6px; padding: 15px; margin-bottom: 15px; position: relative; }
+    .chart-bar { position: absolute; bottom: 15px; background: linear-gradient(180deg, #667eea 0%, #764ba2 100%); border-radius: 3px 3px 0 0; }
+    .empty { color: #666; text-align: center; padding: 40px; font-size: 13px; }
+    .collab-user { display: flex; align-items: center; gap: 8px; padding: 8px; background: #1a2035; border-radius: 4px; margin-bottom: 6px; }
+    .collab-avatar { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+    .collab-name { font-size: 12px; flex: 1; }
+    .collab-viewing { font-size: 10px; color: #8b92b0; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>👁️ Run Observer</h2>
+    <div class="collab">
+      <div class="collab-status offline" id="collabStatus"></div>
+      <span id="collabText">Connecting...</span>
+    </div>
+  </div>
+  <div class="main">
+    <div class="panel">
+      <div class="panel-header">Metrics</div>
+      <div class="section">
+        <div class="metric">
+          <div class="metric-label">Active Runs</div>
+          <div class="metric-value" id="activeRuns">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Success Rate</div>
+          <div class="metric-value" id="successRate">0%</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Avg Duration</div>
+          <div class="metric-value" id="avgDuration">0s</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Total Runs</div>
+          <div class="metric-value" id="totalRuns">0</div>
+        </div>
+      </div>
+      <div class="panel-header">Collaborators</div>
+      <div class="section" id="collaborators">
+        <div class="empty">No collaborators</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header">Execution Timeline</div>
+      <div class="section">
+        <div class="chart" id="performanceChart"></div>
+        <div class="timeline" id="timeline">
+          <div class="empty">No execution history</div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header">Recent Runs</div>
+      <div class="section" id="recentRuns">
+        <div class="empty">No runs yet</div>
+      </div>
+    </div>
+  </div>
+  <script type="module">
+    let zellous = null;
+    let runs = [];
+    let collaborators = new Map();
+    let metricsWs = null;
+    let runsWs = null;
+
+    function connectToRealTimeMetrics() {
+      const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      metricsWs = new WebSocket(`${wsProtocol}//${window.location.host}/api/runs/subscribe`);
+
+      metricsWs.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.type === 'run-started') {
+            document.getElementById('activeRuns').textContent = data.activeRuns || 0;
+          } else if (data.type === 'run-completed') {
+            runs.unshift(data);
+            updateRecentRuns();
+            updateTimeline();
+            updateChart();
+            loadMetrics();
+            if (zellous) {
+              zellous.broadcastState('run-observer', { activeRuns: data.activeRuns, timestamp: Date.now() });
+            }
+          } else if (data.type === 'connected') {
+            loadMetrics();
+            loadRuns();
+          }
+        } catch (e) {
+          console.error('Real-time update error:', e);
+        }
+      };
+
+      metricsWs.onerror = () => {
+        console.warn('Real-time connection lost, falling back to polling');
+        metricsWs = null;
+        setTimeout(connectToRealTimeMetrics, 3000);
+      };
+    }
+
+    async function init() {
+      try {
+        const { ZellousSDK } = await import('@sequential/zellous-client-sdk');
+        const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${wsProtocol}//${window.location.host}`;
+        zellous = new ZellousSDK({ serverUrl: wsUrl });
+        await zellous.connect();
+        await zellous.joinRoom('run-observer');
+
+        document.getElementById('collabStatus').classList.remove('offline');
+        document.getElementById('collabText').textContent = 'Connected';
+
+        zellous.on('message', handleMessage);
+        zellous.on('user-joined', handleUserJoined);
+        zellous.on('user-left', handleUserLeft);
+
+        broadcastPresence();
+      } catch (e) {
+        console.error('Zellous connection failed:', e);
+        document.getElementById('collabText').textContent = 'Offline';
+      }
+
+      connectToRealTimeMetrics();
+      loadRuns();
+      loadMetrics();
+      setInterval(loadMetrics, 30000);
+    }
+
+    async function loadRuns() {
+      try {
+        const res = await fetch('/api/runs');
+        if (!res.ok) return;
+
+        runs = await res.json();
+        updateRecentRuns();
+        updateTimeline();
+        updateChart();
+
+        if (zellous) {
+          zellous.broadcastState('run-observer', { runs: runs.length, timestamp: Date.now() });
+        }
+      } catch (e) {
+        console.error('Failed to load runs:', e);
+      }
+    }
+
+    async function loadMetrics() {
+      try {
+        const res = await fetch('/api/metrics');
+        if (!res.ok) return;
+
+        const metrics = await res.json();
+        document.getElementById('activeRuns').textContent = metrics.activeRuns || 0;
+        document.getElementById('successRate').textContent = metrics.successRate + '%';
+        document.getElementById('avgDuration').textContent = (metrics.averageDuration || 0).toFixed(1) + 's';
+        document.getElementById('totalRuns').textContent = metrics.totalRuns || 0;
+      } catch (e) {
+        console.error('Failed to load metrics:', e);
+      }
+    }
+
+    function updateRecentRuns() {
+      const panel = document.getElementById('recentRuns');
+      if (runs.length === 0) {
+        panel.innerHTML = '<div class="empty">No runs yet</div>';
+        return;
+      }
+
+      panel.innerHTML = runs.slice(0, 10).map(r => {
+        const statusClass = r.status === 'error' ? 'error' : (r.status === 'pending' ? 'pending' : '');
+        const taskName = r.taskName || 'Unknown Task';
+        const timestamp = new Date(r.timestamp).toLocaleTimeString();
+        const duration = r.duration ? (r.duration/1000).toFixed(1) + 's' : '0s';
+
+        return `
+          <div class="run-entry ${statusClass}" onclick="selectRun('${r.runId || r.id}')">
+            <div class="run-title">${taskName}</div>
+            <div class="run-meta">${timestamp} • ${duration}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateTimeline() {
+      const panel = document.getElementById('timeline');
+      if (runs.length === 0) {
+        panel.innerHTML = '<div class="empty">No execution history</div>';
+        return;
+      }
+
+      panel.innerHTML = runs.slice(0, 15).map(r => {
+        const taskName = r.taskName || 'Unknown Task';
+        const timestamp = new Date(r.timestamp).toLocaleTimeString();
+        const status = r.status || 'success';
+
+        return `
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-time">${timestamp}</div>
+              <div class="timeline-text">${taskName} - ${status}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateChart() {
+      const chart = document.getElementById('performanceChart');
+      if (runs.length === 0) {
+        chart.innerHTML = '<div class="empty" style="padding-top: 80px;">No data</div>';
+        return;
+      }
+
+      const last20 = runs.slice(0, 20).reverse();
+      const maxDuration = Math.max(...last20.map(r => r.duration || 1000));
+
+      chart.innerHTML = last20.map((r, i) => {
+        const height = ((r.duration || 1000) / maxDuration) * 150;
+        const left = (i / 20) * 90;
+        return `<div class="chart-bar" style="left: ${left}%; width: 4%; height: ${height}px;"></div>`;
+      }).join('');
+    }
+
+    function selectRun(id) {
+      console.log('Selected run:', id);
+      if (zellous) {
+        zellous.sendMessage({ type: 'run-selected', runId: id, user: 'me' });
+      }
+    }
+
+    function broadcastPresence() {
+      if (zellous) {
+        zellous.sendMessage({ type: 'presence', viewing: 'run-observer', timestamp: Date.now() });
+        setTimeout(broadcastPresence, 30000);
+      }
+    }
+
+    function handleMessage(data) {
+      if (data.type === 'presence') {
+        collaborators.set(data.from, { viewing: data.viewing, timestamp: data.timestamp });
+        updateCollaborators();
+      }
+    }
+
+    function handleUserJoined(userId) {
+      collaborators.set(userId, { viewing: null, timestamp: Date.now() });
+      updateCollaborators();
+    }
+
+    function handleUserLeft(userId) {
+      collaborators.delete(userId);
+      updateCollaborators();
+    }
+
+    function updateCollaborators() {
+      const panel = document.getElementById('collaborators');
+      if (collaborators.size === 0) {
+        panel.innerHTML = '<div class="empty">No collaborators</div>';
+        return;
+      }
+
+      panel.innerHTML = Array.from(collaborators.entries()).map(([id, info]) => `
+        <div class="collab-user">
+          <div class="collab-avatar">${id.slice(0, 2).toUpperCase()}</div>
+          <div class="collab-name">${id.slice(0, 8)}</div>
+          <div class="collab-viewing">${info.viewing || 'idle'}</div>
+        </div>
+      `).join('');
+    }
+
+    window.selectRun = selectRun;
+    init();
+  </script>
+</body>
+</html>
