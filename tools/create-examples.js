@@ -5,21 +5,39 @@ import { createComplexFlowExample } from './examples/complex-flow.js';
 import { createApiIntegrationExample } from './examples/api-integration.js';
 import { createBatchProcessingExample } from './examples/batch-processing.js';
 import { createExamplesReadme } from './examples/readme.js';
+import { createExampleTools } from './examples/example-tools.js';
+import { createExampleFlows } from './examples/example-flows.js';
+import { createSequentialOSExample } from './examples/sequential-os-example.js';
 
 export async function createExamples() {
   const tasksDir = path.join(process.cwd(), 'tasks');
-  fs.mkdirSync(tasksDir, { recursive: true });
+  const toolsDir = path.join(process.cwd(), 'tools');
 
-  const examples = [
+  fs.mkdirSync(tasksDir, { recursive: true });
+  fs.mkdirSync(toolsDir, { recursive: true });
+
+  console.log('\n📚 Creating comprehensive examples...\n');
+
+  console.log('Creating example tasks:');
+  const taskExamples = [
     createSimpleFlowExample,
     createComplexFlowExample,
     createApiIntegrationExample,
-    createBatchProcessingExample
+    createBatchProcessingExample,
+    createSequentialOSExample
   ];
 
-  for (const createExample of examples) {
+  for (const createExample of taskExamples) {
     await createExample(tasksDir);
   }
 
+  console.log('\nCreating example tools:');
+  createExampleTools(toolsDir);
+
+  console.log('\nCreating example flows:');
+  createExampleFlows(tasksDir);
+
   createExamplesReadme(tasksDir);
+
+  console.log('\n✓ All examples created successfully!');
 }
