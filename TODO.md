@@ -2,6 +2,17 @@
 
 ## STATUS SUMMARY - November 30, 2025 (UPDATED)
 
+### Audit & Security Phase Complete ✅ (Nov 30 2025)
+- [x] Comprehensive codebase audit (32 issues identified)
+- [x] Fix hardcoded file browser path (dynamic via API)
+- [x] Fix WebSocket constant inconsistency (1 → WebSocket.OPEN)
+- [x] Remove unreachable Promise in metrics endpoint
+- [x] Complete peak hour metrics calculation
+- [x] Fix image preview XSS vulnerability (file:// → API data URLs)
+- [x] Add WebSocket exponential backoff reconnection
+- [x] Add path validation to rename/copy operations
+- [x] Document all findings in AUDIT.md (see file for details)
+
 ### Completed ✅
 - [x] WebSocket infrastructure in desktop-server
 - [x] Active run tracking (activeTasks map)
@@ -33,16 +44,38 @@
 - [x] Rename and copy operations with backend API endpoints
 - [x] Real-time file sync via WebSocket (all file operations broadcast to connected clients)
 
+### Phase 5 - High Priority Refactoring (Next Sprint) 📋
+From AUDIT.md - See audit report for full details on 32 identified issues
+- [ ] Refactor server.js (1027 lines) into modular routes (est. 4-6h)
+  - `/src/routes/seq-os.js` - Sequential-OS endpoints
+  - `/src/routes/files.js` - File operations
+  - `/src/routes/tasks.js` - Task endpoints
+  - `/src/routes/flows.js` - Flow endpoints
+  - `/src/routes/metrics.js` - Metrics
+  - `/src/middleware/` - Logging, rate limiting, validation
+- [ ] Implement task execution sandbox (Worker threads) (est. 2-3h)
+- [ ] Add WebSocket rate limiting (est. 1-2h)
+- [ ] Replace 47 alert() calls with toast notifications (est. 3-4h)
+- [ ] Add null safety guards in file operations (est. 1h)
+
+### Phase 6 - Medium Priority UX Improvements 📋
+- [ ] Implement state persistence (localStorage) for all apps (est. 2-3h per app)
+- [ ] Fix window sizing responsiveness (est. 2h)
+- [ ] Complete collaborative features (action context) (est. 1-2h)
+- [ ] Add comprehensive test coverage for file operations (est. 3-4h)
+
 ### In Progress 🔄
 - [ ] Advanced collaboration features (shared cursor, live editing)
 - [ ] Performance optimization (caching, batching)
 - [ ] Audit logging for all file operations
 
 ### Planned 📋
+- [ ] API documentation (OpenAPI/Swagger) (est. 2-3h)
+- [ ] Environment variable documentation (est. 30min)
+- [ ] CORS configuration (est. 30min)
+- [ ] Manifest schema validation (est. 1h)
 - [ ] Monitoring and observability
 - [ ] Code refactoring and shared libraries
-- [ ] Advanced collaboration features
-- [ ] Performance optimization
 - [ ] Testing suite
 
 ---
