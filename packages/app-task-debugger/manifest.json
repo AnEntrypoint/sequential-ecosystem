@@ -1,0 +1,17 @@
+{
+  "id": "app-task-debugger",
+  "name": "Task Debugger",
+  "version": "1.0.0",
+  "description": "Debug task execution, view history, repair and rerun",
+  "icon": "🐛",
+  "entry": "dist/index.html",
+  "capabilities": ["sequential-os"],
+  "window": {
+    "defaultWidth": 1000,
+    "defaultHeight": 700,
+    "minWidth": 800,
+    "minHeight": 600,
+    "resizable": true,
+    "maximizable": true
+  }
+}
