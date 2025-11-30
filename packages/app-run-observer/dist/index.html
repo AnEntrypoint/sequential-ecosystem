@@ -94,8 +94,10 @@
     let zellous = null;
     let runs = [];
     let collaborators = new Map();
+    let collaboratorSelections = new Map();
     let metricsWs = null;
     let runsWs = null;
+    let myUserId = null;
 
     function connectToRealTimeMetrics() {
       const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -138,6 +140,7 @@
         const wsUrl = `${wsProtocol}//${window.location.host}`;
         zellous = new ZellousSDK({ serverUrl: wsUrl });
         await zellous.connect();
+        myUserId = zellous.getUserId?.() || 'user-' + Math.random().toString(36).slice(2, 9);
         await zellous.joinRoom('run-observer');
 
         document.getElementById('collabStatus').classList.remove('offline');
@@ -192,6 +195,12 @@
       }
     }
 
+    function getCollaboratorsViewingRun(runId) {
+      return Array.from(collaboratorSelections.entries())
+        .filter(([userId, sel]) => sel.runId === runId && userId !== myUserId)
+        .map(([userId]) => userId);
+    }
+
     function updateRecentRuns() {
       const panel = document.getElementById('recentRuns');
       if (runs.length === 0) {
@@ -204,11 +213,14 @@
         const taskName = r.taskName || 'Unknown Task';
         const timestamp = new Date(r.timestamp).toLocaleTimeString();
         const duration = r.duration ? (r.duration/1000).toFixed(1) + 's' : '0s';
+        const collab = getCollaboratorsViewingRun(r.runId || r.id);
+        const collabBadge = collab.length > 0 ? `<div style="font-size: 10px; color: #667eea; margin-top: 4px;">👥 ${collab.length} viewing</div>` : '';
 
         return `
-          <div class="run-entry ${statusClass}" onclick="selectRun('${r.runId || r.id}')">
+          <div class="run-entry ${statusClass}" onclick="selectRun('${r.runId || r.id}')" ${collab.length > 0 ? 'style="border-left-color: #667eea; opacity: 0.9;"' : ''}>
             <div class="run-title">${taskName}</div>
             <div class="run-meta">${timestamp} • ${duration}</div>
+            ${collabBadge}
           </div>
         `;
       }).join('');
@@ -256,9 +268,10 @@
     }
 
     function selectRun(id) {
-      console.log('Selected run:', id);
-      if (zellous) {
-        zellous.sendMessage({ type: 'run-selected', runId: id, user: 'me' });
+      if (zellous && myUserId) {
+        zellous.sendMessage({ type: 'run-selected', runId: id, userId: myUserId, timestamp: Date.now() });
+        collaboratorSelections.set(myUserId, { runId: id, timestamp: Date.now() });
+        updateRecentRuns();
       }
     }
 
@@ -271,8 +284,15 @@
 
     function handleMessage(data) {
       if (data.type === 'presence') {
-        collaborators.set(data.from, { viewing: data.viewing, timestamp: data.timestamp });
+        collaborators.set(data.from, { viewing: data.viewing, timestamp: data.timestamp, runId: collaboratorSelections.get(data.from)?.runId });
         updateCollaborators();
+      } else if (data.type === 'run-selected') {
+        if (data.userId && data.userId !== myUserId) {
+          collaboratorSelections.set(data.userId, { runId: data.runId, timestamp: data.timestamp });
+          collaborators.set(data.userId, { ...collaborators.get(data.userId), runId: data.runId, timestamp: data.timestamp });
+          updateRecentRuns();
+          updateCollaborators();
+        }
       }
     }
 

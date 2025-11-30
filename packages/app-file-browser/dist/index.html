@@ -69,6 +69,8 @@
     let currentPath = '/home/user/sequential-ecosystem';
     let selectedFile = null;
     let fileTree = {};
+    let collaboratorPaths = new Map();
+    let myUserId = null;
 
     async function init() {
       try {
@@ -77,6 +79,7 @@
         const wsUrl = `${wsProtocol}//${window.location.host}`;
         zellous = new ZellousSDK({ serverUrl: wsUrl });
         await zellous.connect();
+        myUserId = zellous.getUserId?.() || 'user-' + Math.random().toString(36).slice(2, 9);
         await zellous.joinRoom('file-browser');
 
         zellous.on('message', handleMessage);
@@ -121,6 +124,12 @@
       }
     }
 
+    function getCollaboratorsInPath(path) {
+      return Array.from(collaboratorPaths.entries())
+        .filter(([userId, info]) => info.path === path && userId !== myUserId)
+        .map(([userId]) => userId);
+    }
+
     function renderFileList() {
       const panel = document.getElementById('fileList');
       const files = Object.values(fileTree);
@@ -130,7 +139,10 @@
         return;
       }
 
-      panel.innerHTML = files.map(f => `
+      const collabCount = getCollaboratorsInPath(currentPath).length;
+      const collabBanner = collabCount > 0 ? `<div style="background: rgba(67, 206, 162, 0.1); padding: 8px; margin-bottom: 8px; border-radius: 4px; font-size: 11px; color: #43cea2;">👥 ${collabCount} collaborator${collabCount === 1 ? '' : 's'} browsing this directory</div>` : '';
+
+      panel.innerHTML = collabBanner + files.map(f => `
         <div class="file-item" onclick="selectFile('${f.name.replace(/'/g, "\\'")}')">
           <div class="file-icon">${f.isDirectory ? '📁' : '📄'}</div>
           <div class="file-info">
@@ -172,6 +184,12 @@
       }
 
       document.getElementById('currentPath').textContent = currentPath;
+
+      if (zellous && myUserId) {
+        zellous.sendMessage({ type: 'file-browsing', path: currentPath, userId: myUserId, timestamp: Date.now() });
+        collaboratorPaths.set(myUserId, { path: currentPath, timestamp: Date.now() });
+      }
+
       await loadFiles();
     }
 
@@ -224,10 +242,10 @@
     }
 
     function handleMessage(data) {
-      if (data.type === 'collaborator-browsing') {
-        const elem = document.getElementById('collabStatus');
-        if (elem) {
-          elem.title = `Collaborator viewing: ${data.path}`;
+      if (data.type === 'file-browsing') {
+        if (data.userId && data.userId !== myUserId) {
+          collaboratorPaths.set(data.userId, { path: data.path, timestamp: data.timestamp });
+          renderFileList();
         }
       }
     }
