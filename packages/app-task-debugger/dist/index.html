@@ -41,9 +41,18 @@
     .string { color: #ce9178; }
     .number { color: #b5cea8; }
     .empty { color: #858585; font-style: italic; text-align: center; padding: 40px; }
+    .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 2000; }
+    .toast { padding: 12px 16px; margin-bottom: 8px; border-radius: 4px; font-size: 13px; max-width: 300px; word-wrap: break-word; animation: slideIn 0.3s ease-out; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+    @keyframes slideIn { from { transform: translateX(350px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes slideOut { to { transform: translateX(350px); opacity: 0; } }
+    .toast.success { background: #4caf50; color: white; }
+    .toast.error { background: #f48771; color: white; }
+    .toast.warning { background: #ff9800; color: white; }
+    .toast.info { background: #2196F3; color: white; }
   </style>
 </head>
 <body>
+  <div class="toast-container" id="toastContainer"></div>
   <div class="header">
     <h2>🐛 Task Debugger</h2>
     <div class="controls">
@@ -71,6 +80,7 @@
     </div>
   </div>
   <script>
+    function showToast(message, type = "info", duration = 3000) { const c = document.getElementById("toastContainer"); if (!c) return; const t = document.createElement("div"); t.className = `toast ${type}`; t.textContent = message; c.appendChild(t); setTimeout(() => { t.style.animation = "slideOut 0.3s ease-out forwards"; setTimeout(() => t.remove(), 300); }, duration); } function showError(message) { showToast(message, "error"); } function showSuccess(message) { showToast(message, "success"); } function showWarning(message) { showToast(message, "warning"); }
     let tasks = [];
     let currentRun = null;
 
@@ -84,14 +94,14 @@
 
     async function runTask() {
       const taskName = document.getElementById('taskSelect').value;
-      if (!taskName) return alert('Select a task');
+      if (!taskName) return showError('Select a task');
 
       let input = {};
       try {
         const inputVal = document.getElementById('inputField').value.trim();
         input = inputVal ? JSON.parse(inputVal) : {};
       } catch (e) {
-        return alert('Invalid JSON input');
+        return showError('Invalid JSON input');
       }
 
       const res = await fetch(`/api/tasks/${taskName}/run`, {
@@ -107,7 +117,7 @@
 
     async function testTask() {
       const taskName = document.getElementById('taskSelect').value;
-      if (!taskName) return alert('Select a task');
+      if (!taskName) return showError('Select a task');
 
       document.getElementById('detailsPanel').innerHTML = `
         <div class="test-section">
@@ -128,7 +138,7 @@
       try {
         input = JSON.parse(document.getElementById('testInput').value || '{}');
       } catch (e) {
-        return alert('Invalid JSON');
+        return showError('Invalid JSON');
       }
 
       const res = await fetch(`/api/tasks/${taskName}/run`, {
@@ -217,7 +227,7 @@
     function rerunWithEdit() {
       if (!currentRun) return;
       document.getElementById('inputField').value = JSON.stringify(currentRun.input, null, 2);
-      alert('Input loaded. Edit and click Run.');
+      showError('Input loaded. Edit and click Run.');
     }
 
     async function repairTask() {
