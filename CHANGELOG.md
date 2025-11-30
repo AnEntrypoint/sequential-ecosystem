@@ -4,7 +4,30 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] - 2025-11-30
 
-### Comprehensive Codebase Audit & Critical Fixes (Nov 30, 2025 PM)
+### Phase 5: UX Improvements & Frontend Enhancements (Nov 30, 2025 PM - Final)
+
+**Toast Notification System** (NEW):
+- Replaced 39 `alert()` calls across 6 apps with non-blocking toast notifications
+- Apps upgraded: file-browser, task-debugger, task-editor, code-editor, flow-editor, run-observer
+- Toast notifications support: success, error, warning, info types
+- Styled with animations (slide-in/out effects)
+- Configurable duration (default 3 seconds)
+- Non-intrusive corner display (bottom-right)
+
+**Null Safety Guards** (NEW):
+- Added optional chaining and null checks to file browser functions
+- Prevent crashes from undefined fileTree lookups
+- Guard missing DOM element references
+- Safe event handling with fallback behavior
+- Prevents undefined.split() and similar runtime errors
+
+**UX Enhancements**:
+- Success feedback messages for file operations (create, rename, copy, delete)
+- Automatic modal closure after operations
+- Non-blocking error reporting via toast instead of alert()
+- Better error message formatting with fallback chains
+
+### Comprehensive Codebase Audit & Critical Fixes (Nov 30, 2025 AM)
 
 **Critical Issues Fixed** (8):
 1. **Hardcoded File Path**: Removed hardcoded `/home/user/sequential-ecosystem` path in file browser, now dynamically fetches from `/api/files/current-path`
