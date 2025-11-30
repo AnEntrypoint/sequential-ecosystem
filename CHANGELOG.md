@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] - 2025-11-30
 
+### Window Management Controls Fix (Nov 30, 2025)
+
+**Critical Fix: All Titlebar Controls Now Fully Responsive**:
+- Fixed close, minimize, maximize buttons not responding to mouse clicks
+- Root cause: .window-control-btn elements had pointer-events: none inherited from parent
+- Solution: Added pointer-events: auto !important to button CSS rule
+- Drag functionality now works from entire window header (excluding buttons)
+- Fixed: drag handler now checks for button clicks before initiating drag
+- Verification: All 4 window management features fully functional (close, minimize, maximize, drag)
+- Status: Production-ready
+
 ### Phase 5: Exhaustive Testing & Error Handling (Nov 30, 2025 - FINAL)
 
 **Exhaustive Desktop App Testing** (COMPLETE):
