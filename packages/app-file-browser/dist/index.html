@@ -37,6 +37,13 @@
     .empty { color: #666; text-align: center; padding: 40px; font-size: 13px; }
     .error { color: #f48771; }
     .toolbar { display: flex; gap: 8px; }
+    .code-keyword { color: #569cd6; font-weight: bold; }
+    .code-string { color: #ce9178; }
+    .code-number { color: #b5cea8; }
+    .code-comment { color: #6a9955; }
+    .code-function { color: #dcdcaa; }
+    .code-property { color: #9cdcfe; }
+    .code-operator { color: #d4d4d4; }
     button.delete { background: #f48771; }
     button.delete:hover { background: #d4453e; }
     .input-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
@@ -236,6 +243,30 @@
       document.getElementById('deleteBtn').style.display = 'inline-block';
     }
 
+    function highlightCode(content, filename) {
+      const ext = filename.split('.').pop().toLowerCase();
+      const codeExtensions = ['js', 'ts', 'jsx', 'tsx', 'json', 'py', 'java', 'cpp', 'c', 'html', 'css', 'xml', 'sh', 'bash', 'yml', 'yaml'];
+
+      if (!codeExtensions.includes(ext)) {
+        return escapeHtml(content);
+      }
+
+      let highlighted = escapeHtml(content);
+      const keywords = ['function', 'const', 'let', 'var', 'if', 'else', 'for', 'while', 'return', 'class', 'import', 'export', 'async', 'await', 'def', 'if', 'else', 'for', 'while', 'true', 'false', 'null', 'undefined'];
+
+      keywords.forEach(kw => {
+        const regex = new RegExp(`\\b${kw}\\b`, 'g');
+        highlighted = highlighted.replace(regex, `<span class="code-keyword">${kw}</span>`);
+      });
+
+      highlighted = highlighted.replace(/(['"])([^\\1]*?)\1/g, '<span class="code-string">$1$2$1</span>');
+      highlighted = highlighted.replace(/\b(\d+)\b/g, '<span class="code-number">$1</span>');
+      highlighted = highlighted.replace(/\/\/.*/g, (match) => `<span class="code-comment">${match}</span>`);
+      highlighted = highlighted.replace(/#.*/g, (match) => `<span class="code-comment">${match}</span>`);
+
+      return highlighted;
+    }
+
     async function preview(name, event) {
       if (event) event.stopPropagation();
 
@@ -254,8 +285,9 @@
 
         const data = await res.json();
         const panel = document.getElementById('preview');
+        const highlighted = highlightCode(data.content, name);
         panel.innerHTML = `
-          <div class="preview-content">${escapeHtml(data.content)}</div>
+          <div class="preview-content">${highlighted}</div>
         `;
 
         if (zellous) {
