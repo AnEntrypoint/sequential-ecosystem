@@ -1,5 +1,6 @@
-import fs from 'fs';
 import path from 'path';
+import { existsSync } from 'fs';
+import { ensureDirectory, writeFileAtomicJson } from '@sequential/file-operations';
 
 export async function initCommand(options) {
   try {
@@ -9,18 +10,18 @@ export async function initCommand(options) {
     ];
 
     for (const p of paths) {
-      if (!fs.existsSync(p)) {
-        fs.mkdirSync(p, { recursive: true });
+      if (!existsSync(p)) {
+        await ensureDirectory(p);
         console.log(`✓ Created ${p}`);
       }
     }
 
     const configFile = path.join(process.cwd(), '.sequentialrc.json');
-    if (!fs.existsSync(configFile)) {
-      fs.writeFileSync(configFile, JSON.stringify({
+    if (!existsSync(configFile)) {
+      await writeFileAtomicJson(configFile, {
         adaptor: 'default',
         defaults: {}
-      }, null, 2));
+      });
       console.log(`✓ Created ${configFile}`);
     }
 

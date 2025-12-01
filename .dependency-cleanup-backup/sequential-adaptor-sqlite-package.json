@@ -1,0 +1,41 @@
+{
+  "name": "@sequential/sequential-adaptor-sqlite",
+  "version": "1.0.0",
+  "description": "SQLite storage backend for sequential-runner via tasker-adaptor",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "test": "node --test test/**/*.js"
+  },
+  "keywords": [
+    "sequential",
+    "adapter",
+    "storage",
+    "sqlite",
+    "database"
+  ],
+  "author": "lanmower",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-adaptor-sqlite.git"
+  },
+  "dependencies": {
+    "sql.js": "^1.10.2",
+    "@sequential/sequential-adaptor": "^1.0.0",
+    "@sequential/sequential-logging": "^1.0.0",
+    "@sequential/sequential-storage-utils": "^1.0.0"
+  },
+  "peerDependencies": {
+    "@sequential/sequential-flow": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

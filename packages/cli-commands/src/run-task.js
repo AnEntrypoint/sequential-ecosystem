@@ -1,15 +1,16 @@
-import fs from 'fs';
 import path from 'path';
 import { randomUUID } from 'crypto';
+import { existsSync } from 'fs';
+import { readFile } from 'fs-extra';
 import { createAdapter } from '@sequential/sequential-adaptor';
 
 export async function runTask(options) {
   const { taskName, input = {}, save = false, dryRun = false, verbose = false } = options;
 
-  const tasksDir = path.join(process.cwd(), 'tasks');
+  const tasksDir = path.resolve(process.cwd(), 'tasks');
   const taskFile = path.join(tasksDir, `${taskName}.js`);
 
-  if (!fs.existsSync(taskFile)) {
+  if (!existsSync(taskFile)) {
     throw new Error(`Task '${taskName}' not found at ${taskFile}`);
   }
 
@@ -18,7 +19,7 @@ export async function runTask(options) {
     console.log(`Input:`, input);
   }
 
-  const code = fs.readFileSync(taskFile, 'utf-8');
+  const code = await readFile(taskFile, 'utf-8');
 
   if (dryRun) {
     if (verbose) {

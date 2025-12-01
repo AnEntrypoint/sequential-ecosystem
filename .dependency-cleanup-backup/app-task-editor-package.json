@@ -1,0 +1,16 @@
+{
+  "name": "@sequential/app-task-editor",
+  "version": "1.0.0",
+  "description": "Task Editor for Sequential Desktop",
+  "main": "dist/index.html",
+  "type": "module",
+  "keywords": [
+    "sequential",
+    "task",
+    "editor",
+    "app"
+  ],
+  "author": "Sequential Ecosystem",
+  "license": "MIT",
+  "dependencies": {}
+}

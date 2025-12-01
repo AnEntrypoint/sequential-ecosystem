@@ -1,0 +1,37 @@
+{
+  "name": "@sequential/sequential-adaptor-supabase",
+  "version": "1.0.1",
+  "description": "Supabase storage backend for sequential-runner via tasker-adaptor",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ],
+  "keywords": [
+    "sequential",
+    "adapter",
+    "storage",
+    "supabase",
+    "postgresql"
+  ],
+  "author": "lanmower",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-adaptor-supabase.git"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.58.0",
+    "@sequential/sequential-adaptor": "^1.0.0",
+    "@sequential/sequential-utils": "^1.0.0"
+  },
+  "peerDependencies": {
+    "@sequential/sequential-flow": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

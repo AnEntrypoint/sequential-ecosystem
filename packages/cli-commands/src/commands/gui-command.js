@@ -1,5 +1,5 @@
-import fs from 'fs';
 import path from 'path';
+import { existsSync } from 'fs';
 
 export async function guiCommand(options, __dirname) {
   try {
@@ -10,11 +10,11 @@ export async function guiCommand(options, __dirname) {
 
     console.log('\n🚀 Sequential Desktop - Startup\n');
 
-    if (!fs.existsSync(desktopServerPath)) {
+    if (!existsSync(desktopServerPath)) {
       throw new Error(`Desktop server not found at ${desktopServerPath}`);
     }
 
-    if (!fs.existsSync(serverPath)) {
+    if (!existsSync(serverPath)) {
       throw new Error(`Server not found at ${serverPath}`);
     }
 
@@ -31,9 +31,9 @@ export async function guiCommand(options, __dirname) {
     });
     procs.push({ name: 'Sequential Desktop', proc: desktopProc });
 
-    if (options.zellous !== false && fs.existsSync(zellousPath)) {
+    if (options.zellous !== false && existsSync(zellousPath)) {
       const zellousServerPath = path.join(zellousPath, 'server.js');
-      if (fs.existsSync(zellousServerPath)) {
+      if (existsSync(zellousServerPath)) {
         console.log('[Zellous] Static files served via desktop server, WebSocket on port 8004');
       }
     }

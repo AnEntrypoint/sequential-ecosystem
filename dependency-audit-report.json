@@ -1,0 +1,1237 @@
+{
+  "packages": [
+    {
+      "name": "app-code-editor",
+      "version": "1.0.0",
+      "declaredDeps": {
+        "@sequential/zellous-client-sdk": "^1.0.0"
+      },
+      "declaredDepNames": [
+        "@sequential/zellous-client-sdk"
+      ],
+      "usedDeps": [],
+      "unusedDeps": [
+        "@sequential/zellous-client-sdk"
+      ],
+      "missingDeps": [],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "app-debugger",
+      "version": "1.0.0",
+      "declaredDeps": {},
+      "declaredDepNames": [],
+      "usedDeps": [],
+      "unusedDeps": [],
+      "missingDeps": [],
+      "cleanupNeeded": false
+    },
+    {
+      "name": "app-file-browser",
+      "version": "1.0.0",
+      "declaredDeps": {
+        "@sequential/zellous-client-sdk": "^1.0.0"
+      },
+      "declaredDepNames": [
+        "@sequential/zellous-client-sdk"
+      ],
+      "usedDeps": [],
+      "unusedDeps": [
+        "@sequential/zellous-client-sdk"
+      ],
+      "missingDeps": [],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "app-flow-debugger",
+      "version": "1.0.0",
+      "declaredDeps": {},
+      "declaredDepNames": [],
+      "usedDeps": [],
+      "unusedDeps": [],
+      "missingDeps": [],
+      "cleanupNeeded": false
+    },
+    {
+      "name": "app-flow-editor",
+      "version": "1.0.0",
+      "declaredDeps": {
+        "@sequential/zellous-client-sdk": "^1.0.0"
+      },
+      "declaredDepNames": [
+        "@sequential/zellous-client-sdk"
+      ],
+      "usedDeps": [],
+      "unusedDeps": [
+        "@sequential/zellous-client-sdk"
+      ],
+      "missingDeps": [],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "app-run-observer",
+      "version": "1.0.0",
+      "declaredDeps": {
+        "@sequential/zellous-client-sdk": "^1.0.0"
+      },
+      "declaredDepNames": [
+        "@sequential/zellous-client-sdk"
+      ],
+      "usedDeps": [],
+      "unusedDeps": [
+        "@sequential/zellous-client-sdk"
+      ],
+      "missingDeps": [],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "app-task-debugger",
+      "version": "1.0.0",
+      "declaredDeps": {},
+      "declaredDepNames": [],
+      "usedDeps": [],
+      "unusedDeps": [],
+      "missingDeps": [],
+      "cleanupNeeded": false
+    },
+    {
+      "name": "app-task-editor",
+      "version": "1.0.0",
+      "declaredDeps": {
+        "@sequential/zellous-client-sdk": "^1.0.0"
+      },
+      "declaredDepNames": [
+        "@sequential/zellous-client-sdk"
+      ],
+      "usedDeps": [],
+      "unusedDeps": [
+        "@sequential/zellous-client-sdk"
+      ],
+      "missingDeps": [],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "app-terminal",
+      "version": "1.0.0",
+      "declaredDeps": {},
+      "declaredDepNames": [],
+      "usedDeps": [],
+      "unusedDeps": [],
+      "missingDeps": [],
+      "cleanupNeeded": false
+    },
+    {
+      "name": "app-tool-editor",
+      "version": "1.0.0",
+      "declaredDeps": {
+        "@sequential/zellous-client-sdk": "^1.0.0"
+      },
+      "declaredDepNames": [
+        "@sequential/zellous-client-sdk"
+      ],
+      "usedDeps": [],
+      "unusedDeps": [
+        "@sequential/zellous-client-sdk"
+      ],
+      "missingDeps": [],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "chat-component",
+      "version": "1.0.0",
+      "declaredDeps": {},
+      "declaredDepNames": [],
+      "usedDeps": [],
+      "unusedDeps": [],
+      "missingDeps": [],
+      "cleanupNeeded": false
+    },
+    {
+      "name": "cli-commands",
+      "version": "1.0.0",
+      "declaredDeps": {
+        "@sequential/sequential-runner": "^1.0.0",
+        "@sequential/sequential-adaptor": "^1.0.0",
+        "commander": "^11.0.0"
+      },
+      "declaredDepNames": [
+        "@sequential/sequential-adaptor",
+        "@sequential/sequential-runner",
+        "commander"
+      ],
+      "usedDeps": [
+        "@sequential/sequential-adaptor",
+        "child_process",
+        "crypto",
+        "fs",
+        "path",
+        "url"
+      ],
+      "unusedDeps": [
+        "@sequential/sequential-runner",
+        "commander"
+      ],
+      "missingDeps": [
+        "child_process",
+        "crypto",
+        "fs",
+        "path",
+        "url"
+      ],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "core",
+      "version": "1.0.0",
+      "declaredDeps": {
+        "fs-extra": "^11.1.1"
+      },
+      "declaredDepNames": [
+        "fs-extra"
+      ],
+      "usedDeps": [
+        "fs",
+        "path"
+      ],
+      "unusedDeps": [
+        "fs-extra"
+      ],
+      "missingDeps": [
+        "fs",
+        "path"
+      ],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "data-access-layer",
+      "version": "1.0.0",
+      "declaredDeps": {
+        "fs-extra": "^11.1.1"
+      },
+      "declaredDepNames": [
+        "fs-extra"
+      ],
+      "usedDeps": [
+        "fs",
+        "fs-extra",
+        "node:assert",
+        "node:test",
+        "path"
+      ],
+      "unusedDeps": [],
+      "missingDeps": [
+        "fs",
+        "node:assert",
+        "node:test",
+        "path"
+      ],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "dependency-injection",
+      "version": "1.0.0",
+      "declaredDeps": {},
+      "declaredDepNames": [],
+      "usedDeps": [
+        "node:assert",
+        "node:test"
+      ],
+      "unusedDeps": [],
+      "missingDeps": [
+        "node:assert",
+        "node:test"
+      ],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "desktop-api-client",
+      "version": "1.0.0",
+      "declaredDeps": {},
+      "declaredDepNames": [],
+      "usedDeps": [],
+      "unusedDeps": [],
+      "missingDeps": [],
+      "cleanupNeeded": false
+    },
+    {
+      "name": "desktop-server",
+      "version": "1.0.0",
+      "declaredDeps": {
+        "@sequential/data-access-layer": "*",
+        "@sequential/dependency-injection": "*",
+        "@sequential/task-execution-service": "*",
+        "@sequential/error-handling": "*",
+        "@sequential/response-formatting": "*",
+        "@sequential/param-validation": "*",
+        "@sequential/file-operations": "*",
+        "@sequential/input-sanitization": "*",
+        "@sequential/websocket-broadcaster": "*",
+        "@sequential/websocket-factory": "*",
+        "@sequential/server-utilities": "*",
+        "express": "^4.18.2",
+        "fs-extra": "^11.1.1",
+        "http-errors": "^2.0.0",
+        "ws": "^8.14.2"
+      },
+      "declaredDepNames": [
+        "@sequential/data-access-layer",
+        "@sequential/dependency-injection",
+        "@sequential/error-handling",
+        "@sequential/file-operations",
+        "@sequential/input-sanitization",
+        "@sequential/param-validation",
+        "@sequential/response-formatting",
+        "@sequential/server-utilities",
+        "@sequential/task-execution-service",
+        "@sequential/websocket-broadcaster",
+        "@sequential/websocket-factory",
+        "express",
+        "fs-extra",
+        "http-errors",
+        "ws"
+      ],
+      "usedDeps": [
+        "@sequential/data-access-layer",
+        "@sequential/dependency-injection",
+        "@sequential/error-handling",
+        "@sequential/file-operations",
+        "@sequential/param-validation",
+        "@sequential/server-utilities",
+        "@sequential/task-execution-service",
+        "@sequential/websocket-broadcaster",
+        "express",
+        "fs",
+        "fs-extra",
+        "http",
+        "module",
+        "node:assert",
+        "node:test",
+        "os",
+        "path",
+        "url",
+        "worker_threads",
+        "ws"
+      ],
+      "unusedDeps": [
+        "@sequential/input-sanitization",
+        "@sequential/response-formatting",
+        "@sequential/websocket-factory",
+        "http-errors"
+      ],
+      "missingDeps": [
+        "fs",
+        "http",
+        "module",
+        "node:assert",
+        "node:test",
+        "os",
+        "path",
+        "url",
+        "worker_threads"
+      ],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "desktop-shell",
+      "version": "1.0.1",
+      "declaredDeps": {},
+      "declaredDepNames": [],
+      "usedDeps": [],
+      "unusedDeps": [],
+      "missingDeps": [],
+      "cleanupNeeded": false
+    },
+    {
+      "name": "desktop-theme",
+      "version": "1.0.0",
+      "declaredDeps": {},
+      "declaredDepNames": [],
+      "usedDeps": [],
+      "unusedDeps": [],
+      "missingDeps": [],
+      "cleanupNeeded": false
+    },
+    {
+      "name": "desktop-ui-components",
+      "version": "1.0.0",
+      "declaredDeps": {},
+      "declaredDepNames": [],
+      "usedDeps": [
+        "hyperapp"
+      ],
+      "unusedDeps": [],
+      "missingDeps": [
+        "hyperapp"
+      ],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "error-handling",
+      "version": "1.0.0",
+      "declaredDeps": {},
+      "declaredDepNames": [],
+      "usedDeps": [],
+      "unusedDeps": [],
+      "missingDeps": [],
+      "cleanupNeeded": false
+    },
+    {
+      "name": "file-operations",
+      "version": "1.0.0",
+      "declaredDeps": {},
+      "declaredDepNames": [],
+      "usedDeps": [
+        "crypto",
+        "fs-extra",
+        "path"
+      ],
+      "unusedDeps": [],
+      "missingDeps": [
+        "crypto",
+        "fs-extra",
+        "path"
+      ],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "input-sanitization",
+      "version": "1.0.0",
+      "declaredDeps": {},
+      "declaredDepNames": [],
+      "usedDeps": [],
+      "unusedDeps": [],
+      "missingDeps": [],
+      "cleanupNeeded": false
+    },
+    {
+      "name": "param-validation",
+      "version": "1.0.0",
+      "declaredDeps": {},
+      "declaredDepNames": [],
+      "usedDeps": [],
+      "unusedDeps": [],
+      "missingDeps": [],
+      "cleanupNeeded": false
+    },
+    {
+      "name": "response-formatting",
+      "version": "1.0.0",
+      "declaredDeps": {},
+      "declaredDepNames": [],
+      "usedDeps": [],
+      "unusedDeps": [],
+      "missingDeps": [],
+      "cleanupNeeded": false
+    },
+    {
+      "name": "sequential-adaptor",
+      "version": "1.0.6",
+      "declaredDeps": {
+        "sequential-storage-utils": "^1.0.1",
+        "sequential-utils": "^1.0.0",
+        "sequential-logging": "^1.0.3"
+      },
+      "declaredDepNames": [
+        "sequential-logging",
+        "sequential-storage-utils",
+        "sequential-utils"
+      ],
+      "usedDeps": [
+        "@sequential/sequential-logging",
+        "@sequential/sequential-storage-utils",
+        "@sequential/sequential-utils",
+        "crypto",
+        "fs",
+        "node:assert",
+        "node:test",
+        "path"
+      ],
+      "unusedDeps": [
+        "sequential-logging",
+        "sequential-storage-utils",
+        "sequential-utils"
+      ],
+      "missingDeps": [
+        "@sequential/sequential-logging",
+        "@sequential/sequential-storage-utils",
+        "@sequential/sequential-utils",
+        "crypto",
+        "fs",
+        "node:assert",
+        "node:test",
+        "path"
+      ],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "sequential-adaptor-sqlite",
+      "version": "1.0.0",
+      "declaredDeps": {
+        "sql.js": "^1.10.2",
+        "@sequential/sequential-adaptor": "^1.0.0",
+        "@sequential/sequential-logging": "^1.0.0",
+        "@sequential/sequential-storage-utils": "^1.0.0",
+        "@sequential/sequential-validators": "^1.0.0"
+      },
+      "declaredDepNames": [
+        "@sequential/sequential-adaptor",
+        "@sequential/sequential-logging",
+        "@sequential/sequential-storage-utils",
+        "@sequential/sequential-validators",
+        "sql.js"
+      ],
+      "usedDeps": [
+        "@sequential/sequential-adaptor",
+        "@sequential/sequential-logging",
+        "@sequential/sequential-storage-utils",
+        "fs",
+        "node:assert",
+        "node:test",
+        "path",
+        "sql.js",
+        "url"
+      ],
+      "unusedDeps": [
+        "@sequential/sequential-validators"
+      ],
+      "missingDeps": [
+        "fs",
+        "node:assert",
+        "node:test",
+        "path",
+        "url"
+      ],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "sequential-adaptor-supabase",
+      "version": "1.0.1",
+      "declaredDeps": {
+        "@supabase/supabase-js": "^2.58.0",
+        "@sequential/sequential-adaptor": "^1.0.0",
+        "@sequential/sequential-storage-utils": "^1.0.0",
+        "@sequential/sequential-validators": "^1.0.0"
+      },
+      "declaredDepNames": [
+        "@sequential/sequential-adaptor",
+        "@sequential/sequential-storage-utils",
+        "@sequential/sequential-validators",
+        "@supabase/supabase-js"
+      ],
+      "usedDeps": [
+        "@sequential/sequential-adaptor",
+        "@sequential/sequential-utils",
+        "@supabase/supabase-js"
+      ],
+      "unusedDeps": [
+        "@sequential/sequential-storage-utils",
+        "@sequential/sequential-validators"
+      ],
+      "missingDeps": [
+        "@sequential/sequential-utils"
+      ],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "sequential-fetch",
+      "version": "1.0.0",
+      "declaredDeps": {
+        "@types/node": "^20.0.0"
+      },
+      "declaredDepNames": [
+        "@types/node"
+      ],
+      "usedDeps": [],
+      "unusedDeps": [
+        "@types/node"
+      ],
+      "missingDeps": [],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "sequential-flow",
+      "version": "1.0.0",
+      "declaredDeps": {
+        "@sequential/sequential-fetch": "^1.0.0",
+        "@sequential/sequential-utils": "^1.0.0"
+      },
+      "declaredDepNames": [
+        "@sequential/sequential-fetch",
+        "@sequential/sequential-utils"
+      ],
+      "usedDeps": [],
+      "unusedDeps": [
+        "@sequential/sequential-fetch",
+        "@sequential/sequential-utils"
+      ],
+      "missingDeps": [],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "sequential-http-utils",
+      "version": "1.0.0",
+      "declaredDeps": {},
+      "declaredDepNames": [],
+      "usedDeps": [],
+      "unusedDeps": [],
+      "missingDeps": [],
+      "cleanupNeeded": false
+    },
+    {
+      "name": "sequential-logging",
+      "version": "1.0.3",
+      "declaredDeps": {
+        "@sequential/sequential-utils": "^1.0.0"
+      },
+      "declaredDepNames": [
+        "@sequential/sequential-utils"
+      ],
+      "usedDeps": [
+        "@sequential/sequential-utils",
+        "node:assert",
+        "node:test"
+      ],
+      "unusedDeps": [],
+      "missingDeps": [
+        "node:assert",
+        "node:test"
+      ],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "sequential-machine",
+      "version": "1.0.0",
+      "declaredDeps": {
+        "tar": "^6.2.0",
+        "sequential-flow": "^1.0.0",
+        "sequential-utils": "^1.0.0"
+      },
+      "declaredDepNames": [
+        "sequential-flow",
+        "sequential-utils",
+        "tar"
+      ],
+      "usedDeps": [
+        "child_process",
+        "crypto",
+        "fs",
+        "path",
+        "tar"
+      ],
+      "unusedDeps": [
+        "sequential-flow",
+        "sequential-utils"
+      ],
+      "missingDeps": [
+        "child_process",
+        "crypto",
+        "fs",
+        "path"
+      ],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "sequential-runner",
+      "version": "1.0.0",
+      "declaredDeps": {
+        "dotenv": "^16.4.7",
+        "@sequential/sequential-flow": "^1.0.0",
+        "sequential-wrapper": "^2.0.0",
+        "@sequential/sequential-adaptor": "^1.0.0",
+        "sequential-utils": "^1.0.0"
+      },
+      "declaredDepNames": [
+        "@sequential/sequential-adaptor",
+        "@sequential/sequential-flow",
+        "dotenv",
+        "sequential-utils",
+        "sequential-wrapper"
+      ],
+      "usedDeps": [
+        "@sequential/sequential-utils",
+        "events",
+        "fs",
+        "path"
+      ],
+      "unusedDeps": [
+        "@sequential/sequential-adaptor",
+        "@sequential/sequential-flow",
+        "dotenv",
+        "sequential-utils",
+        "sequential-wrapper"
+      ],
+      "missingDeps": [
+        "@sequential/sequential-utils",
+        "events",
+        "fs",
+        "path"
+      ],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "sequential-storage-utils",
+      "version": "1.0.1",
+      "declaredDeps": {},
+      "declaredDepNames": [],
+      "usedDeps": [
+        "@sequential/sequential-utils",
+        "node:assert",
+        "node:test"
+      ],
+      "unusedDeps": [],
+      "missingDeps": [
+        "@sequential/sequential-utils",
+        "node:assert",
+        "node:test"
+      ],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "sequential-utils",
+      "version": "1.0.0",
+      "declaredDeps": {},
+      "declaredDepNames": [],
+      "usedDeps": [
+        "node:assert",
+        "node:test"
+      ],
+      "unusedDeps": [],
+      "missingDeps": [
+        "node:assert",
+        "node:test"
+      ],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "sequential-validators",
+      "version": "1.0.0",
+      "declaredDeps": {},
+      "declaredDepNames": [],
+      "usedDeps": [
+        "node:assert",
+        "node:test"
+      ],
+      "unusedDeps": [],
+      "missingDeps": [
+        "node:assert",
+        "node:test"
+      ],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "sequential-wrapped-services",
+      "version": "1.1.1",
+      "declaredDeps": {
+        "@sequential/sequential-http-utils": "^1.0.0",
+        "@sequential/sequential-validators": "^1.0.0",
+        "@sequential/sequential-logging": "^1.0.0",
+        "@sequential/sequential-utils": "^1.0.0",
+        "dotenv": "^16.4.7"
+      },
+      "declaredDepNames": [
+        "@sequential/sequential-http-utils",
+        "@sequential/sequential-logging",
+        "@sequential/sequential-utils",
+        "@sequential/sequential-validators",
+        "dotenv"
+      ],
+      "usedDeps": [
+        "@sequential/sequential-utils",
+        "@sequential/sequential-wrapped-services",
+        "fs",
+        "https:",
+        "path",
+        "url"
+      ],
+      "unusedDeps": [
+        "@sequential/sequential-http-utils",
+        "@sequential/sequential-logging",
+        "@sequential/sequential-validators",
+        "dotenv"
+      ],
+      "missingDeps": [
+        "@sequential/sequential-wrapped-services",
+        "fs",
+        "https:",
+        "path",
+        "url"
+      ],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "sequential-wrapper",
+      "version": "2.0.1",
+      "declaredDeps": {
+        "cors": "^2.8.5",
+        "dotenv": "^16.3.1",
+        "express": "^4.18.2",
+        "node-fetch": "^3.3.2",
+        "nodemon": "^3.0.1"
+      },
+      "declaredDepNames": [
+        "cors",
+        "dotenv",
+        "express",
+        "node-fetch",
+        "nodemon"
+      ],
+      "usedDeps": [
+        "@sequential/sequential-utils",
+        "@sequential/sequential-wrapper",
+        "fs",
+        "https:",
+        "path",
+        "url"
+      ],
+      "unusedDeps": [
+        "cors",
+        "dotenv",
+        "express",
+        "node-fetch",
+        "nodemon"
+      ],
+      "missingDeps": [
+        "@sequential/sequential-utils",
+        "@sequential/sequential-wrapper",
+        "fs",
+        "https:",
+        "path",
+        "url"
+      ],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "server-utilities",
+      "version": "1.0.0",
+      "declaredDeps": {},
+      "declaredDepNames": [],
+      "usedDeps": [
+        "path",
+        "url",
+        "worker_threads"
+      ],
+      "unusedDeps": [],
+      "missingDeps": [
+        "path",
+        "url",
+        "worker_threads"
+      ],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "task-execution-service",
+      "version": "1.0.0",
+      "declaredDeps": {},
+      "declaredDepNames": [],
+      "usedDeps": [
+        "node:assert",
+        "node:test"
+      ],
+      "unusedDeps": [],
+      "missingDeps": [
+        "node:assert",
+        "node:test"
+      ],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "websocket-broadcaster",
+      "version": "1.0.0",
+      "declaredDeps": {},
+      "declaredDepNames": [],
+      "usedDeps": [],
+      "unusedDeps": [],
+      "missingDeps": [],
+      "cleanupNeeded": false
+    },
+    {
+      "name": "websocket-factory",
+      "version": "1.0.0",
+      "declaredDeps": {},
+      "declaredDepNames": [],
+      "usedDeps": [],
+      "unusedDeps": [],
+      "missingDeps": [],
+      "cleanupNeeded": false
+    },
+    {
+      "name": "zellous",
+      "version": "2.0.0",
+      "declaredDeps": {
+        "cors": "^2.8.5",
+        "express": "^4.18.2",
+        "msgpackr": "^1.11.5",
+        "ws": "^8.14.2",
+        "@playwright/test": "^1.56.1",
+        "nodemon": "^3.1.11"
+      },
+      "declaredDepNames": [
+        "@playwright/test",
+        "cors",
+        "express",
+        "msgpackr",
+        "nodemon",
+        "ws"
+      ],
+      "usedDeps": [
+        "cors",
+        "crypto",
+        "events",
+        "express",
+        "fs",
+        "http",
+        "mini-css-extract-plugin",
+        "msgpackr",
+        "path",
+        "url",
+        "ws"
+      ],
+      "unusedDeps": [
+        "@playwright/test",
+        "nodemon"
+      ],
+      "missingDeps": [
+        "crypto",
+        "events",
+        "fs",
+        "http",
+        "mini-css-extract-plugin",
+        "path",
+        "url"
+      ],
+      "cleanupNeeded": true
+    },
+    {
+      "name": "zellous-client-sdk",
+      "version": "1.0.0",
+      "declaredDeps": {},
+      "declaredDepNames": [],
+      "usedDeps": [],
+      "unusedDeps": [],
+      "missingDeps": [],
+      "cleanupNeeded": false
+    }
+  ],
+  "unusedDeps": [],
+  "versionMismatches": {
+    "dotenv": {
+      "versions": [
+        "^16.4.7",
+        "^16.3.1"
+      ],
+      "packages": {
+        "^16.4.7": [
+          "sequential-runner",
+          "sequential-wrapped-services"
+        ],
+        "^16.3.1": [
+          "sequential-wrapper"
+        ]
+      },
+      "usageCount": 3
+    },
+    "nodemon": {
+      "versions": [
+        "^3.0.1",
+        "^3.1.11"
+      ],
+      "packages": {
+        "^3.0.1": [
+          "sequential-wrapper"
+        ],
+        "^3.1.11": [
+          "zellous"
+        ]
+      },
+      "usageCount": 2
+    }
+  },
+  "missingDeps": [],
+  "sharedDeps": {
+    "@sequential/zellous-client-sdk": {
+      "^1.0.0": [
+        "app-code-editor",
+        "app-file-browser",
+        "app-flow-editor",
+        "app-run-observer",
+        "app-task-editor",
+        "app-tool-editor"
+      ]
+    },
+    "@sequential/sequential-runner": {
+      "^1.0.0": [
+        "cli-commands"
+      ]
+    },
+    "@sequential/sequential-adaptor": {
+      "^1.0.0": [
+        "cli-commands",
+        "sequential-adaptor-sqlite",
+        "sequential-adaptor-supabase",
+        "sequential-runner"
+      ]
+    },
+    "commander": {
+      "^11.0.0": [
+        "cli-commands"
+      ]
+    },
+    "fs-extra": {
+      "^11.1.1": [
+        "core",
+        "data-access-layer",
+        "desktop-server"
+      ]
+    },
+    "@sequential/data-access-layer": {
+      "*": [
+        "desktop-server"
+      ]
+    },
+    "@sequential/dependency-injection": {
+      "*": [
+        "desktop-server"
+      ]
+    },
+    "@sequential/task-execution-service": {
+      "*": [
+        "desktop-server"
+      ]
+    },
+    "@sequential/error-handling": {
+      "*": [
+        "desktop-server"
+      ]
+    },
+    "@sequential/response-formatting": {
+      "*": [
+        "desktop-server"
+      ]
+    },
+    "@sequential/param-validation": {
+      "*": [
+        "desktop-server"
+      ]
+    },
+    "@sequential/file-operations": {
+      "*": [
+        "desktop-server"
+      ]
+    },
+    "@sequential/input-sanitization": {
+      "*": [
+        "desktop-server"
+      ]
+    },
+    "@sequential/websocket-broadcaster": {
+      "*": [
+        "desktop-server"
+      ]
+    },
+    "@sequential/websocket-factory": {
+      "*": [
+        "desktop-server"
+      ]
+    },
+    "@sequential/server-utilities": {
+      "*": [
+        "desktop-server"
+      ]
+    },
+    "express": {
+      "^4.18.2": [
+        "desktop-server",
+        "sequential-wrapper",
+        "zellous"
+      ]
+    },
+    "http-errors": {
+      "^2.0.0": [
+        "desktop-server"
+      ]
+    },
+    "ws": {
+      "^8.14.2": [
+        "desktop-server",
+        "zellous"
+      ]
+    },
+    "sequential-storage-utils": {
+      "^1.0.1": [
+        "sequential-adaptor"
+      ]
+    },
+    "sequential-utils": {
+      "^1.0.0": [
+        "sequential-adaptor",
+        "sequential-machine",
+        "sequential-runner"
+      ]
+    },
+    "sequential-logging": {
+      "^1.0.3": [
+        "sequential-adaptor"
+      ]
+    },
+    "sql.js": {
+      "^1.10.2": [
+        "sequential-adaptor-sqlite"
+      ]
+    },
+    "@sequential/sequential-logging": {
+      "^1.0.0": [
+        "sequential-adaptor-sqlite",
+        "sequential-wrapped-services"
+      ]
+    },
+    "@sequential/sequential-storage-utils": {
+      "^1.0.0": [
+        "sequential-adaptor-sqlite",
+        "sequential-adaptor-supabase"
+      ]
+    },
+    "@sequential/sequential-validators": {
+      "^1.0.0": [
+        "sequential-adaptor-sqlite",
+        "sequential-adaptor-supabase",
+        "sequential-wrapped-services"
+      ]
+    },
+    "@supabase/supabase-js": {
+      "^2.58.0": [
+        "sequential-adaptor-supabase"
+      ]
+    },
+    "@types/node": {
+      "^20.0.0": [
+        "sequential-fetch"
+      ]
+    },
+    "@sequential/sequential-fetch": {
+      "^1.0.0": [
+        "sequential-flow"
+      ]
+    },
+    "@sequential/sequential-utils": {
+      "^1.0.0": [
+        "sequential-flow",
+        "sequential-logging",
+        "sequential-wrapped-services"
+      ]
+    },
+    "tar": {
+      "^6.2.0": [
+        "sequential-machine"
+      ]
+    },
+    "sequential-flow": {
+      "^1.0.0": [
+        "sequential-machine"
+      ]
+    },
+    "dotenv": {
+      "^16.4.7": [
+        "sequential-runner",
+        "sequential-wrapped-services"
+      ],
+      "^16.3.1": [
+        "sequential-wrapper"
+      ]
+    },
+    "@sequential/sequential-flow": {
+      "^1.0.0": [
+        "sequential-runner"
+      ]
+    },
+    "sequential-wrapper": {
+      "^2.0.0": [
+        "sequential-runner"
+      ]
+    },
+    "@sequential/sequential-http-utils": {
+      "^1.0.0": [
+        "sequential-wrapped-services"
+      ]
+    },
+    "cors": {
+      "^2.8.5": [
+        "sequential-wrapper",
+        "zellous"
+      ]
+    },
+    "node-fetch": {
+      "^3.3.2": [
+        "sequential-wrapper"
+      ]
+    },
+    "nodemon": {
+      "^3.0.1": [
+        "sequential-wrapper"
+      ],
+      "^3.1.11": [
+        "zellous"
+      ]
+    },
+    "msgpackr": {
+      "^1.11.5": [
+        "zellous"
+      ]
+    },
+    "@playwright/test": {
+      "^1.56.1": [
+        "zellous"
+      ]
+    }
+  },
+  "summary": {
+    "totalPackages": 45,
+    "packagesWithUnused": 19,
+    "packagesWithMissing": 21,
+    "totalUnused": 40,
+    "totalMissing": 80,
+    "totalVersionMismatches": 2,
+    "sharedDepsCount": 8,
+    "top20SharedDeps": [
+      {
+        "dep": "@sequential/zellous-client-sdk",
+        "packageCount": 6,
+        "versionCount": 1
+      },
+      {
+        "dep": "@sequential/sequential-adaptor",
+        "packageCount": 4,
+        "versionCount": 1
+      },
+      {
+        "dep": "fs-extra",
+        "packageCount": 3,
+        "versionCount": 1
+      },
+      {
+        "dep": "express",
+        "packageCount": 3,
+        "versionCount": 1
+      },
+      {
+        "dep": "sequential-utils",
+        "packageCount": 3,
+        "versionCount": 1
+      },
+      {
+        "dep": "@sequential/sequential-validators",
+        "packageCount": 3,
+        "versionCount": 1
+      },
+      {
+        "dep": "@sequential/sequential-utils",
+        "packageCount": 3,
+        "versionCount": 1
+      },
+      {
+        "dep": "dotenv",
+        "packageCount": 3,
+        "versionCount": 2
+      }
+    ]
+  }
+}

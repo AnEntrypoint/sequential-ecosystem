@@ -1,19 +1,23 @@
-import fs from 'fs';
 import path from 'path';
+import { existsSync } from 'fs';
+import { listFiles, readFile } from 'fs-extra';
 
 export async function syncTasks(options = {}) {
   const { adaptor = 'default', task, verbose = false } = options;
 
-  const tasksDir = path.join(process.cwd(), 'tasks');
+  const tasksDir = path.resolve(process.cwd(), 'tasks');
 
-  if (!fs.existsSync(tasksDir)) {
+  if (!existsSync(tasksDir)) {
     console.log('No tasks directory found');
     return;
   }
 
-  const taskFiles = task
-    ? [`${task}.js`]
-    : fs.readdirSync(tasksDir).filter(f => f.endsWith('.js'));
+  let taskFiles;
+  if (task) {
+    taskFiles = [`${task}.js`];
+  } else {
+    taskFiles = await listFiles(tasksDir, { extensions: '.js' });
+  }
 
   let synced = 0;
   let errors = 0;
@@ -23,12 +27,12 @@ export async function syncTasks(options = {}) {
       const taskName = taskFile.replace('.js', '');
       const taskPath = path.join(tasksDir, taskFile);
 
-      if (!fs.existsSync(taskPath)) {
+      if (!existsSync(taskPath)) {
         if (verbose) console.log(`⚠ Skipping ${taskName} - file not found`);
         continue;
       }
 
-      const code = fs.readFileSync(taskPath, 'utf-8');
+      const code = await readFile(taskPath, 'utf-8');
       const taskModule = await import(`file://${taskPath}`);
       const config = taskModule.config || {};
 

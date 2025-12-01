@@ -1,11 +1,11 @@
-import fs from 'fs';
 import path from 'path';
+import { existsSync } from 'fs';
 
 export async function describeCommand(taskName) {
   try {
     const taskFile = path.join(process.cwd(), 'tasks', `${taskName}.js`);
 
-    if (!fs.existsSync(taskFile)) {
+    if (!existsSync(taskFile)) {
       throw new Error(`Task '${taskName}' not found at ${taskFile}`);
     }
 

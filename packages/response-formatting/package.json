@@ -14,5 +14,9 @@
     "directory": "packages/response-formatting"
   },
   "engines": {"node": ">=18.0.0"},
+  "scripts": {
+    "test": "node --test tests/*.js",
+    "test:coverage": "node --test --experimental-test-coverage tests/*.js"
+  },
   "dependencies": {}
 }

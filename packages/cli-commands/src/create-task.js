@@ -1,23 +1,24 @@
-import fs from 'fs';
 import path from 'path';
 import { randomUUID } from 'crypto';
+import { existsSync } from 'fs';
+import { ensureDirectory, writeFileAtomicString } from '@sequential/file-operations';
 import { generateMachineTemplate } from './task-templates/machine.js';
 import { generateFlowGraphTemplate } from './task-templates/flow-graph.js';
 import { generateFlowSimpleTemplate } from './task-templates/flow-simple.js';
 
 export async function createTask(options) {
   const { name, withGraph = false, inputs = [], description = '', runner = 'flow' } = options;
-  const tasksDir = path.join(process.cwd(), 'tasks');
+  const tasksDir = path.resolve(process.cwd(), 'tasks');
   const taskFile = path.join(tasksDir, `${name}.js`);
   const taskDataDir = path.join(tasksDir, name);
   const runsDir = path.join(taskDataDir, 'runs');
 
-  if (fs.existsSync(taskFile)) {
+  if (existsSync(taskFile)) {
     throw new Error(`Task '${name}' already exists at ${taskFile}`);
   }
 
-  fs.mkdirSync(tasksDir, { recursive: true });
-  fs.mkdirSync(runsDir, { recursive: true });
+  await ensureDirectory(tasksDir);
+  await ensureDirectory(runsDir);
 
   const timestamp = new Date().toISOString();
   const taskId = randomUUID();
@@ -31,7 +32,7 @@ export async function createTask(options) {
     code = generateFlowSimpleTemplate(name, taskId, timestamp, inputs, description);
   }
 
-  fs.writeFileSync(taskFile, code);
+  await writeFileAtomicString(taskFile, code);
 
   console.log(`✓ Task '${name}' created at ${taskFile}`);
   console.log(`  - Runner: ${runner}`);

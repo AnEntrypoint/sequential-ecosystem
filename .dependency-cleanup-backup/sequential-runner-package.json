@@ -1,0 +1,33 @@
+{
+  "name": "@sequential/sequential-runner",
+  "version": "1.0.0",
+  "description": "Deployment-agnostic task execution engine with automatic suspend/resume",
+  "type": "commonjs",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "keywords": [
+    "sequential",
+    "runner",
+    "task-execution",
+    "workflow",
+    "state-machine"
+  ],
+  "author": "lanmower",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-runner.git"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "@sequential/sequential-flow": "^1.0.0",
+    "sequential-wrapper": "^2.0.0",
+    "@sequential/sequential-adaptor": "^1.0.0",
+    "@sequential/sequential-utils": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

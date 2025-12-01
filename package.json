@@ -14,8 +14,11 @@
 
     "zellous": "node packages/zellous/server.js",
     "dev": "node -e \"const{spawn}=require('child_process');const z=spawn('node',['packages/zellous/server.js'],{stdio:'inherit'});const o=spawn('node',['packages/osjs-webdesktop/src/server/index.js'],{stdio:'inherit'});process.on('SIGINT',()=>{z.kill();o.kill();process.exit()});\"",
-    "test": "find packages -name package.json -exec dirname {} \\; | xargs -I {} sh -c 'cd {} && npm test 2>/dev/null || true'",
-    "lint": "find packages -name package.json -exec dirname {} \\; | xargs -I {} sh -c 'cd {} && npm run lint 2>/dev/null || true'",
+    "test": "node scripts/test-all.js",
+    "test:watch": "find packages -name package.json -exec dirname {} \\; | xargs -I {} sh -c 'cd {} && npm run test:watch 2>/dev/null || true'",
+    "test:coverage": "c8 node scripts/test-all.js",
+    "lint": "eslint packages --ext .js --ignore-path .gitignore || true",
+    "lint:fix": "eslint packages --ext .js --ignore-path .gitignore --fix || true",
     "build": "find packages -name package.json -exec dirname {} \\; | xargs -I {} sh -c 'cd {} && npm run build 2>/dev/null || true'"
   },
   "keywords": [
@@ -48,6 +51,9 @@
     "sequential-ecosystem": "./cli.js",
     "seq": "./cli.js"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "files": [
     "cli.js",
     "CLAUDE.md",
@@ -57,12 +63,16 @@
   "dependencies": {
     "@sequential/cli-commands": "file:./packages/cli-commands",
     "commander": "^11.0.0",
-    "sequential-adaptor": "^1.0.7",
-    "sequential-flow": "^1.0.1",
+    "@sequential/sequential-adaptor": "file:./packages/sequential-adaptor",
+    "@sequential/sequential-flow": "file:./packages/sequential-flow",
     "express": "^4.18.2",
     "ws": "^8.14.2",
     "cors": "^2.8.5",
     "body-parser": "^1.20.2"
+  },
+  "devDependencies": {
+    "c8": "^8.0.1",
+    "eslint": "^8.54.0"
   },
   "engines": {
     "node": ">=18.0.0"

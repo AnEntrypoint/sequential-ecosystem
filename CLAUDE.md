@@ -799,6 +799,79 @@ npx sequential-ecosystem run my-task --input '{}' # Run task
 # View results in tasks/my-task/runs/
 ```
 
+## Dependency Management
+
+### Dependency Audit Results (Dec 1, 2025)
+
+**Summary**: Comprehensive audit of all 45 packages completed
+- **40 unused dependencies** identified across 19 packages
+- **2 version mismatches** (minor, easily fixed)
+- **Cleanup impact**: 37% reduction in total declared dependencies
+
+**See**: `DEPENDENCY_AUDIT_REPORT.md` for full analysis and cleanup plan
+
+### Dependency Policy
+
+**When to Add a Dependency**:
+1. Production code needs it - Only add if code imports it
+2. Minimal alternatives - Prefer built-ins (`fs`) over libraries (`fs-extra`)
+3. Mature and maintained - Check last update, GitHub stars, npm downloads
+4. Size matters - Avoid large deps for small features
+
+**When to Remove a Dependency**:
+1. No imports found - Run audit, grep for usage
+2. Replaced by built-in - Node.js adds features over time
+3. Dead project - Unmaintained for 2+ years
+4. Security vulnerabilities - Use `npm audit`
+
+**Version Pinning Strategy**:
+- Production deps: Use caret (`^`) for minor updates (e.g., `^4.18.2`)
+- Dev deps: Use caret (`^`) for convenience
+- Internal monorepo: Use exact versions (`1.0.0`) or wildcards (`*`)
+- Breaking changes: Update all packages using a dependency at once
+
+**Testing After Changes**:
+```bash
+# 1. Remove dependency
+npm uninstall package-name
+
+# 2. Verify code still works
+npm test
+npm run build  # if applicable
+
+# 3. Check for runtime errors
+node src/index.js  # or appropriate entry
+```
+
+**PR Review Checklist**:
+- [ ] New deps are actually imported in code
+- [ ] Version is compatible with other packages using same dep
+- [ ] Size is reasonable (check bundlephobia.com)
+- [ ] Last updated within 2 years
+- [ ] No known security vulnerabilities (`npm audit`)
+- [ ] Considered built-in alternatives first
+
+**Automated Cleanup**:
+```bash
+# Run dependency audit
+node dependency-audit.js
+
+# Preview cleanup changes
+node dependency-cleanup.js --dry-run
+
+# Execute cleanup (with backups)
+node dependency-cleanup.js
+
+# Restore from backup if needed
+cp .dependency-cleanup-backup/* packages/*/package.json
+```
+
+**Shared Dependencies (use consistently)**:
+- `express`: `^4.18.2` (used in 3 packages)
+- `fs-extra`: `^11.1.1` (used in 3 packages)
+- `dotenv`: `^16.4.7` (used in 3 packages)
+- `@sequential/sequential-adaptor`: `^1.0.0` (used in 4 packages)
+
 ## Troubleshooting
 
 | Issue | Solution |
@@ -1300,6 +1373,54 @@ All desktop applications have been comprehensively audited, enhanced, tested, an
 - ✅ **Collaboration**: Real-time presence and selection sync
 
 ## Development Guide
+
+### File Naming Standards
+
+All source files in the `/packages/` directory must use **kebab-case** naming convention:
+
+**Standard Pattern** (✅ CORRECT):
+```
+my-file.js              ✅ kebab-case (lowercase with hyphens)
+my-adapter.js           ✅ kebab-case
+subscription-factory.js ✅ kebab-case
+task-executor.js        ✅ kebab-case
+```
+
+**Anti-Patterns** (❌ INCORRECT):
+```
+myFile.js               ❌ camelCase - DO NOT USE
+my_file.js              ❌ snake_case - DO NOT USE
+MyFile.js               ❌ PascalCase - DO NOT USE (except classes in special cases)
+```
+
+**Exceptions** (Standard reserved names):
+- `package.json` - npm standard
+- `index.js` - commonjs standard
+- `deno.json` - deno standard
+- `config.json` - configuration
+- `.gitignore`, `.gitmodules` - git standards
+
+**Why Kebab-Case?**
+- Industry standard for JavaScript projects (webpack, babel, jest, etc.)
+- Consistent with modern npm ecosystem
+- Readable in URLs and CLI commands
+- Compatible with web standards (lowercase, no special chars)
+
+**Enforcement**:
+- All new files must follow kebab-case
+- Existing files are already 100% compliant (226/226 files)
+- Imports use the exact filename (case-sensitive on Linux/macOS)
+
+**Example Import**:
+```javascript
+// ✅ CORRECT
+import { MyClass } from './my-adapter.js';
+import { createHandler } from './error-handler.js';
+
+// ❌ INCORRECT
+import { MyClass } from './myAdapter.js';
+import { createHandler } from './errorHandler.js';
+```
 
 ### Quick Start
 
@@ -1859,3 +1980,33 @@ This creates:
 - Multiple sample files
 - Markdown summary
 - Real-time progress updates
+
+## Testing Infrastructure
+
+Comprehensive testing infrastructure covering all 45 packages with 70%+ coverage targets.
+
+**Full Documentation**: See TESTING.md for complete testing guide.
+
+**Quick Start**:
+```bash
+npm test                 # Run all tests
+npm run test:coverage    # Run with coverage
+npm run lint             # Check code quality
+```
+
+**Current Status**:
+- Coverage: 6/45 packages (13%) → Target: 70%+
+- CI/CD: GitHub Actions testing all 45 packages on Node 18.x, 20.x, 22.x
+- Tools: Node.js native test runner, c8 coverage, ESLint
+- Template: templates/test-template.js for new packages
+
+**Testing Checklist** (for new features):
+1. Copy test template to package/test/ directory
+2. Write unit tests for all exported functions
+3. Test edge cases (null, undefined, empty, large input)
+4. Test error handling and validation
+5. Run locally: npm test
+6. Check coverage: npm run test:coverage (70% minimum)
+7. Run linting: npm run lint
+8. Commit tests with feature code
+

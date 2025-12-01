@@ -1,17 +1,17 @@
-import fs from 'fs';
 import path from 'path';
+import { existsSync } from 'fs';
+import { listFiles } from '@sequential/file-operations';
 
 export async function listCommand(options) {
   try {
     const tasksDir = path.join(process.cwd(), 'tasks');
-    if (!fs.existsSync(tasksDir)) {
+    if (!existsSync(tasksDir)) {
       console.log('No tasks found');
       return;
     }
 
-    const tasks = fs.readdirSync(tasksDir)
-      .filter(f => f.endsWith('.js'))
-      .map(f => f.replace('.js', ''));
+    const taskFiles = await listFiles(tasksDir, { extensions: '.js' });
+    const tasks = taskFiles.map(f => f.replace('.js', ''));
 
     if (tasks.length === 0) {
       console.log('No tasks found');

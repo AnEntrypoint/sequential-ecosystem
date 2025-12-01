@@ -1,5 +1,5 @@
-import fs from 'fs';
 import path from 'path';
+import { ensureDirectory } from '@sequential/file-operations';
 import { createSimpleFlowExample } from './examples/simple-flow.js';
 import { createComplexFlowExample } from './examples/complex-flow.js';
 import { createApiIntegrationExample } from './examples/api-integration.js';
@@ -13,8 +13,8 @@ export async function createExamples() {
   const tasksDir = path.join(process.cwd(), 'tasks');
   const toolsDir = path.join(process.cwd(), 'tools');
 
-  fs.mkdirSync(tasksDir, { recursive: true });
-  fs.mkdirSync(toolsDir, { recursive: true });
+  await ensureDirectory(tasksDir);
+  await ensureDirectory(toolsDir);
 
   console.log('\n📚 Creating comprehensive examples...\n');
 

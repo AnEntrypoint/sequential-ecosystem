@@ -1,11 +1,12 @@
-import fs from 'fs';
 import path from 'path';
+import { existsSync } from 'fs';
+import { remove } from 'fs-extra';
 
-export function deleteCommand(taskName, options) {
+export async function deleteCommand(taskName, options) {
   try {
     const taskDir = path.join(process.cwd(), 'tasks', taskName);
 
-    if (!fs.existsSync(taskDir)) {
+    if (!existsSync(taskDir)) {
       throw new Error(`Task '${taskName}' not found`);
     }
 
@@ -15,7 +16,7 @@ export function deleteCommand(taskName, options) {
       return;
     }
 
-    fs.rmSync(taskDir, { recursive: true });
+    await remove(taskDir);
     console.log(`✓ Task '${taskName}' deleted`);
   } catch (e) {
     console.error('Error:', e instanceof Error ? e.message : String(e));
