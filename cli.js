@@ -1,17 +1,21 @@
 #!/usr/bin/env node
 
 import { program } from 'commander';
-import { createTask } from './tools/create-task.js';
-import { syncTasks } from './tools/sync-tasks.js';
-import { runTask } from './tools/run-task.js';
-import { getConfig, setConfig, showConfig } from './tools/config.js';
-import { initCommand } from './tools/commands/init-command.js';
-import { guiCommand } from './tools/commands/gui-command.js';
-import { listCommand } from './tools/commands/list-command.js';
-import { describeCommand } from './tools/commands/describe-command.js';
-import { historyCommand } from './tools/commands/history-command.js';
-import { showCommand } from './tools/commands/show-command.js';
-import { deleteCommand } from './tools/commands/delete-command.js';
+import {
+  createTask,
+  syncTasks,
+  runTask,
+  getConfig,
+  setConfig,
+  showConfig,
+  initCommand,
+  guiCommand,
+  listCommand,
+  describeCommand,
+  historyCommand,
+  showCommand,
+  deleteCommand
+} from '@sequential/cli-commands';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';

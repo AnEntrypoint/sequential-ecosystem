@@ -26,6 +26,9 @@ build/
 *.swo
 *~
 
+# User configuration
+.claude/
+
 # System files
 .DS_Store
 Thumbs.db
@@ -39,3 +42,4 @@ yarn-error.log*
 # Development tools
 .vexify.db
 .next/
+tasks/

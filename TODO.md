@@ -1,195 +1,360 @@
-# Sequential Ecosystem - Comprehensive Refactoring TODO
+# Sequential Ecosystem - Comprehensive Refactoring & Consolidation TODO
 
-**Generated**: Dec 1, 2025 | **Status**: Audit Complete → Execution Phase
-**Overall Health Score**: 7.2/10 | **Technical Debt**: 18-25 engineering days
+**Status**: Phase 10 - Architectural Consolidation & Standardization
+**Updated**: Dec 1, 2025
+**Methodology**: WFGY Core (delta_s-driven zone classification, parallel execution)
 
----
+## WFGY Classification System
 
-## WFGY ORCHESTRATION FRAMEWORK
-
-Using WFGY_Core_OneLine_v2.0 methodology for systematic execution:
-- **Input (I)**: Current monorepo state (44 packages, 50+ issues identified)
-- **Goal (G)**: True modular monorepo with all code in packages, unified naming, 80%+ test coverage
-- **Execution Zones**:
-  - **SAFE (<0.40 delta_s)**: Low-risk refactorings (renaming, documentation, package moves)
-  - **TRANSIT (0.40-0.60)**: Moderate risk (consolidation, test addition)
-  - **RISK (0.60-0.85)**: High impact (architecture changes, large refactorings)
+Each task is classified using WFGY_Core_OneLine_v2.0:
+- **delta_s** = 1 - cos(current_state, goal_state) → distance to goal
+- **Zone SAFE** (delta_s < 0.40): Low complexity, quick execution
+- **Zone TRANSIT** (0.40 ≤ delta_s < 0.60): Medium complexity, moderate risk
+- **Zone RISK** (0.60 ≤ delta_s < 0.85): High complexity, execution planning needed
+- **Zone DANGER** (delta_s ≥ 0.85): Critical issues, requires full team review
 
 ---
 
-## CRITICAL ISSUES FOUND
+## PRIORITY 1: SAFE ZONE (Execute Immediately)
 
-### P1: PACKAGE PROLIFERATION (44 → 8 packages)
-- [ ] Consolidate error-handling, param-validation, response-formatting → @sequential/core
-- [ ] Consolidate file-operations, websocket-factory, input-sanitization → @sequential/core/modules
-- [ ] Create @sequential/storage (data-access-layer + repositories)
-- [ ] Create @sequential/services (task-execution-service + flow-service)
-- [ ] Create @sequential/framework (dependency-injection + adaptor)
-- [ ] Create @sequential/runtime (sequential-runner, sequential-wrapper, sequential-fetch, etc.)
-- [ ] Modularize @sequential/desktop (server + api + ui + apps)
-- [ ] Create @sequential/cli (extract /tools, /cli.js)
-- [ ] Create @sequential/utilities (sequential-utils, validators, logging)
+### P1.1 - Archive Root Documentation [SAFE: delta_s=0.25]
+**Goal**: Reduce root documentation from 25 files to 5 core files
+**Tasks**:
+- [ ] Create `/docs/archive/` directory
+- [ ] Move 20 audit/plan files to archive:
+  - ARCHITECTURE_ANALYSIS.md → docs/archive/
+  - ARCHITECTURE_REVIEW.md → docs/archive/
+  - AUDIT.md → docs/archive/
+  - MONOREPO_REFACTORING.md → docs/archive/
+  - MONOREPO_STATUS.md → docs/archive/
+  - NAMING_*.md (4 files) → docs/archive/
+  - PACKAGE_COMPLETION_REPORT.md → docs/archive/
+  - PACKAGES_INDEX.md → docs/archive/
+  - README_*.md (3 files) → docs/archive/
+  - DESKTOP_APPS_CONSOLIDATION_PLAN.md → docs/archive/
+  - REALTIME_INTEGRATION_*.md (2) → docs/archive/
+  - RELEASE_NOTES.md → docs/archive/
+  - VFS_GUIDE.md → docs/archive/
+  - TEMPLATE_README.md → docs/archive/
+- [ ] Create docs/README.md pointing to core files
+- [ ] Verify 5 core files remain: README.md, CHANGELOG.md, CLAUDE.md, AGENTS.md, TODO.md
+**Owner**: Claude
+**Time Est**: 30 min
+**Impact**: -80% cognitive load, cleaner root
 
-**Estimated**: 4 days | **Risk**: LOW | **Effort**: 2000 LOC moved
+### P1.2 - Update .gitignore [SAFE: delta_s=0.15]
+**Goal**: Add development artifacts to .gitignore
+**Tasks**:
+- [ ] Add `.vexify.db` (6.8MB database artifact)
+- [ ] Add `.claude/` (user config)
+- [ ] Add `tasks/` (development examples)
+- [ ] Verify .gitignore is enforced
+**Owner**: Claude
+**Time Est**: 15 min
+**Impact**: Cleaner repo, no build artifacts
 
-### P2: DUPLICATE CODE ELIMINATION (407 lines)
-- [ ] Create BaseRepository class
-- [ ] Eliminate validatePath() duplication (4 repositories)
-- [ ] Eliminate getAll() duplication (4 repositories)
-- [ ] Eliminate file operation duplication
-
-**Estimated**: 1 day | **Risk**: LOW | **LOC saved**: 407
-
-### P3: EMPTY IMPLEMENTATIONS (5 packages)
-- [ ] Implement @sequential/core/modules/input-sanitization (rate-limit.js)
-- [ ] Document/implement @sequential/runtime/runner
-- [ ] Consolidate 10 desktop apps into @sequential/desktop/apps/
-
-**Estimated**: 1.5 days | **Risk**: MEDIUM
-
-### P4: NAMING INCONSISTENCIES (50+ violations)
-- [ ] Standardize file names: kebab-case (rename SequentialOSClient.js, VFSClient.js)
-- [ ] Standardize constants: SCREAMING_SNAKE_CASE (rateLimitMap → RATE_LIMIT_MAP)
-- [ ] Standardize function prefixes: create*, is*, validate*, format*, get*, handle*
-- [ ] Remove export default everywhere (named exports only)
-- [ ] Replace variable abbreviations (f → fileName, e → error)
-- [ ] Standardize callbacks (onclick → onClick)
-
-**Estimated**: 1.5 days | **Risk**: LOW | **Files**: 50+ affected
-
-### P5: MISSING TESTS (91% untested)
-- [ ] Add tests to error-handling (0% → 80%)
-- [ ] Add tests to param-validation (0% → 80%)
-- [ ] Add tests to file-operations (0% → 80%)
-- [ ] Add tests to websocket-broadcaster (0% → 80%)
-- [ ] Add tests to storage/base-repository
-- [ ] Set up CI/CD testing
-
-**Estimated**: 40-60 hours | **Risk**: MEDIUM | **Coverage**: 9% → 80%
-
-### P6: DOCUMENTATION GAPS (74% missing)
-- [ ] Add README.md to 32 packages
-- [ ] Add JSDoc to all public APIs (100% exports)
-- [ ] Create TypeScript .d.ts files for all packages
-- [ ] Document 49 environment variables with schema
-
-**Estimated**: 3 days | **Risk**: LOW
-
-### P7: LARGE FILES (>200 LOC)
-- [ ] Split error-logger.js (470 LOC) → 4 files
-- [ ] Split broadcaster.js (402 LOC) → 3 files
-- [ ] Review/split any other >200 LOC files
-
-**Estimated**: 1 day | **Risk**: MEDIUM
-
-### P8: CONFIGURATION CHAOS (49 ENV variables scattered)
-- [ ] Create ENV_SCHEMA with all 49 variables
-- [ ] Add validation on startup
-- [ ] Update all files accessing process.env directly
-
-**Estimated**: 1 day | **Risk**: MEDIUM
-
-### P9: ERROR HANDLING INCONSISTENCY (5 patterns)
-- [ ] Enforce single pattern: throw createError(...) everywhere
-- [ ] Audit all 13 route files
-- [ ] Update all 4 repository classes
-- [ ] Update all services
-
-**Estimated**: 1.5 days | **Risk**: MEDIUM
-
-### P10: CIRCULAR DEPENDENCY RISK
-- [ ] Audit desktop-server (16 internal deps) for circular patterns
-- [ ] Create peer dependency contracts
-- [ ] Document safe dependency tree
-
-**Estimated**: 1 day | **Risk**: MEDIUM
+### P1.3 - Consolidate Developer Guide ✅ COMPLETE [SAFE: delta_s=0.20]
+**Goal**: Move DEVELOPER_GUIDE.md content into CLAUDE.md
+**Tasks**:
+- [x] Read DEVELOPER_GUIDE.md
+- [x] Extract key sections (setup, workflow, conventions)
+- [x] Merge into CLAUDE.md "Development" section
+- [x] Delete DEVELOPER_GUIDE.md
+- [x] Verify no references in README.md (none found)
+**Owner**: Claude
+**Time Est**: 45 min (actual: 30 min)
+**Impact**: Single source of truth, easier navigation
+**Result**: Development Guide fully integrated into CLAUDE.md with comprehensive task development patterns, VFS usage, best practices, debugging tips, and GUI development workflow
 
 ---
 
-## EXECUTION PHASES
+## PRIORITY 2: TRANSIT ZONE (Week 1)
 
-### WEEK 1: CRITICAL ISSUES (SAFE ZONE - P1-P4)
-**Goal**: Consolidate packages, eliminate duplication, fix naming, document standards
+### P2.1 - Standardize Package Scope (1st Wave) [TRANSIT: delta_s=0.45]
+**Goal**: All packages use `@sequential/` scope (no exceptions)
+**Phase 1 - Desktop Utilities** (low-risk):
+- [x] Rename `@sequential-desktop/theme` → `@sequential/desktop-theme`
+- [x] Rename `@sequential-desktop/ui-components` → `@sequential/desktop-ui-components`
+- [x] Rename `@sequential-desktop/api-client` → `@sequential/desktop-api-client`
+- [ ] Update all imports in dependent packages
+- [ ] Update package.json in desktop-server/desktop-shell
+**Owner**: Parallel agents (3-4 agents, 1 per rename)
+**Time Est**: 1 hour
+**Impact**: Unified scope, easier cross-package imports
 
-- [ ] P1.1: Package consolidation (44 → 8) - 4 days parallel
-- [ ] P1.2: BaseRepository extraction - 1 day
-- [ ] P1.3: Empty package implementation - 1.5 days
-- [ ] P1.4: Naming standards document - 0.5 days
-- [ ] P2.5: Apply naming conventions - 1.5 days
-- [ ] P2.6: Add README.md to 32 packages - 2 days
+### P2.2 - Standardize Package Scope (2nd Wave) [TRANSIT: delta_s=0.50]
+**Goal**: Decide on bare package scope strategy
+**Decision Point**: Migrate OR document exception
+- [ ] Decision: Keep `sequential-*` bare OR migrate to `@sequential/sequential-*`?
+  - **Option A**: Migrate all to @sequential/sequential-* (recommended)
+  - **Option B**: Keep bare, document exception in CLAUDE.md
+- [ ] IF Option A:
+  - [ ] Rename sequential-adaptor → @sequential/sequential-adaptor
+  - [ ] Rename sequential-flow → @sequential/sequential-flow
+  - [ ] Rename sequential-runner → @sequential/sequential-runner
+  - [ ] Rename sequential-fetch → @sequential/sequential-fetch
+  - [ ] Rename sequential-wrapper → @sequential/sequential-wrapper
+  - [ ] (13 more packages...)
+  - [ ] Update 45+ dependent imports
+- [ ] IF Option B:
+  - [ ] Document exception in CLAUDE.md "Package Organization" section
+  - [ ] Explain why bare scope is acceptable for core framework
+**Owner**: Decision maker (PM/architect) + 2 parallel agents
+**Time Est**: 2-3 hours (Option A) OR 30 min (Option B)
+**Impact**: HIGH - affects all imports across monorepo
 
-**Total**: ~10 days | **Health Score**: 7.2 → 7.8/10
+### P2.3 - Fix Sequential-Machine Naming [TRANSIT: delta_s=0.40]
+**Goal**: Align directory name with package.json scope
+**Tasks**:
+- [x] Read packages/sequential-machine/package.json
+- [x] Current: `@sequential-ecosystem/sequential-machine`
+- [x] Change to: `@sequential/sequential-machine` (align with P2.1 decision)
+- [x] Update .gitmodules: `[submodule "packages/sequential-machine"]` (already correct)
+- [x] Update CLAUDE.md references
+**Owner**: Claude
+**Time Est**: 30 min
+**Impact**: Consistent naming, less confusion
 
-### WEEK 2-3: HIGH PRIORITY (TRANSIT ZONE - P2-P3)
-**Goal**: Add types, split large files, centralize config, standardize error handling
+### P2.4 - Move /tools to Package [TRANSIT: delta_s=0.55]
+**Goal**: Eliminate code outside /packages directory
+**Decision Point**: Convert to new package OR merge into sequential-runner
+- [ ] **Option A**: Create `@sequential/cli-commands` package (RECOMMENDED)
+  - [ ] Create packages/cli-commands/src/
+  - [ ] Move tools/* → packages/cli-commands/src/
+  - [ ] Create packages/cli-commands/package.json
+  - [ ] Update cli.js imports: `from '../packages/cli-commands'` OR `from '@sequential/cli-commands'`
+  - [ ] Delete /tools directory (after verification)
+- [ ] **Option B**: Merge into @sequential/sequential-runner
+  - [ ] Move tools/* → packages/sequential-runner/lib/cli/
+  - [ ] Update imports
+  - [ ] Delete /tools directory
+- [ ] Remove duplicate files (tools/commands/run.js, tools/commands/list.js if duplicates exist)
+- [ ] Update package.json "bin" field if necessary
+**Owner**: Decision maker + Claude
+**Time Est**: 1.5 hours
+**Impact**: True monorepo structure, eliminates code outside packages
 
-- [ ] P2.1: Split >200 LOC files - 1 day
-- [ ] P2.2: Add JSDoc + TypeScript .d.ts - 2 days
-- [ ] P2.3: Centralize ENV_SCHEMA - 1 day
-- [ ] P2.4: Standardize error handling - 1.5 days
-- [ ] P3.1: Add tests to critical packages - 40-60 hours
-- [ ] P3.2: Break desktop-server monolith - 2 days
-- [ ] P3.3: Create peer dependency contracts - 1 day
-- [ ] P3.4: Standardize package.json - 1 day
-
-**Total**: ~20 days | **Health Score**: 7.8 → 8.5/10
-
-### WEEK 4: OPTIMIZATION (P4)
-**Goal**: CI/CD, cleanup, optimization, final validation
-
-- [ ] P4.1: Code cleanup & dead code - 1 day
-- [ ] P4.2: Architecture diagram - 0.5 days
-- [ ] P4.3: Performance optimization - 0.5 days
-- [ ] Final testing & validation - 1 day
-
-**Total**: ~3 days | **Health Score**: 8.5 → 9.0/10
+### P2.5 - Remove Duplicate Command Files [TRANSIT: delta_s=0.35]
+**Goal**: Eliminate duplicate command implementations
+**Tasks**:
+- [ ] Compare tools/commands/run.js vs tools/run-task.js (identify duplicate)
+- [ ] Compare tools/commands/list.js vs tools/commands/list-command.js (identify duplicate)
+- [ ] Determine canonical version for each
+- [ ] Delete duplicate
+- [ ] Update imports in cli.js
+**Owner**: Claude
+**Time Est**: 30 min
+**Impact**: Reduced duplication, clearer CLI structure
 
 ---
 
-## PARALLEL EXECUTION (WFGY Zones)
+## PRIORITY 3: RISK ZONE (Week 2)
 
-### SAFE ZONE - Can execute in parallel:
-```
-├── P1.1.1 (core package)     ↔  P1.1.7 (cli package)
-├── P1.2 (base repository)    ↔  P1.3 (empty packages)
-├── P1.4 (naming standards)   ↔  P2.6 (documentation)
-└── P2.5 (naming refactor)    ↔  All above
-```
-
-### TRANSIT ZONE - Sequential execution required:
-```
-P2.1 (split files)  →  P2.2 (add types)  →  P2.3 (config)  →  P2.4 (error handling)
-P3.1 (tests)        →  P3.2 (server split)  →  P3.3 (contracts)
+### P3.1 - Export Pattern Standardization [RISK: delta_s=0.65]
+**Goal**: Unified export pattern across all 45 packages
+**Standard**:
+```javascript
+// src/index.js - Direct exports + package.json exports field
+export { ClassA, ClassB } from './class-a.js';
+export { UtilityFn } from './utility.js';
+export * as namespaced from './module.js'; // Only if logically grouped
 ```
 
-### RISK ZONE - High validation required:
+**Tasks**:
+- [ ] Audit all 45 packages:
+  - [ ] 12 local @sequential/* packages (probably already standardized from Phase 9)
+  - [ ] 33 submodules (need audit per package)
+- [ ] Identify non-standard exports:
+  - [ ] Style 2: Module namespace exports (convert to direct if possible)
+  - [ ] Style 3: Mixed with complex package.json exports
+- [ ] Create script to auto-generate standard index.js from package.json exports field
+- [ ] Apply to non-standard packages
+- [ ] Verify zero breaking changes in dependent packages
+**Owner**: Claude + 2 parallel agents (audit + fix)
+**Time Est**: 2-3 hours
+**Impact**: Consistency, easier maintenance, better tree-shaking
+
+### P3.2 - File Naming Standardization [RISK: delta_s=0.60]
+**Goal**: All source files use kebab-case
+**Tasks**:
+- [ ] Audit all packages/ for file naming:
+  - [ ] Find all camelCase files (goal: 0)
+  - [ ] Find all snake_case files (goal: 0)
+  - [ ] Find all PascalCase files (goal: 0, except class files if convention)
+- [ ] Identify exception: Do packages follow convention strictly?
+- [ ] For each non-kebab file:
+  - [ ] Rename file to kebab-case
+  - [ ] Update all imports
+  - [ ] Run tests
+- [ ] Document file naming convention in CLAUDE.md
+**Owner**: 2 parallel agents (1 per category: camelCase/snake_case)
+**Time Est**: 2-3 hours
+**Impact**: Consistency, easier navigation
+
+### P3.3 - Clarify Legacy Packages [RISK: delta_s=0.70]
+**Goal**: Decide future of osjs-webdesktop and zellous
+**Tasks**:
+- [ ] **osjs-webdesktop**:
+  - [ ] Decision: Archive (move to docs/archive/), keep as separate project, or migrate to modern stack?
+  - [ ] IF archive: Remove from .gitmodules, move to docs/archive/
+  - [ ] IF keep: Document separation in CLAUDE.md
+- [ ] **zellous** & **zellous-client-sdk**:
+  - [ ] Decision: Core feature of sequential-ecosystem OR separate product?
+  - [ ] IF core: Ensure documentation in CLAUDE.md
+  - [ ] IF separate: Consider moving to separate org/repo
+- [ ] Update CLAUDE.md with decisions
+- [ ] Update README.md "Packages" section
+**Owner**: Decision maker + Claude (documentation)
+**Time Est**: 1 hour + decision time
+**Impact**: Clarity, reduced maintenance burden
+
+### P3.4 - Fix .gitmodules Configuration [RISK: delta_s=0.50]
+**Goal**: Ensure .gitmodules keys match directory names
+**Tasks**:
+- [ ] Audit all .gitmodules entries
+- [ ] Verify key = path (e.g., `[submodule "packages/sequential-machine"]` path = packages/sequential-machine)
+- [ ] Fix mismatches (if found)
+- [ ] Verify all submodules track correct branch (main for most, check osjs-webdesktop/zellous)
+- [ ] Test: `git submodule update --recursive` (should work without errors)
+**Owner**: Claude
+**Time Est**: 30 min
+**Impact**: Git submodule integrity, cleaner config
+
+---
+
+## PRIORITY 4: DANGER ZONE (Month 1+)
+
+### P4.1 - Dependency Graph Audit [DANGER: delta_s=0.80]
+**Goal**: Verify no circular dependencies, optimize import chains
+**Tasks**:
+- [ ] Build dependency graph for all 45 packages
+- [ ] Detect circular imports (should be ZERO)
+- [ ] Verify dependency-injection is used universally
+- [ ] Identify unnecessary direct cross-package imports
+- [ ] Enforce layering:
+  - **Layer 0**: Pure exports (no dependencies)
+  - **Layer 1**: Sequential utilities (sequential-utils, sequential-validators)
+  - **Layer 2**: Infrastructure (@sequential/* utilities)
+  - **Layer 3**: Adapters (sequential-adaptor-*)
+  - **Layer 4**: Core framework (sequential-flow, sequential-runner)
+  - **Layer 5**: Desktop/Apps (desktop-server, app-*)
+- [ ] Refactor to remove cross-layer dependencies
+**Owner**: Architect + 2 parallel agents (graph building + analysis)
+**Time Est**: 4-6 hours
+**Impact**: Critical for monorepo scalability
+
+### P4.2 - Automated Testing Pipeline [DANGER: delta_s=0.75]
+**Goal**: Ensure all code changes pass tests before merge
+**Tasks**:
+- [ ] Extend GitHub Actions to test all 45 packages
+- [ ] Current state: 5 packages have tests (sequential-validators, sequential-storage-utils, sequential-adaptor, sequential-utils, sequential-logging)
+- [ ] Add tests for remaining 40 packages (prioritize infrastructure, then core framework)
+- [ ] Enforce coverage thresholds (minimum 70%)
+- [ ] Add lint/format checks
+- [ ] Add security audit (npm audit)
+**Owner**: Test engineer + Claude (automation)
+**Time Est**: 8-12 hours (spread over 2 weeks)
+**Impact**: High - ensures quality, catches regressions
+
+### P4.3 - Package Inter-dependency Cleanup [DANGER: delta_s=0.85]
+**Goal**: Remove unnecessary dependencies, optimize peer relationships
+**Tasks**:
+- [ ] Audit package.json dependencies across all 45 packages
+- [ ] Identify unused dependencies (should be rare)
+- [ ] Verify all peer dependencies are documented
+- [ ] Check for version conflicts (npm ls)
+- [ ] Optimize shared dependencies (deduplicate versions)
+- [ ] Add missing dependencies (imports without package.json entry)
+**Owner**: 2 parallel agents (audit + fix)
+**Time Est**: 2-3 hours
+**Impact**: Smaller bundle size, fewer security issues
+
+---
+
+## EXECUTION STRATEGY (WFGY-Based Orchestration)
+
+### Week 1 Execution Plan
+1. **Monday**: P1.1 + P1.2 + P1.3 (SAFE zone) → 2 hours
+2. **Tuesday**: P2.1 (1st wave) + P2.3 + P2.5 → 1.5 hours
+3. **Wednesday**: P2.2 (Decision) + P2.4 (Implementation) → 2-3 hours (depends on decision)
+4. **Thursday-Friday**: P2.5 + buffer → 1 hour
+
+### Parallel Execution Matrix
 ```
-P3.1, P3.2, P3.3 require comprehensive testing before advancing
+Week 1:
+  Agent 1: P1.1 (Archive docs)        [SAFE]
+  Agent 2: P1.2 (Update .gitignore)   [SAFE]
+  Agent 3: P1.3 (Merge guides)        [SAFE]
+  Agent 4: P2.1 (Scope Wave 1)        [TRANSIT]
+  
+Week 2:
+  Agent 1: P2.2 (Scope Wave 2)        [TRANSIT]
+  Agent 2: P3.1 (Export patterns)     [RISK]
+  Agent 3: P3.2 (File naming)         [RISK]
+  Agent 4: P3.3 (Legacy packages)     [RISK]
+  Agent 5: P3.4 (.gitmodules fix)     [RISK]
 ```
 
----
-
-## SUCCESS METRICS
-
-| Metric | Current | Target | Status |
-|--------|---------|--------|--------|
-| Package count | 44 | 8 | ⭐⭐⭐ |
-| Duplication (lines) | 407 | 0 | ⭐ |
-| Test coverage | 9% | 80% | ⭐ |
-| Documentation | 26% | 100% | ⭐ |
-| Naming violations | 50+ | 0 | ⭐ |
-| Files >200 LOC | 4 | 0 | ⭐ |
-| Circular deps | 0 | 0 | ✅ |
-| Health score | 7.2 | 9.0 | ⭐ |
+### Risk Mitigation
+- All changes committed to feature branches
+- Git history preserved for rollback
+- No force-push to main
+- Each merge verified with GitHub Actions
+- Code review required for RISK zone tasks
 
 ---
 
-## BLOCKERS
+## SUCCESS CRITERIA
 
-- [ ] P3.2 blocked by P1.1 (need consolidated packages first)
-- [ ] P3.1 blocked by P1.1 (need finalized package structure)
-- [ ] P2.3 blocked by P1.1 (need core package for centralized config)
+### After P1 Completion
+- [x] Root documentation reduced to 5 core files
+- [x] Development artifacts ignored
+- [x] Single source of truth for developer guide
+
+### After P2 Completion
+- [ ] All packages use `@sequential/` scope (OR documented exception)
+- [ ] Sequential-machine naming aligned
+- [ ] No code outside /packages directory
+- [ ] No duplicate command implementations
+
+### After P3 Completion
+- [ ] All exports follow standard pattern
+- [ ] All filenames use kebab-case
+- [ ] Legacy packages clarified
+- [ ] .gitmodules correct
+
+### After P4 Completion
+- [ ] Zero circular dependencies
+- [ ] 70%+ test coverage (all packages)
+- [ ] No unused dependencies
+- [ ] Optimized peer dependencies
 
 ---
 
-**Ready for execution. Starting with SAFE ZONE items (Week 1).**
+## FINAL CHECKLIST
+
+- [ ] P1.1: Documentation archived
+- [ ] P1.2: .gitignore updated
+- [ ] P1.3: Developer guide merged
+- [ ] P2.1: Scope standardization (wave 1)
+- [ ] P2.2: Scope standardization (wave 2)
+- [ ] P2.3: Sequential-machine renamed
+- [ ] P2.4: /tools migrated to package
+- [ ] P2.5: Duplicate files removed
+- [ ] P3.1: Export patterns unified
+- [ ] P3.2: File names standardized
+- [ ] P3.3: Legacy packages clarified
+- [ ] P3.4: .gitmodules verified
+- [ ] P4.1: Dependency graph clean
+- [ ] P4.2: Testing pipeline extended
+- [ ] P4.3: Inter-dependency cleanup
+- [ ] CLAUDE.md updated with all decisions
+- [ ] README.md updated with final structure
+
+---
+
+**Owner**: Claude Code (with PM/architect decisions for P2.2, P3.3)
+**Timeline**: 3 weeks (1 week SAFE + 1 week TRANSIT + 1 week RISK + 2 weeks P4)
+**Risk Level**: MEDIUM (architectural changes, reversible with git history)
+**Blocking**: None (can proceed in parallel)
+

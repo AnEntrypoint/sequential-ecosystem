@@ -50,12 +50,12 @@
   },
   "files": [
     "cli.js",
-    "tools",
     "CLAUDE.md",
     "CHANGELOG.md",
     "README.md"
   ],
   "dependencies": {
+    "@sequential/cli-commands": "file:./packages/cli-commands",
     "commander": "^11.0.0",
     "sequential-adaptor": "^1.0.7",
     "sequential-flow": "^1.0.1",
