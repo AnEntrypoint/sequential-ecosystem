@@ -1,8 +1,8 @@
-import fs from 'fs';
 import path from 'path';
 import { randomUUID } from 'crypto';
+import { writeFileAtomicString } from '@sequential/file-operations';
 
-export function createApiIntegrationExample(tasksDir) {
+export async function createApiIntegrationExample(tasksDir) {
   const taskName = 'example-api-integration';
   const taskFile = path.join(tasksDir, `${taskName}.js`);
   const taskId = randomUUID();
@@ -99,6 +99,6 @@ export async function example_api_integration(input) {
 }
 `;
 
-  fs.writeFileSync(taskFile, code);
+  await writeFileAtomicString(taskFile, code);
   console.log(`✓ Created ${taskName}`);
 }

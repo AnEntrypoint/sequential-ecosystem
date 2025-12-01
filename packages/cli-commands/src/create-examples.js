@@ -32,7 +32,7 @@ export async function createExamples() {
   }
 
   console.log('\nCreating example tools:');
-  createExampleTools(toolsDir);
+  await createExampleTools(toolsDir);
 
   console.log('\nCreating example flows:');
   createExampleFlows(tasksDir);

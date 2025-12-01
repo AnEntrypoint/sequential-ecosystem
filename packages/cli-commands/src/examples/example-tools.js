@@ -1,7 +1,7 @@
-import fs from 'fs';
 import path from 'path';
+import { ensureDirectory, writeFileAtomicString } from '@sequential/file-operations';
 
-export function createExampleTools(toolsDir) {
+export async function createExampleTools(toolsDir) {
   const examples = [
     {
       name: 'database.js',
@@ -110,9 +110,11 @@ export async function ensureDir(dirPath) {
     }
   ];
 
+  await ensureDirectory(toolsDir);
+
   for (const example of examples) {
     const filePath = path.join(toolsDir, example.name);
-    fs.writeFileSync(filePath, example.content);
+    await writeFileAtomicString(filePath, example.content);
     console.log(`  ✓ Created example tool: ${example.name}`);
   }
 }

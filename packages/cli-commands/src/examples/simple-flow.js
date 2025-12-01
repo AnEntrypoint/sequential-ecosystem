@@ -1,8 +1,8 @@
-import fs from 'fs';
 import path from 'path';
 import { randomUUID } from 'crypto';
+import { writeFileAtomicString } from '@sequential/file-operations';
 
-export function createSimpleFlowExample(tasksDir) {
+export async function createSimpleFlowExample(tasksDir) {
   const taskName = 'example-simple-flow';
   const taskFile = path.join(tasksDir, `${taskName}.js`);
   const taskId = randomUUID();
@@ -54,6 +54,6 @@ export async function example_simple_flow(input) {
 }
 `;
 
-  fs.writeFileSync(taskFile, code);
+  await writeFileAtomicString(taskFile, code);
   console.log(`✓ Created ${taskName}`);
 }

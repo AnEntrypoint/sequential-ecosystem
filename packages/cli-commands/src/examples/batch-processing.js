@@ -1,8 +1,8 @@
-import fs from 'fs';
 import path from 'path';
 import { randomUUID } from 'crypto';
+import { writeFileAtomicString } from '@sequential/file-operations';
 
-export function createBatchProcessingExample(tasksDir) {
+export async function createBatchProcessingExample(tasksDir) {
   const taskName = 'example-batch-processing';
   const taskFile = path.join(tasksDir, `${taskName}.js`);
   const taskId = randomUUID();
@@ -120,6 +120,6 @@ export async function example_batch_processing(input) {
 }
 `;
 
-  fs.writeFileSync(taskFile, code);
+  await writeFileAtomicString(taskFile, code);
   console.log(`✓ Created ${taskName}`);
 }
