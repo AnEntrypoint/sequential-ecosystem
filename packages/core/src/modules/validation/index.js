@@ -5,6 +5,7 @@
 
 import path from 'path';
 import fs from 'fs';
+import { createValidationError, createForbiddenError } from '@sequential/error-handling';
 
 /**
  * Validate a file path and ensure it doesn't traverse outside allowed directory
@@ -14,7 +15,7 @@ import fs from 'fs';
  */
 export function validateFilePath(filePath) {
   if (!filePath || typeof filePath !== 'string') {
-    throw new Error('Invalid file path');
+    throw createValidationError('Invalid file path', 'filePath');
   }
 
   const normalizedPath = path.resolve(filePath);
@@ -27,13 +28,13 @@ export function validateFilePath(filePath) {
     if (err.code === 'ENOENT') {
       realPath = normalizedPath;
     } else {
-      throw new Error('Access denied: cannot access file system');
+      throw createForbiddenError('Access denied: cannot access file system');
     }
   }
 
   const relative = path.relative(cwd, realPath);
   if (relative.startsWith('..') || path.isAbsolute(relative)) {
-    throw new Error('Access denied: path traversal detected');
+    throw createForbiddenError('Access denied: path traversal detected');
   }
 
   return realPath;
@@ -47,13 +48,13 @@ export function validateFilePath(filePath) {
  */
 export function validateTaskName(taskName) {
   if (!taskName || typeof taskName !== 'string') {
-    throw new Error('Invalid task name');
+    throw createValidationError('Invalid task name', 'taskName');
   }
   if (!/^[a-zA-Z0-9._-]+$/.test(taskName)) {
-    throw new Error('Task name contains invalid characters (allowed: alphanumeric, dot, dash, underscore)');
+    throw createValidationError('Task name contains invalid characters (allowed: alphanumeric, dot, dash, underscore)', 'taskName');
   }
   if (taskName.length > 100) {
-    throw new Error('Task name too long (max 100 characters)');
+    throw createValidationError('Task name too long (max 100 characters)', 'taskName');
   }
   return taskName;
 }
@@ -66,13 +67,13 @@ export function validateTaskName(taskName) {
  */
 export function validateFileName(fileName) {
   if (!fileName || typeof fileName !== 'string') {
-    throw new Error('Invalid file name');
+    throw createValidationError('Invalid file name', 'fileName');
   }
   if (fileName.includes('/') || fileName.includes('\\') || fileName.startsWith('.')) {
-    throw new Error('File name contains invalid characters');
+    throw createValidationError('File name contains invalid characters', 'fileName');
   }
   if (fileName.length > 255) {
-    throw new Error('File name too long (max 255 characters)');
+    throw createValidationError('File name too long (max 255 characters)', 'fileName');
   }
   return fileName;
 }
@@ -87,10 +88,10 @@ export function validateFileName(fileName) {
  */
 export function validateParam(value, name, type) {
   if (!value && value !== 0 && value !== false) {
-    throw new Error(`${name} is required`);
+    throw createValidationError(`${name} is required`, name);
   }
   if (type && typeof value !== type) {
-    throw new Error(`${name} must be a ${type}`);
+    throw createValidationError(`${name} must be a ${type}`, name);
   }
   return value;
 }
@@ -103,7 +104,7 @@ export function validateParam(value, name, type) {
 export function validateRequired(...params) {
   for (const { name, value } of params) {
     if (!value && value !== 0 && value !== false) {
-      throw new Error(`${name} is required`);
+      throw createValidationError(`${name} is required`, name);
     }
   }
 }
@@ -119,7 +120,7 @@ export function validateRequired(...params) {
 export function validateType(value, name, expectedType) {
   const actualType = typeof value;
   if (actualType !== expectedType) {
-    throw new Error(`${name} must be a ${expectedType}, got ${actualType}`);
+    throw createValidationError(`${name} must be a ${expectedType}, got ${actualType}`, name);
   }
   return value;
 }
@@ -175,18 +176,18 @@ export function validateInputSchema(input, schema) {
  */
 export function validateAndSanitizeMetadata(metadata, maxSize = 10 * 1024 * 1024) {
   if (!metadata || typeof metadata !== 'object') {
-    throw new Error('Metadata must be a valid object');
+    throw createValidationError('Metadata must be a valid object', 'metadata');
   }
 
   try {
     JSON.stringify(metadata);
   } catch (e) {
-    throw new Error(`Metadata is not JSON serializable: ${e.message}`);
+    throw createValidationError(`Metadata is not JSON serializable: ${e.message}`, 'metadata');
   }
 
   const serialized = JSON.stringify(metadata);
   if (serialized.length > maxSize) {
-    throw new Error(`Metadata exceeds maximum size (${serialized.length} > ${maxSize} bytes)`);
+    throw createValidationError(`Metadata exceeds maximum size (${serialized.length} > ${maxSize} bytes)`, 'metadata');
   }
 
   return metadata;
