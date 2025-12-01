@@ -1,16 +1,16 @@
 # Sequential Ecosystem - Architecture Reference
 
 ## Status
-**Last Updated**: Dec 1, 2025 (Week 2 Complete - 4/5 P2 Tasks)
-**State**: True modular monorepo with 15+ packages, enterprise-grade architecture, unified patterns, environment validation
+**Last Updated**: Dec 1, 2025 (Week 2 P2 Complete + P2.5 Phase 1 Prep)
+**State**: True modular monorepo with 15+ packages, enterprise-grade architecture, unified patterns, environment validation, naming guidelines
 **Phase 9 Status**: ✅ COMPLETE - All 8 infrastructure packages extracted and integrated
 **Week 1 (SAFE)**: ✅ COMPLETE - Documentation organization (11 files moved to docs/archive/)
 **Week 2 (TRANSIT) P2.1**: ✅ COMPLETE - Desktop-server extraction (8 infrastructure packages)
 **Week 2 (TRANSIT) P2.2**: ✅ COMPLETE - Package CLAUDE.md generation (100% coverage)
-**Week 2 (TRANSIT) P2.3**: ✅ COMPLETE - ENV Configuration Consolidation via @sequential/core-config (68 env vars, startup validation)
+**Week 2 (TRANSIT) P2.3**: ✅ COMPLETE - ENV Configuration Consolidation (68 env vars, startup validation)
 **Week 2 (TRANSIT) P2.4**: ✅ COMPLETE - Error handling standardization (@sequential/core, @sequential/error-handling)
-**Week 2 (TRANSIT) P2.5**: ⏳ PENDING - Naming convention cleanup (12 hours, 200+ files, AST-based refactoring)
-**Key Files**: CLAUDE.md (this file), TODO.md (execution roadmap), ENV.md (environment reference), CHANGELOG.md (commit log)
+**Week 2 (TRANSIT) P2.5**: 🚀 IN PROGRESS - Phase 1 Prep Complete (analysis tool, guidelines doc, execution plan)
+**Key Files**: CLAUDE.md (this file), TODO.md (roadmap), ENV.md (environment), NAMING-CONVENTIONS.md (guidelines), CHANGELOG.md (log)
 
 ## Phase 9: Comprehensive Monorepo Refactoring (Dec 1, 2025 - COMPLETE ✅)
 
@@ -232,7 +232,46 @@ TIMEOUT: '30000'    → Success: 30000 (parsed as number)
 - ✅ 12-factor app compliant
 - ✅ Easy to add new variables
 
-### Phase 2.5: Factory Wrappers Package (SUPERSEDED)
+### Phase 2.5: Naming Convention Cleanup - Phase 1 Prep (Dec 1, 2025)
+
+**Problem**: 1648 naming pattern inconsistencies across codebase, unclear which are actual issues vs correct idioms
+
+**Solution**: Comprehensive analysis + clear guidelines to distinguish problematic patterns from correct conventions
+
+**Implementation**:
+
+1. **Analysis Tool** (`tools/analyze-naming.js`)
+   - Scans 210+ JavaScript files
+   - Identifies: casing inconsistencies (260), abbreviations (1272), prefix redundancy (116)
+   - Generates categorized report with pattern counts
+   - Pure JavaScript, no dependencies
+
+2. **Naming Conventions Document** (`NAMING-CONVENTIONS.md`)
+   - Clarifies correct patterns: Express conventions, UPPERCASE constants, getter/setters, etc.
+   - Identifies problematic patterns: function parameter abbreviations, file naming
+   - Provides examples for each category
+   - Defines enforcement rules (future ESLint config)
+
+3. **Execution Plan** (`P2.5-EXECUTION-PLAN.md`)
+   - Phase 1: High-impact abbreviations (error-handling, desktop-server, sequential-runner)
+   - Phase 2: Mid-priority packages (data-access-layer, services)
+   - Phase 3: Lower priority and examples
+   - Realistic 10-hour scope (vs. unbounded 12-hour refactoring)
+
+**Key Findings**:
+- ~700 genuine naming issues (vs. 1648 flagged)
+- ~950 false positives (Express `req`/`res`, UPPERCASE constants, getter methods)
+- Most abbreviations are acceptable in tight scopes or standard conventions
+- Only parameter & variable abbreviations in public APIs need fixing
+
+**Benefits**:
+- ✅ Clear team consensus on naming conventions
+- ✅ Avoids wasted effort on non-issues
+- ✅ Realistic phased approach
+- ✅ Foundation for ESLint enforcement
+- ✅ Future-proofs code quality
+
+### Phase 2.5 Redux: Factory Wrappers Package (HISTORICAL)
 
 **Problem**: Repeated boilerplate for creating common objects (rate limiters, HTTP clients, storage adapters)
 
