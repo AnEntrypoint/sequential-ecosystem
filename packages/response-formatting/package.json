@@ -1,0 +1,18 @@
+{
+  "name": "@sequential/response-formatting",
+  "version": "1.0.0",
+  "description": "HTTP response formatting utilities with standardized envelopes",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": ["src"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-ecosystem.git",
+    "directory": "packages/response-formatting"
+  },
+  "engines": {"node": ">=18.0.0"},
+  "dependencies": {}
+}

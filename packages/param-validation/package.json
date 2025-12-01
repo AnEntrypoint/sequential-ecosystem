@@ -1,0 +1,18 @@
+{
+  "name": "@sequential/param-validation",
+  "version": "1.0.0",
+  "description": "Parameter and input validation middleware with validation chains",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": ["src"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-ecosystem.git",
+    "directory": "packages/param-validation"
+  },
+  "engines": {"node": ">=18.0.0"},
+  "dependencies": {}
+}
