@@ -8,8 +8,8 @@
         "commander": "^11.0.0",
         "cors": "^2.8.5",
         "express": "^4.18.2",
-        "sequential-adaptor": "^1.0.6",
-        "sequential-flow": "^1.0.0",
+        "sequential-adaptor": "^1.0.7",
+        "sequential-flow": "^1.0.1",
         "ws": "^8.14.2",
       },
     },
@@ -131,11 +131,11 @@
 
     "send": ["send@0.19.0", "", { "dependencies": { "debug": "2.6.9", "depd": "2.0.0", "destroy": "1.2.0", "encodeurl": "~1.0.2", "escape-html": "~1.0.3", "etag": "~1.8.1", "fresh": "0.5.2", "http-errors": "2.0.0", "mime": "1.6.0", "ms": "2.1.3", "on-finished": "2.4.1", "range-parser": "~1.2.1", "statuses": "2.0.1" } }, "sha512-dW41u5VfLXu8SJh5bwRmyYUbAoSB3c9uQh6L8h/KtsFREPWpbX1lrljJo186Jc4nmci/sGUZ9a0a0J2zgfq2hw=="],
 
-    "sequential-adaptor": ["sequential-adaptor@1.0.6", "", { "dependencies": { "sequential-logging": "^1.0.3", "sequential-storage-utils": "^1.0.1", "sequential-utils": "^1.0.0" }, "peerDependencies": { "sequential-flow": "^1.0.0" } }, "sha512-AOAdsUOZwrxj+bAZC4HcXE+JR90rPSeOesg+kXYTJ843oyc6G5Bs3PYD2LhWpJIogPEVPBgTgheHLAhsTAmmQw=="],
+    "sequential-adaptor": ["sequential-adaptor@1.0.7", "", { "dependencies": { "sequential-logging": "^1.0.3", "sequential-storage-utils": "^1.0.1", "sequential-utils": "^1.0.0" }, "peerDependencies": { "sequential-flow": "^1.0.0" } }, "sha512-nDxohTH5MXCy+/PbGMVSuPA64TiWNG5vvwtUPiUi+5wWU6RyF7Sjh3DnkY2ZWLWCFM7n0G/IFD5O9E08csCO4g=="],
 
     "sequential-fetch": ["sequential-fetch@1.0.0", "", {}, "sha512-5wmilCmXQU3FjBWXBVEIJgPAcXggowW1wy91v74GHfWskg5wav+fCSOhUxDkBx0+jR4/jE8B5gEeOFCCVGs2oA=="],
 
-    "sequential-flow": ["sequential-flow@1.0.0", "", { "dependencies": { "sequential-fetch": "^1.0.0" }, "peerDependencies": { "firebase-admin": "^11.0.0", "redis": "^4.0.0" }, "optionalPeers": ["firebase-admin", "redis"] }, "sha512-z4erAMtjMEuyMTOdnMgEW77XX6MX2JkJ04JosNXpb/bk/idSHQjfvawjKIi5sKZt69qBVNYWdEPmdGW0zFLRmQ=="],
+    "sequential-flow": ["sequential-flow@1.0.1", "", { "dependencies": { "sequential-fetch": "^1.0.0", "sequential-utils": "^1.0.0" }, "peerDependencies": { "firebase-admin": "^11.0.0", "redis": "^4.0.0" }, "optionalPeers": ["firebase-admin", "redis"] }, "sha512-THJqc1X3FdPhTcy9UMDdjQVE/WYLeBewmYdNdRwYV81IjuzhSbF0d2o+YC6PA/uzFzlnMYkHWufQdzOxXg4k8A=="],
 
     "sequential-logging": ["sequential-logging@1.0.3", "", { "dependencies": { "sequential-utils": "^1.0.0" } }, "sha512-uS7KqtQgKriGcbe5mkLS26WBazoaq79uE7PVWCGbEOXmhMaJXca5R4/XwBz+8pdGg1bNHw+orwjUZb7xJBBvuA=="],
 
