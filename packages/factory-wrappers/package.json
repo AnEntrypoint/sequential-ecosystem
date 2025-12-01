@@ -1,0 +1,26 @@
+{
+  "name": "@sequential/factory-wrappers",
+  "version": "1.0.0",
+  "description": "Convenient factory wrapper functions for sequential-ecosystem packages",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./di": "./src/di-wrappers.js",
+    "./middleware": "./src/middleware-wrappers.js",
+    "./http": "./src/http-wrappers.js",
+    "./websocket": "./src/websocket-wrappers.js",
+    "./storage": "./src/storage-wrappers.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-ecosystem",
+    "directory": "packages/factory-wrappers"
+  },
+  "keywords": ["sequential", "ecosystem", "factories", "wrappers"],
+  "author": "AnEntrypoint",
+  "license": "MIT",
+  "dependencies": {
+    "@sequential/core-config": "^1.0.0"
+  }
+}
