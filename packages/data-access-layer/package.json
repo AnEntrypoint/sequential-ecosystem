@@ -11,7 +11,8 @@
     ".": "./src/index.js",
     "./task-repository": "./src/repositories/task-repository.js",
     "./flow-repository": "./src/repositories/flow-repository.js",
-    "./tool-repository": "./src/repositories/tool-repository.js"
+    "./tool-repository": "./src/repositories/tool-repository.js",
+    "./file-repository": "./src/repositories/file-repository.js"
   },
   "repository": {
     "type": "git",
