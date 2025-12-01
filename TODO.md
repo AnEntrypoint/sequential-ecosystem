@@ -1,384 +1,195 @@
-# Sequential Ecosystem - Comprehensive Enhancement TODO
+# Sequential Ecosystem - Comprehensive Refactoring TODO
 
-## STATUS SUMMARY - November 30, 2025 (UPDATED)
-
-### Audit & Security Phase Complete ✅ (Nov 30 2025)
-- [x] Comprehensive codebase audit (32 issues identified)
-- [x] Fix hardcoded file browser path (dynamic via API)
-- [x] Fix WebSocket constant inconsistency (1 → WebSocket.OPEN)
-- [x] Remove unreachable Promise in metrics endpoint
-- [x] Complete peak hour metrics calculation
-- [x] Fix image preview XSS vulnerability (file:// → API data URLs)
-- [x] Add WebSocket exponential backoff reconnection
-- [x] Add path validation to rename/copy operations
-- [x] Document all findings in AUDIT.md (see file for details)
-
-### Completed ✅
-- [x] WebSocket infrastructure in desktop-server
-- [x] Active run tracking (activeTasks map)
-- [x] Real-time metrics with actual activeRuns count
-- [x] Safe file API endpoints (list, read, write, mkdir, delete)
-- [x] Security hardening (path traversal protection)
-- [x] Broadcast functions for real-time events
-- [x] Architecture analysis and documentation
-- [x] Frontend integration with WebSocket (app-run-observer)
-- [x] Frontend integration with file APIs (app-file-browser)
-- [x] Package both apps as production-ready components
-- [x] Collaborative selection sync in app-run-observer (visual badges for run viewing)
-- [x] Collaborative selection sync in app-file-browser (collaborator presence in directories)
-
-### Phase 3 - Frontend Integration Complete ✅
-- [x] Real-time metrics with WebSocket subscriptions
-- [x] Safe file browsing with API integration
-- [x] Collaborative selection sync (run viewing badges)
-- [x] Collaborator presence indicators (directory browsing)
-- [x] WebSocket error handling with auto-reconnect
-
-### Phase 4 - Extended Features Complete ✅
-- [x] Run Details Panel with JSON syntax highlighting (app-run-observer)
-- [x] Performance Metrics Dashboard with task breakdown (app-run-observer)
-- [x] Search and filter for task names and status (app-run-observer)
-- [x] Syntax highlighting for 15+ programming languages (app-file-browser)
-- [x] Image preview support for 6 image formats (app-file-browser)
-- [x] File operation buttons (create, delete, rename, copy) (app-file-browser)
-- [x] Rename and copy operations with backend API endpoints
-- [x] Real-time file sync via WebSocket (all file operations broadcast to connected clients)
-
-### Phase 5 - High Priority Refactoring (Next Sprint) 📋
-From AUDIT.md - See audit report for full details on 32 identified issues
-- [ ] Refactor server.js (1027 lines) into modular routes (est. 4-6h)
-  - `/src/routes/seq-os.js` - Sequential-OS endpoints
-  - `/src/routes/files.js` - File operations
-  - `/src/routes/tasks.js` - Task endpoints
-  - `/src/routes/flows.js` - Flow endpoints
-  - `/src/routes/metrics.js` - Metrics
-  - `/src/middleware/` - Logging, rate limiting, validation
-- [ ] Implement task execution sandbox (Worker threads) (est. 2-3h)
-- [ ] Add WebSocket rate limiting (est. 1-2h)
-- [ ] Replace 47 alert() calls with toast notifications (est. 3-4h)
-- [ ] Add null safety guards in file operations (est. 1h)
-
-### Phase 6 - Medium Priority UX Improvements 📋
-- [ ] Implement state persistence (localStorage) for all apps (est. 2-3h per app)
-- [ ] Fix window sizing responsiveness (est. 2h)
-- [ ] Complete collaborative features (action context) (est. 1-2h)
-- [ ] Add comprehensive test coverage for file operations (est. 3-4h)
-
-### In Progress 🔄
-- [ ] Advanced collaboration features (shared cursor, live editing)
-- [ ] Performance optimization (caching, batching)
-- [ ] Audit logging for all file operations
-
-### Planned 📋
-- [ ] API documentation (OpenAPI/Swagger) (est. 2-3h)
-- [ ] Environment variable documentation (est. 30min)
-- [ ] CORS configuration (est. 30min)
-- [ ] Manifest schema validation (est. 1h)
-- [ ] Monitoring and observability
-- [ ] Code refactoring and shared libraries
-- [ ] Testing suite
+**Generated**: Dec 1, 2025 | **Status**: Audit Complete → Execution Phase
+**Overall Health Score**: 7.2/10 | **Technical Debt**: 18-25 engineering days
 
 ---
 
-## Phase 1: Run Observability Enhancements (app-run-observer)
+## WFGY ORCHESTRATION FRAMEWORK
 
-### Core Features
-- [ ] Real-time metrics dashboard with WebSocket updates
-  - [ ] Live execution counter (active runs)
-  - [ ] Live success/failure rate percentage
-  - [ ] Live average duration calculation
-  - [ ] Real-time metrics refresh (500ms intervals)
-
-- [ ] Execution Timeline
-  - [ ] Visual timeline of all runs with status colors
-  - [ ] Start/end time display per run
-  - [ ] Duration bars for visual comparison
-  - [ ] Click to expand run details
-
-- [ ] Performance Charts
-  - [ ] Success rate trend over time (last 50 runs)
-  - [ ] Duration trend chart (execution time)
-  - [ ] Throughput chart (runs per time period)
-  - [ ] Error rate timeline
-
-- [ ] Run Details Panel
-  - [ ] Task name and runner type
-  - [ ] Input/output JSON viewer with syntax highlighting
-  - [ ] Error messages with stack traces
-  - [ ] Execution timestamps and duration
-  - [ ] Real-time re-execution capability
-
-- [ ] Filters and Search
-  - [ ] Filter by task name
-  - [ ] Filter by status (success/error/running)
-  - [ ] Filter by date range
-  - [ ] Search in execution output/errors
-  - [ ] Filter by runner type
-
-### Collaborative Features
-- [ ] Zellous WebRTC integration
-  - [ ] Broadcast execution start/complete events
-  - [ ] Share run details with collaborators
-  - [ ] Presence indicators (who's watching which runs)
-  - [ ] Shared cursor for pointing at specific metrics
-
-- [ ] Real-time Notifications
-  - [ ] Long-running task alerts
-  - [ ] Error notifications with details
-  - [ ] Task completion notifications
-  - [ ] Failure recovery suggestions
-
-### Backend Enhancements
-- [ ] WebSocket endpoints for live metrics
-  - [ ] GET /api/metrics/stream (WebSocket)
-  - [ ] GET /api/runs/stream (WebSocket for new runs)
-  - [ ] POST /api/runs/:runId/subscribe (watch specific run)
-
-- [ ] Enhanced metrics calculation
-  - [ ] Per-task success rates
-  - [ ] Per-runner statistics
-  - [ ] Historical metrics (hourly/daily/weekly)
-  - [ ] Performance trends and anomalies
+Using WFGY_Core_OneLine_v2.0 methodology for systematic execution:
+- **Input (I)**: Current monorepo state (44 packages, 50+ issues identified)
+- **Goal (G)**: True modular monorepo with all code in packages, unified naming, 80%+ test coverage
+- **Execution Zones**:
+  - **SAFE (<0.40 delta_s)**: Low-risk refactorings (renaming, documentation, package moves)
+  - **TRANSIT (0.40-0.60)**: Moderate risk (consolidation, test addition)
+  - **RISK (0.60-0.85)**: High impact (architecture changes, large refactorings)
 
 ---
 
-## Phase 2: File System Browser Enhancements (app-file-browser)
+## CRITICAL ISSUES FOUND
 
-### Core Features
-- [ ] Advanced File Operations
-  - [ ] Create new files/directories
-  - [ ] Rename files/directories
-  - [ ] Delete files/directories with confirmation
-  - [ ] Copy/cut/paste operations
-  - [ ] Bulk operations (select multiple)
+### P1: PACKAGE PROLIFERATION (44 → 8 packages)
+- [ ] Consolidate error-handling, param-validation, response-formatting → @sequential/core
+- [ ] Consolidate file-operations, websocket-factory, input-sanitization → @sequential/core/modules
+- [ ] Create @sequential/storage (data-access-layer + repositories)
+- [ ] Create @sequential/services (task-execution-service + flow-service)
+- [ ] Create @sequential/framework (dependency-injection + adaptor)
+- [ ] Create @sequential/runtime (sequential-runner, sequential-wrapper, sequential-fetch, etc.)
+- [ ] Modularize @sequential/desktop (server + api + ui + apps)
+- [ ] Create @sequential/cli (extract /tools, /cli.js)
+- [ ] Create @sequential/utilities (sequential-utils, validators, logging)
 
-- [ ] File Preview Enhancements
-  - [ ] Syntax highlighting for all code files
-  - [ ] Image preview (PNG, JPG, GIF)
-  - [ ] Binary file detection with hex preview
-  - [ ] Large file handling (lazy load, pagination)
-  - [ ] Raw/formatted view toggle
+**Estimated**: 4 days | **Risk**: LOW | **Effort**: 2000 LOC moved
 
-- [ ] Search and Filter
-  - [ ] Full-text search in files
-  - [ ] File type filter
-  - [ ] Size filter
-  - [ ] Modified date filter
-  - [ ] Regular expression search
+### P2: DUPLICATE CODE ELIMINATION (407 lines)
+- [ ] Create BaseRepository class
+- [ ] Eliminate validatePath() duplication (4 repositories)
+- [ ] Eliminate getAll() duplication (4 repositories)
+- [ ] Eliminate file operation duplication
 
-- [ ] File Properties
-  - [ ] Detailed file information panel
-  - [ ] File permissions display and editing
-  - [ ] File hash (SHA-256) calculation
-  - [ ] File history (last modified, created)
-  - [ ] Duplicate file detection
+**Estimated**: 1 day | **Risk**: LOW | **LOC saved**: 407
 
-- [ ] Directory Diff Viewer
-  - [ ] Compare two directories
-  - [ ] Show added/removed/modified files
-  - [ ] Visual diff with color coding
-  - [ ] Export diff report
+### P3: EMPTY IMPLEMENTATIONS (5 packages)
+- [ ] Implement @sequential/core/modules/input-sanitization (rate-limit.js)
+- [ ] Document/implement @sequential/runtime/runner
+- [ ] Consolidate 10 desktop apps into @sequential/desktop/apps/
 
-### Collaborative Features
-- [ ] Real-time File Sync
-  - [ ] Watch for file changes via WebSocket
-  - [ ] Sync operations across collaborators
-  - [ ] Lock mechanism (editing file locks it)
-  - [ ] Conflict resolution (last-write-wins or merge)
+**Estimated**: 1.5 days | **Risk**: MEDIUM
 
-- [ ] Shared Browsing
-  - [ ] Broadcast current directory to collaborators
-  - [ ] Follow mode (see what others are viewing)
-  - [ ] Shared file cursor/pointer
-  - [ ] Comment on files
+### P4: NAMING INCONSISTENCIES (50+ violations)
+- [ ] Standardize file names: kebab-case (rename SequentialOSClient.js, VFSClient.js)
+- [ ] Standardize constants: SCREAMING_SNAKE_CASE (rateLimitMap → RATE_LIMIT_MAP)
+- [ ] Standardize function prefixes: create*, is*, validate*, format*, get*, handle*
+- [ ] Remove export default everywhere (named exports only)
+- [ ] Replace variable abbreviations (f → fileName, e → error)
+- [ ] Standardize callbacks (onclick → onClick)
 
-- [ ] Activity Log
-  - [ ] Who modified which files and when
-  - [ ] Operation history (create, delete, modify)
-  - [ ] Undo last operation (if compatible)
-  - [ ] Replay mode (watch changes happen)
+**Estimated**: 1.5 days | **Risk**: LOW | **Files**: 50+ affected
 
-### Backend Enhancements
-- [ ] File Operation Endpoints
-  - [ ] POST /api/files/create
-  - [ ] POST /api/files/:path/rename
-  - [ ] DELETE /api/files/:path
-  - [ ] POST /api/files/copy
-  - [ ] POST /api/files/delete-batch
+### P5: MISSING TESTS (91% untested)
+- [ ] Add tests to error-handling (0% → 80%)
+- [ ] Add tests to param-validation (0% → 80%)
+- [ ] Add tests to file-operations (0% → 80%)
+- [ ] Add tests to websocket-broadcaster (0% → 80%)
+- [ ] Add tests to storage/base-repository
+- [ ] Set up CI/CD testing
 
-- [ ] Search and Analysis Endpoints
-  - [ ] GET /api/files/search?q=
-  - [ ] GET /api/files/:path/hash
-  - [ ] GET /api/files/duplicates
-  - [ ] POST /api/files/compare
+**Estimated**: 40-60 hours | **Risk**: MEDIUM | **Coverage**: 9% → 80%
 
-- [ ] WebSocket Endpoints
-  - [ ] GET /api/files/watch/:path (WebSocket)
-  - [ ] GET /api/files/stream (all file operations)
-  - [ ] Broadcast file operation events
+### P6: DOCUMENTATION GAPS (74% missing)
+- [ ] Add README.md to 32 packages
+- [ ] Add JSDoc to all public APIs (100% exports)
+- [ ] Create TypeScript .d.ts files for all packages
+- [ ] Document 49 environment variables with schema
 
----
+**Estimated**: 3 days | **Risk**: LOW
 
-## Phase 3: Collaborative Features Across All Apps
+### P7: LARGE FILES (>200 LOC)
+- [ ] Split error-logger.js (470 LOC) → 4 files
+- [ ] Split broadcaster.js (402 LOC) → 3 files
+- [ ] Review/split any other >200 LOC files
 
-### Zellous Integration (All Apps)
-- [ ] App Presence System
-  - [ ] User list showing who's using which app
-  - [ ] Online status indicators
-  - [ ] User profile/avatar display
-  - [ ] Join/leave notifications
+**Estimated**: 1 day | **Risk**: MEDIUM
 
-- [ ] Real-time State Sync
-  - [ ] App state broadcast to collaborators
-  - [ ] Cursor position sharing in editors
-  - [ ] Selection sharing in UIs
-  - [ ] Scroll position sync
+### P8: CONFIGURATION CHAOS (49 ENV variables scattered)
+- [ ] Create ENV_SCHEMA with all 49 variables
+- [ ] Add validation on startup
+- [ ] Update all files accessing process.env directly
 
-- [ ] Collaborative Tools
-  - [ ] Shared terminal (multiple users typing)
-  - [ ] Collaborative code editing (with OT or CRDT)
-  - [ ] Shared flow editor (multiple drawing)
-  - [ ] Shared task editing
+**Estimated**: 1 day | **Risk**: MEDIUM
 
-### WebSocket Infrastructure
-- [ ] Unified WebSocket Manager
-  - [ ] Central connection management
-  - [ ] Auto-reconnection with exponential backoff
-  - [ ] Message queuing during disconnection
-  - [ ] Heartbeat mechanism
+### P9: ERROR HANDLING INCONSISTENCY (5 patterns)
+- [ ] Enforce single pattern: throw createError(...) everywhere
+- [ ] Audit all 13 route files
+- [ ] Update all 4 repository classes
+- [ ] Update all services
 
-- [ ] Event Broadcasting System
-  - [ ] Pub/sub for app events
-  - [ ] Event filtering and routing
-  - [ ] Event history (last 100 events)
-  - [ ] Event replay for new subscribers
+**Estimated**: 1.5 days | **Risk**: MEDIUM
 
-### Communication Protocol
-- [ ] Message Format Standardization
-  - [ ] Event type classification
-  - [ ] User/session identification
-  - [ ] Timestamp and sequence numbering
-  - [ ] Error handling and recovery
+### P10: CIRCULAR DEPENDENCY RISK
+- [ ] Audit desktop-server (16 internal deps) for circular patterns
+- [ ] Create peer dependency contracts
+- [ ] Document safe dependency tree
+
+**Estimated**: 1 day | **Risk**: MEDIUM
 
 ---
 
-## Phase 4: Architectural Review and Refactoring
+## EXECUTION PHASES
 
-### Code Organization Review
-- [ ] Examine cross-app patterns
-  - [ ] Identify code duplication across apps
-  - [ ] Extract shared UI components
-  - [ ] Create shared utility libraries
-  - [ ] Standardize API client patterns
+### WEEK 1: CRITICAL ISSUES (SAFE ZONE - P1-P4)
+**Goal**: Consolidate packages, eliminate duplication, fix naming, document standards
 
-- [ ] Frontend Architecture
-  - [ ] Evaluate component structure
-  - [ ] Check state management consistency
-  - [ ] Review CSS/styling patterns
-  - [ ] Optimize bundle sizes
+- [ ] P1.1: Package consolidation (44 → 8) - 4 days parallel
+- [ ] P1.2: BaseRepository extraction - 1 day
+- [ ] P1.3: Empty package implementation - 1.5 days
+- [ ] P1.4: Naming standards document - 0.5 days
+- [ ] P2.5: Apply naming conventions - 1.5 days
+- [ ] P2.6: Add README.md to 32 packages - 2 days
 
-- [ ] Backend Architecture
-  - [ ] Review API endpoint organization
-  - [ ] Check database query efficiency
-  - [ ] Examine error handling patterns
-  - [ ] Evaluate security measures
+**Total**: ~10 days | **Health Score**: 7.2 → 7.8/10
 
-### File Structure Optimization
-- [ ] Reorganize app packages
-  - [ ] Move shared components to central location
-  - [ ] Extract shared utilities
-  - [ ] Create shared type definitions
-  - [ ] Establish dependency graph
+### WEEK 2-3: HIGH PRIORITY (TRANSIT ZONE - P2-P3)
+**Goal**: Add types, split large files, centralize config, standardize error handling
 
-- [ ] Dependencies Management
-  - [ ] Audit all dependencies for updates
-  - [ ] Remove unused dependencies
-  - [ ] Evaluate security vulnerabilities
-  - [ ] Plan dependency upgrade strategy
+- [ ] P2.1: Split >200 LOC files - 1 day
+- [ ] P2.2: Add JSDoc + TypeScript .d.ts - 2 days
+- [ ] P2.3: Centralize ENV_SCHEMA - 1 day
+- [ ] P2.4: Standardize error handling - 1.5 days
+- [ ] P3.1: Add tests to critical packages - 40-60 hours
+- [ ] P3.2: Break desktop-server monolith - 2 days
+- [ ] P3.3: Create peer dependency contracts - 1 day
+- [ ] P3.4: Standardize package.json - 1 day
 
-### Documentation Improvements
-- [ ] Architecture Documentation
-  - [ ] Create architecture diagram
-  - [ ] Document data flow
-  - [ ] Document communication patterns
-  - [ ] Document deployment strategy
+**Total**: ~20 days | **Health Score**: 7.8 → 8.5/10
 
-- [ ] API Documentation
-  - [ ] Document all endpoints
-  - [ ] Add request/response examples
-  - [ ] Document error codes
-  - [ ] Add authentication/authorization info
+### WEEK 4: OPTIMIZATION (P4)
+**Goal**: CI/CD, cleanup, optimization, final validation
 
-- [ ] Developer Guide
-  - [ ] How to add new app
-  - [ ] How to add new API endpoint
-  - [ ] How to implement WebSocket features
-  - [ ] Testing guidelines
+- [ ] P4.1: Code cleanup & dead code - 1 day
+- [ ] P4.2: Architecture diagram - 0.5 days
+- [ ] P4.3: Performance optimization - 0.5 days
+- [ ] Final testing & validation - 1 day
+
+**Total**: ~3 days | **Health Score**: 8.5 → 9.0/10
 
 ---
 
-## Phase 5: Performance and Stability
+## PARALLEL EXECUTION (WFGY Zones)
 
-### Performance Optimization
-- [ ] Frontend Performance
-  - [ ] Lazy load heavy components
-  - [ ] Implement virtual scrolling for large lists
-  - [ ] Optimize re-renders
-  - [ ] Cache computed values
+### SAFE ZONE - Can execute in parallel:
+```
+├── P1.1.1 (core package)     ↔  P1.1.7 (cli package)
+├── P1.2 (base repository)    ↔  P1.3 (empty packages)
+├── P1.4 (naming standards)   ↔  P2.6 (documentation)
+└── P2.5 (naming refactor)    ↔  All above
+```
 
-- [ ] Backend Performance
-  - [ ] Index frequently queried fields
-  - [ ] Implement query result caching
-  - [ ] Optimize file operations
-  - [ ] Add rate limiting
+### TRANSIT ZONE - Sequential execution required:
+```
+P2.1 (split files)  →  P2.2 (add types)  →  P2.3 (config)  →  P2.4 (error handling)
+P3.1 (tests)        →  P3.2 (server split)  →  P3.3 (contracts)
+```
 
-### Stability and Monitoring
-- [ ] Error Handling
-  - [ ] Comprehensive error logging
-  - [ ] User-friendly error messages
-  - [ ] Error recovery strategies
-  - [ ] Error alerts to admin
-
-- [ ] Monitoring and Metrics
-  - [ ] Application health checks
-  - [ ] Performance metrics collection
-  - [ ] Error rate tracking
-  - [ ] User activity monitoring
+### RISK ZONE - High validation required:
+```
+P3.1, P3.2, P3.3 require comprehensive testing before advancing
+```
 
 ---
 
-## Phase 6: Testing
+## SUCCESS METRICS
 
-### Unit Tests
-- [ ] Frontend unit tests for components
-- [ ] Backend unit tests for API endpoints
-- [ ] Utility function tests
-- [ ] WebSocket handler tests
-
-### Integration Tests
-- [ ] App-to-backend integration
-- [ ] Zellous collaboration workflows
-- [ ] File operation workflows
-- [ ] Run execution workflows
-
-### E2E Tests
-- [ ] User workflows in each app
-- [ ] Collaborative workflows
-- [ ] Error scenarios
-- [ ] Performance scenarios
+| Metric | Current | Target | Status |
+|--------|---------|--------|--------|
+| Package count | 44 | 8 | ⭐⭐⭐ |
+| Duplication (lines) | 407 | 0 | ⭐ |
+| Test coverage | 9% | 80% | ⭐ |
+| Documentation | 26% | 100% | ⭐ |
+| Naming violations | 50+ | 0 | ⭐ |
+| Files >200 LOC | 4 | 0 | ⭐ |
+| Circular deps | 0 | 0 | ✅ |
+| Health score | 7.2 | 9.0 | ⭐ |
 
 ---
 
-## Summary
+## BLOCKERS
 
-**Total Work Items**: 100+
-**Estimated Phases**: 6
-**Key Goals**:
-1. ✅ Complete run observability with real-time updates
-2. ✅ Complete file system browser with real-time sync
-3. ✅ Add collaborative features to all apps
-4. ✅ Review and optimize architecture
-5. ✅ Improve documentation
-6. ✅ Enhance performance and stability
+- [ ] P3.2 blocked by P1.1 (need consolidated packages first)
+- [ ] P3.1 blocked by P1.1 (need finalized package structure)
+- [ ] P2.3 blocked by P1.1 (need core package for centralized config)
 
-**Status**: Ready to Execute
+---
+
+**Ready for execution. Starting with SAFE ZONE items (Week 1).**
