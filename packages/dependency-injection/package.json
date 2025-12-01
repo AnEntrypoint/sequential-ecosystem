@@ -1,0 +1,18 @@
+{
+  "name": "@sequential/dependency-injection",
+  "version": "1.0.0",
+  "description": "Lightweight DI container for Sequential Ecosystem packages",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-ecosystem.git",
+    "directory": "packages/dependency-injection"
+  },
+  "keywords": ["sequential", "dependency-injection", "di-container", "ioc"],
+  "author": "Sequential Ecosystem",
+  "license": "MIT"
+}
