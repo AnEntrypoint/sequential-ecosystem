@@ -18,13 +18,13 @@ export class TaskRepository extends BaseRepository {
     return await this.readJsonFile(configPath, 'config');
   }
 
-  getCode(taskName) {
+  async getCode(taskName) {
     const taskDir = this.validatePath(taskName);
     const codePath = path.join(taskDir, 'code.js');
-    if (!fs.existsSync(codePath)) {
+    if (!await fs.pathExists(codePath)) {
       throw this.createError(`Task code not found`, 404, 'NOT_FOUND');
     }
-    return fs.readFileSync(codePath, 'utf8');
+    return await fs.readFile(codePath, 'utf8');
   }
 
   async saveRun(taskName, runId, runData) {
@@ -38,7 +38,7 @@ export class TaskRepository extends BaseRepository {
   async getRuns(taskName) {
     const taskDir = this.validatePath(taskName);
     const runsDir = path.join(taskDir, 'runs');
-    if (!fs.existsSync(runsDir)) {
+    if (!await fs.pathExists(runsDir)) {
       return [];
     }
     const results = await readJsonFiles(runsDir);

@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs-extra';
+import { ensureDirectory } from '@sequential/file-operations';
 import { BaseRepository } from './base-repository.js';
 
 export class FlowRepository extends BaseRepository {
@@ -7,18 +8,18 @@ export class FlowRepository extends BaseRepository {
     super(baseDir || path.join(process.cwd(), 'tasks'), 'Flow');
   }
 
-  getAll() {
-    if (!fs.existsSync(this.baseDir)) {
+  async getAll() {
+    if (!await fs.pathExists(this.baseDir)) {
       return [];
     }
 
     const flows = [];
-    const taskDirs = fs.readdirSync(this.baseDir)
-      .filter(f => fs.statSync(path.join(this.baseDir, f)).isDirectory());
+    const entries = await fs.readdir(this.baseDir, { withFileTypes: true });
+    const dirs = entries.filter(e => e.isDirectory()).map(e => e.name);
 
-    for (const name of taskDirs) {
+    for (const name of dirs) {
       const graphPath = path.join(this.baseDir, name, 'graph.json');
-      const graph = this.readJsonFileOptional(graphPath);
+      const graph = await this.readJsonFileOptional(graphPath);
       if (graph) {
         flows.push({ id: name, name, graph });
       }
@@ -26,20 +27,21 @@ export class FlowRepository extends BaseRepository {
     return flows;
   }
 
-  get(flowId) {
+  async get(flowId) {
     const flowDir = this.validatePath(flowId);
     const graphPath = path.join(flowDir, 'graph.json');
-    const graph = this.readJsonFile(graphPath, 'graph');
+    const graph = await this.readJsonFile(graphPath, 'graph');
     return { id: flowId, graph };
   }
 
   async save(id, graphData, configData) {
     const flowDir = this.validatePath(id);
+    await ensureDirectory(flowDir);
     const graphPath = path.join(flowDir, 'graph.json');
     await this.writeJsonFileAsync(graphPath, graphData);
 
     const configPath = path.join(flowDir, 'config.json');
-    if (!fs.existsSync(configPath)) {
+    if (!await fs.pathExists(configPath)) {
       await this.writeJsonFileAsync(configPath, configData);
     }
   }

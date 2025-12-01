@@ -13,14 +13,14 @@ export class ToolRepository extends BaseRepository {
     await fs.ensureDir(this.baseDir);
   }
 
-  getAll() {
-    const tools = this.getAllFiles();
+  async getAll() {
+    const tools = await this.getAllFiles();
     return tools.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
   }
 
-  get(id) {
+  async get(id) {
     const toolPath = path.join(this.baseDir, `${id}.json`);
-    return this.readJsonFile(toolPath);
+    return await this.readJsonFile(toolPath);
   }
 
   async save(id, tool) {
@@ -32,7 +32,7 @@ export class ToolRepository extends BaseRepository {
   async delete(id) {
     const toolPath = path.join(this.baseDir, `${id}.json`);
 
-    if (!fs.existsSync(toolPath)) {
+    if (!await fs.pathExists(toolPath)) {
       throw this.createError(`Tool not found`, 404, 'NOT_FOUND');
     }
 

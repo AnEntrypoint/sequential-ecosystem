@@ -151,13 +151,13 @@ export class BaseRepository {
    * @returns {array} - Array of entities with metadata
    */
   async getAll() {
-    if (!fs.existsSync(this.baseDir)) {
+    if (!await fs.pathExists(this.baseDir)) {
       return [];
     }
 
     try {
-      const dirs = fs.readdirSync(this.baseDir)
-        .filter(f => fs.statSync(path.join(this.baseDir, f)).isDirectory());
+      const entries = await fs.readdir(this.baseDir, { withFileTypes: true });
+      const dirs = entries.filter(e => e.isDirectory()).map(e => e.name);
 
       const results = [];
       for (const name of dirs) {
@@ -187,7 +187,7 @@ export class BaseRepository {
    * @returns {array} - Array of parsed JSON objects
    */
   async getAllFiles() {
-    if (!fs.existsSync(this.baseDir)) {
+    if (!await fs.pathExists(this.baseDir)) {
       return [];
     }
 
