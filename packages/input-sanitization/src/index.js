@@ -1,1 +1,5 @@
-export { createRateLimitMiddleware } from './rate-limit.js';
+export {
+  createRateLimitMiddleware,
+  createWebSocketRateLimiter,
+  checkWebSocketRateLimit
+} from './rate-limit.js';

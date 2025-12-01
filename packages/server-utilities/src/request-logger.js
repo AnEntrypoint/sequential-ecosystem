@@ -1,4 +1,4 @@
-import { CONFIG } from '../config/defaults.js';
+import { CONFIG } from './config.js';
 
 const requestLog = [];
 
