@@ -1,4 +1,4 @@
-import { createValidationError, createBadRequestError } from '../utils/error-factory.js';
+import { createValidationError, createBadRequestError } from '@sequential/error-handling';
 
 export class ValidationChain {
   constructor() {

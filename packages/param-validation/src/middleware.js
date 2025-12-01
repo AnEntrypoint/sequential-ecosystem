@@ -1,4 +1,4 @@
-import { createValidationError } from '../utils/error-factory.js';
+import { createValidationError } from '@sequential/error-handling';
 
 export function validateParam(validator, paramName) {
   return (value) => {
