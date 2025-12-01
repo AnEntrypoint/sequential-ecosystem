@@ -60,11 +60,18 @@ Monorepo Structure:
 │       └── src/routes/flows.js
 ```
 
-**Next Steps (Remaining Phase 3-5):**
-- Extract WebSocket subscription handler factory (90 lines dedup)
-- Create dependency injection container
-- Implement test infrastructure
+**Phase 3 Complete - WebSocket Refactoring (Dec 1, 2025)**
+- ✅ Created ws-subscription-factory.js (55 lines, reusable)
+- ✅ Refactored server.js to use factory pattern
+- ✅ Eliminated 90 lines of duplicate WebSocket handlers
+- ✅ Reduced server.js from 382 → 331 lines (-13%)
+- ✅ Made adding new subscription types trivial (config-driven)
+
+**Next Steps (Remaining Phase 4-5):**
+- Create dependency injection container (enable package testing)
+- Implement test infrastructure for repositories/services
 - Add more services (FlowService, RunService)
+- Extract state management patterns
 
 ## Phase 8: Comprehensive Security Audit & Hardening (Dec 1, 2025)
 
