@@ -1,12 +1,48 @@
 # Sequential Ecosystem - Architecture Reference
 
 ## Status
-**Last Updated**: Dec 1, 2025 (Phase 8 Complete - Comprehensive Security Audit & Hardening)
-**State**: Phase 8 Complete - Critical security fixes, input validation, observability improvements
+**Last Updated**: Dec 1, 2025 (Phase 9 - Architectural Refactoring & Library Integration)
+**State**: Phase 9 In Progress - Code deduplication, library replacement, service layer extraction
 **Phase 6**: Desktop-server refactoring (1284→228 lines), Worker sandbox (security), config centralization
 **Phase 7**: Comprehensive error logging, localStorage persistence (10 apps), test suite with CI/CD, storage observability
 **Phase 8**: Critical security audit, 10 high/critical fixes, observability enhancements, request tracing
+**Phase 9**: Architectural improvements - library integration (http-errors), 40+ lines dedup, service extraction
 **Key Files**: CLAUDE.md (architecture), CHANGELOG.md (changes), cli.js (entry point), TODO.md (roadmap)
+
+## Phase 9: Architectural Refactoring & Library Integration (In Progress)
+
+### Phase 1: Quick Wins - Library Replacement & Duplication Removal (In Progress)
+
+**Completed:**
+1. **http-errors Library Integration** → Replaced 62-line error-factory.js with http-errors wrapper
+   - 8 custom error functions consolidated using standard HTTP error library
+   - 4.8kB dependency, npm ecosystem standard
+   - Status: ✅ Complete
+
+2. **FileStore Service** → Extracted directory listing duplication (40+ lines)
+   - New service: `src/lib/file-store.js` (59 lines, reusable)
+   - Methods: `listJsonFiles()`, `listDirectories()`, `readJson()`, `writeJson()`
+   - Used in: tasks.js, flows.js, tools.js (routes cleaned up)
+   - Status: ✅ Complete
+
+3. **validateParam Wrapper** → Eliminated 15+ validation try-catch patterns
+   - New middleware: `src/middleware/param-validator.js` (24 lines)
+   - Functions: `validateParam()`, `validateRequired()`, `validateType()`
+   - Applied to: tasks.js, flows.js, tools.js validation endpoints
+   - Status: ✅ Complete
+
+**Impact:**
+- Reduced error-factory.js: 62→42 lines (32% reduction)
+- Eliminated 40+ lines of duplicated directory listing code
+- Consolidated 15+ identical validation patterns into 3 reusable functions
+- Created FileStore service for 100% code reuse across 3 route files
+- Total lines saved: ~60 lines (15% reduction in affected routes)
+
+**Next Steps (Phase 1 Complete → Phase 2):**
+- Create TaskRepository/FlowRepository data access layers
+- Extract service layer (TaskService, FlowService)
+- Implement dependency injection
+- Add WebSocket subscription handler factory
 
 ## Phase 8: Comprehensive Security Audit & Hardening (Dec 1, 2025)
 

@@ -1,0 +1,23 @@
+{
+  "name": "@sequential/data-access-layer",
+  "version": "1.0.0",
+  "description": "Data access layer with repositories for task and flow operations",
+  "main": "src/index.js",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./task-repository": "./src/repositories/task-repository.js",
+    "./flow-repository": "./src/repositories/flow-repository.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-ecosystem.git",
+    "directory": "packages/data-access-layer"
+  },
+  "keywords": ["sequential", "repository", "data-access", "task", "flow"],
+  "author": "Sequential Ecosystem <contact@sequential.dev>",
+  "license": "MIT",
+  "dependencies": {
+    "fs-extra": "^11.1.1"
+  }
+}
