@@ -4,6 +4,9 @@
   "description": "Data access layer with repositories for task and flow operations",
   "main": "src/index.js",
   "type": "module",
+  "scripts": {
+    "test": "node --test test.js"
+  },
   "exports": {
     ".": "./src/index.js",
     "./task-repository": "./src/repositories/task-repository.js",

@@ -4,6 +4,9 @@
   "description": "Task execution service with validation, orchestration, and state management",
   "main": "src/index.js",
   "type": "module",
+  "scripts": {
+    "test": "node --test test.js"
+  },
   "exports": {
     ".": "./src/index.js",
     "./task-service": "./src/services/task-service.js"
