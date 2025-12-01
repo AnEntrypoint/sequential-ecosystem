@@ -1,15 +1,10 @@
-import fs from 'fs';
 import path from 'path';
+import { readJsonFile } from '@sequential/file-operations';
 
-export function showCommand(taskName, runId) {
+export async function showCommand(taskName, runId) {
   try {
     const runPath = path.join(process.cwd(), 'tasks', taskName, 'runs', `${runId}.json`);
-
-    if (!fs.existsSync(runPath)) {
-      throw new Error(`Run '${runId}' not found`);
-    }
-
-    const runData = JSON.parse(fs.readFileSync(runPath, 'utf-8'));
+    const runData = await readJsonFile(runPath);
     console.log(JSON.stringify(runData, null, 2));
   } catch (e) {
     console.error('Error:', e instanceof Error ? e.message : String(e));

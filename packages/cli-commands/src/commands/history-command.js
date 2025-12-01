@@ -1,7 +1,8 @@
 import fs from 'fs';
 import path from 'path';
+import { readJsonFiles } from '@sequential/file-operations';
 
-export function historyCommand(taskName, options) {
+export async function historyCommand(taskName, options) {
   try {
     const taskFile = path.join(process.cwd(), 'tasks', `${taskName}.js`);
     const runsDir = path.join(process.cwd(), 'tasks', taskName, 'runs');
@@ -15,16 +16,14 @@ export function historyCommand(taskName, options) {
       return;
     }
 
-    const runs = fs.readdirSync(runsDir)
-      .filter(f => f.endsWith('.json'))
-      .map(f => {
-        const data = JSON.parse(fs.readFileSync(path.join(runsDir, f), 'utf-8'));
-        return {
-          id: data.id,
-          status: data.status,
-          completedAt: data.completedAt
-        };
-      })
+    const results = await readJsonFiles(runsDir);
+    const runs = results
+      .filter(r => r.content)
+      .map(r => ({
+        id: r.content.id,
+        status: r.content.status,
+        completedAt: r.content.completedAt
+      }))
       .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
       .slice(0, parseInt(options.limit));
 
