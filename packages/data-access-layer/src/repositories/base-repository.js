@@ -1,5 +1,11 @@
 import path from 'path';
 import fs from 'fs-extra';
+import {
+  readJsonFile as readJsonFileUtil,
+  readJsonFileOptional as readJsonFileOptionalUtil,
+  writeFileAtomicJson,
+  listFiles
+} from '@sequential/file-operations';
 
 /**
  * BaseRepository - Abstract base class for all repositories
@@ -69,17 +75,16 @@ export class BaseRepository {
    * @returns {object} - Parsed JSON object
    * @throws {Error} - 404 if file doesn't exist, or parse error
    */
-  readJsonFile(filePath, context = 'file') {
-    if (!fs.existsSync(filePath)) {
-      const err = new Error(`${this.entityName} ${context} not found`);
-      err.status = 404;
-      err.code = 'NOT_FOUND';
-      throw err;
-    }
-
+  async readJsonFile(filePath, context = 'file') {
     try {
-      return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      return await readJsonFileUtil(filePath);
     } catch (e) {
+      if (e.code === 'ENOENT') {
+        const err = new Error(`${this.entityName} ${context} not found`);
+        err.status = 404;
+        err.code = 'NOT_FOUND';
+        throw err;
+      }
       throw new Error(`Invalid ${this.entityName.toLowerCase()} ${context}: ${e.message}`);
     }
   }
@@ -93,13 +98,9 @@ export class BaseRepository {
    * @param {string} filePath - Full path to JSON file
    * @returns {object|null} - Parsed JSON or null
    */
-  readJsonFileOptional(filePath) {
-    if (!fs.existsSync(filePath)) {
-      return null;
-    }
-
+  async readJsonFileOptional(filePath) {
     try {
-      return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      return await readJsonFileOptionalUtil(filePath);
     } catch (e) {
       if (process.env.DEBUG) {
         console.warn(`Failed to parse ${filePath}: ${e.message}`);
@@ -109,18 +110,18 @@ export class BaseRepository {
   }
 
   /**
-   * writeJsonFile - Safely write JSON files
+   * writeJsonFile - Safely write JSON files with atomic operation
    *
+   * Uses atomic write (temp file + rename) for crash safety
    * Ensures parent directory exists before writing
    *
    * @param {string} filePath - Full path to JSON file
    * @param {object} data - Object to serialize
    * @throws {Error} - Write error
    */
-  writeJsonFile(filePath, data) {
+  async writeJsonFile(filePath, data) {
     try {
-      fs.ensureDirSync(path.dirname(filePath));
-      fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+      await writeFileAtomicJson(filePath, data);
     } catch (e) {
       const err = new Error(`Failed to write ${this.entityName.toLowerCase()}: ${e.message}`);
       err.status = 500;
@@ -130,22 +131,14 @@ export class BaseRepository {
   }
 
   /**
-   * writeJsonFileAsync - Async version of writeJsonFile
+   * writeJsonFileAsync - Alias for writeJsonFile (now always async)
    *
    * @param {string} filePath - Full path to JSON file
    * @param {object} data - Object to serialize
    * @throws {Error} - Write error
    */
   async writeJsonFileAsync(filePath, data) {
-    try {
-      await fs.ensureDir(path.dirname(filePath));
-      await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf8');
-    } catch (e) {
-      const err = new Error(`Failed to write ${this.entityName.toLowerCase()}: ${e.message}`);
-      err.status = 500;
-      err.code = 'WRITE_ERROR';
-      throw err;
-    }
+    return this.writeJsonFile(filePath, data);
   }
 
   /**
@@ -157,23 +150,26 @@ export class BaseRepository {
    *
    * @returns {array} - Array of entities with metadata
    */
-  getAll() {
+  async getAll() {
     if (!fs.existsSync(this.baseDir)) {
       return [];
     }
 
     try {
-      return fs.readdirSync(this.baseDir)
-        .filter(f => fs.statSync(path.join(this.baseDir, f)).isDirectory())
-        .map(name => {
-          let result = { name, id: name };
-          const configPath = path.join(this.baseDir, name, 'config.json');
-          const configData = this.readJsonFileOptional(configPath);
-          if (configData) {
-            result = { ...result, ...configData };
-          }
-          return result;
-        });
+      const dirs = fs.readdirSync(this.baseDir)
+        .filter(f => fs.statSync(path.join(this.baseDir, f)).isDirectory());
+
+      const results = [];
+      for (const name of dirs) {
+        let result = { name, id: name };
+        const configPath = path.join(this.baseDir, name, 'config.json');
+        const configData = await this.readJsonFileOptional(configPath);
+        if (configData) {
+          result = { ...result, ...configData };
+        }
+        results.push(result);
+      }
+      return results;
     } catch (err) {
       if (process.env.DEBUG) {
         console.error(`Error reading ${this.entityName.toLowerCase()} directory: ${err.message}`);
@@ -190,25 +186,31 @@ export class BaseRepository {
    *
    * @returns {array} - Array of parsed JSON objects
    */
-  getAllFiles() {
+  async getAllFiles() {
     if (!fs.existsSync(this.baseDir)) {
       return [];
     }
 
     try {
-      const files = fs.readdirSync(this.baseDir)
-        .filter(f => f.endsWith('.json'));
+      const files = await listFiles(this.baseDir, {
+        extensions: '.json',
+        fullPath: true
+      });
 
-      return files.map(f => {
+      const results = [];
+      for (const filePath of files) {
         try {
-          return JSON.parse(fs.readFileSync(path.join(this.baseDir, f), 'utf8'));
+          const data = await readJsonFileOptionalUtil(filePath);
+          if (data) {
+            results.push(data);
+          }
         } catch (e) {
           if (process.env.DEBUG) {
-            console.warn(`Failed to parse ${f}: ${e.message}`);
+            console.warn(`Failed to parse ${path.basename(filePath)}: ${e.message}`);
           }
-          return null;
         }
-      }).filter(Boolean);
+      }
+      return results;
     } catch (err) {
       if (process.env.DEBUG) {
         console.error(`Error reading ${this.entityName.toLowerCase()} files: ${err.message}`);
