@@ -1,21 +1,23 @@
-import fs from 'fs';
 import path from 'path';
+import { readJsonFile, writeFileAtomicJson } from '@sequential/file-operations';
 
 const CONFIG_FILE = path.join(process.cwd(), '.sequentialrc.json');
 
-export function loadConfig() {
-  if (!fs.existsSync(CONFIG_FILE)) {
-    throw new Error(`Config file not found: ${CONFIG_FILE}. Run 'sequential-ecosystem init' first.`);
-  }
-  return JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf-8'));
+export async function loadConfig() {
+  return await readJsonFile(CONFIG_FILE, {
+    default: { error: `Config file not found: ${CONFIG_FILE}. Run 'sequential-ecosystem init' first.` }
+  }).then(config => {
+    if (config.error) throw new Error(config.error);
+    return config;
+  });
 }
 
-export function saveConfig(config) {
-  fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2));
+export async function saveConfig(config) {
+  await writeFileAtomicJson(CONFIG_FILE, config);
 }
 
-export function getConfig(key) {
-  const config = loadConfig();
+export async function getConfig(key) {
+  const config = await loadConfig();
   const keys = key.split('.');
 
   let value = config;
@@ -30,8 +32,8 @@ export function getConfig(key) {
   return value;
 }
 
-export function setConfig(key, value) {
-  const config = loadConfig();
+export async function setConfig(key, value) {
+  const config = await loadConfig();
   const keys = key.split('.');
 
   let current = config;
@@ -43,11 +45,11 @@ export function setConfig(key, value) {
   }
 
   current[keys[keys.length - 1]] = value;
-  saveConfig(config);
+  await saveConfig(config);
 }
 
-export function showConfig() {
-  const config = loadConfig();
+export async function showConfig() {
+  const config = await loadConfig();
   console.log('Sequential Ecosystem Configuration:');
   console.log(JSON.stringify(config, null, 2));
 }
