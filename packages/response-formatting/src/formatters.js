@@ -67,7 +67,7 @@ export function formatError(httpCode, error) {
   };
 }
 
-export function respondWith(res, formatter) {
+export function formatHttpResponse(res, formatter) {
   return {
     ok: (data, meta) => {
       const response = formatter ? formatter(data, meta) : formatResponse(data, meta);

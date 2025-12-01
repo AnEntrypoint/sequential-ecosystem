@@ -20,7 +20,7 @@ const ERROR_CATEGORIES = {
  * @returns {string} The error category from ERROR_CATEGORIES
  * @private
  */
-function categorizeError(error) {
+function getErrorCategory(error) {
   const message = error.message || '';
   const code = error.code || '';
 
@@ -164,7 +164,7 @@ export function normalizeError(error) {
  * @returns {Object} Log entry object with timestamp, category, severity
  */
 export function logFileOperation(operation, filePath, error, context = {}) {
-  const category = categorizeError(error);
+  const category = getErrorCategory(error);
   const timestamp = new Date().toISOString();
   const stackTrace = getStackTrace(error);
 
@@ -224,7 +224,7 @@ export function logFileSuccess(operation, filePath, duration = 0, metadata = {})
  * @returns {Object} Log entry object with batch operation details
  */
 export function logBatchFileOperation(operation, fileCount, error, duration = 0) {
-  const category = error ? categorizeError(error) : 'SUCCESS';
+  const category = error ? getErrorCategory(error) : 'SUCCESS';
   const timestamp = new Date().toISOString();
 
   const logEntry = {
@@ -257,7 +257,7 @@ export function logBatchFileOperation(operation, fileCount, error, duration = 0)
  * @returns {Object} Error response object with error details and statusCode
  */
 export function createDetailedErrorResponse(operation, filePath, error, statusCode = 500) {
-  const category = categorizeError(error);
+  const category = getErrorCategory(error);
   const userMessage = getUserFriendlyMessage(category, operation);
 
   return {

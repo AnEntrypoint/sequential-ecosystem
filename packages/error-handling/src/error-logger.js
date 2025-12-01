@@ -10,7 +10,7 @@ const ERROR_CATEGORIES = {
   UNKNOWN: 'UNKNOWN'
 };
 
-function categorizeError(error) {
+function getErrorCategory(error) {
   const message = error.message || '';
   const code = error.code || '';
 
@@ -45,7 +45,7 @@ function getStackTrace(error, limit = 5) {
 }
 
 export function logFileOperation(operation, filePath, error, context = {}) {
-  const category = categorizeError(error);
+  const category = getErrorCategory(error);
   const timestamp = new Date().toISOString();
   const stackTrace = getStackTrace(error);
 
@@ -89,7 +89,7 @@ export function logFileSuccess(operation, filePath, duration = 0, metadata = {})
 }
 
 export function logBatchFileOperation(operation, fileCount, error, duration = 0) {
-  const category = error ? categorizeError(error) : 'SUCCESS';
+  const category = error ? getErrorCategory(error) : 'SUCCESS';
   const timestamp = new Date().toISOString();
 
   const logEntry = {
@@ -130,7 +130,7 @@ function getSeverity(category) {
 }
 
 export function createDetailedErrorResponse(operation, filePath, error, statusCode = 500) {
-  const category = categorizeError(error);
+  const category = getErrorCategory(error);
   const userMessage = getUserFriendlyMessage(category, operation);
 
   return {
