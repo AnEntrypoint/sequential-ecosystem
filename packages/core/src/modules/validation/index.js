@@ -26,7 +26,13 @@ export function validateFilePath(filePath) {
     realPath = fs.realpathSync(normalizedPath);
   } catch (err) {
     if (err.code === 'ENOENT') {
-      realPath = normalizedPath;
+      const parentDir = path.dirname(normalizedPath);
+      try {
+        const realParent = fs.realpathSync(parentDir);
+        realPath = path.join(realParent, path.basename(normalizedPath));
+      } catch (parentErr) {
+        realPath = normalizedPath;
+      }
     } else {
       throw createForbiddenError('Access denied: cannot access file system');
     }

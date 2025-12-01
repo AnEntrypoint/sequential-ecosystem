@@ -7,12 +7,21 @@
   "exports": {
     ".": "./src/index.js"
   },
-  "files": ["src"],
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "test": "node --test tests/**/*.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/AnEntrypoint/sequential-ecosystem.git",
     "directory": "packages/file-operations"
   },
-  "engines": {"node": ">=18.0.0"},
-  "dependencies": {}
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "fs-extra": "^11.1.1"
+  }
 }

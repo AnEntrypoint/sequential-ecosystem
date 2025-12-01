@@ -28,7 +28,5 @@
   ],
   "author": "Sequential Ecosystem <contact@sequential.dev>",
   "license": "MIT",
-  "dependencies": {
-    "fs-extra": "^11.1.1"
-  }
+  "dependencies": {}
 }

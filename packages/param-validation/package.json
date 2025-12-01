@@ -8,6 +8,9 @@
     ".": "./src/index.js"
   },
   "files": ["src"],
+  "scripts": {
+    "test": "node --test tests/**/*.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/AnEntrypoint/sequential-ecosystem.git",

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { randomUUID } from 'crypto';
-import { createAdapter } from 'sequential-adaptor';
+import { createAdapter } from '@sequential/sequential-adaptor';
 
 export async function runTask(options) {
   const { taskName, input = {}, save = false, dryRun = false, verbose = false } = options;

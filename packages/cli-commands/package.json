@@ -25,8 +25,8 @@
     "url": "https://github.com/AnEntrypoint/sequential-cli-commands.git"
   },
   "dependencies": {
-    "sequential-runner": "^1.0.0",
-    "sequential-adaptor": "^1.0.0",
+    "@sequential/sequential-runner": "^1.0.0",
+    "@sequential/sequential-adaptor": "^1.0.0",
     "commander": "^11.0.0"
   },
   "engines": {

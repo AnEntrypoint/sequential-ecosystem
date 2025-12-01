@@ -29,10 +29,29 @@ export class BaseRepository {
    */
   validatePath(id) {
     const fullPath = path.join(this.baseDir, id);
-    const realPath = path.resolve(fullPath);
-    const baseReal = path.resolve(this.baseDir);
+    const baseReal = fs.realpathSync(path.resolve(this.baseDir));
 
-    if (!realPath.startsWith(baseReal)) {
+    let realPath;
+    try {
+      realPath = fs.realpathSync(path.resolve(fullPath));
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        const parentDir = path.dirname(fullPath);
+        try {
+          const realParent = fs.realpathSync(path.resolve(parentDir));
+          realPath = path.join(realParent, path.basename(fullPath));
+        } catch (parentErr) {
+          realPath = path.resolve(fullPath);
+        }
+      } else {
+        const error = new Error(`Access to ${this.entityName.toLowerCase()} '${id}' denied`);
+        error.status = 403;
+        error.code = 'FORBIDDEN';
+        throw error;
+      }
+    }
+
+    if (!realPath.startsWith(baseReal + path.sep) && realPath !== baseReal) {
       const err = new Error(`Access to ${this.entityName.toLowerCase()} '${id}' denied`);
       err.status = 403;
       err.code = 'FORBIDDEN';
