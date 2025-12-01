@@ -23,6 +23,7 @@
   "dependencies": {
     "dotenv": "^16.4.7",
     "@sequential/sequential-flow": "^1.0.0",
+    "@sequential/core-config": "^1.0.0",
     "sequential-wrapper": "^2.0.0",
     "@sequential/sequential-adaptor": "^1.0.0",
     "@sequential/sequential-utils": "^1.0.0"
