@@ -1,20 +1,29 @@
-# Documentation Archive
+# Sequential Ecosystem Documentation
 
-This directory contains archived documentation from refactoring phases.
+This directory contains archived documentation from previous development phases.
 
-## Current Documentation
-See root directory for:
-- README.md (main documentation)
-- CLAUDE.md (architecture guide)
-- CHANGELOG.md (version history)
-- AGENTS.md (agent guidelines)
-- TODO.md (active tasks)
+## Core Documentation (Root)
+
+**Active, maintained documentation in the repository root:**
+
+- **README.md** - Quick start and deployment guide
+- **CLAUDE.md** - Architecture reference, patterns, and deployment guide
+- **CHANGELOG.md** - Version history and changes
+- **AGENTS.md** - Guidelines for agentic coding
+- **TODO.md** - Execution roadmap and task tracking
 
 ## Archive
-This `archive/` directory contains:
-- Audit reports and analysis documents
-- Completed refactoring plans
-- Status snapshots and reports
-- Old naming convention documents
 
-These are kept for historical reference but are not actively maintained.
+This `archive/` subdirectory contains historical documentation from completed phases:
+
+- Architectural analyses and reviews
+- Dependency audit reports
+- Phase summaries and planning documents
+- Security audits
+- Testing reports
+
+These files are preserved for historical reference but are superseded by current documentation in the root.
+
+## Using This Repository
+
+Start with **README.md** in the root directory for quick-start instructions, then refer to **CLAUDE.md** for architecture, patterns, and technical guidance.
