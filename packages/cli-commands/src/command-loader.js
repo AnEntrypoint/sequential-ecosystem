@@ -1,16 +1,17 @@
-import fs from 'fs';
 import path from 'path';
+import { existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { register, list, get } from '@sequential/sequential-adaptor';
+import { listFiles } from '@sequential/file-operations';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export async function loadCommands(commandsDir) {
   const dir = commandsDir || path.join(__dirname, 'commands');
-  if (!fs.existsSync(dir)) return;
+  if (!existsSync(dir)) return;
 
-  const files = fs.readdirSync(dir).filter(f => f.endsWith('.js'));
+  const files = await listFiles(dir, { extensions: '.js' });
   for (const file of files) {
     const modulePath = path.join(dir, file);
     const mod = await import(`file://${modulePath}`);
