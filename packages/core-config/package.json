@@ -8,7 +8,9 @@
     ".": "./src/index.js",
     "./defaults": "./src/defaults.js",
     "./server": "./src/server.js",
-    "./services": "./src/services.js"
+    "./services": "./src/services.js",
+    "./validate": "./src/validate.js",
+    "./schema": "./src/schema.js"
   },
   "repository": {
     "type": "git",
