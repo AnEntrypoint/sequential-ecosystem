@@ -1,16 +1,16 @@
 # Sequential Ecosystem - Architecture Reference
 
 ## Status
-**Last Updated**: Dec 1, 2025 (Week 1-2 Complete)
-**State**: True modular monorepo with 14 packages, enterprise-grade architecture, unified patterns, atomic operations throughout
+**Last Updated**: Dec 1, 2025 (Week 2 Complete - 4/5 P2 Tasks)
+**State**: True modular monorepo with 15+ packages, enterprise-grade architecture, unified patterns, environment validation
 **Phase 9 Status**: ✅ COMPLETE - All 8 infrastructure packages extracted and integrated
-**Week 1 (SAFE)**: ✅ COMPLETE - Core consolidation, BaseRepository, naming standards, documentation (100% packages documented)
-**Week 2 (TRANSIT) P2.1**: ✅ COMPLETE - Desktop-server split (334→140 lines, 58% reduction), 4 focused modules created
-**Week 2 (TRANSIT) P2.2**: ✅ COMPLETE - @sequential/core fully typed (JSDoc + .d.ts for error & validation modules)
-**Week 2 (TRANSIT) P2.3**: ✅ COMPLETE - File-operations consolidation (17 files migrated, 45% of 38 total)
-**Week 2 (TRANSIT) P2.4**: ✅ COMPLETE - Configuration centralization via @sequential/core-config (18+ hardcoded values)
-**Week 2 (TRANSIT) P2.5**: ✅ COMPLETE - Factory wrappers package created (@sequential/factory-wrappers with 18 functions)
-**Key Files**: CLAUDE.md (this file), TODO.md (execution roadmap), CHANGELOG.md (commit log)
+**Week 1 (SAFE)**: ✅ COMPLETE - Documentation organization (11 files moved to docs/archive/)
+**Week 2 (TRANSIT) P2.1**: ✅ COMPLETE - Desktop-server extraction (8 infrastructure packages)
+**Week 2 (TRANSIT) P2.2**: ✅ COMPLETE - Package CLAUDE.md generation (100% coverage)
+**Week 2 (TRANSIT) P2.3**: ✅ COMPLETE - ENV Configuration Consolidation via @sequential/core-config (68 env vars, startup validation)
+**Week 2 (TRANSIT) P2.4**: ✅ COMPLETE - Error handling standardization (@sequential/core, @sequential/error-handling)
+**Week 2 (TRANSIT) P2.5**: ⏳ PENDING - Naming convention cleanup (12 hours, 200+ files, AST-based refactoring)
+**Key Files**: CLAUDE.md (this file), TODO.md (execution roadmap), ENV.md (environment reference), CHANGELOG.md (commit log)
 
 ## Phase 9: Comprehensive Monorepo Refactoring (Dec 1, 2025 - COMPLETE ✅)
 
@@ -177,7 +177,62 @@ Each phase follows same pattern:
 - ✅ Strongly typed via exports
 - ✅ No magic numbers in code
 
-### Phase 2.5: Factory Wrappers Package (COMPLETE)
+### Phase 2.3: ENV Configuration Consolidation (COMPLETE - Dec 1, 2025)
+
+**Problem**: 64 environment variables scattered across codebase with no centralized validation or type safety
+
+**Solution**: Created @sequential/core-config with schema-based validation and startup checks
+
+**Implementation**:
+
+1. **EnvSchema Class** (`schema.js`) - Declarative environment variable definitions
+   - Type coercion: STRING, NUMBER, BOOLEAN, PORT, URL, ENUM
+   - Validation rules: required, default, description, values
+   - Pure JavaScript (no external dependencies)
+
+2. **ConfigValidator Class** (`validate.js`) - Startup validation
+   - Validates all 68 environment variables
+   - Type-safe coercion with clear error messages
+   - Config.get(key) and config.getAll() methods
+   - Prints schema help on validation failure
+
+3. **Environment Variables** (68 total, organized by category)
+   - **Core**: PORT, HOST, NODE_ENV, DEBUG, PROTOCOL, HOSTNAME
+   - **CORS**: CORS_ORIGIN, CORS_CREDENTIALS
+   - **Request Handling**: REQUEST_LOG_THRESHOLD, REQUEST_SIZE_LIMIT, REQUEST_TIMEOUT
+   - **Rate Limiting**: RATE_LIMIT_WINDOW, RATE_LIMIT_MAX, RATE_LIMIT_CLEANUP, WS_MAX_CONNECTIONS_PER_IP, WS_CLEANUP_INTERVAL_MS
+   - **File Operations**: ECOSYSTEM_PATH, VFS_DIR, MAX_FILE_SIZE_BYTES, MAX_FILE_NAME_LENGTH, MAX_TASK_NAME_LENGTH
+   - **Services**: DENO_EXECUTOR_*, STACK_PROCESSOR_*, TASK_EXECUTOR_*, GAPI_*, KEYSTORE_*, SUPABASE_*, OPENAI_*, WEBSEARCH_*, ADMIN_DEBUG_*
+   - **Other**: SEQUENTIAL_MACHINE_*, DATABASE_URL, ZELLOUS_DATA, USER_AGENT_MAX_LENGTH, OP_LOG_MAX_SIZE, etc.
+
+4. **Integration Points**
+   - `desktop-server`: validateEnvironment() called at startup
+   - `sequential-runner`: vfs.js and host-tools.js use validator.get('DEBUG')
+   - Other packages: Can import validator for configuration access
+
+5. **Documentation**
+   - Created ENV.md with complete reference guide
+   - Includes type coercion rules, development examples, troubleshooting
+   - Migration guide from hardcoded values
+
+**Type Validation Examples**:
+```javascript
+PORT: 'invalid'     → Error: "must be a valid port (1-65535)"
+NODE_ENV: 'prod'    → Error: "must be one of development, production, test"
+DEBUG: 'true'       → Success: true (coerced)
+TIMEOUT: '30000'    → Success: 30000 (parsed as number)
+```
+
+**Benefits**:
+- ✅ All environment variables validated on startup
+- ✅ Clear error messages with schema help
+- ✅ Type-safe coercion (no silent NaN or undefined)
+- ✅ No external dependencies
+- ✅ Centralized configuration source
+- ✅ 12-factor app compliant
+- ✅ Easy to add new variables
+
+### Phase 2.5: Factory Wrappers Package (SUPERSEDED)
 
 **Problem**: Repeated boilerplate for creating common objects (rate limiters, HTTP clients, storage adapters)
 
