@@ -1,3 +1,16 @@
+export {
+  buildErrorResponse,
+  validationError,
+  notFoundError,
+  forbiddenError,
+  conflictError,
+  unprocessableError,
+  internalError,
+  sendError,
+  ErrorCode,
+  STATUS_CODES
+} from './error-responses.js';
+
 export function createErrorResponse(code, message, extra = {}) {
   return {
     error: {
