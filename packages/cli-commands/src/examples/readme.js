@@ -1,7 +1,7 @@
-import fs from 'fs';
 import path from 'path';
+import { writeFileAtomicString } from '@sequential/file-operations';
 
-export function createExamplesReadme(tasksDir) {
+export async function createExamplesReadme(tasksDir) {
   const readmeFile = path.join(tasksDir, 'EXAMPLES.md');
 
   const content = `# Sequential Ecosystem Examples
@@ -355,6 +355,6 @@ npx sequential-ecosystem run example-simple-flow --input '{}'
 For questions and issues, see the main repository documentation.
 `;
 
-  fs.writeFileSync(readmeFile, content);
+  await writeFileAtomicString(readmeFile, content);
   console.log(`  ✓ Created comprehensive EXAMPLES.md`);
 }

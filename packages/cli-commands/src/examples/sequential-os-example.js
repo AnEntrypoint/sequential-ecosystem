@@ -1,5 +1,5 @@
-import fs from 'fs';
 import path from 'path';
+import { writeFileAtomicString } from '@sequential/file-operations';
 
 export async function createSequentialOSExample(tasksDir) {
   const taskName = 'example-sequential-os';
@@ -61,6 +61,6 @@ export async function ${taskName.replace(/-/g, '_')}(input) {
 }
 `;
 
-  fs.writeFileSync(taskPath, content);
+  await writeFileAtomicString(taskPath, content);
   console.log(`  ✓ Created Sequential-OS example: ${taskName}.js`);
 }

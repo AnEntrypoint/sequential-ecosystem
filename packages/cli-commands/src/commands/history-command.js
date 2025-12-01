@@ -1,17 +1,17 @@
-import fs from 'fs';
 import path from 'path';
 import { readJsonFiles } from '@sequential/file-operations';
+import fs from 'fs-extra';
 
 export async function historyCommand(taskName, options) {
   try {
     const taskFile = path.join(process.cwd(), 'tasks', `${taskName}.js`);
     const runsDir = path.join(process.cwd(), 'tasks', taskName, 'runs');
 
-    if (!fs.existsSync(taskFile)) {
+    if (!await fs.pathExists(taskFile)) {
       throw new Error(`Task '${taskName}' not found`);
     }
 
-    if (!fs.existsSync(runsDir)) {
+    if (!await fs.pathExists(runsDir)) {
       console.log('No execution history');
       return;
     }

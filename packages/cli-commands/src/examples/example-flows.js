@@ -1,9 +1,9 @@
-import fs from 'fs';
 import path from 'path';
+import { ensureDirectory, writeFileAtomicString } from '@sequential/file-operations';
 
-export function createExampleFlows(tasksDir) {
+export async function createExampleFlows(tasksDir) {
   const flowsDir = path.join(tasksDir, 'flows');
-  fs.mkdirSync(flowsDir, { recursive: true });
+  await ensureDirectory(flowsDir);
 
   const flows = [
     {
@@ -108,7 +108,7 @@ export function createExampleFlows(tasksDir) {
 
   for (const flow of flows) {
     const filePath = path.join(flowsDir, flow.name);
-    fs.writeFileSync(filePath, JSON.stringify(flow.content, null, 2));
+    await writeFileAtomicString(filePath, JSON.stringify(flow.content, null, 2));
     console.log(`  ✓ Created example flow: ${flow.name}`);
   }
 
