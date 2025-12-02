@@ -564,14 +564,48 @@ packages/sequential-os-http/
 
 **Commits**: c3efe44
 
+### Issue #7: Create StateManager with Lifecycle Management (8 hours) ✅ COMPLETE
+
+**Problem**: Unbounded in-memory Maps causing memory leaks in long-running servers
+- storage-observer.js: 5 Maps (runs, tasks, flows, tools, appState) grow indefinitely
+- No cleanup mechanism or TTL
+- No lifecycle management
+- Hard to test (module-level state)
+
+**Solution**: New package **@sequential/persistent-state** with StateManager
+
+**Implementation** (429 lines, 6 files):
+- **StateManager**: Core class with TTL, cleanup, LRU eviction, graceful shutdown
+- **FileSystemAdapter**: Persistent storage (JSON files per type/id)
+- **MemoryAdapter**: In-memory only for testing
+- **INTEGRATION-GUIDE.md**: 5-phase rollout plan for desktop-server (5-7 hours)
+
+**Features**:
+- ✅ Bounded cache (configurable maxSize, default 1000)
+- ✅ TTL-based expiry (configurable, default 5 minutes)
+- ✅ Automatic periodic cleanup (configurable, default 1 minute)
+- ✅ LRU eviction when full
+- ✅ Graceful shutdown with resource cleanup
+- ✅ Pluggable adapter pattern (filesystem, memory, or custom)
+- ✅ Cache statistics monitoring
+
+**Integration Path**:
+1. Phase 1: Add dependency (15 min)
+2. Phase 2: Initialize StateManager (30 min)
+3. Phase 3: Update storage-observer routes (1-2 hours)
+4. Phase 4: Persist task execution data (1-2 hours)
+5. Phase 5: Add monitoring endpoints (30 min)
+
+**Status**: ✅ Package complete with documentation, ready for desktop-server integration
+
 ### P3.2 Readiness Checklist ✅
 
-**Critical Blockers - CLEARED**:
+**Critical Blockers - ALL CLEARED**:
 - ✅ Issue #2: Sequential-OS route duplication → Extracted into @sequential/sequential-os-http
 - ✅ Issue #5: Error response inconsistency → Centralized in @sequential/error-handling
-- ⚠️ Issue #7: In-memory singletons (RISK zone) → Can address separately or defer
+- ✅ Issue #7: In-memory singletons → StateManager with lifecycle management
 
-**Status**: 🟢 READY FOR P3.2 PLANNING
+**Status**: 🟢 READY FOR P3.2 PLANNING AND EXECUTION
 
 ---
 
