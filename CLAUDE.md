@@ -136,13 +136,21 @@ Commits: fix, feat, refactor, docs, test, chore
 - **CHANGELOG.md** (continuous updates)
 - **ENV.md** (full environment reference)
 
-## Recent (Phase 7)
+## Recent (Phase 8 - Critical Reassessment)
+⚠️ Comprehensive analysis under "be extra critical" mandate revealed:
+- Phase 7 consolidated CRITICAL path in core sequential packages (error module, CRUD patterns, utilities)
+- Remaining non-critical duplication identified in peripheral packages (zellous, sequential-machine, sequential-runner, sequential-wrapped-services)
+- Core sequential packages now compliant with DRY + modularity goals
+- Architectural debt documented for Phase 9: 9 files >200 lines in peripheral packages (zellous, sequential-wrapped-services, sequential-adaptor-sqlite, sequential-wrapper)
+- Decision: Defer peripheral refactoring (ROI diminishing, complexity high) unless blocking new features
+
+## Phase 7
 ✅ Consolidated CRUD patterns: 308 → 220 lines, eliminated 88 lines of duplication via private factory methods + configuration objects
 ✅ Extracted path validation utilities: validateAndResolvePath, createTimer → @sequential/server-utilities (reused across 13+ route files)
 ✅ Split error module (282 → 12 lines, 95% reduction): error-categories.js, error-serializer.js, error-logger.js + barrel export
 ✅ Unified CONFIG: Merged core-config + server-utilities settings, added type safety (parseInt), CORS, hot-reload support
 ✅ Maximum modularity achieved: DRY refactoring reduced technical debt, improved extensibility
 
-## Previous (Phase 6)
+## Phase 6
 ✅ Sanitization consolidation: escapeHtml, sanitizeInput → @sequential/param-validation
 ✅ 16 tests passing, array handling fixed | Commit: 59a6f8b
