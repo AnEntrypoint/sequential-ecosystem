@@ -1,6 +1,6 @@
 import path from 'path';
 import { existsSync } from 'fs';
-import { listFiles, readFile } from 'fs-extra';
+import fse from 'fs-extra';
 
 export async function syncTasks(options = {}) {
   const { adaptor = 'default', task, verbose = false } = options;
@@ -16,7 +16,8 @@ export async function syncTasks(options = {}) {
   if (task) {
     taskFiles = [`${task}.js`];
   } else {
-    taskFiles = await listFiles(tasksDir, { extensions: '.js' });
+    const files = await fse.readdir(tasksDir);
+    taskFiles = files.filter(f => f.endsWith('.js'));
   }
 
   let synced = 0;
@@ -32,7 +33,7 @@ export async function syncTasks(options = {}) {
         continue;
       }
 
-      const code = await readFile(taskPath, 'utf-8');
+      const code = await fse.readFile(taskPath, 'utf-8');
       const taskModule = await import(`file://${taskPath}`);
       const config = taskModule.config || {};
 

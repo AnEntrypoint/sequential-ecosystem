@@ -1,6 +1,6 @@
 import path from 'path';
 import { existsSync } from 'fs';
-import { remove } from 'fs-extra';
+import fse from 'fs-extra';
 
 export async function deleteCommand(taskName, options) {
   try {
@@ -16,7 +16,7 @@ export async function deleteCommand(taskName, options) {
       return;
     }
 
-    await remove(taskDir);
+    await fse.remove(taskDir);
     console.log(`✓ Task '${taskName}' deleted`);
   } catch (e) {
     console.error('Error:', e instanceof Error ? e.message : String(e));

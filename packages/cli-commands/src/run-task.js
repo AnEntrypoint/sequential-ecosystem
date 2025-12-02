@@ -1,7 +1,7 @@
 import path from 'path';
 import { randomUUID } from 'crypto';
 import { existsSync } from 'fs';
-import { readFile } from 'fs-extra';
+import fse from 'fs-extra';
 import { createAdapter } from '@sequential/sequential-adaptor';
 
 export async function runTask(options) {
@@ -19,7 +19,7 @@ export async function runTask(options) {
     console.log(`Input:`, input);
   }
 
-  const code = await readFile(taskFile, 'utf-8');
+  const code = await fse.readFile(taskFile, 'utf-8');
 
   if (dryRun) {
     if (verbose) {
