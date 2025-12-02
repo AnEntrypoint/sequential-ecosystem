@@ -656,7 +656,14 @@ export async function initCommand(options) {
 
     if (options.examples !== false) {
       const { createExamples } = await import('../create-examples.js');
+      const { createExampleApps } = await import('../examples/create-apps.js');
+
       await createExamples();
+
+      const appsDir = path.join(process.cwd(), '.sequential', 'apps');
+      await ensureDirectory(appsDir);
+      console.log('\n📱 Creating example apps:');
+      await createExampleApps(appsDir);
     }
 
     console.log('\n✅ Initialized sequential-ecosystem');
@@ -678,9 +685,13 @@ export async function initCommand(options) {
       console.log('  - api-client.js: HTTP client with backoff');
       console.log('  - filesystem.js: File operations');
 
+      console.log('\n📱 Example Apps (./.sequential/apps/):');
+      console.log('  - dashboard: Task monitoring interface');
+      console.log('  - docs: Quick reference guide');
+
       console.log('\n🚀 Try it out:');
       console.log('  npx sequential-ecosystem run example-simple-flow --input \'{}\'');
-      console.log('  npx sequential-ecosystem gui  # Visual Desktop GUI');
+      console.log('  npx sequential-ecosystem gui  # Visual Desktop GUI with example apps');
     }
 
     console.log('\n📖 Documentation:');
