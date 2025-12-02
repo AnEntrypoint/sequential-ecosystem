@@ -77,6 +77,14 @@ export class StateManager {
     }
   }
 
+  async getAll(type) {
+    if (this.isShutdown) {
+      throw new Error('StateManager is shutdown');
+    }
+
+    return await this.adapter.getAll(type);
+  }
+
   _cleanupExpiredEntries() {
     const now = Date.now();
     const expired = [];

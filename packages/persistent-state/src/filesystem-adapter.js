@@ -58,6 +58,33 @@ export class FileSystemAdapter {
     }
   }
 
+  async getAll(type) {
+    try {
+      const typeDir = path.join(this.dataDir, type);
+      if (!await fs.pathExists(typeDir)) {
+        return [];
+      }
+
+      const files = await fs.readdir(typeDir);
+      const entries = [];
+
+      for (const file of files) {
+        if (file.endsWith('.json')) {
+          const filePath = path.join(typeDir, file);
+          const content = await fs.readFile(filePath, 'utf-8');
+          entries.push(JSON.parse(content));
+        }
+      }
+
+      return entries;
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        return [];
+      }
+      throw error;
+    }
+  }
+
   async shutdown() {
   }
 }

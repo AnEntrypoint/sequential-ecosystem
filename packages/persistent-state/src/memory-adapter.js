@@ -31,6 +31,17 @@ export class MemoryAdapter {
     }
   }
 
+  async getAll(type) {
+    const prefix = `${type}:`;
+    const entries = [];
+    for (const [key, value] of this.store.entries()) {
+      if (key.startsWith(prefix)) {
+        entries.push(JSON.parse(JSON.stringify(value)));
+      }
+    }
+    return entries;
+  }
+
   async shutdown() {
     this.store.clear();
   }
