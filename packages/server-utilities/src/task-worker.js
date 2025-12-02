@@ -1,14 +1,27 @@
 import { parentPort } from 'worker_threads';
 
 function extractFunctionBody(code) {
-  const exportMatch = code.match(/export\s+(?:default\s+)?(?:async\s+)?function\s+\w+\s*\([^)]*\)\s*{([\s\S]*)}(?:\s*;)?$/);
-  if (exportMatch) {
-    return exportMatch[1];
+  const openBraceIndex = code.indexOf('{');
+  if (openBraceIndex === -1) {
+    return code;
   }
 
-  const asyncMatch = code.match(/async\s+\([^)]*\)\s*=>\s*{([\s\S]*)}$/);
-  if (asyncMatch) {
-    return asyncMatch[1];
+  let braceCount = 0;
+  let closeBraceIndex = -1;
+
+  for (let i = openBraceIndex; i < code.length; i++) {
+    if (code[i] === '{') braceCount++;
+    if (code[i] === '}') {
+      braceCount--;
+      if (braceCount === 0) {
+        closeBraceIndex = i;
+        break;
+      }
+    }
+  }
+
+  if (closeBraceIndex !== -1) {
+    return code.substring(openBraceIndex + 1, closeBraceIndex);
   }
 
   return code;
