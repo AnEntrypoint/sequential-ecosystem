@@ -1,9 +1,9 @@
 # Sequential Ecosystem - Architecture Reference
 
 ## Status
-**Last Updated**: Dec 2, 2025 17:00 (Task Execution Infrastructure - Critical Fixes)
+**Last Updated**: Dec 2, 2025 17:30 (Background Task Manager Implementation)
 **State**: 47 packages, Grade A architecture, enterprise-grade, unified patterns, persistent state management with TTL/cleanup
-**Task Execution Phase**: 🔧 IN PROGRESS - Virtualized task execution with ES6 module support
+**Task Execution Phase**: ✅ COMPLETE - Virtualized task execution + Background CLI task management
 **Phase 9 Status**: ✅ COMPLETE - All 8 infrastructure packages extracted and integrated
 **Phase 10 Week 1 (SAFE)**: ✅ COMPLETE - Documentation organization (11 files archived)
 **Phase 10 Week 2 (TRANSIT)**: ✅ COMPLETE - P2.1-P2.5 all done
@@ -19,7 +19,8 @@
   - ✅ Issue #5: Centralized error response helpers in @sequential/error-handling
   - ✅ Issue #7: StateManager integration (Phase 1-5 COMPLETE)
   - ✅ Security: V1 and V2 vulnerabilities mitigated
-**Issue #7 Progress** (Dec 2, Phases 1-5 ✅ COMPLETE):
+  - ✅ CLI Tasks: Background process spawning with full lifecycle management
+**Background Task Manager** (Dec 2, New Feature ✅ COMPLETE):
   - ✅ Phase 1: Created @sequential/persistent-state package (StateManager, FileSystemAdapter, MemoryAdapter)
   - ✅ Phase 2: Integrated StateManager into desktop-server
     - Added getAll() method to StateManager, adapters
@@ -35,6 +36,68 @@
     - Returns: cacheSize, maxSize, ttlMs, cleanupIntervalMs, isShutdown
   - ✅ Phase 5: Test and verify memory reduction (StateManager verified working)
 **Key Files**: CLAUDE.md (this), TODO.md (roadmap), ENV.md (environment), NAMING-CONVENTIONS.md (naming), ARCHITECTURE-ANALYSIS.md (26KB), CHANGELOG.md (log)
+
+## Background Task Manager (Dec 2, 2025)
+
+**Status**: ✅ COMPLETE - Full lifecycle management of persistent CLI tasks
+
+### Architecture
+
+**BackgroundTaskManager** (`@sequential/server-utilities/src/background-task-manager.js`):
+- Spawn child processes via `spawn(command, args, options)`
+  - Uses process groups (detached: true) for process group management
+  - Captures stdout/stderr in real-time data events
+  - Tracks PID, status (running/completed/failed), start time, exit code, signal
+- List all tasks: `list()` returns array of process metadata
+- Get status: `status(id)` returns complete process information including duration
+- Retrieve output: `getOutput(id)` returns stdout and stderr buffers
+- Kill process: `kill(id)` sends SIGTERM to process group
+- Wait for completion: `waitFor(id)` polls until process finishes
+- Cleanup: `cleanup()` terminates all running processes (graceful shutdown integration)
+
+### API Endpoints
+
+Registered in `desktop-server/src/routes/background-tasks.js`:
+
+```
+POST /api/background-tasks/spawn
+- Body: {command, args[], options?}
+- Response: {id, pid, message}
+
+GET /api/background-tasks/list
+- Response: {tasks[], count}
+
+GET /api/background-tasks/{id}/status
+- Response: {status: {id, pid, command, args, status, duration, exitCode, signal, ...}}
+
+GET /api/background-tasks/{id}/output
+- Response: {stdout, stderr}
+
+POST /api/background-tasks/{id}/kill
+- Response: {success, message}
+
+POST /api/background-tasks/{id}/wait
+- Response: {status: {...}} (blocks until completion)
+```
+
+### Integration
+
+- Imported in `server.js` and registered as routes
+- Integrated with graceful shutdown:
+  - `graceful-shutdown.js` calls `backgroundTaskManager.cleanup()` on SIGINT/SIGTERM
+  - Ensures all spawned processes are terminated before server exits
+  - Prevents zombie processes
+
+### Testing
+
+**Test Results** (Dec 2, 17:20):
+- ✅ Spawn `ping -c 10` (13 seconds execution, exit code 0)
+- ✅ Spawn `sleep 100` and kill (SIGTERM signal properly received)
+- ✅ List endpoint shows multiple tasks with statuses
+- ✅ Status endpoint provides complete metadata (PID, duration, exit code, signal)
+- ✅ Detached process execution (processes persist after HTTP connection closes)
+
+**Use Case**: "when running cli tasks that persist, they must be spawned as background tasks" ✅ SOLVED
 
 ## Security Audit & Vulnerability Mitigation (Dec 2, 2025)
 

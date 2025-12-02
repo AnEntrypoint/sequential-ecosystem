@@ -4,6 +4,37 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] - 2025-12-02
 
+### Background Task Manager for Persistent CLI Execution (Dec 2, 2025)
+
+**Addresses architectural requirement**: "when running cli tasks that persist, they must be spawned as background tasks"
+
+1. **BackgroundTaskManager** (`@sequential/server-utilities`):
+   - Spawn detached child processes with process group management
+   - Track status (running/completed/failed), PID, exit code, signal
+   - Capture stdout/stderr output in real-time
+   - Kill processes with SIGTERM
+   - Wait for completion with polling
+   - Cleanup on graceful shutdown (SIGINT/SIGTERM)
+
+2. **API Endpoints** (desktop-server/src/routes/background-tasks.js):
+   - POST /api/background-tasks/spawn: Spawn new CLI process
+   - GET /api/background-tasks/list: List all tasks
+   - GET /api/background-tasks/{id}/status: Get task metadata
+   - GET /api/background-tasks/{id}/output: Get stdout/stderr
+   - POST /api/background-tasks/{id}/kill: Terminate process
+   - POST /api/background-tasks/{id}/wait: Wait for completion
+
+3. **Graceful Shutdown Integration**:
+   - Call backgroundTaskManager.cleanup() on SIGINT/SIGTERM
+   - Terminates all spawned processes before server exits
+   - Prevents zombie processes
+
+4. **Verification**:
+   - ✅ Spawn ping -c 10 (13s execution, exit code 0)
+   - ✅ Spawn sleep 100 and kill (SIGTERM signal received)
+   - ✅ List multiple tasks with correct statuses
+   - ✅ Detached execution (processes persist after HTTP connection closes)
+
 ### Task-to-Tool Invocation & Flow Execution (Dec 2, 2025)
 
 **Complete End-to-End Pipeline Implemented**:
