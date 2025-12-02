@@ -4,7 +4,7 @@
 **47 packages** | Grade A architecture | **Last Update**: Dec 2, 2025 | Phase 6 Complete: Sanitization Consolidation ✅
 
 ## What It Does
-Infinite-length task execution with automatic suspend/resume. Tasks pause on HTTP calls (implicit xstate) or state transitions (explicit xstate). Deployable on Node.js, Deno, or Bun without code changes.
+Infinite-length task execution with automatic suspend/resume. **Tasks** pause automatically on HTTP calls or tool invocations (implicit xstate). **Flows** provide visual orchestration to coordinate multiple tasks and tools together into larger structures (explicit xstate). Deployable on Node.js, Deno, or Bun without code changes.
 
 ## Architecture
 ```
@@ -14,8 +14,8 @@ Task → Code (implicit/explicit xstate) → Storage → Results
 ```
 
 **Two Patterns**:
-- **Implicit (80%)**: Write normal async code with `fetch()` → auto-pause/resume
-- **Explicit (20%)**: Define state graph → executor follows transitions
+- **Implicit xstate** (Tasks): Write code normally; pause auto-triggered on `fetch()` or `__callHostTool__()`. Zero state management needed.
+- **Explicit xstate** (Flows): Visual state graph coordination that calls tasks and tools together to build larger workflows. Used for orchestrating multiple tasks into bigger structures.
 
 ## Package Structure
 ```
@@ -68,26 +68,34 @@ Supabase:    Use SUPABASE_URL + SUPABASE_KEY
 
 ## Core Patterns
 
-**Creating Tasks**:
+**Tasks** (Implicit xstate - write normal code):
 ```javascript
-// Implicit (auto-pause)
 export async function myTask(input) {
-  const data = await fetch(url).then(r => r.json());  // Auto-pauses here
-  return { success: true, data };
+  const data = await fetch(url).then(r => r.json());  // Auto-pauses on HTTP call
+  const result = await __callHostTool__('db', 'query', input);  // Auto-pauses on tool call
+  return { success: true, data, result };
 }
+```
 
-// Explicit (state graph)
+**Flows** (Explicit xstate - orchestrate tasks & tools):
+```javascript
 export const graph = {
   id: 'workflow',
-  initial: 'fetch',
+  initial: 'fetchData',
   states: {
-    fetch: { onDone: 'process' },
-    process: { type: 'final' }
+    fetchData: { onDone: 'processData' },
+    processData: { onDone: 'final', onError: 'handleError' },
+    final: { type: 'final' },
+    handleError: { type: 'final' }
   }
 };
 
-export async function fetch(input) {
-  return await __callHostTool__('api', 'getData', {});
+export async function fetchData(input) {
+  return await __callHostTool__('task', 'myTask', input);  // Calls task
+}
+
+export async function processData(result) {
+  return await __callHostTool__('tool', 'transform', result);  // Calls tool
 }
 ```
 
@@ -179,7 +187,7 @@ Exceptions: `package.json`, `index.js`, `deno.json`, `.gitignore`
 
 ## Design Decisions
 
-**Why two xstate patterns?** 80% of tasks are simple async (implicit), 20% need explicit control flow
+**Why two xstate patterns?** Tasks (implicit) for normal code execution; Flows (explicit) for orchestrating multiple tasks & tools into larger structures
 **Why folder storage default?** Zero setup, Git-friendly, fast, easy debugging
 **Why storage adaptor pattern?** Swap backends without code changes (folder → SQLite → PostgreSQL)
 **Why monorepo?** Each package independently versioned and deployable
