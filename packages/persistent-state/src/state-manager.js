@@ -1,13 +1,19 @@
+import { LRUCache } from 'lru-cache';
+
 export class StateManager {
   constructor(adapter, config = {}) {
     this.adapter = adapter;
-    this.memoryCache = new Map();
     this.maxCacheSize = config.maxCacheSize || 1000;
     this.cacheTTL = config.cacheTTL || 300000;
     this.cleanupInterval = config.cleanupInterval || 60000;
     this.isShutdown = false;
 
-    this.cleanupTimer = setInterval(() => this._cleanupExpiredEntries(), this.cleanupInterval);
+    this.memoryCache = new LRUCache({
+      max: this.maxCacheSize,
+      ttl: this.cacheTTL,
+      updateAgeOnGet: false,
+      allowStale: true
+    });
   }
 
   _getCacheKey(type, id) {
@@ -22,7 +28,7 @@ export class StateManager {
     const cacheKey = this._getCacheKey(type, id);
     const cached = this.memoryCache.get(cacheKey);
 
-    if (cached) {
+    if (cached !== undefined) {
       if (Date.now() - cached.timestamp < this.cacheTTL) {
         return cached.data;
       }
@@ -46,10 +52,6 @@ export class StateManager {
 
     await this.adapter.set(type, id, data);
     this.memoryCache.set(cacheKey, { data, timestamp: Date.now() });
-
-    if (this.memoryCache.size > this.maxCacheSize) {
-      this._evictOldestEntry();
-    }
   }
 
   async delete(type, id) {
@@ -89,35 +91,6 @@ export class StateManager {
     return await this.adapter.getAll(type);
   }
 
-  _cleanupExpiredEntries() {
-    const now = Date.now();
-    const expired = [];
-
-    for (const [key, entry] of this.memoryCache.entries()) {
-      if (now - entry.timestamp > this.cacheTTL) {
-        expired.push(key);
-      }
-    }
-
-    expired.forEach(key => this.memoryCache.delete(key));
-  }
-
-  _evictOldestEntry() {
-    let oldestKey = null;
-    let oldestTime = Infinity;
-
-    for (const [key, entry] of this.memoryCache.entries()) {
-      if (entry.timestamp < oldestTime) {
-        oldestTime = entry.timestamp;
-        oldestKey = key;
-      }
-    }
-
-    if (oldestKey) {
-      this.memoryCache.delete(oldestKey);
-    }
-  }
-
   getCacheStats() {
     return {
       cacheSize: this.memoryCache.size,
@@ -132,7 +105,6 @@ export class StateManager {
     if (this.isShutdown) return;
 
     this.isShutdown = true;
-    clearInterval(this.cleanupTimer);
     this.memoryCache.clear();
     await this.adapter.shutdown();
   }
