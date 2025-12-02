@@ -1,6 +1,7 @@
 import path from 'path';
 import { existsSync } from 'fs';
 import { ensureDirectory, writeFileAtomicJson, writeFileAtomicString } from '@sequential/file-operations';
+import { generateGitignore, generateSequentialrc } from '../templates.js';
 
 function generateTechnicalDocumentation() {
   return `# Sequential Ecosystem - Complete Technical Reference
@@ -642,6 +643,16 @@ export async function initCommand(options) {
       await writeFileAtomicString(docPath, docContent);
       console.log(`✓ Created ${docPath}`);
     }
+
+    const gitignorePath = path.join(process.cwd(), '.gitignore');
+    const gitignoreContent = generateGitignore();
+    await writeFileAtomicString(gitignorePath, gitignoreContent);
+    console.log(`✓ Created ${gitignorePath}`);
+
+    const sequentialrcPath = path.join(process.cwd(), '.sequentialrc.json');
+    const sequentialrcConfig = generateSequentialrc();
+    await writeFileAtomicJson(sequentialrcPath, sequentialrcConfig);
+    console.log(`✓ Created ${sequentialrcPath}`);
 
     if (options.examples !== false) {
       const { createExamples } = await import('../create-examples.js');

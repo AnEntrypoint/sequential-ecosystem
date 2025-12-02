@@ -4,6 +4,8 @@ import { createSimpleFlowExample } from './examples/simple-flow.js';
 import { createComplexFlowExample } from './examples/complex-flow.js';
 import { createApiIntegrationExample } from './examples/api-integration.js';
 import { createBatchProcessingExample } from './examples/batch-processing.js';
+import { createPaymentFlowExample } from './examples/payment-flow.js';
+import { createResumableTaskExample } from './examples/resumable-task.js';
 import { createExamplesReadme } from './examples/readme.js';
 import { createExampleTools } from './examples/example-tools.js';
 import { createExampleFlows } from './examples/example-flows.js';
@@ -24,6 +26,8 @@ export async function createExamples() {
     createComplexFlowExample,
     createApiIntegrationExample,
     createBatchProcessingExample,
+    createPaymentFlowExample,
+    createResumableTaskExample,
     createSequentialOSExample
   ];
 
