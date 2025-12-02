@@ -14,3 +14,4 @@ export {
   validateInputSchema,
   validateAndSanitizeMetadata
 } from './schema-validation.js';
+export { escapeHtml, sanitizeInput } from './input-sanitization.js';

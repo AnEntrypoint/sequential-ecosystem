@@ -3,7 +3,7 @@
  * Parameter and input validation functions for file operations, task names, and schemas
  */
 
-import { validatePathRelative, validateTaskName as validateTaskNameSchema, validateFileName as validateFileNameSchema, validateRequired as validateRequiredFn, validateType as validateTypeFn, validateInputSchema as validateInputSchemaFn, validateAndSanitizeMetadata as validateAndSanitizeMetadataFn } from '@sequential/param-validation';
+import { validatePathRelative, validateTaskName as validateTaskNameSchema, validateFileName as validateFileNameSchema, validateRequired as validateRequiredFn, validateType as validateTypeFn, validateInputSchema as validateInputSchemaFn, validateAndSanitizeMetadata as validateAndSanitizeMetadataFn, escapeHtml as escapeHtmlFn, sanitizeInput as sanitizeInputFn } from '@sequential/param-validation';
 import { createValidationError, createForbiddenError } from '@sequential/error-handling';
 
 /**
@@ -74,41 +74,10 @@ export function validateAndSanitizeMetadata(metadata, maxSize = 10 * 1024 * 1024
   }
 }
 
-/**
- * Escape HTML special characters to prevent XSS attacks
- * @param {string} text - Text to escape
- * @returns {string} Escaped text
- */
 export function escapeHtml(text) {
-  if (!text || typeof text !== 'string') return text;
-  const map = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;',
-    '/': '&#x2F;'
-  };
-  return text.replace(/[&<>"'\/]/g, char => map[char]);
+  return escapeHtmlFn(text);
 }
 
-/**
- * Sanitize user input by trimming and optionally escaping HTML
- * Recursively sanitizes objects
- * @param {any} input - Input to sanitize
- * @param {boolean} [allowHtml=false] - Whether to allow HTML (skip escaping)
- * @returns {any} Sanitized input
- */
 export function sanitizeInput(input, allowHtml = false) {
-  if (typeof input === 'string') {
-    return allowHtml ? input.trim() : escapeHtml(input.trim());
-  }
-  if (typeof input === 'object' && input !== null) {
-    const sanitized = {};
-    for (const [key, value] of Object.entries(input)) {
-      sanitized[key] = sanitizeInput(value, allowHtml);
-    }
-    return sanitized;
-  }
-  return input;
+  return sanitizeInputFn(input, allowHtml);
 }
