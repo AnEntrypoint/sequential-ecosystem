@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs-extra';
+import { validatePath } from '@sequential/param-validation';
 import {
   readJsonFile as readJsonFileUtil,
   readJsonFileOptional as readJsonFileOptionalUtil,
@@ -34,37 +35,17 @@ export class BaseRepository {
    * @throws {Error} - 403 if path traversal detected
    */
   validatePath(id) {
-    const fullPath = path.join(this.baseDir, id);
-    const baseReal = fs.realpathSync(path.resolve(this.baseDir));
-
-    let realPath;
     try {
-      realPath = fs.realpathSync(path.resolve(fullPath));
+      return validatePath(id, this.baseDir);
     } catch (err) {
-      if (err.code === 'ENOENT') {
-        const parentDir = path.dirname(fullPath);
-        try {
-          const realParent = fs.realpathSync(path.resolve(parentDir));
-          realPath = path.join(realParent, path.basename(fullPath));
-        } catch (parentErr) {
-          realPath = path.resolve(fullPath);
-        }
-      } else {
+      if (err.code === 'FORBIDDEN' || err.code === 'VALIDATION_ERROR') {
         const error = new Error(`Access to ${this.entityName.toLowerCase()} '${id}' denied`);
-        error.status = 403;
+        error.status = err.status || 403;
         error.code = 'FORBIDDEN';
         throw error;
       }
-    }
-
-    if (!realPath.startsWith(baseReal + path.sep) && realPath !== baseReal) {
-      const err = new Error(`Access to ${this.entityName.toLowerCase()} '${id}' denied`);
-      err.status = 403;
-      err.code = 'FORBIDDEN';
       throw err;
     }
-
-    return fullPath;
   }
 
   /**

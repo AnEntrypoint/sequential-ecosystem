@@ -3,8 +3,7 @@
  * Parameter and input validation functions for file operations, task names, and schemas
  */
 
-import path from 'path';
-import fs from 'fs';
+import { validatePathRelative } from '@sequential/param-validation';
 import { createValidationError, createForbiddenError } from '@sequential/error-handling';
 
 /**
@@ -14,36 +13,14 @@ import { createValidationError, createForbiddenError } from '@sequential/error-h
  * @throws {Error} If path is invalid or traversal is detected
  */
 export function validateFilePath(filePath) {
-  if (!filePath || typeof filePath !== 'string') {
-    throw createValidationError('Invalid file path', 'filePath');
-  }
-
-  const normalizedPath = path.resolve(filePath);
-  const cwd = path.resolve(process.cwd());
-
-  let realPath;
   try {
-    realPath = fs.realpathSync(normalizedPath);
+    return validatePathRelative(filePath);
   } catch (err) {
-    if (err.code === 'ENOENT') {
-      const parentDir = path.dirname(normalizedPath);
-      try {
-        const realParent = fs.realpathSync(parentDir);
-        realPath = path.join(realParent, path.basename(normalizedPath));
-      } catch (parentErr) {
-        realPath = normalizedPath;
-      }
-    } else {
-      throw createForbiddenError('Access denied: cannot access file system');
+    if (err.code === 'VALIDATION_ERROR') {
+      throw createValidationError(err.message, 'filePath');
     }
+    throw createForbiddenError(err.message);
   }
-
-  const relative = path.relative(cwd, realPath);
-  if (relative.startsWith('..') || path.isAbsolute(relative)) {
-    throw createForbiddenError('Access denied: path traversal detected');
-  }
-
-  return realPath;
 }
 
 /**
