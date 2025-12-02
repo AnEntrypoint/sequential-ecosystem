@@ -1,3 +1,5 @@
+import createHttpError from 'http-errors';
+
 export class AppError extends Error {
   constructor(httpCode, code, message, category = null, details = {}) {
     super(message);
@@ -33,8 +35,27 @@ export const ERROR_CODES = {
   PATH_TRAVERSAL: { code: 'PATH_TRAVERSAL', httpCode: 403, category: 'security' }
 };
 
+function getHttpErrorClass(statusCode) {
+  const errorMap = {
+    400: createHttpError.BadRequest,
+    403: createHttpError.Forbidden,
+    404: createHttpError.NotFound,
+    409: createHttpError.Conflict,
+    413: createHttpError.PayloadTooLarge,
+    422: createHttpError.UnprocessableEntity,
+    500: createHttpError.InternalServerError
+  };
+  return errorMap[statusCode] || createHttpError.InternalServerError;
+}
+
 export function createError(errorDef, message, details = {}) {
-  return new AppError(errorDef.httpCode, errorDef.code, message, errorDef.category, details);
+  const HttpError = getHttpErrorClass(errorDef.httpCode);
+  const error = new HttpError(message);
+  error.code = errorDef.code;
+  error.category = errorDef.category;
+  error.details = details;
+  error.timestamp = new Date().toISOString();
+  return error;
 }
 
 export function createValidationError(message, field = null) {
@@ -71,7 +92,7 @@ export function createFileError(code, message, details = {}) {
 }
 
 export function categorizeError(error) {
-  if (error instanceof AppError) return error.category || 'unknown';
+  if (error instanceof AppError || error.code) return error.category || 'unknown';
   if (error.code?.includes('ENOENT')) return 'file';
   if (error.code?.includes('EACCES')) return 'authorization';
   if (error.code?.includes('EISDIR')) return 'resource';
@@ -80,18 +101,22 @@ export function categorizeError(error) {
 
 export function createErrorHandler() {
   return (err, req, res, next) => {
-    const appError = err instanceof AppError ? err : new AppError(500, 'INTERNAL_SERVER_ERROR', err.message || 'Unknown error', 'server');
+    const isAppError = err instanceof AppError || (err.code && err.category);
+    const statusCode = err.status || err.statusCode || 500;
+    const code = err.code || 'INTERNAL_SERVER_ERROR';
+    const category = err.category || (statusCode === 500 ? 'server' : 'request');
+    const timestamp = err.timestamp || new Date().toISOString();
 
-    res.status(appError.httpCode).json({
+    res.status(statusCode).json({
       error: {
-        code: appError.code,
-        message: appError.message,
-        category: appError.category,
+        code,
+        message: err.message || 'Unknown error',
+        category,
         requestId: req.requestId,
-        ...(appError.details && Object.keys(appError.details).length > 0 && { details: appError.details }),
+        ...(err.details && Object.keys(err.details).length > 0 && { details: err.details }),
         ...(process.env.DEBUG && { stack: err.stack })
       },
-      timestamp: appError.timestamp
+      timestamp
     });
   };
 }
