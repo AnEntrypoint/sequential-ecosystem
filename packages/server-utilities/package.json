@@ -7,12 +7,18 @@
   "exports": {
     ".": "./src/index.js"
   },
-  "files": ["src"],
+  "files": [
+    "src"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/AnEntrypoint/sequential-ecosystem.git",
     "directory": "packages/server-utilities"
   },
-  "engines": {"node": ">=18.0.0"},
-  "dependencies": {}
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "node-cron": "^3.0.3"
+  }
 }

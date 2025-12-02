@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+import cron from 'node-cron';
 
 export class TaskScheduler extends EventEmitter {
   constructor(options = {}) {
@@ -213,10 +214,12 @@ export class TaskScheduler extends EventEmitter {
   }
 
   calculateNextCronRun(cronExpression) {
-    const parts = cronExpression.split(' ');
-    if (parts.length !== 5) {
+    if (!cron.validate(cronExpression)) {
       throw new Error('Invalid cron expression format');
     }
+
+    const parts = cronExpression.split(' ');
+    const [minute, hour, dayOfMonth, month, dayOfWeek] = parts;
 
     const now = new Date();
     const nextRun = new Date(now);
@@ -228,7 +231,7 @@ export class TaskScheduler extends EventEmitter {
     const maxIterations = 1440 * 32;
 
     while (!found && iterations < maxIterations) {
-      if (this.matchesCronExpression(nextRun, cronExpression)) {
+      if (this.matchesCronExpression(nextRun, minute, hour, dayOfMonth, month, dayOfWeek)) {
         found = true;
       } else {
         nextRun.setMinutes(nextRun.getMinutes() + 1);
@@ -239,28 +242,20 @@ export class TaskScheduler extends EventEmitter {
     return found ? nextRun.getTime() : null;
   }
 
-  matchesCronExpression(date, cronExpression) {
-    const parts = cronExpression.split(' ');
-    const [minute, hour, dayOfMonth, month, dayOfWeek] = parts;
-
+  matchesCronExpression(date, minute, hour, dayOfMonth, month, dayOfWeek) {
     const d = date.getDate();
     const m = date.getMonth() + 1;
     const h = date.getHours();
     const min = date.getMinutes();
     const dow = date.getDay();
 
-    if (!this.cronPartMatches(min, minute)) return false;
-    if (!this.cronPartMatches(h, hour)) return false;
-    if (!this.cronPartMatches(d, dayOfMonth)) return false;
-    if (!this.cronPartMatches(m, month)) return false;
-    if (!this.cronPartMatches(dow, dayOfWeek)) return false;
-
-    return true;
+    return this.cronPartMatches(min, minute) && this.cronPartMatches(h, hour) &&
+           this.cronPartMatches(d, dayOfMonth) && this.cronPartMatches(m, month) &&
+           this.cronPartMatches(dow, dayOfWeek);
   }
 
   cronPartMatches(value, pattern) {
-    if (pattern === '*') return true;
-    if (pattern === '?') return true;
+    if (pattern === '*' || pattern === '?') return true;
 
     if (pattern.includes('/')) {
       const [start, step] = pattern.split('/');
