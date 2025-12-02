@@ -1,8 +1,9 @@
 import { executeTaskWithTimeout } from '@sequential/server-utilities';
 
 export class TaskService {
-  constructor(repository, config = {}) {
+  constructor(repository, toolRepository = null, config = {}) {
     this.repository = repository;
+    this.toolRepository = toolRepository;
     this.config = config;
     this.activeTasks = new Map();
     this.defaultExecutionTimeoutMs = config.executionTimeoutMs || 30000;
@@ -93,6 +94,25 @@ export class TaskService {
 
   async executeTask(runId, taskName, code, input, cancelled = false) {
     const timeoutMs = this.getExecutionTimeoutMs(cancelled);
-    return executeTaskWithTimeout(taskName, code, input, timeoutMs);
+
+    const toolExecutor = this.toolRepository ? async (toolName, params) => {
+      const tool = await this.toolRepository.get(toolName);
+      if (!tool) {
+        throw new Error(`Tool not found: ${toolName}`);
+      }
+      const implementation = tool.implementation || tool.code;
+      if (!implementation) {
+        throw new Error(`Tool has no implementation: ${toolName}`);
+      }
+      try {
+        const asyncFn = new Function(`return (${implementation})`);
+        const fn = asyncFn();
+        return await fn(params || {});
+      } catch (error) {
+        throw new Error(`Tool execution failed: ${error.message}`);
+      }
+    } : null;
+
+    return executeTaskWithTimeout(taskName, code, input, timeoutMs, toolExecutor);
   }
 }

@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-export async function executeTaskWithTimeout(taskName, code, input, timeoutMs = 30000) {
+export async function executeTaskWithTimeout(taskName, code, input, timeoutMs = 30000, toolExecutor = null) {
   return new Promise((resolve, reject) => {
     const workerPath = path.join(__dirname, './task-worker.js');
     let worker = null;
@@ -38,7 +38,37 @@ export async function executeTaskWithTimeout(taskName, code, input, timeoutMs = 
         }
       };
 
-      const handleMessage = (message) => {
+      const handleMessage = async (message) => {
+        if (message.type === 'call-tool') {
+          if (!toolExecutor) {
+            worker.postMessage({
+              type: 'tool-result',
+              id: message.id,
+              success: false,
+              error: 'Tool execution not supported in this context'
+            });
+            return;
+          }
+
+          try {
+            const result = await toolExecutor(message.toolName, message.params);
+            worker.postMessage({
+              type: 'tool-result',
+              id: message.id,
+              success: true,
+              result
+            });
+          } catch (error) {
+            worker.postMessage({
+              type: 'tool-result',
+              id: message.id,
+              success: false,
+              error: error.message
+            });
+          }
+          return;
+        }
+
         if (completed || cleanedUp) return;
         completed = true;
         cleanup();

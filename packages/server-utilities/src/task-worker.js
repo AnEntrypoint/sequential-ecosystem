@@ -27,19 +27,48 @@ function extractFunctionBody(code) {
   return code;
 }
 
-parentPort.on('message', async (message) => {
-  const { taskCode, input, taskName } = message;
+let requestId = 0;
+const pendingRequests = new Map();
 
-  try {
-    const body = extractFunctionBody(taskCode);
-    const fn = new Function('input', '__callHostTool__', `return (async (input) => { ${body} })(input)`);
-    const result = await fn(input || {}, async () => {});
-    parentPort.postMessage({ success: true, result });
-  } catch (error) {
+const __callHostTool__ = async (toolName, params = {}) => {
+  const id = requestId++;
+  return new Promise((resolve, reject) => {
+    pendingRequests.set(id, { resolve, reject });
     parentPort.postMessage({
-      success: false,
-      error: error.message,
-      stack: error.stack
+      type: 'call-tool',
+      id,
+      toolName,
+      params
     });
+  });
+};
+
+parentPort.on('message', async (message) => {
+  if (message.type === 'tool-result') {
+    const { id, success, result, error } = message;
+    const pending = pendingRequests.get(id);
+    pendingRequests.delete(id);
+    if (pending) {
+      if (success) {
+        pending.resolve(result);
+      } else {
+        pending.reject(new Error(error));
+      }
+    }
+  } else {
+    const { taskCode, input, taskName } = message;
+
+    try {
+      const body = extractFunctionBody(taskCode);
+      const fn = new Function('input', '__callHostTool__', `return (async (input) => { ${body} })(input)`);
+      const result = await fn(input || {}, __callHostTool__);
+      parentPort.postMessage({ success: true, result });
+    } catch (error) {
+      parentPort.postMessage({
+        success: false,
+        error: error.message,
+        stack: error.stack
+      });
+    }
   }
 });

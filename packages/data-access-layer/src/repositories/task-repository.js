@@ -53,4 +53,10 @@ export class TaskRepository extends BaseRepository {
     const runPath = path.join(taskDir, 'runs', `${runId}.json`);
     return await this.readJsonFile(runPath, 'run');
   }
+
+  async get(taskName) {
+    const config = await this.getConfig(taskName);
+    const code = await this.getCode(taskName);
+    return { config, code };
+  }
 }
