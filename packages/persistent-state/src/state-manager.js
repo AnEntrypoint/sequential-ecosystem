@@ -22,8 +22,12 @@ export class StateManager {
     const cacheKey = this._getCacheKey(type, id);
     const cached = this.memoryCache.get(cacheKey);
 
-    if (cached && Date.now() - cached.timestamp < this.cacheTTL) {
-      return cached.data;
+    if (cached) {
+      if (Date.now() - cached.timestamp < this.cacheTTL) {
+        return cached.data;
+      }
+      this.memoryCache.delete(cacheKey);
+      return null;
     }
 
     const data = await this.adapter.get(type, id);

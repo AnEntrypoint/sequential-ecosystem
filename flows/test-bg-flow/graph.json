@@ -1,0 +1,19 @@
+{
+  "id": "test-bg-flow",
+  "initial": "start",
+  "states": {
+    "start": {
+      "handlerType": "background-task",
+      "taskName": "echo-task",
+      "taskInput": "{\"arg\":\"test\"}",
+      "onDone": "complete",
+      "onError": "error"
+    },
+    "complete": {
+      "type": "final"
+    },
+    "error": {
+      "type": "final"
+    }
+  }
+}
