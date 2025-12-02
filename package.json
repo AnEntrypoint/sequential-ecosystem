@@ -1,6 +1,6 @@
 {
   "name": "sequential-ecosystem",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "description": "Infinite-length task execution with automatic suspend/resume and flow/machine runners",
   "type": "module",
   "scripts": {
