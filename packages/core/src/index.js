@@ -13,7 +13,6 @@ export {
   validateFilePath,
   validateTaskName,
   validateFileName,
-  validateParam,
   validateRequired,
   validateType,
   validateInputSchema,
