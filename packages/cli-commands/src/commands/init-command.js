@@ -2,419 +2,613 @@ import path from 'path';
 import { existsSync } from 'fs';
 import { ensureDirectory, writeFileAtomicJson, writeFileAtomicString } from '@sequential/file-operations';
 
-function generateDocumentation() {
-  return `# Sequential Ecosystem - Quick Start Guide
+function generateTechnicalDocumentation() {
+  return `# Sequential Ecosystem - Complete Technical Reference
 
-## What is Sequential Ecosystem?
+## Table of Contents
+1. Core Concepts & Philosophy
+2. Architecture & Design Patterns
+3. Writing Tasks (Implicit & Explicit)
+4. Advanced Patterns & Recipes
+5. Storage Backends
+6. API Reference
+7. CLI Commands
+8. Deployment & Scaling
+9. Troubleshooting
+10. Performance & Best Practices
 
-Sequential Ecosystem is a framework for building infinite-length task execution systems with automatic suspend/resume on HTTP calls. Write normal async code with \`fetch()\` and the system automatically pauses, saves state, and resumes—perfect for long-running workflows on stateless infrastructure.
+---
 
-## Quick Start (5 minutes)
+## Part 1: Core Concepts
 
-\`\`\`bash
-npm install -g sequential-ecosystem
-npx sequential-ecosystem init
-npx sequential-ecosystem create-task my-task
-# Edit ./tasks/my-task/code.js
-npx sequential-ecosystem run my-task --input '{}'
-npx sequential-ecosystem gui  # Visual desktop UI on http://localhost:3001
-\`\`\`
+### What is Sequential Ecosystem?
 
-## Architecture Overview
+Sequential Ecosystem is an infinite-length task execution framework for distributed systems. Unlike traditional serverless (Lambda, Cloud Functions) which timeout after 15 minutes, Sequential automatically:
 
-**Three Execution Patterns:**
-- **Implicit xstate (Sequential-JS)**: Auto-pause on \`fetch()\` - zero config
-- **Explicit xstate (FlowState)**: State graphs for complex workflows
-- **Container (Sequential-OS)**: Content-addressable layers for shell commands
+1. **Pauses on HTTP calls** (\`fetch()\`, \`__callHostTool__())\`
+2. **Saves complete execution state** (variables, call stack, context)
+3. **Resumes on next trigger** (webhook, scheduled, API call)
+4. **Never loses progress** even across server restarts
 
-**Storage Backends:**
-- Folder (default): Zero setup, Git-friendly
-- SQLite: Single-node persistence
-- PostgreSQL/Supabase: Distributed deployments
+### Three Execution Patterns
 
-## Folder Structure
-
-\`\`\`
-my-project/
-├── .sequentialrc.json     # Configuration (adaptor, defaults)
-├── tasks/                 # Task definitions
-│   ├── my-task/
-│   │   ├── code.js       # Task implementation
-│   │   ├── config.json   # Metadata & input schema
-│   │   └── runs/         # Execution history
-│   └── my-flow/
-│       ├── code.js
-│       ├── graph.json    # State machine (explicit only)
-│       └── config.json
-├── tools/                # Reusable utility functions
-│   ├── database.js
-│   ├── api-client.js
-│   └── filesystem.js
-└── flows/               # Flow definitions
-    ├── user-auth.json
-    └── data-pipeline.json
-\`\`\`
-
-## CLI Commands
-
-### Task Management
-\`\`\`bash
-npx sequential-ecosystem create-task <name> [--runner flow|machine]
-npx sequential-ecosystem run <name> --input '{...}'
-npx sequential-ecosystem list
-npx sequential-ecosystem describe <name>
-npx sequential-ecosystem history <name>
-npx sequential-ecosystem show <name> <run-id>
-npx sequential-ecosystem delete <name>
-\`\`\`
-
-### Configuration
-\`\`\`bash
-npx sequential-ecosystem config set adaptor sqlite
-npx sequential-ecosystem config set defaults.userId john
-npx sequential-ecosystem config show
-\`\`\`
-
-### Visual Tools
-\`\`\`bash
-npx sequential-ecosystem gui           # Desktop GUI (port 3001)
-npx sequential-ecosystem gui --desktop # OS.js desktop mode
-\`\`\`
-
-## Writing Tasks
-
-### Pattern 1: Implicit (Sequential-JS) - Recommended for 80% of use cases
-
-Write normal async code. \`fetch()\` calls trigger automatic pause/resume.
+#### Pattern 1: Implicit (Sequential-JS) - 80% of Use Cases
+Write normal async code. Pause/resume triggered automatically by \`fetch()\` calls.
 
 \`\`\`javascript
-export async function myTask(input) {
-  const data = await fetch(\`/api/users/\${input.userId}\`)
-    .then(r => r.json());
-  const posts = await fetch(\`/api/posts\`).then(r => r.json());
-  return { success: true, count: posts.length };
+export async function processOrder(input) {
+  const user = await fetch(\`/api/users/\${input.userId}\`).then(r => r.json());
+  const payment = await fetch('/api/charge', { method: 'POST', body: JSON.stringify({ userId: input.userId, amount: 100 }) }).then(r => r.json());
+  if (!payment.success) throw new Error('Payment failed');
+  const confirmation = await fetch('/api/confirm', { method: 'POST', body: JSON.stringify({ orderId: input.orderId }) }).then(r => r.json());
+  return { status: 'complete', confirmation };
 }
-
-export const config = {
-  id: 'my-task',
-  name: 'My Task',
-  inputs: [{ name: 'userId', type: 'string', required: true }]
-};
 \`\`\`
 
-### Pattern 2: Explicit (FlowState) - For complex workflows
-
-Define state graph, executor follows transitions.
+#### Pattern 2: Explicit (FlowState/xstate) - Complex Workflows
+Define state machine. Executor follows transitions, calling handlers.
 
 \`\`\`javascript
 export const graph = {
-  id: 'workflow',
-  initial: 'fetchData',
+  id: 'orderFlow',
+  initial: 'validateInput',
   states: {
-    fetchData: { onDone: 'process', onError: 'handleError' },
-    process: { onDone: 'complete' },
-    handleError: { type: 'final' },
+    validateInput: { onDone: 'fetchUser', onError: 'handleInvalidInput' },
+    fetchUser: { onDone: 'processPayment', onError: 'handleMissingUser' },
+    processPayment: { onDone: 'sendConfirmation', onError: 'handlePaymentFailed' },
+    sendConfirmation: { onDone: 'complete' },
+    handleInvalidInput: { type: 'final' },
+    handleMissingUser: { type: 'final' },
+    handlePaymentFailed: { type: 'final' },
     complete: { type: 'final' }
   }
 };
 
-export async function fetchData(input) {
-  const data = await fetch('/api/data').then(r => r.json());
-  return { status: 'success', data };
+export async function validateInput(input) {
+  if (!input.userId || !input.orderId) throw new Error('Missing required fields');
+  return { valid: true };
 }
 
-export async function process(result) {
-  return { count: result.data.length };
+export async function fetchUser(input) {
+  return await fetch(\`/api/users/\${input.userId}\`).then(r => r.json());
 }
 
-export async function handleError(error) {
-  return { error: error.message };
+// ... handlers for each state ...
+\`\`\`
+
+#### Pattern 3: Container (Sequential-OS) - System Workflows
+Shell commands + content-addressable layers for system-level workflows.
+
+\`\`\`javascript
+export async function buildApp(input) {
+  const steps = [
+    { cmd: 'npm install', label: 'Install dependencies' },
+    { cmd: 'npm run build', label: 'Build project' },
+    { cmd: 'npm run test', label: 'Run tests' },
+    { cmd: 'npm publish', label: 'Publish to npm' }
+  ];
+
+  for (const step of steps) {
+    const result = await __callHostTool__('executeShell', {
+      command: step.cmd,
+      workingDir: input.projectDir
+    });
+    if (result.exitCode !== 0) throw new Error(\`\${step.label} failed\`);
+  }
+
+  return { success: true };
 }
 \`\`\`
 
-## Available Host Tools
+### State Scopes
 
-Inside tasks, access filesystem via \`__callHostTool__()\`:
+Tasks can read/write files at three scopes:
 
 \`\`\`javascript
-// Write file
+// 'run' scope: Current execution only (deleted after task completes)
 await __callHostTool__('writeFile', {
-  path: 'output.json',
-  content: { result: 'success' },
-  scope: 'run'  // 'run', 'task', or 'global'
-});
-
-// Read file
-const result = await __callHostTool__('readFile', {
-  path: 'config.json',
-  scope: 'auto'  // Searches run -> task -> global
-});
-
-// List files
-const files = await __callHostTool__('listFiles', {
-  path: '/',
+  path: 'progress.json',
+  content: { completed: 50, total: 100 },
   scope: 'run'
 });
 
-// File operations
-await __callHostTool__('mkdir', { path: 'logs', scope: 'run' });
-await __callHostTool__('fileExists', { path: 'file.txt', scope: 'run' });
-await __callHostTool__('deleteFile', { path: 'temp.txt', scope: 'run' });
+// 'task' scope: All executions of this task share data
+await __callHostTool__('writeFile', {
+  path: 'cache.json',
+  content: { lastChecked: Date.now() },
+  scope: 'task'
+});
+
+// 'global' scope: All tasks can access
+await __callHostTool__('writeFile', {
+  path: 'config.json',
+  content: { apiKey: 'secret', dbUrl: 'postgres://...' },
+  scope: 'global'
+});
+
+// 'auto' scope for reads: Searches run -> task -> global
+const config = await __callHostTool__('readFile', {
+  path: 'config.json',
+  scope: 'auto'
+});
 \`\`\`
 
-## HTTP API Endpoints
+---
 
-### Task Management
-\`\`\`
-POST   /api/tasks                      # Create task
-GET    /api/tasks                      # List tasks
-GET    /api/tasks/:taskName            # Get task details
-PUT    /api/tasks/:taskName            # Update task
-DELETE /api/tasks/:taskName            # Delete task
-POST   /api/tasks/:taskName/run        # Execute task
-GET    /api/tasks/:taskName/history    # Execution history
-GET    /api/tasks/:taskName/runs/:id   # Run details
-\`\`\`
+## Part 2: Architecture
 
-### Flow Management
-\`\`\`
-POST   /api/flows                      # Create flow
-GET    /api/flows                      # List flows
-GET    /api/flows/:id                  # Get flow
-PUT    /api/flows/:id                  # Update flow
-DELETE /api/flows/:id                  # Delete flow
-\`\`\`
+### Internal State Management
 
-### Scheduler
-\`\`\`
-POST   /api/scheduler/schedule         # Schedule task (once/recurring/interval)
-GET    /api/scheduler/scheduled        # List schedules
-GET    /api/scheduler/stats            # Scheduler statistics
-GET    /api/scheduler/:id              # Get schedule
-PUT    /api/scheduler/:id              # Update schedule
-DELETE /api/scheduler/:id              # Cancel schedule
-GET    /api/scheduler/:id/history      # Execution history
-\`\`\`
+When a task calls \`fetch()\` or \`__callHostTool__()\`:
 
-### Execution
+1. **Serializer** captures: variables, call stack, execution context
+2. **Adaptor** persists to storage (folder/SQLite/PostgreSQL)
+3. **Unique run ID** generated (e.g., \`run-1702600000-abc123\`)
+4. **HTTP response** sent immediately
+5. **Next call** resumes from exact pause point with all state restored
+
+### Storage Adaptors
+
+#### Folder Adaptor (Default)
 \`\`\`
-GET    /api/runs                       # List all runs
-GET    /api/runs/:id                   # Run details
-POST   /api/runs/:id/cancel            # Cancel run
-GET    /api/metrics                    # Aggregated metrics
+tasks/
+├── my-task/
+│   ├── code.js
+│   ├── config.json
+│   └── runs/
+│       ├── run-1702600000-abc123.json
+│       ├── run-1702610000-def456.json
 \`\`\`
+- Zero setup
+- Git-friendly (ignore runs/ in .gitignore)
+- Perfect for dev/testing
+- Single-machine only
 
-## Triggers & Events
-
-### File-based Triggers
-Monitor directories and auto-run tasks on file changes:
-
+#### SQLite Adaptor
 \`\`\`bash
-npx sequential-ecosystem sync ./tasks --watch
+DATABASE_URL="sqlite:./tasks.db"
 \`\`\`
+- Persistent, queryable
+- Single-machine (one writer)
+- Fast file I/O
+- Suitable for small teams
 
-### Cron Scheduling
-Schedule tasks using cron expressions:
-
+#### PostgreSQL/Supabase Adaptor
 \`\`\`bash
-curl -X POST http://localhost:3000/api/scheduler/schedule \\
-  -H 'Content-Type: application/json' \\
-  -d '{
-    "taskName": "daily-sync",
-    "type": "recurring",
-    "cronExpression": "0 9 * * *",
-    "args": []
-  }'
+DATABASE_URL="postgresql://user:password@host/dbname"
 \`\`\`
+- Distributed (multiple writers with locking)
+- Horizontal scaling
+- Production-grade
+- Supports multi-region
 
-### Interval Scheduling
-Repeat tasks at fixed intervals:
+---
 
-\`\`\`bash
-curl -X POST http://localhost:3000/api/scheduler/schedule \\
-  -H 'Content-Type: application/json' \\
-  -d '{
-    "taskName": "background-job",
-    "type": "interval",
-    "intervalMs": 300000,
-    "args": []
-  }'
-\`\`\`
+## Part 3: Writing Tasks
 
-### One-time Scheduling
-Schedule task for specific future time:
+### Implicit Pattern Example
 
-\`\`\`bash
-curl -X POST http://localhost:3000/api/scheduler/schedule \\
-  -H 'Content-Type: application/json' \\
-  -d '{
-    "taskName": "send-report",
-    "type": "once",
-    "executeAt": 1702600000000,
-    "args": ["john@example.com"]
-  }'
-\`\`\`
-
-## Environment Variables
-
-\`\`\`bash
-# Storage
-DATABASE_URL="sqlite:./tasks.db"           # SQLite
-DATABASE_URL="postgres://host:port/db"     # PostgreSQL
-
-# Server
-PORT=3000
-NODE_ENV=development
-DEBUG=1                                     # Verbose logging
-
-# Task Execution
-TASK_TIMEOUT=300000                        # 5 minutes
-TASK_MAX_RETRIES=3
-
-# Storage Backend Selection
-SEQUENTIAL_ADAPTOR=folder                  # default, sqlite, supabase
-\`\`\`
-
-## Common Patterns
-
-### Retry Logic
 \`\`\`javascript
-export async function retryableTask(input) {
-  for (let i = 0; i < 3; i++) {
-    try {
-      return await fetch(url).then(r => r.json());
-    } catch (e) {
-      if (i === 2) throw e;
-      await new Promise(r => setTimeout(r, 1000 * Math.pow(2, i)));
-    }
+// tasks/user-onboarding/code.js
+export async function userOnboarding(input) {
+  if (!input.email) throw new Error('Email required');
+
+  const userCheck = await fetch(\`/api/check-email\`, {
+    method: 'POST',
+    body: JSON.stringify({ email: input.email })
+  }).then(r => r.json());
+
+  if (userCheck.exists) {
+    throw new Error('User already registered');
   }
-}
-\`\`\`
 
-### Batch Processing
-\`\`\`javascript
-export async function batchTask(input) {
-  const batchSize = 100;
-  for (let i = 0; i < input.items.length; i += batchSize) {
-    const batch = input.items.slice(i, i + batchSize);
-    await Promise.all(batch.map(processItem));
-  }
-  return { processed: input.items.length };
-}
-\`\`\`
+  const newUser = await fetch('/api/users', {
+    method: 'POST',
+    body: JSON.stringify(input)
+  }).then(r => r.json());
 
-### Progress Tracking
-\`\`\`javascript
-export async function progressTask(input) {
-  for (let i = 0; i < input.items.length; i++) {
-    await processItem(input.items[i]);
-    const progress = Math.round((i + 1) / input.items.length * 100);
-    await __callHostTool__('writeFile', {
-      path: 'progress.json',
-      content: { current: i + 1, total: input.items.length, percent: progress },
-      scope: 'run'
-    });
-  }
-}
-\`\`\`
+  await fetch('/api/email/send', {
+    method: 'POST',
+    body: JSON.stringify({ to: input.email, template: 'welcome', name: input.name })
+  }).then(r => r.json());
 
-### Checkpointing
-\`\`\`javascript
-export async function resumableTask(input) {
-  const checkpointPath = 'checkpoint.json';
-  let state = { processed: 0 };
-
-  const checkpointExists = await __callHostTool__('fileExists', {
-    path: checkpointPath,
-    scope: 'run'
+  await __callHostTool__('writeFile', {
+    path: 'user-log.json',
+    content: { userId: newUser.id, createdAt: new Date().toISOString() },
+    scope: 'global'
   });
 
-  if (checkpointExists.exists) {
-    const checkpoint = await __callHostTool__('readFile', {
-      path: checkpointPath,
-      scope: 'run'
-    });
-    state = JSON.parse(checkpoint.content);
+  return { success: true, userId: newUser.id };
+}
+
+export const config = {
+  id: 'user-onboarding',
+  name: 'User Onboarding',
+  inputs: [
+    { name: 'email', type: 'string', required: true },
+    { name: 'name', type: 'string', required: true },
+    { name: 'password', type: 'string', required: true }
+  ],
+  timeout: 300000,
+  retries: 3
+};
+\`\`\`
+
+### Explicit Pattern Example
+
+\`\`\`javascript
+// tasks/payment-workflow/code.js
+export const graph = {
+  id: 'paymentFlow',
+  initial: 'validatePayment',
+  states: {
+    validatePayment: { onDone: 'authorizeCard', onError: 'rejectPayment' },
+    authorizeCard: { onDone: 'captureAmount', onError: 'handleAuthFailure' },
+    captureAmount: { onDone: 'sendReceipt', onError: 'reverseAuth' },
+    sendReceipt: { onDone: 'complete' },
+    rejectPayment: { type: 'final' },
+    handleAuthFailure: { type: 'final' },
+    reverseAuth: { type: 'final' },
+    complete: { type: 'final' }
+  }
+};
+
+export async function validatePayment(input) {
+  const errors = [];
+  if (!input.amount || input.amount < 0.01) errors.push('Invalid amount');
+  if (!input.cardToken) errors.push('Card token required');
+  if (errors.length > 0) throw new Error(errors.join(', '));
+  return { validated: true, amount: input.amount };
+}
+
+export async function authorizeCard(data) {
+  const result = await fetch('/api/stripe/authorize', {
+    method: 'POST',
+    body: JSON.stringify({ amount: data.amount, token: data.cardToken })
+  }).then(r => r.json());
+
+  if (!result.success) throw new Error('Authorization failed');
+  return { authId: result.authId, amount: data.amount };
+}
+
+export async function captureAmount(data) {
+  const result = await fetch('/api/stripe/capture', {
+    method: 'POST',
+    body: JSON.stringify({ authId: data.authId, amount: data.amount })
+  }).then(r => r.json());
+
+  if (!result.success) throw new Error('Capture failed');
+  return { transactionId: result.transactionId };
+}
+
+export async function sendReceipt(data) {
+  await fetch('/api/email/receipt', {
+    method: 'POST',
+    body: JSON.stringify({ transactionId: data.transactionId, amount: data.amount })
+  }).then(r => r.json());
+
+  return { status: 'complete', transactionId: data.transactionId };
+}
+
+export async function rejectPayment(error) {
+  await fetch('/api/logging/error', {
+    method: 'POST',
+    body: JSON.stringify({ error: error.message, type: 'validation' })
+  });
+  return { status: 'rejected' };
+}
+
+export async function handleAuthFailure(error) {
+  await fetch('/api/logging/error', {
+    method: 'POST',
+    body: JSON.stringify({ error: error.message, type: 'auth_failed' })
+  });
+  return { status: 'failed' };
+}
+
+export async function reverseAuth(data) {
+  await fetch('/api/stripe/reverse', {
+    method: 'POST',
+    body: JSON.stringify({ authId: data.authId })
+  }).then(r => r.json());
+  return { status: 'reversed' };
+}
+
+export const config = {
+  id: 'payment-workflow',
+  name: 'Payment Processing',
+  runner: 'flow',
+  inputs: [
+    { name: 'amount', type: 'number' },
+    { name: 'cardToken', type: 'string' }
+  ]
+};
+\`\`\`
+
+---
+
+## Part 4: Advanced Patterns
+
+### Retry with Exponential Backoff
+\`\`\`javascript
+export async function retryableTask(input) {
+  const maxRetries = 5;
+  let lastError;
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const result = await fetch(\`/api/unstable-service\`).then(r => r.json());
+      return { success: true, data: result };
+    } catch (error) {
+      lastError = error;
+      if (attempt < maxRetries - 1) {
+        const delayMs = Math.pow(2, attempt) * 1000 + Math.random() * 1000;
+        await new Promise(r => setTimeout(r, delayMs));
+      }
+    }
   }
 
-  for (let i = state.processed; i < input.items.length; i++) {
-    await processItem(input.items[i]);
-    state.processed = i + 1;
-    await __callHostTool__('writeFile', {
-      path: checkpointPath,
-      content: state,
-      scope: 'run'
-    });
-  }
+  throw lastError;
 }
 \`\`\`
 
-## Deployment
+### Batch Processing with Progress
+\`\`\`javascript
+export async function batchProcess(input) {
+  const batchSize = 100;
+  const items = input.items;
+  const results = [];
 
-| Environment | Storage | Commands |
-|---|---|---|
-| Local Dev | Folder (default) | \`npx sequential-ecosystem init\` |
-| Testing | Folder | Same, no config needed |
-| Production (single) | SQLite | \`DATABASE_URL="sqlite:./tasks.db"\` |
-| Production (distributed) | PostgreSQL | \`DATABASE_URL="postgres://..."\` |
+  for (let i = 0; i < items.length; i += batchSize) {
+    const batch = items.slice(i, i + batchSize);
 
-## Desktop GUI
+    const batchResults = await Promise.all(
+      batch.map(item =>
+        fetch('/api/process', {
+          method: 'POST',
+          body: JSON.stringify(item)
+        }).then(r => r.json())
+      )
+    );
 
-Visual interface available at \`http://localhost:3001\` after running \`npx sequential-ecosystem gui\`.
+    results.push(...batchResults);
 
-**Apps included:**
-- Terminal - Full Sequential-OS CLI
-- Code Editor - Edit task code with syntax highlighting
-- Task Editor - Visual task builder with multiple runners
-- Flow Editor - Drag-and-drop state machine designer
-- Task Debugger - Test & debug tasks
-- Flow Debugger - Visualize state machine execution
-- Run Observer - Real-time metrics dashboard
-- File Browser - Browse task files and outputs
+    const progress = {
+      current: Math.min(i + batchSize, items.length),
+      total: items.length,
+      percentage: Math.round((i + batchSize) / items.length * 100)
+    };
 
-## Troubleshooting
+    await __callHostTool__('writeFile', {
+      path: 'progress.json',
+      content: progress,
+      scope: 'run'
+    });
+  }
 
-**Task won't run**
-\`\`\`bash
-npx sequential-ecosystem run my-task --dry-run --verbose
+  return { processed: results.length, results };
+}
 \`\`\`
 
-**Check state**
+### Resumable with Checkpoint
+\`\`\`javascript
+export async function resumableTask(input) {
+  const checkpointFile = 'checkpoint.json';
+  let checkpoint = { processed: 0, errors: [] };
+
+  try {
+    const existing = await __callHostTool__('readFile', {
+      path: checkpointFile,
+      scope: 'run'
+    });
+    checkpoint = JSON.parse(existing.content);
+  } catch {
+    // First run, no checkpoint
+  }
+
+  for (let i = checkpoint.processed; i < input.items.length; i++) {
+    try {
+      const item = input.items[i];
+
+      const result = await fetch('/api/process', {
+        method: 'POST',
+        body: JSON.stringify(item)
+      }).then(r => r.json());
+
+      checkpoint.processed = i + 1;
+
+      await __callHostTool__('writeFile', {
+        path: checkpointFile,
+        content: checkpoint,
+        scope: 'run'
+      });
+    } catch (error) {
+      checkpoint.errors.push({
+        index: i,
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+
+      await __callHostTool__('writeFile', {
+        path: checkpointFile,
+        content: checkpoint,
+        scope: 'run'
+      });
+
+      throw error;
+    }
+  }
+
+  return { processed: checkpoint.processed, errors: checkpoint.errors };
+}
+\`\`\`
+
+### Rate Limiting
+\`\`\`javascript
+export async function rateLimitedTask(input) {
+  const rateLimitPerSecond = 10;
+  const results = [];
+
+  for (let i = 0; i < input.items.length; i++) {
+    const result = await fetch('/api/limited-service', {
+      method: 'POST',
+      body: JSON.stringify(input.items[i])
+    }).then(r => r.json());
+
+    results.push(result);
+
+    if ((i + 1) % rateLimitPerSecond === 0 && i < input.items.length - 1) {
+      await new Promise(r => setTimeout(r, 1000));
+    }
+  }
+
+  return { processed: results.length, results };
+}
+\`\`\`
+
+---
+
+## Part 5: API Reference
+
+### Task Management Endpoints
+\`\`\`
+POST /api/tasks
+  Body: { name, code, config }
+
+GET /api/tasks
+  Returns: [{ id, name, lastRun, status }]
+
+POST /api/tasks/:taskName/run
+  Body: { input }
+  Returns: { runId, taskName, status }
+
+GET /api/tasks/:taskName/history
+  Returns: [{ runId, status, createdAt }]
+
+GET /api/runs/:runId
+  Returns: { runId, taskName, status, state, output }
+\`\`\`
+
+### File Operations
+\`\`\`javascript
+await __callHostTool__('writeFile', { path, content, scope });
+const data = await __callHostTool__('readFile', { path, scope });
+const files = await __callHostTool__('listFiles', { path, scope });
+const exists = await __callHostTool__('fileExists', { path, scope });
+await __callHostTool__('deleteFile', { path, scope });
+await __callHostTool__('mkdir', { path, scope });
+const result = await __callHostTool__('executeShell', { command, workingDir });
+\`\`\`
+
+---
+
+## Part 6: CLI Commands
+
+\`\`\`bash
+# Initialize
+npx sequential-ecosystem init
+npx sequential-ecosystem init --no-examples
+
+# Task management
+npx sequential-ecosystem create-task <name> [--runner flow|machine|sequential-os]
+npx sequential-ecosystem list
+npx sequential-ecosystem run <name> --input '{json}'
+npx sequential-ecosystem run <name> --input '{json}' --dry-run --verbose
+npx sequential-ecosystem history <name>
+npx sequential-ecosystem show <name> <run-id>
+npx sequential-ecosystem delete <name>
+
+# Configuration
+npx sequential-ecosystem config set adaptor sqlite
+npx sequential-ecosystem config show
+
+# Server
+npx sequential-ecosystem gui              # Desktop GUI (port 3001)
+npx sequential-ecosystem server           # API server (port 3000)
+\`\`\`
+
+---
+
+## Part 7: Deployment
+
+### Development
+\`\`\`bash
+npx sequential-ecosystem init
+npx sequential-ecosystem gui
+\`\`\`
+
+### Production (PostgreSQL)
+\`\`\`bash
+DATABASE_URL="postgresql://user:pass@prod.db/sequential" \\
+NODE_ENV=production \\
+npx sequential-ecosystem server
+\`\`\`
+
+### Horizontal Scaling
+With PostgreSQL + multiple servers:
+\`\`\`bash
+DATABASE_URL="postgresql://..." PORT=3001 npx sequential-ecosystem server
+DATABASE_URL="postgresql://..." PORT=3002 npx sequential-ecosystem server
+# Use load balancer to distribute traffic
+\`\`\`
+
+---
+
+## Part 8: Troubleshooting
+
+**Task won't run:**
+\`\`\`bash
+npx sequential-ecosystem run my-task --input '{}' --dry-run --verbose
+\`\`\`
+
+**Check execution state:**
 \`\`\`bash
 npx sequential-ecosystem show my-task <run-id>
-npx sequential-ecosystem history my-task
+cat ./tasks/my-task/runs/run-*.json | jq .
 \`\`\`
 
-**Reset storage**
+**Reset storage:**
 \`\`\`bash
-rm -rf ./tasks/**/runs
-npx sequential-ecosystem init  # Reinitialize
+rm -rf ./tasks/*/runs
+DATABASE_URL="sqlite:./tasks.db" rm ./tasks.db
+npx sequential-ecosystem init
 \`\`\`
 
-**View logs**
+---
+
+## Part 9: Best Practices
+
+1. **Always use scope when writing files** - prevents data loss across runs
+2. **Implement checkpointing** - resume from exact failure point
+3. **Log to global scope** - audit trail across all executions
+4. **Use exponential backoff** - for API calls to unreliable services
+5. **Test with --dry-run** - validate before production deployment
+6. **Monitor run history** - track success/failure patterns
+7. **Validate input early** - fail fast with clear error messages
+8. **Handle partial failures** - be idempotent where possible
+
+---
+
+## Part 10: Examples
+
+Run examples from ./tasks/:
 \`\`\`bash
-# Desktop GUI shows real-time execution logs
-# Or read from task runs directory:
-cat ./tasks/my-task/runs/<run-id>.json
+npx sequential-ecosystem run example-simple-flow --input '{}'
+npx sequential-ecosystem run example-api-integration --input '{"url":"https://api.example.com"}'
+npx sequential-ecosystem run example-batch-process --input '{"items":[1,2,3]}'
+npx sequential-ecosystem run example-payment-flow --input '{"amount":100,"cardToken":"tok_123"}'
+npx sequential-ecosystem run example-resumable-task --input '{"items":[1,2,3,4,5]}'
 \`\`\`
 
-## Next Steps
-
-1. Create your first task: \`npx sequential-ecosystem create-task <name>\`
-2. Try the GUI: \`npx sequential-ecosystem gui\`
-3. Run examples: \`npx sequential-ecosystem run example-simple-flow\`
-4. Schedule tasks: Use \`/api/scheduler/schedule\` endpoint
-5. Integrate: Embed in your app or use as microservice
-
-## Key Concepts
-
-- **State**: Automatically saved between HTTP calls, survives restarts
-- **Scopes**: run (current execution), task (shared), global (all tasks)
-- **Adaptor**: Pluggable storage (folder/sqlite/supabase)
-- **Runner**: Execution strategy (sequential-js/flow/sequential-os)
-- **Graph**: State machine definition for explicit workflows
+---
 
 Happy building! 🚀
+
+**Quick Links:**
+- GUI: http://localhost:3001
+- API: http://localhost:3000
+- Docs: Read all CLAUDE.md / AGENTS.md / GEMINI.md / README.md files
+- Examples: ./tasks/ directory
 `;
 }
 
@@ -435,13 +629,13 @@ export async function initCommand(options) {
     const configFile = path.join(process.cwd(), '.sequentialrc.json');
     if (!existsSync(configFile)) {
       await writeFileAtomicJson(configFile, {
-        adaptor: 'default',
+        adaptor: 'folder',
         defaults: {}
       });
       console.log(`✓ Created ${configFile}`);
     }
 
-    const docContent = generateDocumentation();
+    const docContent = generateTechnicalDocumentation();
     const docFiles = ['README.md', 'CLAUDE.md', 'AGENTS.md', 'GEMINI.md'];
     for (const fileName of docFiles) {
       const docPath = path.join(process.cwd(), fileName);
@@ -454,35 +648,35 @@ export async function initCommand(options) {
       await createExamples();
     }
 
-    console.log('\n✓ Initialized sequential-ecosystem');
+    console.log('\n✅ Initialized sequential-ecosystem');
     console.log('\n📦 Quick Commands:');
-    console.log('  npx sequential-ecosystem create-task <name> [--runner flow|machine]');
+    console.log('  npx sequential-ecosystem create-task <name>');
     console.log('  npx sequential-ecosystem run <name> --input \'{}\'');
     console.log('  npx sequential-ecosystem gui');
 
     if (options.examples !== false) {
       console.log('\n📚 Example Tasks (./tasks/):');
       console.log('  - example-simple-flow: Sequential-JS with auto-pause');
-      console.log('  - example-complex-flow: FlowState with explicit state machine');
       console.log('  - example-api-integration: HTTP client with retry logic');
-      console.log('  - example-batch-processing: Concurrency control and batching');
-      console.log('  - example-sequential-os: Container-based with layer management');
+      console.log('  - example-batch-processing: Batch with progress tracking');
+      console.log('  - example-payment-flow: Complex state machine');
+      console.log('  - example-resumable-task: Checkpointing & resumption');
 
       console.log('\n🔧 Example Tools (./tools/):');
-      console.log('  - database.js: Database operations (query, insert, update, delete)');
-      console.log('  - api-client.js: HTTP client with retry and backoff');
-      console.log('  - filesystem.js: File operations with safety checks');
-
-      console.log('\n🔄 Example Flows (./tasks/flows/):');
-      console.log('  - user-authentication.json: Authentication workflow');
-      console.log('  - data-pipeline.json: ETL processing pipeline');
-      console.log('  - order-processing.json: E-commerce order flow');
+      console.log('  - database.js: Database operations');
+      console.log('  - api-client.js: HTTP client with backoff');
+      console.log('  - filesystem.js: File operations');
 
       console.log('\n🚀 Try it out:');
-      console.log('  npx sequential-ecosystem run example-simple-flow --input \'{"message":"hello"}\'');
+      console.log('  npx sequential-ecosystem run example-simple-flow --input \'{}\'');
       console.log('  npx sequential-ecosystem gui  # Visual Desktop GUI');
-      console.log('\n📖 Read: ./tasks/EXAMPLES.md for detailed documentation');
     }
+
+    console.log('\n📖 Documentation:');
+    console.log('  - README.md: Quick start guide');
+    console.log('  - CLAUDE.md: For Claude Code integration');
+    console.log('  - AGENTS.md: Agent patterns');
+    console.log('  - GEMINI.md: AI integration examples');
   } catch (e) {
     console.error('Error:', e instanceof Error ? e.message : String(e));
     process.exit(1);
