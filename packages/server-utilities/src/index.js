@@ -9,3 +9,4 @@ export {
   listEnvVariables,
   generateEnvDocs
 } from './env-schema.js';
+export { BackgroundTaskManager, backgroundTaskManager } from './background-task-manager.js';
