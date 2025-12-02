@@ -1,29 +1,36 @@
-# Sequential Ecosystem Documentation
+# Documentation Index
 
-This directory contains archived documentation from previous development phases.
+This directory contains archived documentation and historical analysis files from the Sequential Ecosystem project.
 
-## Core Documentation (Root)
+## Core Documentation (Root Directory)
 
-**Active, maintained documentation in the repository root:**
+The main documentation files are located in the project root:
 
-- **README.md** - Quick start and deployment guide
-- **CLAUDE.md** - Architecture reference, patterns, and deployment guide
-- **CHANGELOG.md** - Version history and changes
-- **AGENTS.md** - Guidelines for agentic coding
-- **TODO.md** - Execution roadmap and task tracking
+1. **README.md** - Project overview, quick start, and feature summary
+2. **CLAUDE.md** - Architecture, design patterns, and developer guidance (AI context)
+3. **AGENTS.md** - Same content as CLAUDE.md, for OpenCode integration
+4. **CHANGELOG.md** - Version history and release notes
+5. **TODO.md** - Comprehensive task list and roadmap
 
-## Archive
+## Archived Documentation
 
-This `archive/` subdirectory contains historical documentation from completed phases:
+This `archive/` subdirectory contains historical analysis, planning documents, and intermediate reports:
 
-- Architectural analyses and reviews
-- Dependency audit reports
-- Phase summaries and planning documents
-- Security audits
-- Testing reports
+- **Architecture Analysis** - ARCHITECTURE-*.md files documenting design decisions
+- **Security Audits** - SECURITY_AUDIT_*.md files
+- **Dependency Analysis** - Cleanup reports and visualization
+- **Planning Documents** - Execution plans, improvement checklists, summaries
+- **Testing & Implementation Reports** - Phase completion reports
 
-These files are preserved for historical reference but are superseded by current documentation in the root.
+All archive files are non-critical and preserved for reference only.
 
-## Using This Repository
+## Quick Links
 
-Start with **README.md** in the root directory for quick-start instructions, then refer to **CLAUDE.md** for architecture, patterns, and technical guidance.
+- [Main Project README](/README.md)
+- [Development Guide](/CLAUDE.md)
+- [Changelog](/CHANGELOG.md)
+- [Task Roadmap](/TODO.md)
+
+---
+
+**Note**: To contribute, start with CLAUDE.md for architecture context and README.md for quick start.
