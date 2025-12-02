@@ -10,5 +10,7 @@ export {
   validateEmail,
   validateUrl,
   registerCustomSchema,
-  getValidator
+  getValidator,
+  validateInputSchema,
+  validateAndSanitizeMetadata
 } from './schema-validation.js';

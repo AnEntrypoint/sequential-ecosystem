@@ -3,7 +3,7 @@
  * Parameter and input validation functions for file operations, task names, and schemas
  */
 
-import { validatePathRelative, validateTaskName as validateTaskNameSchema, validateFileName as validateFileNameSchema } from '@sequential/param-validation';
+import { validatePathRelative, validateTaskName as validateTaskNameSchema, validateFileName as validateFileNameSchema, validateRequired as validateRequiredFn, validateType as validateTypeFn, validateInputSchema as validateInputSchemaFn, validateAndSanitizeMetadata as validateAndSanitizeMetadataFn } from '@sequential/param-validation';
 import { createValidationError, createForbiddenError } from '@sequential/error-handling';
 
 /**
@@ -53,119 +53,25 @@ export function validateFileName(fileName) {
   }
 }
 
-/**
- * Validate a single parameter value
- * @param {any} value - The value to validate
- * @param {string} name - The parameter name for error messages
- * @param {string} [type] - Expected type (optional)
- * @returns {any} The validated value
- * @throws {Error} If validation fails
- */
-export function validateParam(value, name, type) {
-  if (!value && value !== 0 && value !== false) {
-    throw createValidationError(`${name} is required`, name);
-  }
-  if (type && typeof value !== type) {
-    throw createValidationError(`${name} must be a ${type}`, name);
-  }
-  return value;
-}
-
-/**
- * Validate multiple required parameters
- * @param {...{name: string, value: any}} params - Parameter objects with name and value
- * @throws {Error} If any parameter is missing
- */
 export function validateRequired(...params) {
   for (const { name, value } of params) {
-    if (!value && value !== 0 && value !== false) {
-      throw createValidationError(`${name} is required`, name);
-    }
+    validateRequiredFn(name, value);
   }
 }
 
-/**
- * Validate parameter type matches expected type
- * @param {any} value - The value to validate
- * @param {string} name - The parameter name for error messages
- * @param {string} expectedType - Expected type (string, number, boolean, etc.)
- * @returns {any} The validated value
- * @throws {Error} If type doesn't match
- */
 export function validateType(value, name, expectedType) {
-  const actualType = typeof value;
-  if (actualType !== expectedType) {
-    throw createValidationError(`${name} must be a ${expectedType}, got ${actualType}`, name);
-  }
-  return value;
+  return validateTypeFn(name, value, expectedType);
 }
 
-/**
- * Validate input object against a schema
- * @param {Object} input - Input object to validate
- * @param {Array<{name: string, type: string, required?: boolean}>} schema - Schema definition array
- * @returns {string[]|null} Array of error messages or null if valid
- */
-export function validateInputSchema(input, schema) {
-  if (!schema || !Array.isArray(schema)) {
-    return null;
-  }
+export const validateInputSchema = validateInputSchemaFn;
 
-  const errors = [];
-
-  for (const field of schema) {
-    const { name, type, required = false } = field;
-    const value = input[name];
-
-    if (value === undefined || value === null) {
-      if (required) {
-        errors.push(`Field '${name}' is required`);
-      }
-      continue;
-    }
-
-    const actualType = typeof value;
-    if (type === 'array' && !Array.isArray(value)) {
-      errors.push(`Field '${name}' must be an array, got ${actualType}`);
-    } else if (type === 'object' && (actualType !== 'object' || Array.isArray(value))) {
-      errors.push(`Field '${name}' must be an object, got ${actualType}`);
-    } else if (type === 'number' && actualType !== 'number') {
-      errors.push(`Field '${name}' must be a number, got ${actualType}`);
-    } else if (type === 'string' && actualType !== 'string') {
-      errors.push(`Field '${name}' must be a string, got ${actualType}`);
-    } else if (type === 'boolean' && actualType !== 'boolean') {
-      errors.push(`Field '${name}' must be a boolean, got ${actualType}`);
-    }
-  }
-
-  return errors.length > 0 ? errors : null;
-}
-
-/**
- * Validate and sanitize metadata object
- * Ensures metadata is JSON-serializable and doesn't exceed size limit
- * @param {Object} metadata - Metadata object to validate
- * @param {number} [maxSize=10485760] - Maximum size in bytes (default 10MB)
- * @returns {Object} Validated metadata
- * @throws {Error} If metadata is invalid or exceeds max size
- */
 export function validateAndSanitizeMetadata(metadata, maxSize = 10 * 1024 * 1024) {
-  if (!metadata || typeof metadata !== 'object') {
-    throw createValidationError('Metadata must be a valid object', 'metadata');
-  }
-
   try {
-    JSON.stringify(metadata);
-  } catch (e) {
-    throw createValidationError(`Metadata is not JSON serializable: ${e.message}`, 'metadata');
+    const result = validateAndSanitizeMetadataFn(metadata, maxSize);
+    return result;
+  } catch (err) {
+    throw createValidationError(err.message, 'metadata');
   }
-
-  const serialized = JSON.stringify(metadata);
-  if (serialized.length > maxSize) {
-    throw createValidationError(`Metadata exceeds maximum size (${serialized.length} > ${maxSize} bytes)`, 'metadata');
-  }
-
-  return metadata;
 }
 
 /**
