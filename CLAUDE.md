@@ -1,8 +1,8 @@
 # Sequential Ecosystem - Architecture Reference
 
 ## Status
-**Last Updated**: Dec 2, 2025 (Quick Wins Complete + P3.2 Prep Phase 1-2 Done)
-**State**: 46 packages, Grade A- architecture (improved from B+), enterprise-grade, unified patterns, environment validation, naming guidelines, extracted HTTP adapters
+**Last Updated**: Dec 2, 2025 (Issue #7 StateManager Integration Phase 2 In-Progress)
+**State**: 47 packages, Grade A architecture, enterprise-grade, unified patterns, persistent state management with TTL/cleanup
 **Phase 9 Status**: ✅ COMPLETE - All 8 infrastructure packages extracted and integrated
 **Phase 10 Week 1 (SAFE)**: ✅ COMPLETE - Documentation organization (11 files archived)
 **Phase 10 Week 2 (TRANSIT)**: ✅ COMPLETE - P2.1-P2.5 all done
@@ -16,7 +16,17 @@
 **P3.2 Prep Status**: 🟢 READY - All critical blockers cleared
   - ✅ Issue #2: StateKit HTTP adapter extracted into @sequential/sequential-os-http
   - ✅ Issue #5: Centralized error response helpers in @sequential/error-handling
-  - ⚠️ Issue #7: In-memory singletons (RISK zone, can defer or address separately)
+  - ⏳ Issue #7: StateManager integration (Phase 2/5 complete, Phase 3-5 pending)
+**Issue #7 Progress** (Dec 2, In-Progress):
+  - ✅ Phase 1: Created @sequential/persistent-state package (StateManager, FileSystemAdapter, MemoryAdapter)
+  - ✅ Phase 2: Integrated StateManager into desktop-server
+    - Added getAll() method to StateManager, adapters
+    - Initialized StateManager in server.js with env var config
+    - Updated graceful-shutdown.js for StateManager lifecycle
+    - Updated storage-observer routes to use StateManager.getAll()
+  - ⏳ Phase 3: Persist task execution data via StateManager
+  - ⏳ Phase 4: Monitoring endpoints for cache stats
+  - ⏳ Phase 5: Test and verify memory reduction
 **Key Files**: CLAUDE.md (this), TODO.md (roadmap), ENV.md (environment), NAMING-CONVENTIONS.md (naming), ARCHITECTURE-ANALYSIS.md (26KB), CHANGELOG.md (log)
 
 ## Phase 9: Comprehensive Monorepo Refactoring (Dec 1, 2025 - COMPLETE ✅)
