@@ -3,7 +3,7 @@
  * Parameter and input validation functions for file operations, task names, and schemas
  */
 
-import { validatePathRelative } from '@sequential/param-validation';
+import { validatePathRelative, validateTaskName as validateTaskNameSchema, validateFileName as validateFileNameSchema } from '@sequential/param-validation';
 import { createValidationError, createForbiddenError } from '@sequential/error-handling';
 
 /**
@@ -30,16 +30,12 @@ export function validateFilePath(filePath) {
  * @throws {Error} If task name is invalid
  */
 export function validateTaskName(taskName) {
-  if (!taskName || typeof taskName !== 'string') {
-    throw createValidationError('Invalid task name', 'taskName');
+  try {
+    validateTaskNameSchema(taskName);
+    return taskName;
+  } catch (err) {
+    throw createValidationError(`Task name ${err.message}`, 'taskName');
   }
-  if (!/^[a-zA-Z0-9._-]+$/.test(taskName)) {
-    throw createValidationError('Task name contains invalid characters (allowed: alphanumeric, dot, dash, underscore)', 'taskName');
-  }
-  if (taskName.length > 100) {
-    throw createValidationError('Task name too long (max 100 characters)', 'taskName');
-  }
-  return taskName;
 }
 
 /**
@@ -49,16 +45,12 @@ export function validateTaskName(taskName) {
  * @throws {Error} If file name is invalid
  */
 export function validateFileName(fileName) {
-  if (!fileName || typeof fileName !== 'string') {
-    throw createValidationError('Invalid file name', 'fileName');
+  try {
+    validateFileNameSchema(fileName);
+    return fileName;
+  } catch (err) {
+    throw createValidationError(`File name ${err.message}`, 'fileName');
   }
-  if (fileName.includes('/') || fileName.includes('\\') || fileName.startsWith('.')) {
-    throw createValidationError('File name contains invalid characters', 'fileName');
-  }
-  if (fileName.length > 255) {
-    throw createValidationError('File name too long (max 255 characters)', 'fileName');
-  }
-  return fileName;
 }
 
 /**
