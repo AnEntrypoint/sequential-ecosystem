@@ -12,3 +12,4 @@ export {
 export { BackgroundTaskManager, backgroundTaskManager } from './background-task-manager.js';
 export { TaskQueueManager, taskQueueManager } from './task-queue-manager.js';
 export { QueueWorkerPool, queueWorkerPool } from './queue-worker-pool.js';
+export { TaskScheduler, taskScheduler } from './task-scheduler.js';
