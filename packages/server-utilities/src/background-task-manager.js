@@ -7,6 +7,11 @@ export class BackgroundTaskManager extends EventEmitter {
     super();
     this.processes = new Map();
     this.nextId = 1;
+    this.stateManager = null;
+  }
+
+  setStateManager(stateManager) {
+    this.stateManager = stateManager;
   }
 
   spawn(command, args = [], options = {}) {
@@ -48,16 +53,28 @@ export class BackgroundTaskManager extends EventEmitter {
       signal: null,
       stdout,
       stderr,
-      childProcess
+      childProcess,
+      progress: {
+        percent: 0,
+        stage: 'initializing',
+        details: '',
+        updatedAt: startTime
+      }
     };
 
     childProcess.on('exit', (code, signal) => {
       task.status = code === 0 ? 'completed' : 'failed';
       task.exitCode = code;
       task.signal = signal;
+      task.progress.percent = 100;
+      task.progress.stage = code === 0 ? 'completed' : 'failed';
+      task.progress.updatedAt = Date.now();
+
+      const status = this.status(id);
+      this.persistResult(id, status);
 
       const eventType = code === 0 ? 'task:complete' : 'task:failed';
-      this.emit(eventType, this.status(id));
+      this.emit(eventType, status);
     });
 
     childProcess.on('error', (error) => {
@@ -92,8 +109,27 @@ export class BackgroundTaskManager extends EventEmitter {
       signal: task.signal,
       error: task.error || null,
       stdoutLength: task.stdout.length,
-      stderrLength: task.stderr.length
+      stderrLength: task.stderr.length,
+      progress: task.progress
     };
+  }
+
+  updateProgress(id, percent, stage, details) {
+    const task = this.processes.get(id);
+    if (!task) {
+      return false;
+    }
+
+    const progress = {
+      percent: Math.min(100, Math.max(0, percent)),
+      stage: stage || task.progress.stage,
+      details: details || task.progress.details,
+      updatedAt: Date.now()
+    };
+
+    task.progress = progress;
+    this.emit('task:progress', { id, progress });
+    return true;
   }
 
   list() {
@@ -107,7 +143,8 @@ export class BackgroundTaskManager extends EventEmitter {
         command: task.command,
         status: task.status,
         duration,
-        startTime: task.startTime
+        startTime: task.startTime,
+        progress: task.progress
       });
     }
     return result;
@@ -164,6 +201,52 @@ export class BackgroundTaskManager extends EventEmitter {
         }
       }, 100);
     });
+  }
+
+  persistResult(id, status) {
+    if (!this.stateManager) {
+      return;
+    }
+
+    try {
+      this.stateManager.set('background-tasks', `task-${id}`, {
+        id: status.id,
+        pid: status.pid,
+        command: status.command,
+        args: status.args,
+        status: status.status,
+        startTime: status.startTime,
+        duration: status.duration,
+        exitCode: status.exitCode,
+        signal: status.signal,
+        error: status.error,
+        completedAt: Date.now()
+      }).catch(err => {
+        console.error(`Failed to persist background task ${id}:`, err.message);
+      });
+    } catch (err) {
+      console.error(`Error persisting background task ${id}:`, err.message);
+    }
+  }
+
+  async getHistory(limit = 100) {
+    if (!this.stateManager) {
+      return [];
+    }
+
+    try {
+      const all = await this.stateManager.getAll('background-tasks');
+      if (!all || typeof all !== 'object') {
+        return [];
+      }
+
+      return Object.values(all)
+        .sort((a, b) => (b.completedAt || 0) - (a.completedAt || 0))
+        .slice(0, limit);
+    } catch (err) {
+      console.error('Error retrieving background task history:', err.message);
+      return [];
+    }
   }
 
   cleanup() {
