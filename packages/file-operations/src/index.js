@@ -1,4 +1,4 @@
-export { listJsonFiles, listDirectories, readJson, writeJson } from './file-store.js';
+export { FileStore } from './file-store.js';
 export {
   writeFileAtomic,
   writeFileAtomicString,
