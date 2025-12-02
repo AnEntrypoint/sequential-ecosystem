@@ -1,3 +1,5 @@
+import { executeTaskWithTimeout } from '@sequential/server-utilities';
+
 export class TaskService {
   constructor(repository, config = {}) {
     this.repository = repository;
@@ -87,5 +89,10 @@ export class TaskService {
 
   getExecutionTimeoutMs(cancelled = false) {
     return cancelled ? 0 : this.defaultExecutionTimeoutMs;
+  }
+
+  async executeTask(runId, taskName, code, input, cancelled = false) {
+    const timeoutMs = this.getExecutionTimeoutMs(cancelled);
+    return executeTaskWithTimeout(taskName, code, input, timeoutMs);
   }
 }

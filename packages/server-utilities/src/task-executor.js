@@ -7,7 +7,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export async function executeTaskWithTimeout(taskName, code, input, timeoutMs = 30000) {
   return new Promise((resolve, reject) => {
-    const workerPath = path.join(__dirname, '../../src/task-worker.js');
+    const workerPath = path.join(__dirname, './task-worker.js');
     let worker = null;
     let timeoutHandle = null;
     let cleanedUp = false;
