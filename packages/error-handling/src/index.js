@@ -1,2 +1,3 @@
 export { AppError, ERROR_CODES, createError, createValidationError, createNotFoundError, createForbiddenError, createConflictError, createUnprocessableError, createBadRequestError, createServerError, createErrorHandler, categorizeError } from './app-error.js';
 export { ErrorCategories as ERROR_CATEGORIES, logFileOperation, logFileSuccess, logBatchFileOperation, createDetailedErrorResponse } from './error-logger.js';
+export { createErrorResponse, errorToResponse } from './response-helper.js';
