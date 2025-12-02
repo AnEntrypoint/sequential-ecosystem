@@ -1,8 +1,10 @@
 import { spawn } from 'child_process';
 import path from 'path';
+import { EventEmitter } from 'events';
 
-export class BackgroundTaskManager {
+export class BackgroundTaskManager extends EventEmitter {
   constructor() {
+    super();
     this.processes = new Map();
     this.nextId = 1;
   }
@@ -53,14 +55,19 @@ export class BackgroundTaskManager {
       task.status = code === 0 ? 'completed' : 'failed';
       task.exitCode = code;
       task.signal = signal;
+
+      const eventType = code === 0 ? 'task:complete' : 'task:failed';
+      this.emit(eventType, this.status(id));
     });
 
     childProcess.on('error', (error) => {
       task.status = 'failed';
       task.error = error.message;
+      this.emit('task:failed', this.status(id));
     });
 
     this.processes.set(id, task);
+    this.emit('task:start', { id, pid: childProcess.pid, command, args, startTime });
     return { id, pid: childProcess.pid };
   }
 
@@ -131,6 +138,7 @@ export class BackgroundTaskManager {
           task.childProcess.kill();
         } catch (e2) {}
       }
+      this.emit('task:killed', { id, pid: task.pid, command: task.command });
       return true;
     }
 

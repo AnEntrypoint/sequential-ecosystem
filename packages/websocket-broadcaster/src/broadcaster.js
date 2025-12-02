@@ -3,6 +3,7 @@ import { createSingleSubscriber, createGroupedSubscriber, createSetSubscriber } 
 const runSubscribers = createSingleSubscriber();
 const taskSubscribers = createGroupedSubscriber();
 const fileSubscribers = createSetSubscriber();
+const backgroundTaskSubscribers = createSingleSubscriber();
 
 export function broadcastToRunSubscribers(message) {
   runSubscribers.broadcast(message);
@@ -78,4 +79,16 @@ export function broadcastRunProgress(runId, taskName, progress) {
       timestamp: new Date().toISOString()
     }
   });
+}
+
+export function broadcastBackgroundTaskEvent(message) {
+  backgroundTaskSubscribers.broadcast(message);
+}
+
+export function addBackgroundTaskSubscriber(subscriptionId, ws) {
+  backgroundTaskSubscribers.subscribe(subscriptionId, ws);
+}
+
+export function removeBackgroundTaskSubscriber(subscriptionId) {
+  backgroundTaskSubscribers.unsubscribe(subscriptionId);
 }
