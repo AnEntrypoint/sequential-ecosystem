@@ -1,6 +1,11 @@
 import { parentPort } from 'worker_threads';
 
 function extractFunctionBody(code) {
+  const trimmed = code.trim();
+  if (trimmed.startsWith('return ') || trimmed.startsWith('throw ') || !trimmed.includes('{')) {
+    return code;
+  }
+
   const openBraceIndex = code.indexOf('{');
   if (openBraceIndex === -1) {
     return code;
