@@ -1,0 +1,21 @@
+{
+  "name": "@sequential/agent-backend",
+  "version": "1.0.0",
+  "description": "LLM-powered agent backend using Vercel AI SDK",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node --test test/**/*.js"
+  },
+  "dependencies": {
+    "ai": "^3.0.0",
+    "@anthropic-ai/sdk": "^0.24.0"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
