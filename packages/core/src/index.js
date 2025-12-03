@@ -7,7 +7,7 @@ export {
   logBatchFileOperation,
   createDetailedErrorResponse,
   ErrorCategories
-} from './modules/error/index.js';
+} from '@sequential/error-handling';
 
 export {
   validateFilePath,
