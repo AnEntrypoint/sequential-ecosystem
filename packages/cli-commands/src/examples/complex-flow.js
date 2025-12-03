@@ -2,12 +2,14 @@ import path from 'path';
 import { randomUUID } from 'crypto';
 import { writeFileAtomicString } from '@sequential/file-operations';
 import logger from '@sequential/sequential-logging';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import { delay, withRetry } from '@sequential/async-patterns';
 
 export async function createComplexFlowExample(tasksDir) {
   const taskName = 'example-complex-flow';
   const taskFile = path.join(tasksDir, `${taskName}.js`);
   const taskId = randomUUID();
-  const timestamp = new Date().toISOString();
+  const timestamp = nowISO();
 
   const code = `export const config = {
   name: '${taskName}',
@@ -76,7 +78,7 @@ export async function initialize(input, context = {}) {
     maxRetries,
     retryCount: 0,
     processedItems: [],
-    startTime: new Date().toISOString()
+    startTime: nowISO()
   };
 }
 
@@ -131,13 +133,13 @@ export async function processItems(result, context = {}) {
     id: index,
     original: item,
     processed: \`[\${item.toUpperCase()}]\`,
-    timestamp: new Date().toISOString()
+    timestamp: nowISO()
   }));
 
   return {
     ...result,
     processedItems,
-    completedAt: new Date().toISOString(),
+    completedAt: nowISO(),
     success: true
   };
 }
@@ -150,7 +152,7 @@ export async function handleError(error, context = {}) {
     error: error.message,
     stack: error.stack,
     context,
-    failedAt: new Date().toISOString()
+    failedAt: nowISO()
   };
 }
 `;

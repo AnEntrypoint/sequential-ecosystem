@@ -1,6 +1,8 @@
 import { EventEmitter } from 'events';
 import { Worker } from 'worker_threads';
 import logger from '@sequential/sequential-logging';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import { delay, withRetry } from '@sequential/async-patterns';
 
 export class QueueWorkerPool extends EventEmitter {
   constructor(options = {}) {

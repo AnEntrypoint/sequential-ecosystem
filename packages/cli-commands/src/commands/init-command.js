@@ -4,6 +4,7 @@ import { ensureDirectory, writeFileAtomicJson, writeFileAtomicString } from '@se
 import { generateGitignore, generateSequentialrc } from '../templates.js';
 import { generateTechnicalDocumentation } from '../generators/documentation-generator.js';
 import logger from '@sequential/sequential-logging';
+import { delay, withRetry } from '@sequential/async-patterns';
 
 export async function initCommand(options) {
   try {

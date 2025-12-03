@@ -46,7 +46,7 @@ function getStackTrace(error, limit = 5) {
 
 export function logFileOperation(operation, filePath, error, context = {}) {
   const category = getErrorCategory(error);
-  const timestamp = new Date().toISOString();
+  const timestamp = nowISO();
   const stackTrace = getStackTrace(error);
 
   const logEntry = {
@@ -72,7 +72,7 @@ export function logFileOperation(operation, filePath, error, context = {}) {
 
 export function logFileSuccess(operation, filePath, duration = 0, metadata = {}) {
   const logEntry = {
-    timestamp: new Date().toISOString(),
+    timestamp: nowISO(),
     operation,
     status: 'success',
     filePath,
@@ -90,7 +90,7 @@ export function logFileSuccess(operation, filePath, duration = 0, metadata = {})
 
 export function logBatchFileOperation(operation, fileCount, error, duration = 0) {
   const category = error ? getErrorCategory(error) : 'SUCCESS';
-  const timestamp = new Date().toISOString();
+  const timestamp = nowISO();
 
   const logEntry = {
     timestamp,
@@ -139,7 +139,7 @@ export function createDetailedErrorResponse(operation, filePath, error, statusCo
       message: userMessage,
       operation,
       filePath,
-      timestamp: new Date().toISOString(),
+      timestamp: nowISO(),
       ...(process.env.DEBUG && {
         details: {
           originalError: error.message,

@@ -1,4 +1,6 @@
 import { executeTaskWithTimeout } from '@sequential/server-utilities';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import { delay, withRetry } from '@sequential/async-patterns';
 
 export class TaskService {
   constructor(repository, toolRepository = null, config = {}) {
@@ -84,7 +86,7 @@ export class TaskService {
       output,
       error,
       duration,
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     };
   }
 

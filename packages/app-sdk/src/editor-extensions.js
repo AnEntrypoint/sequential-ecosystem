@@ -1,3 +1,4 @@
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
 export class TaskEditorExtension {
   constructor(appSDK) {
     this.appSDK = appSDK;
@@ -109,7 +110,7 @@ export class FlowEditorExtension {
   addNode(nodeType) {
     this.appSDK.emit('flow:node-added', {
       type: nodeType,
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     });
   }
 
@@ -127,7 +128,7 @@ export class FlowEditorExtension {
       hasInitial: !!document.querySelector('[data-node-type="initial"]'),
       hasFinal: !!document.querySelector('[data-node-type="final"]'),
       nodeCount: document.querySelectorAll('[data-node-type]').length,
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     };
 
     this.appSDK.emit('flow:validated', validation);

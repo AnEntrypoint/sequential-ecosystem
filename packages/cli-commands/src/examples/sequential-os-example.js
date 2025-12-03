@@ -1,6 +1,7 @@
 import path from 'path';
 import { writeFileAtomicString } from '@sequential/file-operations';
 import logger from '@sequential/sequential-logging';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
 
 export async function createSequentialOSExample(tasksDir) {
   const taskName = 'example-sequential-os';
@@ -46,7 +47,7 @@ export async function ${taskName.replace(/-/g, '_')}(input) {
     logger.info(\`Executing: \${cmd}\`);
     results.push({
       command: cmd,
-      timestamp: new Date().toISOString(),
+      timestamp: nowISO(),
       note: 'Creates new layer in Sequential-OS'
     });
   }

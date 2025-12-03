@@ -82,7 +82,7 @@ export function buildErrorResponse(code, message, details = {}) {
   const error = {
     code,
     message,
-    timestamp: new Date().toISOString()
+    timestamp: nowISO()
   };
 
   if (Object.keys(details).length > 0) {

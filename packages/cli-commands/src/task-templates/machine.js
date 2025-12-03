@@ -1,4 +1,5 @@
 import logger from '@sequential/sequential-logging';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
 export function generateMachineTemplate(name, taskId, timestamp, inputs, description) {
   const funcName = name.replace(/-/g, '_');
   const inputsDoc = inputs.length > 0
@@ -45,7 +46,7 @@ async function callService() {
       body: JSON.stringify({
         method: 'getData',
         params: ${JSON.stringify(inputs.length > 0 ? `{${inputs.map(i => `${i}: input.${i}`).join(', ')}}` : '{}')},
-        timestamp: new Date().toISOString()
+        timestamp: nowISO()
       })
     });
 
@@ -61,7 +62,7 @@ async function callService() {
       method: 'getData',
       params: ${JSON.stringify(inputs.length > 0 ? `{${inputs.map(i => `${i}: input.${i}`).join(', ')}}` : '{}')},
       result: result,
-      timestamp: new Date().toISOString(),
+      timestamp: nowISO(),
       success: true
     }, null, 2));
 
@@ -89,7 +90,7 @@ callService();
     success: true,
     input,
     serviceResults: files.length,
-    completedAt: new Date().toISOString()
+    completedAt: nowISO()
   }, null, 2));
 
   logger.info(\`✅ Task completed - output written to \${outputFile}\`);

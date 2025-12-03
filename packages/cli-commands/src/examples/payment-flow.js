@@ -2,12 +2,13 @@ import path from 'path';
 import { randomUUID } from 'crypto';
 import { writeFileAtomicString } from '@sequential/file-operations';
 import logger from '@sequential/sequential-logging';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
 
 export async function createPaymentFlowExample(tasksDir) {
   const taskName = 'example-payment-flow';
   const taskFile = path.join(tasksDir, `${taskName}.js`);
   const taskId = randomUUID();
-  const timestamp = new Date().toISOString();
+  const timestamp = nowISO();
 
   const code = `export const config = {
   name: '${taskName}',
@@ -65,7 +66,7 @@ export async function example_payment_flow(input) {
     itemCount: items.length,
     customerEmail,
     status: 'confirmed',
-    timestamp: new Date().toISOString(),
+    timestamp: nowISO(),
     items: items.map((item, idx) => ({
       ...item,
       index: idx,

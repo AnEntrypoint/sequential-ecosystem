@@ -1,4 +1,6 @@
 import crypto from 'crypto';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import { delay, withRetry } from '@sequential/async-patterns';
 
 export function generateId() {
   return crypto.randomBytes(8).toString('hex');
@@ -30,7 +32,7 @@ export function formatToolCall(toolName, args) {
     type: 'tool_call',
     tool: toolName,
     args,
-    timestamp: new Date().toISOString()
+    timestamp: nowISO()
   };
 }
 
@@ -42,6 +44,6 @@ export function formatToolResult(toolName, result, duration) {
     result: result.error ? null : result.result,
     error: result.error || null,
     duration,
-    timestamp: new Date().toISOString()
+    timestamp: nowISO()
   };
 }

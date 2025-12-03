@@ -1,4 +1,5 @@
 import { CONFIG } from './config.js';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
 
 const requestLog = [];
 
@@ -17,7 +18,7 @@ export function createRequestLogger(slowThresholdMs = null) {
 
       const logEntry = {
         requestId,
-        timestamp: new Date().toISOString(),
+        timestamp: nowISO(),
         method: req.method,
         path: req.path,
         query: Object.keys(req.query).length > 0 ? req.query : undefined,

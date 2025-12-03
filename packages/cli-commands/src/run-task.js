@@ -4,6 +4,7 @@ import { existsSync } from 'fs';
 import fse from 'fs-extra';
 import { createAdapter } from '@sequential/sequential-adaptor';
 import logger from '@sequential/sequential-logging';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
 
 export async function runTask(options) {
   const { taskName, input = {}, save = false, dryRun = false, verbose = false } = options;
@@ -40,7 +41,7 @@ export async function runTask(options) {
   }
 
   const runId = randomUUID();
-  const runStartTime = new Date().toISOString();
+  const runStartTime = nowISO();
 
   try {
     // Check task runner type from config
@@ -72,7 +73,7 @@ export async function runTask(options) {
         input,
         output: result,
         startedAt: runStartTime,
-        completedAt: new Date().toISOString()
+        completedAt: nowISO()
       };
 
       if (verbose) {
@@ -110,14 +111,14 @@ export async function runTask(options) {
           input,
           output: result,
           startedAt: runStartTime,
-          completedAt: new Date().toISOString()
+          completedAt: nowISO()
         };
 
         if (save) {
           await adapter.updateTaskRun(runId, {
             status: 'success',
             output: result,
-            completedAt: new Date().toISOString()
+            completedAt: nowISO()
           });
         }
 
@@ -140,7 +141,7 @@ export async function runTask(options) {
       input,
       error,
       startedAt: runStartTime,
-      completedAt: new Date().toISOString()
+      completedAt: nowISO()
     };
 
     if (verbose) {

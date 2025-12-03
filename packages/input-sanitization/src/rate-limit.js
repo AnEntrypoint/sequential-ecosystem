@@ -1,5 +1,7 @@
 import rateLimit from 'express-rate-limit';
 import { CONFIG } from '../../server-utilities/src/index.js';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import { delay, withRetry } from '@sequential/async-patterns';
 
 const wsConnectionMap = new Map();
 
@@ -11,7 +13,7 @@ export function createRateLimitMiddleware(maxRequests = 100, windowMs = 60000) {
       code: 'RATE_LIMIT_EXCEEDED',
       message: `Too many requests. Limit: ${maxRequests} per ${windowMs}ms`,
       details: { retryAfter: windowMs / 1000 },
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     },
     standardHeaders: false,
     legacyHeaders: false,
@@ -20,7 +22,7 @@ export function createRateLimitMiddleware(maxRequests = 100, windowMs = 60000) {
         code: 'RATE_LIMIT_EXCEEDED',
         message: `Too many requests. Limit: ${maxRequests} per ${windowMs}ms`,
         details: { retryAfter: windowMs / 1000 },
-        timestamp: new Date().toISOString()
+        timestamp: nowISO()
       });
     }
   });

@@ -1,4 +1,6 @@
 import logger from '@sequential/sequential-logging';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import { delay, withRetry } from '@sequential/async-patterns';
 export function generateFlowGraphTemplate(name, taskId, timestamp, inputs, description) {
   return `/**
  * Task: ${name}
@@ -66,7 +68,7 @@ export async function initialize(input, context = {}) {
 
   return {
     ...input,
-    startTime: new Date().toISOString(),
+    startTime: nowISO(),
     retryCount: 0,
     maxRetries: 3
   };
@@ -87,7 +89,7 @@ export async function fetchData(result, context = {}) {
     return {
       ...result,
       externalData: data,
-      fetchedAt: new Date().toISOString()
+      fetchedAt: nowISO()
     };
   } catch (error) {
     if (result.retryCount < result.maxRetries) {
@@ -118,7 +120,7 @@ export async function retryFetch(error, context = {}) {
       ...result,
       retryCount,
       externalData: data,
-      fetchedAt: new Date().toISOString(),
+      fetchedAt: nowISO(),
       recovered: true
     };
   } catch (error) {
@@ -134,14 +136,14 @@ export async function processData(result, context = {}) {
   const processedData = {
     ...externalData,
     processed: true,
-    processedAt: new Date().toISOString()
+    processedAt: nowISO()
   };
 
   return {
     success: true,
     input: result,
     data: processedData,
-    completedAt: new Date().toISOString()
+    completedAt: nowISO()
   };
 }
 
@@ -153,7 +155,7 @@ export async function handleError(error, context = {}) {
     error: error.message,
     stack: error.stack,
     context,
-    failedAt: new Date().toISOString()
+    failedAt: nowISO()
   };
 }
 `;

@@ -2,12 +2,14 @@ import path from 'path';
 import { randomUUID } from 'crypto';
 import { writeFileAtomicString } from '@sequential/file-operations';
 import logger from '@sequential/sequential-logging';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import { delay, withRetry } from '@sequential/async-patterns';
 
 export async function createBatchProcessingExample(tasksDir) {
   const taskName = 'example-batch-processing';
   const taskFile = path.join(tasksDir, `${taskName}.js`);
   const taskId = randomUUID();
-  const timestamp = new Date().toISOString();
+  const timestamp = nowISO();
 
   const code = `export const config = {
   name: '${taskName}',
@@ -50,7 +52,7 @@ async function processBatch(batch, batchIndex) {
         batchIndex,
         itemIndex: index,
         processed: item.toUpperCase(),
-        timestamp: new Date().toISOString(),
+        timestamp: nowISO(),
         url: data.url
       };
     })
@@ -112,7 +114,7 @@ export async function example_batch_processing(input) {
     duration: endTime - startTime,
     averageTimePerItem: (endTime - startTime) / allResults.length,
     results: allResults,
-    timestamp: new Date().toISOString()
+    timestamp: nowISO()
   };
 
   logger.info(\`Completed \${allResults.length} items in \${result.duration}ms\`);

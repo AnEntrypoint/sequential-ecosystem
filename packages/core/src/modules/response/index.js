@@ -16,7 +16,7 @@ export function createErrorResponse(code, message, extra = {}) {
     error: {
       code,
       message,
-      timestamp: new Date().toISOString(),
+      timestamp: nowISO(),
       ...extra
     }
   };
@@ -26,7 +26,7 @@ export function createSuccessResponse(data, meta = {}) {
   return {
     success: true,
     data,
-    timestamp: new Date().toISOString(),
+    timestamp: nowISO(),
     ...meta
   };
 }
@@ -41,7 +41,7 @@ export function createPaginatedResponse(items, page, pageSize, total) {
       total,
       pages: Math.ceil(total / pageSize)
     },
-    timestamp: new Date().toISOString()
+    timestamp: nowISO()
   };
 }
 
@@ -49,7 +49,7 @@ export function createMetricsResponse(metrics) {
   return {
     success: true,
     metrics,
-    timestamp: new Date().toISOString()
+    timestamp: nowISO()
   };
 }
 
@@ -58,7 +58,7 @@ export function createListResponse(items, count = null) {
     success: true,
     data: items,
     count: count !== null ? count : items.length,
-    timestamp: new Date().toISOString()
+    timestamp: nowISO()
   };
 }
 
@@ -69,7 +69,7 @@ export function createBatchResponse(results, failed = []) {
     failed: failed.length,
     results,
     ...(failed.length > 0 && { failedItems: failed }),
-    timestamp: new Date().toISOString()
+    timestamp: nowISO()
   };
 }
 

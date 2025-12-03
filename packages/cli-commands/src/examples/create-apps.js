@@ -1,9 +1,10 @@
 import path from 'path';
 import { writeFileAtomicString } from '@sequential/file-operations';
 import logger from '@sequential/sequential-logging';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
 
 export async function createExampleApps(appsDir) {
-  const timestamp = new Date().toISOString();
+  const timestamp = nowISO();
 
   const apps = [
     {

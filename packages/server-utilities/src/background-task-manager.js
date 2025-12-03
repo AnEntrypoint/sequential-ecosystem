@@ -2,6 +2,7 @@ import { spawn } from 'child_process';
 import path from 'path';
 import { EventEmitter } from 'events';
 import logger from '@sequential/sequential-logging';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
 
 export class BackgroundTaskManager extends EventEmitter {
   constructor() {

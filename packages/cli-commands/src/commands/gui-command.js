@@ -1,6 +1,7 @@
 import path from 'path';
 import { existsSync } from 'fs';
 import logger from '@sequential/sequential-logging';
+import { delay, withRetry } from '@sequential/async-patterns';
 
 export async function guiCommand(options, __dirname) {
   try {

@@ -67,7 +67,7 @@ export class FlowService {
       status,
       error,
       duration,
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     };
   }
 

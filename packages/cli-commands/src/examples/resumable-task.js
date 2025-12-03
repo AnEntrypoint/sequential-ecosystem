@@ -2,12 +2,13 @@ import path from 'path';
 import { randomUUID } from 'crypto';
 import { writeFileAtomicString } from '@sequential/file-operations';
 import logger from '@sequential/sequential-logging';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
 
 export async function createResumableTaskExample(tasksDir) {
   const taskName = 'example-resumable-task';
   const taskFile = path.join(tasksDir, `${taskName}.js`);
   const taskId = randomUUID();
-  const timestamp = new Date().toISOString();
+  const timestamp = nowISO();
 
   const code = `export const config = {
   name: '${taskName}',
@@ -63,7 +64,7 @@ export async function example_resumable_task(input) {
         id: recordId,
         value: Math.random() * 100,
         processed: true,
-        timestamp: new Date().toISOString()
+        timestamp: nowISO()
       });
     }
 
@@ -83,7 +84,7 @@ export async function example_resumable_task(input) {
     ...results,
     completionPercentage: 100,
     duration: Date.now(),
-    timestamp: new Date().toISOString()
+    timestamp: nowISO()
   };
 }`;
 

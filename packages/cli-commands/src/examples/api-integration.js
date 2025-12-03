@@ -2,12 +2,14 @@ import path from 'path';
 import { randomUUID } from 'crypto';
 import { writeFileAtomicString } from '@sequential/file-operations';
 import logger from '@sequential/sequential-logging';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import { delay, withRetry } from '@sequential/async-patterns';
 
 export async function createApiIntegrationExample(tasksDir) {
   const taskName = 'example-api-integration';
   const taskFile = path.join(tasksDir, `${taskName}.js`);
   const taskId = randomUUID();
-  const timestamp = new Date().toISOString();
+  const timestamp = nowISO();
 
   const code = `export const config = {
   name: '${taskName}',
@@ -91,7 +93,7 @@ export async function example_api_integration(input) {
     status: response.status,
     headers: Object.fromEntries(response.headers.entries()),
     data,
-    timestamp: new Date().toISOString()
+    timestamp: nowISO()
   };
 
   logger.info('API call successful');

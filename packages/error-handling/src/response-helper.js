@@ -3,7 +3,7 @@ export function createErrorResponse(code, message, statusCode = 400) {
     error: {
       code,
       message,
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     }
   };
 }

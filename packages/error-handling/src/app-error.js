@@ -1,4 +1,5 @@
 import createHttpError from 'http-errors';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
 
 export class AppError extends Error {
   constructor(httpCode, code, message, category = null, details = {}) {
@@ -7,7 +8,7 @@ export class AppError extends Error {
     this.code = code;
     this.category = category;
     this.details = details;
-    this.timestamp = new Date().toISOString();
+    this.timestamp = nowISO();
     Error.captureStackTrace(this, this.constructor);
   }
 
@@ -54,7 +55,7 @@ export function createError(errorDef, message, details = {}) {
   error.code = errorDef.code;
   error.category = errorDef.category;
   error.details = details;
-  error.timestamp = new Date().toISOString();
+  error.timestamp = nowISO();
   return error;
 }
 
@@ -105,7 +106,7 @@ export function createErrorHandler() {
     const statusCode = err.status || err.statusCode || 500;
     const code = err.code || 'INTERNAL_SERVER_ERROR';
     const category = err.category || (statusCode === 500 ? 'server' : 'request');
-    const timestamp = err.timestamp || new Date().toISOString();
+    const timestamp = err.timestamp || nowISO();
 
     res.status(statusCode).json({
       error: {

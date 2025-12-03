@@ -1,6 +1,7 @@
 import { describe, it, beforeEach } from 'node:test';
 import assert from 'node:assert';
 import { TaskService } from './src/index.js';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
 
 describe('TaskService', () => {
   let service;
@@ -53,7 +54,7 @@ describe('TaskService', () => {
       status: 'success',
       error: null,
       duration: 100,
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     };
 
     assert.doesNotThrow(() => service.validateMetadata(result));

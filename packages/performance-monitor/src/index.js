@@ -18,7 +18,7 @@ export class PerformanceMonitor {
       name,
       duration,
       metadata,
-      timestamp: new Date().toISOString(),
+      timestamp: nowISO(),
       memory: process.memoryUsage().heapUsed / 1024 / 1024
     };
 
@@ -86,14 +86,14 @@ export class PerformanceMonitor {
     session.events.push({
       type: eventType,
       data,
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     });
   }
 
   addAlert(alert) {
     this.alerts.push({
       ...alert,
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     });
 
     if (this.alerts.length > 1000) {
@@ -166,7 +166,7 @@ export class PerformanceMonitor {
         metrics: this.metrics,
         stats: this.getAggregatedStats(),
         alerts: this.alerts,
-        timestamp: new Date().toISOString()
+        timestamp: nowISO()
       }, null, 2);
     }
 

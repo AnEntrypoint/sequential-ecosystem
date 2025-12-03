@@ -1,4 +1,5 @@
 import logger from '@sequential/sequential-logging';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
 export class AppSDK {
   constructor(config = {}) {
     this.appId = config.appId || `app-${Date.now()}`;
@@ -107,7 +108,7 @@ export class AppSDK {
   getAgentContext() {
     return {
       ...this.agentContext,
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     };
   }
 
@@ -128,7 +129,7 @@ export class AppSDK {
     const event = {
       type: eventType,
       appId: this.appId,
-      timestamp: new Date().toISOString(),
+      timestamp: nowISO(),
       data
     };
 

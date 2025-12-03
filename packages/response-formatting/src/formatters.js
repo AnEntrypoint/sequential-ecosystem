@@ -3,7 +3,7 @@ export function formatResponse(data, meta = {}) {
     success: true,
     data,
     meta: {
-      timestamp: new Date().toISOString(),
+      timestamp: nowISO(),
       ...meta
     }
   };
@@ -62,7 +62,7 @@ export function formatError(httpCode, error) {
       ...(error.category && { category: error.category })
     },
     meta: {
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     }
   };
 }

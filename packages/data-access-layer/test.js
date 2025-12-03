@@ -3,6 +3,7 @@ import assert from 'node:assert';
 import fs from 'fs-extra';
 import path from 'path';
 import { TaskRepository, FlowRepository, ToolRepository, FileRepository } from './src/index.js';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
 
 const TEST_DIR = path.join(process.cwd(), 'tasks-test');
 
@@ -37,7 +38,7 @@ describe('TaskRepository', () => {
       output: { result: 'success' },
       status: 'success',
       duration: 1000,
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     };
 
     assert.ok(result.runId);

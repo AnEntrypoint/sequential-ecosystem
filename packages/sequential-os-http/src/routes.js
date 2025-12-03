@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import { createErrorResponse } from '@sequential/error-handling';
 import { packageManager } from './package-manager.js';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
 
 function asyncHandler(fn) {
   return (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
@@ -120,7 +121,7 @@ export function registerSequentialOsRoutes(app, kit, STATEKIT_DIR) {
       exitCode: result.exitCode || 0,
       instruction,
       sessionId,
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     });
   }));
 
@@ -150,7 +151,7 @@ export function registerSequentialOsRoutes(app, kit, STATEKIT_DIR) {
       short: result.short,
       stdout: result.stdout || '',
       stderr: result.stderr || '',
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     });
   }));
 
@@ -183,7 +184,7 @@ export function registerSequentialOsRoutes(app, kit, STATEKIT_DIR) {
       short: result.short,
       stdout: result.stdout || '',
       stderr: result.stderr || '',
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     });
   }));
 
@@ -198,7 +199,7 @@ export function registerSequentialOsRoutes(app, kit, STATEKIT_DIR) {
       short: result.short,
       stdout: result.stdout || '',
       stderr: result.stderr || '',
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     });
   }));
 
@@ -217,7 +218,7 @@ export function registerSequentialOsRoutes(app, kit, STATEKIT_DIR) {
       short: result.short,
       stdout: result.stdout || '',
       stderr: result.stderr || '',
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     });
   }));
 
@@ -235,7 +236,7 @@ export function registerSequentialOsRoutes(app, kit, STATEKIT_DIR) {
       packageName,
       instruction: searchCmd,
       results: result || '',
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     });
   }));
 
@@ -253,7 +254,7 @@ export function registerSequentialOsRoutes(app, kit, STATEKIT_DIR) {
       packageName,
       instruction: infoCmd,
       info: result || '',
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     });
   }));
 
@@ -267,7 +268,7 @@ export function registerSequentialOsRoutes(app, kit, STATEKIT_DIR) {
       instruction: listCmd,
       filter: filter || null,
       packages: result || '',
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     });
   }));
 
@@ -282,7 +283,7 @@ export function registerSequentialOsRoutes(app, kit, STATEKIT_DIR) {
       short: result.short,
       stdout: result.stdout || '',
       stderr: result.stderr || '',
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     });
   }));
 
@@ -295,7 +296,7 @@ export function registerSequentialOsRoutes(app, kit, STATEKIT_DIR) {
       platform: process.platform,
       hasApt,
       isLinux,
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     });
   }));
 }

@@ -57,7 +57,7 @@ export class PerformanceDebugger {
       type,
       function: name,
       depth,
-      timestamp: new Date().toISOString(),
+      timestamp: nowISO(),
       ...metadata
     });
   }
@@ -86,7 +86,7 @@ export class PerformanceDebugger {
     const mem = process.memoryUsage();
     this.memorySnapshots.push({
       sessionId,
-      timestamp: new Date().toISOString(),
+      timestamp: nowISO(),
       heapUsed: mem.heapUsed / 1024 / 1024,
       heapTotal: mem.heapTotal / 1024 / 1024,
       rss: mem.rss / 1024 / 1024,
@@ -177,7 +177,7 @@ export class PerformanceDebugger {
       callGraph,
       memoryTrend,
       bottlenecks,
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     };
 
     if (format === 'json') {

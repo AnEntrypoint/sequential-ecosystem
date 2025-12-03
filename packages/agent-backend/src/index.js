@@ -1,4 +1,5 @@
 import { generateId } from './utils.js';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
 
 let Anthropic = null;
 try {
@@ -53,7 +54,7 @@ export class AgentBackend {
         success: true,
         result,
         duration,
-        timestamp: new Date().toISOString(),
+        timestamp: nowISO(),
         tool: toolName
       };
     } catch (error) {
@@ -62,7 +63,7 @@ export class AgentBackend {
         success: false,
         error: error.message,
         duration,
-        timestamp: new Date().toISOString(),
+        timestamp: nowISO(),
         tool: toolName
       };
     }

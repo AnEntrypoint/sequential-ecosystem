@@ -6,6 +6,7 @@ import { generateMachineTemplate } from './task-templates/machine.js';
 import { generateFlowGraphTemplate } from './task-templates/flow-graph.js';
 import { generateFlowSimpleTemplate } from './task-templates/flow-simple.js';
 import logger from '@sequential/sequential-logging';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
 
 export async function createTask(options) {
   const { name, withGraph = false, inputs = [], description = '', runner = 'flow' } = options;
@@ -21,7 +22,7 @@ export async function createTask(options) {
   await ensureDirectory(tasksDir);
   await ensureDirectory(runsDir);
 
-  const timestamp = new Date().toISOString();
+  const timestamp = nowISO();
   const taskId = randomUUID();
 
   let code;

@@ -1,4 +1,5 @@
 import { createSingleSubscriber, createGroupedSubscriber, createSetSubscriber } from './subscriber-manager.js';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
 
 const runSubscribers = createSingleSubscriber();
 const taskSubscribers = createGroupedSubscriber();
@@ -50,7 +51,7 @@ export function broadcastTaskProgress(taskName, runId, progress) {
       stage: progress.stage || 'executing',
       percentage: progress.percentage || 0,
       details: progress.details || '',
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     }
   });
 
@@ -62,7 +63,7 @@ export function broadcastTaskProgress(taskName, runId, progress) {
       stage: progress.stage || 'executing',
       percentage: progress.percentage || 0,
       details: progress.details || '',
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     }
   });
 }
@@ -76,7 +77,7 @@ export function broadcastRunProgress(runId, taskName, progress) {
       stage: progress.stage || 'executing',
       percentage: progress.percentage || 0,
       details: progress.details || '',
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     }
   });
 }

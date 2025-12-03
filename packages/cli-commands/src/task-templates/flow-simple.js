@@ -1,4 +1,5 @@
 import logger from '@sequential/sequential-logging';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
 export function generateFlowSimpleTemplate(name, taskId, timestamp, inputs, description) {
   const funcName = name.replace(/-/g, '_');
   const inputsDoc = inputs.length > 0
@@ -52,7 +53,7 @@ export async function ${funcName}(input) {
       input,
       data,
       duration: Date.now() - startTime,
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     };
 
     logger.info('Task completed successfully');
@@ -66,7 +67,7 @@ export async function ${funcName}(input) {
       success: false,
       error: error.message,
       input,
-      timestamp: new Date().toISOString()
+      timestamp: nowISO()
     };
   }
 }

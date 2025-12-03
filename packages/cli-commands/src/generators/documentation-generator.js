@@ -204,7 +204,7 @@ export async function userOnboarding(input) {
 
   await __callHostTool__('writeFile', {
     path: 'user-log.json',
-    content: { userId: newUser.id, createdAt: new Date().toISOString() },
+    content: { userId: newUser.id, createdAt: nowISO() },
     scope: 'global'
   });
 
@@ -414,7 +414,7 @@ export async function resumableTask(input) {
       checkpoint.errors.push({
         index: i,
         error: error.message,
-        timestamp: new Date().toISOString()
+        timestamp: nowISO()
       });
 
       await __callHostTool__('writeFile', {

@@ -1,3 +1,4 @@
+import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
 export class ToolEditorExtension {
   constructor(appSDK) {
     this.appSDK = appSDK;
@@ -156,7 +157,7 @@ export class ToolEditorExtension {
       if (imports.length > 0) {
         await this.appSDK.emit('tool:deploy', {
           imports,
-          timestamp: new Date().toISOString()
+          timestamp: nowISO()
         });
       }
     };
