@@ -30,6 +30,44 @@ All notable changes to this project will be documented in this file.
 - GUI responsiveness: <200ms
 - Memory overhead: <50MB per agent
 
+## [Unreleased] - 2025-12-03
+
+### Comprehensive Error Monitoring & Observability (Dec 3, 2025)
+
+**Addresses requirement**: "app error handling must be as comprehensive and observable as possible"
+
+1. **Client-Side Error Capturing** (`error-handler.js`):
+   - Global error handler for uncaught exceptions
+   - Unhandled promise rejection handler
+   - Async/sync function wrapper utilities
+   - Auto-sends errors to server via `/api/errors/log`
+   - Maintains local error history (max 100)
+
+2. **Server-Side Error Logging** (`/api/errors/*`):
+   - Logs to `.sequential-errors/YYYY-MM-DD.jsonl` (JSONL format)
+   - Captures full context: app, message, stack, type, timestamp, URL, user agent, IP, method, endpoint
+   - Real-time WebSocket broadcast on `error:logged` channel
+   - Endpoints: POST /api/errors/log, GET /api/errors/logs, GET /api/errors/stats, DELETE /api/errors/clear
+
+3. **Error Monitor Dashboard** (`/error-monitor.html`):
+   - Real-time stats panel: total files, error count, affected apps, last error time
+   - Recent errors tab: full list with stack traces and metadata
+   - Statistics tab: charts by app and date (bar charts)
+   - WebSocket auto-refresh on error events
+   - Manual refresh button (also polls every 5 seconds)
+   - Clear all errors button
+   - Accessible from taskbar: ⚠️ Errors button
+
+4. **Health Check Endpoints**:
+   - GET `/api/health`: Basic status, uptime, memory, PID, Node version, error counts
+   - GET `/api/health/detailed`: Filesystem status, memory breakdown (heap/external), formatted uptime
+   - Used for monitoring and alerting
+
+5. **Error Handler Integration**:
+   - Integrated into all 11 desktop apps: terminal, code editor, debugger, file browser, flow editors, task editors, etc.
+   - Each app initialized with `new ErrorHandler('app-name')`
+   - Automatic error capture on app startup
+
 ## [Unreleased] - 2025-12-02
 
 ### Background Task Manager for Persistent CLI Execution (Dec 2, 2025)
