@@ -1,0 +1,26 @@
+{
+  "name": "@sequential/resource-controller-factory",
+  "version": "1.0.0",
+  "description": "Factory for creating RESTful resource controllers",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ],
+  "keywords": [
+    "rest",
+    "crud",
+    "controller",
+    "factory",
+    "express"
+  ],
+  "author": "Sequential",
+  "license": "MIT",
+  "dependencies": {
+    "@sequential/response-formatting": "^1.0.0",
+    "@sequential/route-helpers": "^1.0.0"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "@sequential/route-helpers",
+  "version": "1.0.0",
+  "description": "Express route handler utilities for API endpoints",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ],
+  "keywords": [
+    "express",
+    "route",
+    "middleware",
+    "validation",
+    "error-handling"
+  ],
+  "author": "Sequential",
+  "license": "MIT",
+  "dependencies": {
+    "@sequential/response-formatting": "^1.0.0",
+    "@sequential/error-handling": "^1.0.0"
+  }
+}
