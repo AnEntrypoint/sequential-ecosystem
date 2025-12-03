@@ -1,5 +1,6 @@
 import path from 'path';
 import { existsSync } from 'fs';
+import logger from '@sequential/sequential-logging';
 
 export async function guiCommand(options, __dirname) {
   try {
@@ -8,7 +9,7 @@ export async function guiCommand(options, __dirname) {
     const zellousPath = path.join(__dirname, 'packages/zellous');
     const serverPath = path.join(desktopServerPath, 'src/server.js');
 
-    console.log('\n🚀 Sequential Desktop - Startup\n');
+    logger.info('\n🚀 Sequential Desktop - Startup\n');
 
     if (!existsSync(desktopServerPath)) {
       throw new Error(`Desktop server not found at ${desktopServerPath}`);
@@ -23,7 +24,7 @@ export async function guiCommand(options, __dirname) {
 
     const procs = [];
 
-    console.log('Starting Sequential Desktop server...');
+    logger.info('Starting Sequential Desktop server...');
     const desktopProc = spawn('node', [serverPath], {
       cwd: desktopServerPath,
       stdio: 'inherit',
@@ -34,14 +35,14 @@ export async function guiCommand(options, __dirname) {
     if (options.zellous !== false && existsSync(zellousPath)) {
       const zellousServerPath = path.join(zellousPath, 'server.js');
       if (existsSync(zellousServerPath)) {
-        console.log('[Zellous] Static files served via desktop server, WebSocket on port 8004');
+        logger.info('[Zellous] Static files served via desktop server, WebSocket on port 8004');
       }
     }
 
     const shutdown = (signal) => {
-      console.log(`\n\nShutting down (${signal})...`);
+      logger.info(`\n\nShutting down (${signal})...`);
       procs.forEach(({name, proc}) => {
-        console.log(`  Stopping ${name}...`);
+        logger.info(`  Stopping ${name}...`);
         proc.kill('SIGINT');
       });
       setTimeout(() => process.exit(0), 1000);
@@ -49,12 +50,12 @@ export async function guiCommand(options, __dirname) {
 
     procs.forEach(({name, proc}) => {
       proc.on('exit', (code) => {
-        console.error(`\n${name} exited with code ${code}`);
+        logger.error(`\n${name} exited with code ${code}`);
         shutdown('process exit');
       });
 
       proc.on('error', (error) => {
-        console.error(`\n${name} error:`, error.message);
+        logger.error(`\n${name} error:`, error.message);
         shutdown('process error');
       });
     });
@@ -63,12 +64,12 @@ export async function guiCommand(options, __dirname) {
     process.on('SIGTERM', () => shutdown('SIGTERM'));
 
   } catch (e) {
-    console.error('\n✗ Failed to start Sequential Desktop');
-    console.error(`  ${e instanceof Error ? e.message : String(e)}\n`);
-    console.error('Troubleshooting:');
-    console.error('  1. Check dependencies: cd packages/desktop-server && npm install');
-    console.error('  2. Verify apps are installed');
-    console.error('  3. Check logs above for specific errors\n');
+    logger.error('\n✗ Failed to start Sequential Desktop');
+    logger.error(`  ${e instanceof Error ? e.message : String(e)}\n`);
+    logger.error('Troubleshooting:');
+    logger.error('  1. Check dependencies: cd packages/desktop-server && npm install');
+    logger.error('  2. Verify apps are installed');
+    logger.error('  3. Check logs above for specific errors\n');
     process.exit(1);
   }
 }

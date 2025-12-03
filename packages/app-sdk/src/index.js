@@ -1,3 +1,4 @@
+import logger from '@sequential/sequential-logging';
 export class AppSDK {
   constructor(config = {}) {
     this.appId = config.appId || `app-${Date.now()}`;
@@ -135,7 +136,7 @@ export class AppSDK {
       try {
         handler(event);
       } catch (error) {
-        console.error('Event handler error:', error);
+        logger.error('Event handler error:', error);
       }
     });
   }

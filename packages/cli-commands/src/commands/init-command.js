@@ -3,6 +3,7 @@ import { existsSync } from 'fs';
 import { ensureDirectory, writeFileAtomicJson, writeFileAtomicString } from '@sequential/file-operations';
 import { generateGitignore, generateSequentialrc } from '../templates.js';
 import { generateTechnicalDocumentation } from '../generators/documentation-generator.js';
+import logger from '@sequential/sequential-logging';
 
 export async function initCommand(options) {
   try {
@@ -14,7 +15,7 @@ export async function initCommand(options) {
     for (const p of paths) {
       if (!existsSync(p)) {
         await ensureDirectory(p);
-        console.log(`✓ Created ${p}`);
+        logger.info(`✓ Created ${p}`);
       }
     }
 
@@ -24,7 +25,7 @@ export async function initCommand(options) {
         adaptor: 'folder',
         defaults: {}
       });
-      console.log(`✓ Created ${configFile}`);
+      logger.info(`✓ Created ${configFile}`);
     }
 
     const docContent = generateTechnicalDocumentation();
@@ -32,18 +33,18 @@ export async function initCommand(options) {
     for (const fileName of docFiles) {
       const docPath = path.join(process.cwd(), fileName);
       await writeFileAtomicString(docPath, docContent);
-      console.log(`✓ Created ${docPath}`);
+      logger.info(`✓ Created ${docPath}`);
     }
 
     const gitignorePath = path.join(process.cwd(), '.gitignore');
     const gitignoreContent = generateGitignore();
     await writeFileAtomicString(gitignorePath, gitignoreContent);
-    console.log(`✓ Created ${gitignorePath}`);
+    logger.info(`✓ Created ${gitignorePath}`);
 
     const sequentialrcPath = path.join(process.cwd(), '.sequentialrc.json');
     const sequentialrcConfig = generateSequentialrc();
     await writeFileAtomicJson(sequentialrcPath, sequentialrcConfig);
-    console.log(`✓ Created ${sequentialrcPath}`);
+    logger.info(`✓ Created ${sequentialrcPath}`);
 
     if (options.examples !== false) {
       const { createExamples } = await import('../create-examples.js');
@@ -53,45 +54,45 @@ export async function initCommand(options) {
 
       const appsDir = path.join(process.cwd(), '.sequential', 'apps');
       await ensureDirectory(appsDir);
-      console.log('\n📱 Creating example apps:');
+      logger.info('\n📱 Creating example apps:');
       await createExampleApps(appsDir);
     }
 
-    console.log('\n✅ Initialized sequential-ecosystem');
-    console.log('\n📦 Quick Commands:');
-    console.log('  npx sequential-ecosystem create-task <name>');
-    console.log('  npx sequential-ecosystem run <name> --input \'{}\'');
-    console.log('  npx sequential-ecosystem gui');
+    logger.info('\n✅ Initialized sequential-ecosystem');
+    logger.info('\n📦 Quick Commands:');
+    logger.info('  npx sequential-ecosystem create-task <name>');
+    logger.info('  npx sequential-ecosystem run <name> --input \'{}\'');
+    logger.info('  npx sequential-ecosystem gui');
 
     if (options.examples !== false) {
-      console.log('\n📚 Example Tasks (./tasks/):');
-      console.log('  - example-simple-flow: Sequential-JS with auto-pause');
-      console.log('  - example-api-integration: HTTP client with retry logic');
-      console.log('  - example-batch-processing: Batch with progress tracking');
-      console.log('  - example-payment-flow: Complex state machine');
-      console.log('  - example-resumable-task: Checkpointing & resumption');
+      logger.info('\n📚 Example Tasks (./tasks/):');
+      logger.info('  - example-simple-flow: Sequential-JS with auto-pause');
+      logger.info('  - example-api-integration: HTTP client with retry logic');
+      logger.info('  - example-batch-processing: Batch with progress tracking');
+      logger.info('  - example-payment-flow: Complex state machine');
+      logger.info('  - example-resumable-task: Checkpointing & resumption');
 
-      console.log('\n🔧 Example Tools (./tools/):');
-      console.log('  - database.js: Database operations');
-      console.log('  - api-client.js: HTTP client with backoff');
-      console.log('  - filesystem.js: File operations');
+      logger.info('\n🔧 Example Tools (./tools/):');
+      logger.info('  - database.js: Database operations');
+      logger.info('  - api-client.js: HTTP client with backoff');
+      logger.info('  - filesystem.js: File operations');
 
-      console.log('\n📱 Example Apps (./.sequential/apps/):');
-      console.log('  - dashboard: Task monitoring interface');
-      console.log('  - docs: Quick reference guide');
+      logger.info('\n📱 Example Apps (./.sequential/apps/):');
+      logger.info('  - dashboard: Task monitoring interface');
+      logger.info('  - docs: Quick reference guide');
 
-      console.log('\n🚀 Try it out:');
-      console.log('  npx sequential-ecosystem run example-simple-flow --input \'{}\'');
-      console.log('  npx sequential-ecosystem gui  # Visual Desktop GUI with example apps');
+      logger.info('\n🚀 Try it out:');
+      logger.info('  npx sequential-ecosystem run example-simple-flow --input \'{}\'');
+      logger.info('  npx sequential-ecosystem gui  # Visual Desktop GUI with example apps');
     }
 
-    console.log('\n📖 Documentation:');
-    console.log('  - README.md: Quick start guide');
-    console.log('  - CLAUDE.md: For Claude Code integration');
-    console.log('  - AGENTS.md: Agent patterns');
-    console.log('  - GEMINI.md: AI integration examples');
+    logger.info('\n📖 Documentation:');
+    logger.info('  - README.md: Quick start guide');
+    logger.info('  - CLAUDE.md: For Claude Code integration');
+    logger.info('  - AGENTS.md: Agent patterns');
+    logger.info('  - GEMINI.md: AI integration examples');
   } catch (e) {
-    console.error('Error:', e instanceof Error ? e.message : String(e));
+    logger.error('Error:', e instanceof Error ? e.message : String(e));
     process.exit(1);
   }
 }

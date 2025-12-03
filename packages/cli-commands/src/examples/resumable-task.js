@@ -1,6 +1,7 @@
 import path from 'path';
 import { randomUUID } from 'crypto';
 import { writeFileAtomicString } from '@sequential/file-operations';
+import logger from '@sequential/sequential-logging';
 
 export async function createResumableTaskExample(tasksDir) {
   const taskName = 'example-resumable-task';
@@ -37,7 +38,7 @@ export async function example_resumable_task(input) {
   if (batchSize <= 0) throw new Error('batchSize must be positive');
 
   const totalBatches = Math.ceil(totalRecords / batchSize);
-  console.log(\`Processing \${totalRecords} records in \${totalBatches} batches\`);
+  logger.info(\`Processing \${totalRecords} records in \${totalBatches} batches\`);
 
   const results = {
     totalRecords,
@@ -53,7 +54,7 @@ export async function example_resumable_task(input) {
     const endIdx = Math.min(startIdx + batchSize, totalRecords);
     const batchRecords = endIdx - startIdx;
 
-    console.log(\`Batch \${batchNum + 1}/\${totalBatches}: Processing records \${startIdx}-\${endIdx}\`);
+    logger.info(\`Batch \${batchNum + 1}/\${totalBatches}: Processing records \${startIdx}-\${endIdx}\`);
 
     const batchResults = [];
     for (let i = 0; i < batchRecords; i++) {
@@ -87,5 +88,5 @@ export async function example_resumable_task(input) {
 }`;
 
   await writeFileAtomicString(taskFile, code);
-  console.log(`  ✓ example-resumable-task (batch processing with checkpoints)`);
+  logger.info(`  ✓ example-resumable-task (batch processing with checkpoints)`);
 }

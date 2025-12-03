@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs-extra';
 import { validatePath } from '@sequential/param-validation';
+import logger from '@sequential/sequential-logging';
 import {
   readJsonFile as readJsonFileUtil,
   readJsonFileOptional as readJsonFileOptionalUtil,
@@ -84,7 +85,7 @@ export class BaseRepository {
       return await readJsonFileOptionalUtil(filePath);
     } catch (e) {
       if (process.env.DEBUG) {
-        console.warn(`Failed to parse ${filePath}: ${e.message}`);
+        logger.warn(`Failed to parse ${filePath}: ${e.message}`);
       }
       return null;
     }
@@ -153,7 +154,7 @@ export class BaseRepository {
       return results;
     } catch (err) {
       if (process.env.DEBUG) {
-        console.error(`Error reading ${this.entityName.toLowerCase()} directory: ${err.message}`);
+        logger.error(`Error reading ${this.entityName.toLowerCase()} directory: ${err.message}`);
       }
       return [];
     }
@@ -187,14 +188,14 @@ export class BaseRepository {
           }
         } catch (e) {
           if (process.env.DEBUG) {
-            console.warn(`Failed to parse ${path.basename(filePath)}: ${e.message}`);
+            logger.warn(`Failed to parse ${path.basename(filePath)}: ${e.message}`);
           }
         }
       }
       return results;
     } catch (err) {
       if (process.env.DEBUG) {
-        console.error(`Error reading ${this.entityName.toLowerCase()} files: ${err.message}`);
+        logger.error(`Error reading ${this.entityName.toLowerCase()} files: ${err.message}`);
       }
       return [];
     }

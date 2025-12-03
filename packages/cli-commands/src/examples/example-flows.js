@@ -1,5 +1,6 @@
 import path from 'path';
 import { ensureDirectory, writeFileAtomicString } from '@sequential/file-operations';
+import logger from '@sequential/sequential-logging';
 
 export async function createExampleFlows(tasksDir) {
   const flowsDir = path.join(tasksDir, 'flows');
@@ -109,7 +110,7 @@ export async function createExampleFlows(tasksDir) {
   for (const flow of flows) {
     const filePath = path.join(flowsDir, flow.name);
     await writeFileAtomicString(filePath, JSON.stringify(flow.content, null, 2));
-    console.log(`  ✓ Created example flow: ${flow.name}`);
+    logger.info(`  ✓ Created example flow: ${flow.name}`);
   }
 
   return flowsDir;

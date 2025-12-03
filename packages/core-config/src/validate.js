@@ -1,3 +1,4 @@
+import logger from '@sequential/sequential-logging';
 /**
  * Configuration validator with detailed error reporting
  */
@@ -29,9 +30,9 @@ class ConfigValidator {
     } catch (err) {
       if (err instanceof ValidationError) {
         if (throwOnError) {
-          console.error('\n❌ ENVIRONMENT CONFIGURATION ERROR\n');
-          console.error(err.message);
-          console.error('\n📖 Expected environment variables:\n');
+          logger.error('\n❌ ENVIRONMENT CONFIGURATION ERROR\n');
+          logger.error(err.message);
+          logger.error('\n📖 Expected environment variables:\n');
           this._printSchema();
           process.exit(1);
         }
@@ -85,14 +86,14 @@ class ConfigValidator {
     };
 
     for (const [category, keys] of Object.entries(categories)) {
-      console.error(`\n${category}:`);
+      logger.error(`\n${category}:`);
       for (const key of keys) {
         const config = envSchema[key];
         if (config) {
           const required = config.required ? '(required)' : `(optional, default: ${config.default})`;
-          console.error(`  ${key} ${required}`);
+          logger.error(`  ${key} ${required}`);
           if (config.description) {
-            console.error(`    └─ ${config.description}`);
+            logger.error(`    └─ ${config.description}`);
           }
         }
       }

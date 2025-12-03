@@ -1,5 +1,6 @@
 import path from 'path';
 import { ensureDirectory, writeFileAtomicString } from '@sequential/file-operations';
+import logger from '@sequential/sequential-logging';
 
 export async function createExampleTools(toolsDir) {
   const examples = [
@@ -13,22 +14,22 @@ export async function createExampleTools(toolsDir) {
 };
 
 export async function query(sql, params = []) {
-  console.log('Executing query:', sql);
+  logger.info('Executing query:', sql);
   return { rows: [], rowCount: 0 };
 }
 
 export async function insert(table, data) {
-  console.log(\`Inserting into \${table}:\`, data);
+  logger.info(\`Inserting into \${table}:\`, data);
   return { id: Date.now(), ...data };
 }
 
 export async function update(table, id, data) {
-  console.log(\`Updating \${table} id=\${id}:\`, data);
+  logger.info(\`Updating \${table} id=\${id}:\`, data);
   return { id, ...data };
 }
 
 export async function del(table, id) {
-  console.log(\`Deleting from \${table} id=\${id}\`);
+  logger.info(\`Deleting from \${table} id=\${id}\`);
   return { deleted: true, id };
 }
 `
@@ -115,6 +116,6 @@ export async function ensureDir(dirPath) {
   for (const example of examples) {
     const filePath = path.join(toolsDir, example.name);
     await writeFileAtomicString(filePath, example.content);
-    console.log(`  ✓ Created example tool: ${example.name}`);
+    logger.info(`  ✓ Created example tool: ${example.name}`);
   }
 }

@@ -1,5 +1,6 @@
 import path from 'path';
 import { writeFileAtomicString } from '@sequential/file-operations';
+import logger from '@sequential/sequential-logging';
 
 export async function createExampleApps(appsDir) {
   const timestamp = new Date().toISOString();
@@ -78,6 +79,6 @@ export async function createExampleApps(appsDir) {
 </html>`;
 
     await writeFileAtomicString(htmlPath, html);
-    console.log(`  ✓ ${app.title} (app-${app.name})`);
+    logger.info(`  ✓ ${app.title} (app-${app.name})`);
   }
 }

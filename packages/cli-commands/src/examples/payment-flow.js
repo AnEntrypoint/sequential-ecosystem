@@ -1,6 +1,7 @@
 import path from 'path';
 import { randomUUID } from 'crypto';
 import { writeFileAtomicString } from '@sequential/file-operations';
+import logger from '@sequential/sequential-logging';
 
 export async function createPaymentFlowExample(tasksDir) {
   const taskName = 'example-payment-flow';
@@ -39,7 +40,7 @@ export async function createPaymentFlowExample(tasksDir) {
 export async function example_payment_flow(input) {
   const { orderId, items = [], customerEmail } = input;
 
-  console.log(\`Processing order \${orderId}\`);
+  logger.info(\`Processing order \${orderId}\`);
 
   const validation = {
     orderId: !!orderId && orderId.length > 0,
@@ -52,7 +53,7 @@ export async function example_payment_flow(input) {
   }
 
   const totalAmount = items.reduce((sum, item) => sum + (item.price || 0), 0);
-  console.log(\`Order total: \$\${totalAmount.toFixed(2)}\`);
+  logger.info(\`Order total: \$\${totalAmount.toFixed(2)}\`);
 
   const transactionId = 'TXN-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
 
@@ -74,5 +75,5 @@ export async function example_payment_flow(input) {
 }`;
 
   await writeFileAtomicString(taskFile, code);
-  console.log(`  ✓ example-payment-flow (order processing)`);
+  logger.info(`  ✓ example-payment-flow (order processing)`);
 }

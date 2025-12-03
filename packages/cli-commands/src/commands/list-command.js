@@ -1,12 +1,13 @@
 import path from 'path';
 import { existsSync } from 'fs';
 import { listFiles } from '@sequential/file-operations';
+import logger from '@sequential/sequential-logging';
 
 export async function listCommand(options) {
   try {
     const tasksDir = path.join(process.cwd(), 'tasks');
     if (!existsSync(tasksDir)) {
-      console.log('No tasks found');
+      logger.info('No tasks found');
       return;
     }
 
@@ -14,29 +15,29 @@ export async function listCommand(options) {
     const tasks = taskFiles.map(f => f.replace('.js', ''));
 
     if (tasks.length === 0) {
-      console.log('No tasks found');
+      logger.info('No tasks found');
       return;
     }
 
-    console.log('Tasks:');
+    logger.info('Tasks:');
     for (const task of tasks) {
       const taskFile = path.join(tasksDir, `${task}.js`);
       try {
         const taskModule = await import(`file://${taskFile}`);
         const config = taskModule.config || {};
         if (options.verbose) {
-          console.log(`\n${task}:`);
-          console.log(`  Description: ${config.description || 'N/A'}`);
-          console.log(`  Inputs: ${config.inputs?.length || 0}`);
+          logger.info(`\n${task}:`);
+          logger.info(`  Description: ${config.description || 'N/A'}`);
+          logger.info(`  Inputs: ${config.inputs?.length || 0}`);
         } else {
-          console.log(`  - ${task}`);
+          logger.info(`  - ${task}`);
         }
       } catch {
-        console.log(`  - ${task}`);
+        logger.info(`  - ${task}`);
       }
     }
   } catch (e) {
-    console.error('Error:', e instanceof Error ? e.message : String(e));
+    logger.error('Error:', e instanceof Error ? e.message : String(e));
     process.exit(1);
   }
 }

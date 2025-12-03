@@ -1,5 +1,6 @@
 import path from 'path';
 import { writeFileAtomicString } from '@sequential/file-operations';
+import logger from '@sequential/sequential-logging';
 
 export async function createSequentialOSExample(tasksDir) {
   const taskName = 'example-sequential-os';
@@ -28,7 +29,7 @@ export const config = {
 export async function ${taskName.replace(/-/g, '_')}(input) {
   const { projectName, setupCommands = [] } = input;
 
-  console.log(\`Setting up project: \${projectName}\`);
+  logger.info(\`Setting up project: \${projectName}\`);
 
   const commands = [
     \`mkdir -p \${projectName}/src \${projectName}/tests\`,
@@ -42,7 +43,7 @@ export async function ${taskName.replace(/-/g, '_')}(input) {
   const results = [];
 
   for (const cmd of commands) {
-    console.log(\`Executing: \${cmd}\`);
+    logger.info(\`Executing: \${cmd}\`);
     results.push({
       command: cmd,
       timestamp: new Date().toISOString(),
@@ -62,5 +63,5 @@ export async function ${taskName.replace(/-/g, '_')}(input) {
 `;
 
   await writeFileAtomicString(taskPath, content);
-  console.log(`  ✓ Created Sequential-OS example: ${taskName}.js`);
+  logger.info(`  ✓ Created Sequential-OS example: ${taskName}.js`);
 }

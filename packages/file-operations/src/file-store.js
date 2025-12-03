@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs-extra';
+import logger from '@sequential/sequential-logging';
 
 export class FileStore {
   constructor(baseDir) {
@@ -77,13 +78,13 @@ export class FileStore {
                 result = { ...result, ...content };
               } catch (parseErr) {
                 if (process.env.DEBUG) {
-                  console.warn(`Failed to parse ${configPath}: ${parseErr.message}`);
+                  logger.warn(`Failed to parse ${configPath}: ${parseErr.message}`);
                 }
               }
             }
           } catch (validationErr) {
             if (process.env.DEBUG) {
-              console.warn(`Path validation failed for ${name}/${configFile}: ${validationErr.message}`);
+              logger.warn(`Path validation failed for ${name}/${configFile}: ${validationErr.message}`);
             }
           }
         }

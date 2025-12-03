@@ -1,6 +1,7 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
+import logger from '@sequential/sequential-logging';
 
 export class ToolLoader {
   constructor(config = {}) {
@@ -152,7 +153,7 @@ export class ToolLoader {
         const tool = await this.loadTool(toolDef);
         tools.push(tool);
       } catch (error) {
-        console.error(`Error loading tool ${file}:`, error.message);
+        logger.error(`Error loading tool ${file}:`, error.message);
       }
     }
 

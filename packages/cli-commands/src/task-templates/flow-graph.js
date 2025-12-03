@@ -1,3 +1,4 @@
+import logger from '@sequential/sequential-logging';
 export function generateFlowGraphTemplate(name, taskId, timestamp, inputs, description) {
   return `/**
  * Task: ${name}
@@ -60,8 +61,8 @@ export const graph = {
 };
 
 export async function initialize(input, context = {}) {
-  console.log('Initializing task:', '${name}');
-  console.log('Input:', JSON.stringify(input, null, 2));
+  logger.info('Initializing task:', '${name}');
+  logger.info('Input:', JSON.stringify(input, null, 2));
 
   return {
     ...input,
@@ -72,7 +73,7 @@ export async function initialize(input, context = {}) {
 }
 
 export async function fetchData(result, context = {}) {
-  console.log('Fetching data...');
+  logger.info('Fetching data...');
 
   try {
     const response = await fetch('https://httpbin.org/json');
@@ -100,7 +101,7 @@ export async function retryFetch(error, context = {}) {
   const result = context.lastResult || {};
   const retryCount = (result.retryCount || 0) + 1;
 
-  console.log(\`Retry attempt \${retryCount}/\${result.maxRetries}\`);
+  logger.info(\`Retry attempt \${retryCount}/\${result.maxRetries}\`);
 
   await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
 
@@ -126,7 +127,7 @@ export async function retryFetch(error, context = {}) {
 }
 
 export async function processData(result, context = {}) {
-  console.log('Processing data...');
+  logger.info('Processing data...');
 
   const { externalData } = result;
 
@@ -145,7 +146,7 @@ export async function processData(result, context = {}) {
 }
 
 export async function handleError(error, context = {}) {
-  console.error('Task failed:', error.message);
+  logger.error('Task failed:', error.message);
 
   return {
     success: false,

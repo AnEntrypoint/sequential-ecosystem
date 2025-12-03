@@ -1,3 +1,4 @@
+import logger from '@sequential/sequential-logging';
 export function generateMachineTemplate(name, taskId, timestamp, inputs, description) {
   const funcName = name.replace(/-/g, '_');
   const inputsDoc = inputs.length > 0
@@ -64,9 +65,9 @@ async function callService() {
       success: true
     }, null, 2));
 
-    console.log('💾 Service result written to: ' + resultFile);
+    logger.info('💾 Service result written to: ' + resultFile);
   } catch (error) {
-    console.error('❌ Service call failed:', error.message);
+    logger.error('❌ Service call failed:', error.message);
     process.exit(1);
   }
 }
@@ -74,14 +75,14 @@ async function callService() {
 callService();
 "\`;
 
-  console.log('🔧 Calling database service...');
+  logger.info('🔧 Calling database service...');
   const { execSync } = require('child_process');
   execSync(serviceCall, { stdio: 'inherit', cwd: process.cwd() });
 
   const fs = require('fs');
   const files = fs.readdirSync('.').filter(f => f.startsWith('service-result-'));
 
-  console.log(\`📄 Found \${files.length} service result files\`);
+  logger.info(\`📄 Found \${files.length} service result files\`);
 
   const outputFile = 'task-output.json';
   fs.writeFileSync(outputFile, JSON.stringify({
@@ -91,7 +92,7 @@ callService();
     completedAt: new Date().toISOString()
   }, null, 2));
 
-  console.log(\`✅ Task completed - output written to \${outputFile}\`);
+  logger.info(\`✅ Task completed - output written to \${outputFile}\`);
 
   return {
     success: true,

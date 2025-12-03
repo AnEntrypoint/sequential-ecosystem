@@ -1,6 +1,7 @@
 import path from 'path';
 import { readJsonFiles } from '@sequential/file-operations';
 import fs from 'fs-extra';
+import logger from '@sequential/sequential-logging';
 
 export async function historyCommand(taskName, options) {
   try {
@@ -12,7 +13,7 @@ export async function historyCommand(taskName, options) {
     }
 
     if (!await fs.pathExists(runsDir)) {
-      console.log('No execution history');
+      logger.info('No execution history');
       return;
     }
 
@@ -27,12 +28,12 @@ export async function historyCommand(taskName, options) {
       .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
       .slice(0, parseInt(options.limit));
 
-    console.log(`Execution history for ${taskName}:`);
+    logger.info(`Execution history for ${taskName}:`);
     for (const run of runs) {
-      console.log(`  ${run.id.substring(0, 8)}... [${run.status}] ${run.completedAt}`);
+      logger.info(`  ${run.id.substring(0, 8)}... [${run.status}] ${run.completedAt}`);
     }
   } catch (e) {
-    console.error('Error:', e instanceof Error ? e.message : String(e));
+    logger.error('Error:', e instanceof Error ? e.message : String(e));
     process.exit(1);
   }
 }

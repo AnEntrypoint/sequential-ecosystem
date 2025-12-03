@@ -1,3 +1,4 @@
+import logger from '@sequential/sequential-logging';
 export function generateFlowSimpleTemplate(name, taskId, timestamp, inputs, description) {
   const funcName = name.replace(/-/g, '_');
   const inputsDoc = inputs.length > 0
@@ -32,8 +33,8 @@ export const config = {
  * @returns {Promise<*>} Task result
  */
 export async function ${funcName}(input) {
-  console.log('Starting task:', '${name}');
-  console.log('Input:', JSON.stringify(input, null, 2));
+  logger.info('Starting task:', '${name}');
+  logger.info('Input:', JSON.stringify(input, null, 2));
 
   try {
     const startTime = Date.now();
@@ -54,12 +55,12 @@ export async function ${funcName}(input) {
       timestamp: new Date().toISOString()
     };
 
-    console.log('Task completed successfully');
-    console.log('Result:', JSON.stringify(result, null, 2));
+    logger.info('Task completed successfully');
+    logger.info('Result:', JSON.stringify(result, null, 2));
 
     return result;
   } catch (error) {
-    console.error('Task failed:', error.message);
+    logger.error('Task failed:', error.message);
 
     return {
       success: false,

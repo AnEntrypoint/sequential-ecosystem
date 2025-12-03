@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+import logger from '@sequential/sequential-logging';
 
 export class TaskQueueManager extends EventEmitter {
   constructor(options = {}) {
@@ -134,7 +135,7 @@ export class TaskQueueManager extends EventEmitter {
 
       this.emit('queue:loaded', { count: this.queue.size });
     } catch (e) {
-      console.error('[TaskQueueManager] Error loading queue from storage:', e.message);
+      logger.error('[TaskQueueManager] Error loading queue from storage:', e.message);
     }
   }
 
@@ -147,7 +148,7 @@ export class TaskQueueManager extends EventEmitter {
         this.stateManager.set('queue', 'tasks', Object.fromEntries(this.queue));
       }
     } catch (e) {
-      console.error(`[TaskQueueManager] Error persisting task ${id}:`, e.message);
+      logger.error(`[TaskQueueManager] Error persisting task ${id}:`, e.message);
     }
   }
 

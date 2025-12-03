@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 import { Worker } from 'worker_threads';
+import logger from '@sequential/sequential-logging';
 
 export class QueueWorkerPool extends EventEmitter {
   constructor(options = {}) {
@@ -102,7 +103,7 @@ export class QueueWorkerPool extends EventEmitter {
 
         return loop();
       } catch (error) {
-        console.error(`[WorkerPool] Worker ${workerId} error:`, error.message);
+        logger.error(`[WorkerPool] Worker ${workerId} error:`, error.message);
         this.emit('worker:error', { workerId, error: error.message });
         await new Promise(r => setTimeout(r, this.pollInterval));
         return loop();

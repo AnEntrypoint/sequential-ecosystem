@@ -2,6 +2,7 @@ import { Worker } from 'worker_threads';
 import path from 'path';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
+import logger from '@sequential/sequential-logging';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -32,7 +33,7 @@ export async function executeTaskWithTimeout(taskName, code, input, timeoutMs = 
           try {
             worker.terminate();
           } catch (e) {
-            console.error('Failed to terminate worker:', e.message);
+            logger.error('Failed to terminate worker:', e.message);
           }
           worker = null;
         }

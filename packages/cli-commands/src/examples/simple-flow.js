@@ -1,6 +1,7 @@
 import path from 'path';
 import { randomUUID } from 'crypto';
 import { writeFileAtomicString } from '@sequential/file-operations';
+import logger from '@sequential/sequential-logging';
 
 export async function createSimpleFlowExample(tasksDir) {
   const taskName = 'example-simple-flow';
@@ -33,7 +34,7 @@ export async function createSimpleFlowExample(tasksDir) {
 export async function example_simple_flow(input) {
   const { message = 'hello', delay = 1000 } = input;
 
-  console.log(\`Processing message: \${message}\`);
+  logger.info(\`Processing message: \${message}\`);
 
   const response = await fetch('https://httpbin.org/delay/1');
   const data = await response.json();
@@ -48,12 +49,12 @@ export async function example_simple_flow(input) {
     input
   };
 
-  console.log(\`Completed: \${JSON.stringify(result)}\`);
+  logger.info(\`Completed: \${JSON.stringify(result)}\`);
 
   return result;
 }
 `;
 
   await writeFileAtomicString(taskFile, code);
-  console.log(`✓ Created ${taskName}`);
+  logger.info(`✓ Created ${taskName}`);
 }

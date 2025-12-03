@@ -5,6 +5,7 @@ import { ensureDirectory, writeFileAtomicString } from '@sequential/file-operati
 import { generateMachineTemplate } from './task-templates/machine.js';
 import { generateFlowGraphTemplate } from './task-templates/flow-graph.js';
 import { generateFlowSimpleTemplate } from './task-templates/flow-simple.js';
+import logger from '@sequential/sequential-logging';
 
 export async function createTask(options) {
   const { name, withGraph = false, inputs = [], description = '', runner = 'flow' } = options;
@@ -34,17 +35,17 @@ export async function createTask(options) {
 
   await writeFileAtomicString(taskFile, code);
 
-  console.log(`✓ Task '${name}' created at ${taskFile}`);
-  console.log(`  - Runner: ${runner}`);
-  console.log(`  - Edit ${taskFile} to write task logic`);
+  logger.info(`✓ Task '${name}' created at ${taskFile}`);
+  logger.info(`  - Runner: ${runner}`);
+  logger.info(`  - Edit ${taskFile} to write task logic`);
 
   if (runner === 'machine') {
-    console.log(`  - Run with: npx sequential-ecosystem run ${name} --input '{}'`);
-    console.log(`  - Or use sequential-machine CLI directly`);
+    logger.info(`  - Run with: npx sequential-ecosystem run ${name} --input '{}'`);
+    logger.info(`  - Or use sequential-machine CLI directly`);
   } else {
     if (withGraph) {
-      console.log(`  - Modify graph export to define state transitions`);
+      logger.info(`  - Modify graph export to define state transitions`);
     }
-    console.log(`  - Run with: npx sequential-ecosystem run ${name} --input '{}'`);
+    logger.info(`  - Run with: npx sequential-ecosystem run ${name} --input '{}'`);
   }
 }

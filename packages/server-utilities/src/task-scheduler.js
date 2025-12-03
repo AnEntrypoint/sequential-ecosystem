@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 import cron from 'node-cron';
+import logger from '@sequential/sequential-logging';
 
 export class TaskScheduler extends EventEmitter {
   constructor(options = {}) {
@@ -355,7 +356,7 @@ export class TaskScheduler extends EventEmitter {
         await this.stateManager.set('schedules', id, schedule);
       }
     } catch (error) {
-      console.error('[TaskScheduler] Error persisting to storage:', error.message);
+      logger.error('[TaskScheduler] Error persisting to storage:', error.message);
     }
   }
 
@@ -372,7 +373,7 @@ export class TaskScheduler extends EventEmitter {
         }
       }
     } catch (error) {
-      console.error('[TaskScheduler] Error loading from storage:', error.message);
+      logger.error('[TaskScheduler] Error loading from storage:', error.message);
     }
   }
 }

@@ -1,6 +1,7 @@
 import { spawn } from 'child_process';
 import path from 'path';
 import { EventEmitter } from 'events';
+import logger from '@sequential/sequential-logging';
 
 export class BackgroundTaskManager extends EventEmitter {
   constructor() {
@@ -222,10 +223,10 @@ export class BackgroundTaskManager extends EventEmitter {
         error: status.error,
         completedAt: Date.now()
       }).catch(err => {
-        console.error(`Failed to persist background task ${id}:`, err.message);
+        logger.error(`Failed to persist background task ${id}:`, err.message);
       });
     } catch (err) {
-      console.error(`Error persisting background task ${id}:`, err.message);
+      logger.error(`Error persisting background task ${id}:`, err.message);
     }
   }
 
@@ -244,7 +245,7 @@ export class BackgroundTaskManager extends EventEmitter {
         .sort((a, b) => (b.completedAt || 0) - (a.completedAt || 0))
         .slice(0, limit);
     } catch (err) {
-      console.error('Error retrieving background task history:', err.message);
+      logger.error('Error retrieving background task history:', err.message);
       return [];
     }
   }

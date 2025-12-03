@@ -1,6 +1,7 @@
 import path from 'path';
 import { existsSync } from 'fs';
 import fse from 'fs-extra';
+import logger from '@sequential/sequential-logging';
 
 export async function deleteCommand(taskName, options) {
   try {
@@ -11,15 +12,15 @@ export async function deleteCommand(taskName, options) {
     }
 
     if (!options.force) {
-      console.log(`Delete task '${taskName}'? This cannot be undone.`);
-      console.log('Use --force to skip confirmation');
+      logger.info(`Delete task '${taskName}'? This cannot be undone.`);
+      logger.info('Use --force to skip confirmation');
       return;
     }
 
     await fse.remove(taskDir);
-    console.log(`✓ Task '${taskName}' deleted`);
+    logger.info(`✓ Task '${taskName}' deleted`);
   } catch (e) {
-    console.error('Error:', e instanceof Error ? e.message : String(e));
+    logger.error('Error:', e instanceof Error ? e.message : String(e));
     process.exit(1);
   }
 }

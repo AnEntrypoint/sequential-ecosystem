@@ -13,4 +13,4 @@ export { BackgroundTaskManager, backgroundTaskManager } from './background-task-
 export { TaskQueueManager, taskQueueManager } from './task-queue-manager.js';
 export { QueueWorkerPool, queueWorkerPool } from './queue-worker-pool.js';
 export { TaskScheduler, taskScheduler } from './task-scheduler.js';
-export { validateAndResolvePath, createTimer } from './path-utilities.js';
+export { createTimer } from './path-utilities.js';

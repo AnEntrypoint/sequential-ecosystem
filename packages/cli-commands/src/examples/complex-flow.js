@@ -1,6 +1,7 @@
 import path from 'path';
 import { randomUUID } from 'crypto';
 import { writeFileAtomicString } from '@sequential/file-operations';
+import logger from '@sequential/sequential-logging';
 
 export async function createComplexFlowExample(tasksDir) {
   const taskName = 'example-complex-flow';
@@ -68,7 +69,7 @@ export const graph = {
 export async function initialize(input, context = {}) {
   const { items = [], maxRetries = 3 } = input;
 
-  console.log(\`Initializing with \${items.length} items\`);
+  logger.info(\`Initializing with \${items.length} items\`);
 
   return {
     items,
@@ -80,7 +81,7 @@ export async function initialize(input, context = {}) {
 }
 
 export async function fetchData(result, context = {}) {
-  console.log('Fetching external data...');
+  logger.info('Fetching external data...');
 
   try {
     const response = await fetch('https://httpbin.org/json');
@@ -102,7 +103,7 @@ export async function retryFetch(error, context = {}) {
   const result = context.lastResult || {};
   const retryCount = (result.retryCount || 0) + 1;
 
-  console.log(\`Retry attempt \${retryCount}/\${result.maxRetries}\`);
+  logger.info(\`Retry attempt \${retryCount}/\${result.maxRetries}\`);
 
   await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
 
@@ -124,7 +125,7 @@ export async function retryFetch(error, context = {}) {
 export async function processItems(result, context = {}) {
   const { items = [], externalData } = result;
 
-  console.log(\`Processing \${items.length} items\`);
+  logger.info(\`Processing \${items.length} items\`);
 
   const processedItems = items.map((item, index) => ({
     id: index,
@@ -142,7 +143,7 @@ export async function processItems(result, context = {}) {
 }
 
 export async function handleError(error, context = {}) {
-  console.error('Task failed:', error.message);
+  logger.error('Task failed:', error.message);
 
   return {
     success: false,
@@ -155,5 +156,5 @@ export async function handleError(error, context = {}) {
 `;
 
   await writeFileAtomicString(taskFile, code);
-  console.log(`✓ Created ${taskName}`);
+  logger.info(`✓ Created ${taskName}`);
 }

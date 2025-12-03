@@ -1,5 +1,6 @@
 import path from 'path';
 import { writeFileAtomicString } from '@sequential/file-operations';
+import logger from '@sequential/sequential-logging';
 
 export async function createExamplesReadme(tasksDir) {
   const readmeFile = path.join(tasksDir, 'EXAMPLES.md');
@@ -356,5 +357,5 @@ For questions and issues, see the main repository documentation.
 `;
 
   await writeFileAtomicString(readmeFile, content);
-  console.log(`  ✓ Created comprehensive EXAMPLES.md`);
+  logger.info(`  ✓ Created comprehensive EXAMPLES.md`);
 }

@@ -3,6 +3,7 @@ import { randomUUID } from 'crypto';
 import { existsSync } from 'fs';
 import fse from 'fs-extra';
 import { createAdapter } from '@sequential/sequential-adaptor';
+import logger from '@sequential/sequential-logging';
 
 export async function runTask(options) {
   const { taskName, input = {}, save = false, dryRun = false, verbose = false } = options;
@@ -15,25 +16,25 @@ export async function runTask(options) {
   }
 
   if (verbose) {
-    console.log(`Running task: ${taskName}`);
-    console.log(`Input:`, input);
+    logger.info(`Running task: ${taskName}`);
+    logger.info(`Input:`, input);
   }
 
   const code = await fse.readFile(taskFile, 'utf-8');
 
   if (dryRun) {
     if (verbose) {
-      console.log('Dry run mode - syntax check only');
+      logger.info('Dry run mode - syntax check only');
     }
     try {
       const funcName = taskName.replace(/-/g, '_');
       if (!code.includes(`function ${funcName}`) && !code.includes('export default')) {
         throw new Error(`No function '${funcName}' or default export found`);
       }
-      console.log('✓ Task syntax is valid');
+      logger.info('✓ Task syntax is valid');
       return { dryRun: true, valid: true };
     } catch (e) {
-      console.error('✗ Syntax error:', e instanceof Error ? e.message : String(e));
+      logger.error('✗ Syntax error:', e instanceof Error ? e.message : String(e));
       return { dryRun: true, valid: false, error: String(e) };
     }
   }
@@ -50,7 +51,7 @@ export async function runTask(options) {
     if (runner === 'sequential-machine') {
       // Use Sequential Machine runner
       if (verbose) {
-        console.log(`Using Sequential Machine runner`);
+        logger.info(`Using Sequential Machine runner`);
       }
 
       const funcName = taskName.replace(/-/g, '_');
@@ -75,7 +76,7 @@ export async function runTask(options) {
       };
 
       if (verbose) {
-        console.log('Result:', result);
+        logger.info('Result:', result);
       }
 
       return runData;
@@ -121,7 +122,7 @@ export async function runTask(options) {
         }
 
         if (verbose) {
-          console.log('Result:', result);
+          logger.info('Result:', result);
         }
 
         return runData;
@@ -143,7 +144,7 @@ export async function runTask(options) {
     };
 
     if (verbose) {
-      console.error('Error:', error);
+      logger.error('Error:', error);
     }
 
     return runData;

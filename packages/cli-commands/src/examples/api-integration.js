@@ -1,6 +1,7 @@
 import path from 'path';
 import { randomUUID } from 'crypto';
 import { writeFileAtomicString } from '@sequential/file-operations';
+import logger from '@sequential/sequential-logging';
 
 export async function createApiIntegrationExample(tasksDir) {
   const taskName = 'example-api-integration';
@@ -39,7 +40,7 @@ export async function createApiIntegrationExample(tasksDir) {
 export async function example_api_integration(input) {
   const { endpoint = 'https://httpbin.org/get', method = 'GET', params = {} } = input;
 
-  console.log(\`Calling API: \${method} \${endpoint}\`);
+  logger.info(\`Calling API: \${method} \${endpoint}\`);
 
   const queryString = new URLSearchParams(params).toString();
   const url = queryString ? \`\${endpoint}?\${queryString}\` : endpoint;
@@ -58,7 +59,7 @@ export async function example_api_integration(input) {
 
   for (let i = 0; i < retries; i++) {
     try {
-      console.log(\`Attempt \${i + 1}/\${retries}\`);
+      logger.info(\`Attempt \${i + 1}/\${retries}\`);
       response = await fetch(url, options);
 
       if (response.ok) {
@@ -93,12 +94,12 @@ export async function example_api_integration(input) {
     timestamp: new Date().toISOString()
   };
 
-  console.log('API call successful');
+  logger.info('API call successful');
 
   return result;
 }
 `;
 
   await writeFileAtomicString(taskFile, code);
-  console.log(`✓ Created ${taskName}`);
+  logger.info(`✓ Created ${taskName}`);
 }

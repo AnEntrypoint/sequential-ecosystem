@@ -10,6 +10,7 @@ import { createExamplesReadme } from './examples/readme.js';
 import { createExampleTools } from './examples/example-tools.js';
 import { createExampleFlows } from './examples/example-flows.js';
 import { createSequentialOSExample } from './examples/sequential-os-example.js';
+import logger from '@sequential/sequential-logging';
 
 export async function createExamples() {
   const tasksDir = path.join(process.cwd(), 'tasks');
@@ -18,9 +19,9 @@ export async function createExamples() {
   await ensureDirectory(tasksDir);
   await ensureDirectory(toolsDir);
 
-  console.log('\n📚 Creating comprehensive examples...\n');
+  logger.info('\n📚 Creating comprehensive examples...\n');
 
-  console.log('Creating example tasks:');
+  logger.info('Creating example tasks:');
   const taskExamples = [
     createSimpleFlowExample,
     createComplexFlowExample,
@@ -35,13 +36,13 @@ export async function createExamples() {
     await createExample(tasksDir);
   }
 
-  console.log('\nCreating example tools:');
+  logger.info('\nCreating example tools:');
   await createExampleTools(toolsDir);
 
-  console.log('\nCreating example flows:');
+  logger.info('\nCreating example flows:');
   createExampleFlows(tasksDir);
 
   createExamplesReadme(tasksDir);
 
-  console.log('\n✓ All examples created successfully!');
+  logger.info('\n✓ All examples created successfully!');
 }

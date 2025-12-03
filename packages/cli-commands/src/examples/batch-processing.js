@@ -1,6 +1,7 @@
 import path from 'path';
 import { randomUUID } from 'crypto';
 import { writeFileAtomicString } from '@sequential/file-operations';
+import logger from '@sequential/sequential-logging';
 
 export async function createBatchProcessingExample(tasksDir) {
   const taskName = 'example-batch-processing';
@@ -37,7 +38,7 @@ export async function createBatchProcessingExample(tasksDir) {
 };
 
 async function processBatch(batch, batchIndex) {
-  console.log(\`Processing batch \${batchIndex + 1} with \${batch.length} items\`);
+  logger.info(\`Processing batch \${batchIndex + 1} with \${batch.length} items\`);
 
   const results = await Promise.all(
     batch.map(async (item, index) => {
@@ -86,14 +87,14 @@ export async function example_batch_processing(input) {
     concurrency = 2
   } = input;
 
-  console.log(\`Processing \${items.length} items in batches of \${batchSize} with concurrency \${concurrency}\`);
+  logger.info(\`Processing \${items.length} items in batches of \${batchSize} with concurrency \${concurrency}\`);
 
   const batches = [];
   for (let i = 0; i < items.length; i += batchSize) {
     batches.push(items.slice(i, i + batchSize));
   }
 
-  console.log(\`Created \${batches.length} batches\`);
+  logger.info(\`Created \${batches.length} batches\`);
 
   const startTime = Date.now();
   const batchResults = await processWithConcurrency(batches, concurrency);
@@ -114,12 +115,12 @@ export async function example_batch_processing(input) {
     timestamp: new Date().toISOString()
   };
 
-  console.log(\`Completed \${allResults.length} items in \${result.duration}ms\`);
+  logger.info(\`Completed \${allResults.length} items in \${result.duration}ms\`);
 
   return result;
 }
 `;
 
   await writeFileAtomicString(taskFile, code);
-  console.log(`✓ Created ${taskName}`);
+  logger.info(`✓ Created ${taskName}`);
 }
