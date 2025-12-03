@@ -77,7 +77,40 @@ GET    /api/flows/:flowId              Flow definition
 POST   /api/sequential-os/run          Shell command
 GET    /api/background-tasks/list      Running CLI
 GET    /api/apps                       Registered apps
+GET    /api/health                     System health check
+GET    /api/health/detailed            Detailed health metrics
+POST   /api/errors/log                 Log client error
+GET    /api/errors/logs                Retrieve error logs (7 days)
+GET    /api/errors/stats               Error statistics
+DELETE /api/errors/clear               Clear all error logs
 ```
+
+## Error Monitoring
+
+**Client-side error capturing** (`error-handler.js`):
+- Global error handler: captures uncaught exceptions
+- Unhandled promise rejection handler
+- Async/sync function wrappers for manual error tracking
+- Auto-sends errors to server via `/api/errors/log`
+- Maintains local error history (max 100)
+
+**Server-side error logging** (`/api/errors/*`):
+- Logs to `.sequential-errors/YYYY-MM-DD.jsonl` (JSONL format for fast queries)
+- Captures: app name, message, stack, type, timestamp, URL, user agent, IP, method, endpoint
+- Real-time WebSocket broadcast on `error:logged` channel
+
+**Error Monitor Dashboard** (`/error-monitor.html`):
+- Real-time stats: total files, error count, affected apps, last error
+- Recent errors tab: full list with stack traces and metadata
+- Statistics tab: charts by app and date
+- WebSocket auto-refresh on error events
+- Manual refresh button (also polls every 5 seconds)
+- Clear all errors button
+
+**Health checks** (`/api/health*`):
+- Basic: status, uptime, memory, PID, Node version, error counts
+- Detailed: filesystem status, memory breakdown (heap/external), formatted uptime
+- Used for monitoring and alerting
 
 ## Env Vars
 ```
