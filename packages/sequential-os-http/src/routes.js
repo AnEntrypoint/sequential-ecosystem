@@ -106,4 +106,20 @@ export function registerSequentialOsRoutes(app, kit, STATEKIT_DIR) {
       identical: content1 === content2
     });
   }));
+
+  app.post('/api/sequential-os/terminal/execute', asyncHandler(async (req, res) => {
+    const { instruction, sessionId = 'default' } = req.body;
+    if (!instruction) {
+      return res.status(400).json(createErrorResponse('INVALID_INPUT', 'instruction is required'));
+    }
+    const result = await kit.run(instruction);
+    res.json({
+      success: true,
+      output: result.output || '',
+      exitCode: result.exitCode || 0,
+      instruction,
+      sessionId,
+      timestamp: new Date().toISOString()
+    });
+  }));
 }

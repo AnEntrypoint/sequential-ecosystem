@@ -7,7 +7,9 @@
   "exports": {
     ".": "./src/index.js"
   },
-  "files": ["src"],
+  "files": [
+    "src"
+  ],
   "scripts": {
     "test": "node --test tests/**/*.js"
   },
@@ -16,9 +18,11 @@
     "url": "https://github.com/AnEntrypoint/sequential-ecosystem.git",
     "directory": "packages/param-validation"
   },
-  "engines": {"node": ">=18.0.0"},
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
-    "ajv": "^8.12.0",
+    "ajv": "^8.17.1",
     "ajv-formats": "^2.1.1"
   }
 }

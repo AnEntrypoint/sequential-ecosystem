@@ -1,0 +1,15 @@
+{
+  "id": "app-task-executor",
+  "name": "Task Executor",
+  "type": "app",
+  "version": "1.0.0",
+  "description": "Execute pure-logic tasks with test inputs and view results",
+  "entry": "dist/index.html",
+  "icon": "✓",
+  "capabilities": ["execute-tasks", "test-tasks", "view-results"],
+  "window": {
+    "width": 1000,
+    "height": 700,
+    "resizable": true
+  }
+}

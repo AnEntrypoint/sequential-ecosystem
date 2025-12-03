@@ -10,79 +10,69 @@ export async function createPaymentFlowExample(tasksDir) {
 
   const code = `export const config = {
   name: '${taskName}',
-  description: 'Payment processing with external API and email confirmation',
+  description: 'Order processing with validation and confirmation',
   id: '${taskId}',
   created: '${timestamp}',
   runner: 'sequential-flow',
-  timeout: 30000,
-  retryCount: 3,
   inputs: [
     {
       name: 'orderId',
       type: 'string',
       description: 'Order identifier',
-      required: true
+      default: 'ORDER-' + Date.now()
     },
     {
-      name: 'amount',
-      type: 'number',
-      description: 'Payment amount',
-      required: true
+      name: 'items',
+      type: 'array',
+      description: 'Items in order',
+      default: [{name: 'Item A', price: 19.99}, {name: 'Item B', price: 29.99}]
     },
     {
-      name: 'currency',
+      name: 'customerEmail',
       type: 'string',
-      description: 'Currency code',
-      default: 'USD'
+      description: 'Customer email',
+      default: 'customer@example.com'
     }
   ]
 };
 
 export async function example_payment_flow(input) {
-  const { orderId, amount, currency = 'USD' } = input;
+  const { orderId, items = [], customerEmail } = input;
 
-  if (!orderId || !amount) {
-    throw new Error('Missing required fields: orderId, amount');
+  console.log(\`Processing order \${orderId}\`);
+
+  const validation = {
+    orderId: !!orderId && orderId.length > 0,
+    items: Array.isArray(items) && items.length > 0,
+    email: !!customerEmail && customerEmail.includes('@')
+  };
+
+  if (!Object.values(validation).every(v => v)) {
+    throw new Error('Invalid order data: ' + JSON.stringify(validation));
   }
 
-  if (amount <= 0) {
-    throw new Error('Amount must be positive');
-  }
+  const totalAmount = items.reduce((sum, item) => sum + (item.price || 0), 0);
+  console.log(\`Order total: \$\${totalAmount.toFixed(2)}\`);
 
-  const paymentRequest = await fetch('https://api.payment.example.com/charge', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ orderId, amount, currency })
-  }).then(r => r.json());
-
-  if (!paymentRequest.success) {
-    throw new Error(\`Payment failed: \${paymentRequest.error}\`);
-  }
-
-  const transactionId = paymentRequest.transaction_id;
-
-  const confirmationEmail = await fetch('https://api.mail.example.com/send', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      to: paymentRequest.customer_email,
-      subject: 'Payment Confirmation',
-      template: 'payment-receipt',
-      data: { orderId, amount, transactionId }
-    })
-  }).then(r => r.json());
+  const transactionId = 'TXN-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
 
   return {
     success: true,
+    orderId,
     transactionId,
-    amount,
-    currency,
-    status: 'completed',
-    emailSent: confirmationEmail.success,
-    timestamp: new Date().toISOString()
+    totalAmount: totalAmount.toFixed(2),
+    itemCount: items.length,
+    customerEmail,
+    status: 'confirmed',
+    timestamp: new Date().toISOString(),
+    items: items.map((item, idx) => ({
+      ...item,
+      index: idx,
+      processed: true
+    }))
   };
 }`;
 
   await writeFileAtomicString(taskFile, code);
-  console.log(`  ✓ example-payment-flow (payment processing with email)`);
+  console.log(`  ✓ example-payment-flow (order processing)`);
 }

@@ -10,99 +10,78 @@ export async function createResumableTaskExample(tasksDir) {
 
   const code = `export const config = {
   name: '${taskName}',
-  description: 'Large dataset batch processing with checkpoints and resumption',
+  description: 'Large dataset processing with batch checkpoints',
   id: '${taskId}',
   created: '${timestamp}',
   runner: 'sequential-flow',
-  timeout: 300000,
-  retryCount: 5,
-  checkpoint: true,
   inputs: [
     {
-      name: 'datasetId',
-      type: 'string',
-      description: 'Dataset identifier',
-      required: true
+      name: 'totalRecords',
+      type: 'number',
+      description: 'Total records to process',
+      default: 100
     },
     {
       name: 'batchSize',
       type: 'number',
       description: 'Records per batch',
-      default: 100
+      default: 25
     }
   ]
 };
 
 export async function example_resumable_task(input) {
-  const { datasetId, batchSize = 100 } = input;
+  const { totalRecords = 100, batchSize = 25 } = input;
 
-  if (!datasetId) {
-    throw new Error('datasetId is required');
-  }
+  if (totalRecords <= 0) throw new Error('totalRecords must be positive');
+  if (batchSize <= 0) throw new Error('batchSize must be positive');
 
-  const metadata = await fetch(\`https://api.data.example.com/datasets/\${datasetId}/meta\`).then(r => r.json());
-
-  if (!metadata.success) {
-    throw new Error(\`Failed to get dataset metadata: \${metadata.error}\`);
-  }
-
-  const totalRecords = metadata.record_count;
   const totalBatches = Math.ceil(totalRecords / batchSize);
+  console.log(\`Processing \${totalRecords} records in \${totalBatches} batches\`);
 
   const results = {
-    datasetId,
     totalRecords,
+    batchSize,
+    totalBatches,
     processedRecords: 0,
     failedRecords: 0,
     batches: []
   };
 
   for (let batchNum = 0; batchNum < totalBatches; batchNum++) {
-    const offset = batchNum * batchSize;
+    const startIdx = batchNum * batchSize;
+    const endIdx = Math.min(startIdx + batchSize, totalRecords);
+    const batchRecords = endIdx - startIdx;
 
-    const batchData = await fetch(\`https://api.data.example.com/datasets/\${datasetId}/records\`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ offset, limit: batchSize })
-    }).then(r => r.json());
+    console.log(\`Batch \${batchNum + 1}/\${totalBatches}: Processing records \${startIdx}-\${endIdx}\`);
 
-    if (!batchData.success) {
-      results.failedRecords += batchSize;
-      results.batches.push({ batch: batchNum, status: 'failed', error: batchData.error });
-      continue;
-    }
-
-    const processedBatch = await fetch(\`https://api.processor.example.com/process\`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        datasetId,
-        batchNumber: batchNum,
-        records: batchData.records
-      })
-    }).then(r => r.json());
-
-    if (processedBatch.success) {
-      results.processedRecords += batchData.records.length;
-      results.batches.push({
-        batch: batchNum,
-        status: 'completed',
-        recordsProcessed: batchData.records.length
-      });
-    } else {
-      results.failedRecords += batchData.records.length;
-      results.batches.push({
-        batch: batchNum,
-        status: 'failed',
-        error: processedBatch.error
+    const batchResults = [];
+    for (let i = 0; i < batchRecords; i++) {
+      const recordId = startIdx + i;
+      batchResults.push({
+        id: recordId,
+        value: Math.random() * 100,
+        processed: true,
+        timestamp: new Date().toISOString()
       });
     }
+
+    results.processedRecords += batchRecords;
+    results.batches.push({
+      batch: batchNum,
+      startIdx,
+      endIdx,
+      recordsProcessed: batchRecords,
+      status: 'completed',
+      avgValue: batchResults.reduce((a, b) => a + b.value, 0) / batchRecords
+    });
   }
 
   return {
     success: true,
     ...results,
-    completionPercentage: Math.round((results.processedRecords / totalRecords) * 100),
+    completionPercentage: 100,
+    duration: Date.now(),
     timestamp: new Date().toISOString()
   };
 }`;
