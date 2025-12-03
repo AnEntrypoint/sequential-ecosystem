@@ -1,4 +1,5 @@
 import path from 'path';
+import { createCLICommand } from '@sequential/cli-handler';
 import { existsSync } from 'fs';
 import { ensureDirectory, writeFileAtomicJson, writeFileAtomicString } from '@sequential/file-operations';
 import { generateGitignore, generateSequentialrc } from '../templates.js';
