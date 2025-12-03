@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8.1] - 2025-12-03 - Pattern Consolidation Phase
+
+### Code Consolidation & DRY Improvements
+**Validation Unification**
+- Consolidated 5 competing validation implementations into 2 canonical modules
+- `body-validator` (64L) → re-exports from `sequential-validators`
+- Eliminated ~100 lines of duplicate validation code
+- All body validation convenience functions now exported from `sequential-validators/body-validators.js`
+
+**Error Handling Consolidation**
+- Removed duplicate error module from `core/src/modules/error`
+- `core` now re-exports all error utilities from `@sequential/error-handling`
+- Single source of truth for error handling across ecosystem
+- Improved consistency in error serialization and categorization
+
+**Timestamp Utilities Unification**
+- Consolidated two competing timestamp packages
+- `sequential-utils/timestamps.js` now re-exports from `@sequential/timestamp-utilities`
+- Fixed recursive bug in `nowISO()` (was calling itself)
+- Unified 14 timestamp utility functions across ecosystem (nowISO, formatDuration, timeAgo, isExpired, etc.)
+
+**Impact**
+- Eliminated ~200 lines of duplicate code
+- Improved maintainability through single package sources
+- Reduced import complexity (fewer competing implementations)
+- Better pattern consistency for future development
+
 ## [1.8.0] - 2025-12-03 - Agentic Operating System (Phase 12 Complete)
 
 ### Agent-Centric Architecture
