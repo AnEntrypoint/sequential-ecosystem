@@ -1,0 +1,9 @@
+{
+  "name": "@sequential/body-validator",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Middleware and utilities for body parameter validation",
+  "main": "index.js",
+  "files": ["index.js"],
+  "keywords": ["validation", "body", "middleware", "params"]
+}
