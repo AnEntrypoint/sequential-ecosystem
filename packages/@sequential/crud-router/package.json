@@ -1,0 +1,16 @@
+{
+  "name": "@sequential/crud-router",
+  "version": "1.0.0",
+  "description": "Factory for creating CRUD Express routers",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": { ".": "./src/index.js" },
+  "files": ["src"],
+  "keywords": ["crud", "rest", "router", "express"],
+  "author": "Sequential",
+  "license": "MIT",
+  "dependencies": {
+    "@sequential/response-formatting": "^1.0.0",
+    "@sequential/route-helpers": "^1.0.0"
+  }
+}

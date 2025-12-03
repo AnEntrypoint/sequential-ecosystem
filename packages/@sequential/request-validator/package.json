@@ -1,0 +1,15 @@
+{
+  "name": "@sequential/request-validator",
+  "version": "1.0.0",
+  "description": "Unified request validation for Express routes",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": { ".": "./src/index.js" },
+  "files": ["src"],
+  "keywords": ["validation", "express", "request", "middleware"],
+  "author": "Sequential",
+  "license": "MIT",
+  "dependencies": {
+    "@sequential/response-formatting": "^1.0.0"
+  }
+}

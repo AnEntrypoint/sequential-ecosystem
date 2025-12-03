@@ -1,0 +1,20 @@
+{
+  "name": "@sequential/dependency-middleware",
+  "version": "1.0.0",
+  "description": "Middleware for container dependency injection",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ],
+  "keywords": [
+    "dependency-injection",
+    "middleware",
+    "express"
+  ],
+  "author": "Sequential",
+  "license": "MIT"
+}
