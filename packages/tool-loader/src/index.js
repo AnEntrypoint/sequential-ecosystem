@@ -87,19 +87,42 @@ export class ToolLoader {
 
     if (toolDef.code) {
       try {
-        const moduleCode = `
-          ${toolDef.code}
-          export { handler, metadata };
-        `;
+        let handler = null;
+        let metadata = {};
 
-        const tempFile = path.join('/tmp', `tool-${toolDef.name}-${Date.now()}.mjs`);
-        fs.writeFileSync(tempFile, moduleCode);
+        if (toolDef.code.includes('export async function')) {
+          const fnMatch = toolDef.code.match(/export async function\s+(\w+)/);
+          const fnName = fnMatch ? fnMatch[1] : 'handler';
+          const metadataMatch = toolDef.code.match(/export const metadata = ({[\s\S]*?});/);
 
-        const module = await import(`file://${tempFile}`);
-        toolModule.handler = module.handler || module.default;
-        toolModule.metadata = { ...toolModule.metadata, ...module.metadata };
+          handler = new Function('return async function ' + fnName + '(args) { ' + toolDef.code.split('{')[1].split('}')[0] + ' }')();
+          if (metadataMatch) {
+            try {
+              metadata = eval('(' + metadataMatch[1] + ')');
+            } catch (e) {
+              // metadata parsing error, use default
+            }
+          }
+        } else {
+          const moduleCode = toolDef.code;
+          const tempFile = path.join('/tmp', `tool-${toolDef.name}-${Date.now()}.mjs`);
+          fs.writeFileSync(tempFile, moduleCode);
 
-        fs.unlinkSync(tempFile);
+          try {
+            const module = await import(`file://${tempFile}`);
+            handler = module.handler || module.default;
+            metadata = module.metadata || {};
+          } finally {
+            try {
+              fs.unlinkSync(tempFile);
+            } catch (e) {
+              // ignore cleanup errors
+            }
+          }
+        }
+
+        toolModule.handler = handler || (async (args) => ({ success: false, error: 'No handler found' }));
+        toolModule.metadata = { ...toolModule.metadata, ...metadata };
       } catch (error) {
         throw new Error(`Failed to load tool ${toolDef.name}: ${error.message}`);
       }

@@ -1,14 +1,22 @@
-import Anthropic from '@anthropic-ai/sdk';
 import { generateId } from './utils.js';
+
+let Anthropic = null;
+try {
+  const module = await import('@anthropic-ai/sdk');
+  Anthropic = module.default;
+} catch (e) {
+  // SDK not installed, will operate in degraded mode
+}
 
 export class AgentBackend {
   constructor(config = {}) {
     this.apiKey = config.apiKey || process.env.ANTHROPIC_API_KEY;
     this.model = config.model || 'claude-3-5-sonnet-20241022';
-    this.client = new Anthropic({ apiKey: this.apiKey });
+    this.client = Anthropic ? new Anthropic({ apiKey: this.apiKey }) : null;
     this.agents = new Map();
     this.tools = new Map();
     this.maxTokens = config.maxTokens || 4096;
+    this.sdkAvailable = !!Anthropic;
   }
 
   registerTool(toolDef) {
@@ -63,6 +71,15 @@ export class AgentBackend {
   async executeAgentLoop(agentId, userMessage, maxIterations = 10) {
     const agent = this.agents.get(agentId);
     if (!agent) throw new Error(`Agent ${agentId} not found`);
+
+    if (!this.sdkAvailable) {
+      return {
+        success: false,
+        error: 'Anthropic SDK not available',
+        agentId,
+        message: 'Agent backend requires @anthropic-ai/sdk to be installed'
+      };
+    }
 
     agent.conversationHistory.push({
       role: 'user',
