@@ -1,0 +1,10 @@
+{
+  "name": "@sequential/performance-debugger",
+  "version": "1.0.0",
+  "description": "Comprehensive performance debugging and profiling for Sequential Ecosystem",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  }
+}
