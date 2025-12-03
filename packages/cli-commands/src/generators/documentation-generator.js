@@ -69,7 +69,6 @@ export async function fetchUser(input) {
   return await fetch(\`/api/users/\${input.userId}\`).then(r => r.json());
 }
 
-// ... handlers for each state ...
 \`\`\`
 
 #### Pattern 3: Container (Sequential-OS) - System Workflows
@@ -101,28 +100,24 @@ export async function buildApp(input) {
 Tasks can read/write files at three scopes:
 
 \`\`\`javascript
-// 'run' scope: Current execution only (deleted after task completes)
 await __callHostTool__('writeFile', {
   path: 'progress.json',
   content: { completed: 50, total: 100 },
   scope: 'run'
 });
 
-// 'task' scope: All executions of this task share data
 await __callHostTool__('writeFile', {
   path: 'cache.json',
   content: { lastChecked: Date.now() },
   scope: 'task'
 });
 
-// 'global' scope: All tasks can access
 await __callHostTool__('writeFile', {
   path: 'config.json',
   content: { apiKey: 'secret', dbUrl: 'postgres://...' },
   scope: 'global'
 });
 
-// 'auto' scope for reads: Searches run -> task -> global
 const config = await __callHostTool__('readFile', {
   path: 'config.json',
   scope: 'auto'
@@ -185,7 +180,6 @@ DATABASE_URL="postgresql://user:password@host/dbname"
 ### Implicit Pattern Example
 
 \`\`\`javascript
-// tasks/user-onboarding/code.js
 export async function userOnboarding(input) {
   if (!input.email) throw new Error('Email required');
 
@@ -233,7 +227,6 @@ export const config = {
 ### Explicit Pattern Example
 
 \`\`\`javascript
-// tasks/payment-workflow/code.js
 export const graph = {
   id: 'paymentFlow',
   initial: 'validatePayment',
@@ -399,7 +392,6 @@ export async function resumableTask(input) {
     });
     checkpoint = JSON.parse(existing.content);
   } catch {
-    // First run, no checkpoint
   }
 
   for (let i = checkpoint.processed; i < input.items.length; i++) {

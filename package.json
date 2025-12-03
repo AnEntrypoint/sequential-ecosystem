@@ -13,7 +13,7 @@
     "sync": "node cli.js sync-tasks",
 
     "zellous": "node packages/zellous/server.js",
-    "dev": "node -e \"const{spawn}=require('child_process');const z=spawn('node',['packages/zellous/server.js'],{stdio:'inherit'});const o=spawn('node',['packages/osjs-webdesktop/src/server/index.js'],{stdio:'inherit'});process.on('SIGINT',()=>{z.kill();o.kill();process.exit()});\"",
+    "dev": "node packages/desktop-server/src/server.js",
     "test": "node scripts/test-all.js",
     "test:watch": "find packages -name package.json -exec dirname {} \\; | xargs -I {} sh -c 'cd {} && npm run test:watch 2>/dev/null || true'",
     "test:coverage": "c8 node scripts/test-all.js",
