@@ -1,0 +1,9 @@
+{
+  "name": "@sequential/operation-logger",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Operation logger factory with semantic method names",
+  "main": "index.js",
+  "files": ["index.js"],
+  "keywords": ["logging", "operations", "auditing", "tracking"]
+}

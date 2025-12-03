@@ -1,0 +1,9 @@
+{
+  "name": "@sequential/event-broadcaster",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Event broadcaster factory with semantic method names",
+  "main": "index.js",
+  "files": ["index.js"],
+  "keywords": ["events", "broadcast", "websocket", "messaging"]
+}

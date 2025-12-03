@@ -1,0 +1,9 @@
+{
+  "name": "@sequential/service-factory",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Factory pattern for service container resolution with memoization",
+  "main": "index.js",
+  "files": ["index.js"],
+  "keywords": ["service", "factory", "container", "memoization"]
+}
