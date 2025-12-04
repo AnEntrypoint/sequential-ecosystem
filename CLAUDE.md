@@ -278,6 +278,66 @@ sdk.on('storage:connected', () => { /* ... */ });
 - Detailed: filesystem status, memory breakdown (heap/external), formatted uptime
 - Used for monitoring and alerting
 
+## Observability & Developer Experience
+
+**Correlation Tracking** (`@sequential/observability-utils`):
+- Every request assigned unique correlation ID (via header or auto-generated)
+- ID propagated through all logs, metrics, and traces
+- Query logs by correlation ID to see full request lifecycle
+- AsyncLocalStorage ensures correlation ID available in any callback
+
+**Request/Response Metrics** (`/api/observability/metrics`):
+- Automatic timing for all `/api/` endpoints
+- Tracks: request count, average response time, error rate
+- Identifies slow endpoints (>1000ms)
+- Top N error endpoints by frequency
+- Reset via `DELETE /api/observability/metrics/reset`
+
+**Observability API Routes**:
+```
+GET    /api/observability/health              System health: memory, CPU, uptime
+GET    /api/observability/metrics             Summary + slow/error trends
+GET    /api/observability/metrics/endpoint/:path  Per-endpoint detailed metrics
+GET    /api/observability/state               StateManager status and cache size
+GET    /api/observability/state/keys          List all cached keys (first 100)
+GET    /api/observability/state/:key/:subkey  Inspect specific state value
+GET    /api/observability/tasks               Active task list with duration
+GET    /api/observability/profiling           Full memory/CPU/Node/system stats
+DELETE /api/observability/metrics/reset       Clear metrics collector
+```
+
+**Trace Logging** (`TraceLogger` utility):
+```javascript
+import { TraceLogger } from '@sequential/observability-utils';
+
+// Structured logging with correlation ID
+TraceLogger.info('Processing user', { userId: 123, action: 'login' });
+
+// Synchronous span tracking
+TraceLogger.span('fetchUser', () => {
+  return db.query('SELECT * FROM users WHERE id = 123');
+}, { userId: 123 });
+
+// Async span tracking with automatic timing
+await TraceLogger.spanAsync('apiCall', async () => {
+  return await fetch(url).then(r => r.json());
+}, { endpoint: url });
+```
+
+**Metrics Collector** (automatic per-endpoint tracking):
+- Collects request method, path, status code, duration, errors
+- Maintains last 10,000 requests in memory
+- Updates summary statistics in real-time
+- Provides filtering by path/method/error status
+
+**DX Benefits**:
+- **Fast Debugging**: Correlation IDs link logs → metrics → errors → code
+- **Performance Analysis**: Identify slow endpoints without APM tools
+- **Error Patterns**: See which endpoints fail most frequently
+- **State Inspection**: Debug state manager contents without code changes
+- **Task Visibility**: Monitor running tasks and their duration
+- **Resource Monitoring**: Memory, CPU, Node version in single endpoint
+
 ## Env Vars
 ```
 PORT=3000                              TASK_TIMEOUT=300000

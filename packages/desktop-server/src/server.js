@@ -47,6 +47,8 @@ import { backgroundTaskManager } from '@sequential/server-utilities';
 import { broadcastBackgroundTaskEvent } from '@sequential/websocket-broadcaster';
 import { optionalAuth } from '../../zellous/server/auth-middleware.js';
 import { responseFormatterMiddleware } from './middleware/response-formatter-middleware.js';
+import { correlationMiddleware, MetricsCollector, metricsMiddleware } from '@sequential/observability-utils';
+import { registerObservabilityRoutes } from './routes/observability.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -138,6 +140,10 @@ async function main() {
       next();
     });
 
+    app.use(correlationMiddleware);
+    const metricsCollector = new MetricsCollector(10000);
+    app.use('/api/', metricsMiddleware(metricsCollector));
+
     app.use('/api/', createRequestLogger());
     app.use('/api/', createRateLimitMiddleware(100, 60000));
     app.use('/api/', optionalAuth);
@@ -172,6 +178,7 @@ async function main() {
     registerHealthRoutes(app);
     registerLLMRoutes(app, container);
     registerStorageRoutes(app, container);
+    registerObservabilityRoutes(app, container, metricsCollector);
 
     await bootstrapComponents(stateManager);
     registerComponentRoutes(app, container);
