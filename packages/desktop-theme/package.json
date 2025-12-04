@@ -1,0 +1,22 @@
+{
+  "name": "@sequential/desktop-theme",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/index.css",
+  "files": [
+    "src",
+    "dist"
+  ],
+  "description": "Shared theme and design tokens for Sequential Desktop applications",
+  "keywords": [
+    "sequential-desktop",
+    "theme",
+    "css",
+    "design-tokens"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-desktop-theme"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "@sequential/file-operation-handler",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "File operation handler wrapper to eliminate try-catch boilerplate",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    "file",
+    "operations",
+    "handler",
+    "wrapper"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-file-operation-handler"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "@sequential/app-sdk",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "main": "src/index.js",
+  "dependencies": {
+    "@sequential/response-formatting": "file:../@sequential/response-formatting"
+  }
+}

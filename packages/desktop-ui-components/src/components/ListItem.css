@@ -1,0 +1,29 @@
+.list-item {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-sm, 8px);
+  cursor: pointer;
+  border-radius: var(--radius-sm, 3px);
+  transition: background var(--transition-fast, 0.15s ease);
+  gap: var(--spacing-sm, 8px);
+}
+
+.list-item:hover {
+  background: var(--bg-tertiary, #2a2a2a);
+}
+
+.list-item.active {
+  background: var(--bg-tertiary, #3a3a3a);
+  border-left: 3px solid var(--accent-primary, #4ade80);
+}
+
+.list-item-icon {
+  flex-shrink: 0;
+  font-size: 16px;
+}
+
+.list-item-content {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text-primary, #e0e0e0);
+}

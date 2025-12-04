@@ -1,0 +1,27 @@
+{
+  "name": "@sequential/desktop-ui-components",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
+  "description": "Shared UI components for Sequential Desktop applications",
+  "keywords": [
+    "sequential-desktop",
+    "components",
+    "ui",
+    "hyperapp"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "hyperapp": "^1.2.10"
+  },
+  "dependencies": {
+    "hyperapp": "^2.0.8"
+  }
+}

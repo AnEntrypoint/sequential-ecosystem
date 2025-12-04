@@ -1,0 +1,20 @@
+{
+  "id": "app-flow-editor",
+  "name": "Flow Editor",
+  "version": "1.0.0",
+  "description": "Visual state machine builder with drag-drop nodes",
+  "icon": "🔄",
+  "entry": "dist/index.html",
+  "capabilities": ["zellous"],
+  "dependencies": {
+    "@sequential/zellous-client-sdk": "^1.0.0"
+  },
+  "window": {
+    "defaultWidth": 1100,
+    "defaultHeight": 750,
+    "minWidth": 800,
+    "minHeight": 500,
+    "resizable": true,
+    "maximizable": true
+  }
+}

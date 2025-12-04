@@ -1,0 +1,24 @@
+.toolbar {
+  display: flex;
+  gap: var(--spacing-sm, 8px);
+  padding: var(--spacing-sm, 8px);
+  background: var(--bg-elevated, #2d2d2d);
+  border-bottom: 1px solid var(--border-medium, #3e3e3e);
+  align-items: center;
+}
+
+.toolbar button,
+.toolbar select {
+  padding: 6px 12px;
+  background: var(--accent-button, #0e639c);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm, 3px);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.toolbar button:hover,
+.toolbar select:hover {
+  background: var(--accent-button-hover, #1177bb);
+}

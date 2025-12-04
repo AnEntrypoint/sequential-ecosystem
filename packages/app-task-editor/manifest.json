@@ -1,0 +1,20 @@
+{
+  "id": "app-task-editor",
+  "name": "Task Editor",
+  "version": "1.0.0",
+  "description": "Multi-runner task editor with test execution",
+  "icon": "📝",
+  "entry": "dist/index.html",
+  "capabilities": ["sequential-os", "zellous"],
+  "dependencies": {
+    "@sequential/zellous-client-sdk": "^1.0.0"
+  },
+  "window": {
+    "defaultWidth": 1200,
+    "defaultHeight": 800,
+    "minWidth": 800,
+    "minHeight": 500,
+    "resizable": true,
+    "maximizable": true
+  }
+}

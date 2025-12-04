@@ -1,0 +1,27 @@
+{
+  "name": "@sequential/cli-handler",
+  "version": "1.0.0",
+  "description": "Wrapper for CLI command error handling",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ],
+  "keywords": [
+    "cli",
+    "command",
+    "error-handling"
+  ],
+  "author": "Sequential",
+  "license": "MIT",
+  "dependencies": {
+    "@sequential/sequential-logging": "^1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-cli-handler"
+  }
+}

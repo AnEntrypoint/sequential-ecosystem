@@ -1,0 +1,20 @@
+{
+  "name": "@sequential/query-parser",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Parse and validate query/body parameters with type coercion",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    "query",
+    "parser",
+    "validation",
+    "body"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-query-parser"
+  }
+}

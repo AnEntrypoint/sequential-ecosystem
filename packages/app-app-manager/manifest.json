@@ -1,0 +1,17 @@
+{
+  "id": "app-app-manager",
+  "name": "App Manager",
+  "version": "1.0.0",
+  "description": "Manage, create, and configure Sequential apps",
+  "icon": "📦",
+  "entry": "dist/index.html",
+  "capabilities": ["sequential-os"],
+  "window": {
+    "defaultWidth": 1000,
+    "defaultHeight": 700,
+    "minWidth": 700,
+    "minHeight": 500,
+    "resizable": true,
+    "maximizable": true
+  }
+}

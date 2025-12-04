@@ -1,0 +1,11 @@
+{
+  "id": "desktop-ui-components",
+  "name": "@sequential/desktop-ui-components",
+  "version": "1.0.0",
+  "description": "Shared UI components for Sequential Desktop applications",
+  "type": "package",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sequential-ecosystem/desktop-ui-components"
+  }
+}

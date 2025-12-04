@@ -1,0 +1,17 @@
+{
+  "id": "app-debugger",
+  "name": "Filesystem Debugger",
+  "version": "1.0.0",
+  "description": "Layer history, status dashboard, and file change tracking",
+  "icon": "🔍",
+  "entry": "dist/index.html",
+  "capabilities": ["sequential-os"],
+  "window": {
+    "defaultWidth": 1000,
+    "defaultHeight": 700,
+    "minWidth": 600,
+    "minHeight": 400,
+    "resizable": true,
+    "maximizable": true
+  }
+}

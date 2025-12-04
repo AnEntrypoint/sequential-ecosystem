@@ -1,0 +1,114 @@
+[submodule "packages/sequential-fetch"]
+	path = packages/sequential-fetch
+	url = https://github.com/AnEntrypoint/sequential-fetch.git
+	branch = main
+[submodule "packages/sequential-flow"]
+	path = packages/sequential-flow
+	url = https://github.com/AnEntrypoint/sequential-flow.git
+	branch = main
+[submodule "packages/sequential-runner"]
+	path = packages/sequential-runner
+	url = https://github.com/AnEntrypoint/sequential-runner.git
+	branch = main
+[submodule "packages/sequential-wrapper"]
+	path = packages/sequential-wrapper
+	url = https://github.com/AnEntrypoint/sequential-wrapper.git
+	branch = main
+[submodule "packages/sequential-adaptor"]
+	path = packages/sequential-adaptor
+	url = https://github.com/AnEntrypoint/sequential-adaptor.git
+	branch = main
+[submodule "packages/sequential-adaptor-supabase"]
+	path = packages/sequential-adaptor-supabase
+	url = https://github.com/AnEntrypoint/sequential-adaptor-supabase.git
+	branch = main
+[submodule "packages/sequential-adaptor-sqlite"]
+	path = packages/sequential-adaptor-sqlite
+	url = https://github.com/AnEntrypoint/sequential-adaptor-sqlite.git
+	branch = main
+[submodule "packages/sequential-wrapped-services"]
+	path = packages/sequential-wrapped-services
+	url = https://github.com/AnEntrypoint/sequential-wrapped-services.git
+	branch = main
+[submodule "packages/sequential-http-utils"]
+	path = packages/sequential-http-utils
+	url = https://github.com/AnEntrypoint/sequential-http-utils.git
+	branch = main
+[submodule "packages/sequential-logging"]
+	path = packages/sequential-logging
+	url = https://github.com/AnEntrypoint/sequential-logging.git
+	branch = main
+[submodule "packages/sequential-storage-utils"]
+	path = packages/sequential-storage-utils
+	url = https://github.com/AnEntrypoint/sequential-storage-utils.git
+	branch = main
+[submodule "packages/sequential-utils"]
+	path = packages/sequential-utils
+	url = https://github.com/AnEntrypoint/sequential-utils.git
+	branch = main
+[submodule "packages/sequential-validators"]
+	path = packages/sequential-validators
+	url = https://github.com/AnEntrypoint/sequential-validators.git
+	branch = main
+[submodule "packages/zellous"]
+	path = packages/zellous
+	url = https://github.com/AnEntrypoint/zellous.git
+[submodule "packages/statekit"]
+	path = packages/sequential-machine
+	url = https://github.com/AnEntrypoint/statekit.git
+[submodule "packages/desktop-server"]
+	path = packages/desktop-server
+	url = https://github.com/AnEntrypoint/desktop-server
+[submodule "packages/desktop-shell"]
+	path = packages/desktop-shell
+	url = https://github.com/AnEntrypoint/desktop-shell
+[submodule "packages/app-terminal"]
+	path = packages/app-terminal
+	url = https://github.com/AnEntrypoint/app-terminal
+[submodule "packages/app-debugger"]
+	path = packages/app-debugger
+	url = https://github.com/AnEntrypoint/app-debugger
+[submodule "packages/app-flow-editor"]
+	path = packages/app-flow-editor
+	url = https://github.com/AnEntrypoint/app-flow-editor
+[submodule "packages/app-task-editor"]
+	path = packages/app-task-editor
+	url = https://github.com/AnEntrypoint/app-task-editor
+[submodule "packages/app-code-editor"]
+	path = packages/app-code-editor
+	url = https://github.com/AnEntrypoint/app-code-editor
+[submodule "packages/app-tool-editor"]
+	path = packages/app-tool-editor
+	url = https://github.com/AnEntrypoint/app-tool-editor
+[submodule "packages/zellous-client-sdk"]
+	path = packages/zellous-client-sdk
+	url = https://github.com/AnEntrypoint/zellous-client-sdk
+[submodule "packages/desktop-theme"]
+	path = packages/desktop-theme
+	url = https://github.com/AnEntrypoint/desktop-theme
+[submodule "packages/desktop-ui-components"]
+	path = packages/desktop-ui-components
+	url = https://github.com/AnEntrypoint/desktop-ui-components
+[submodule "packages/desktop-api-client"]
+	path = packages/desktop-api-client
+	url = https://github.com/AnEntrypoint/desktop-api-client
+[submodule "packages/app-file-browser"]
+	path = packages/app-file-browser
+	url = https://github.com/AnEntrypoint/app-file-browser.git
+	branch = main
+[submodule "packages/app-flow-debugger"]
+	path = packages/app-flow-debugger
+	url = https://github.com/AnEntrypoint/app-flow-debugger.git
+	branch = main
+[submodule "packages/app-run-observer"]
+	path = packages/app-run-observer
+	url = https://github.com/AnEntrypoint/app-run-observer.git
+	branch = main
+[submodule "packages/app-task-debugger"]
+	path = packages/app-task-debugger
+	url = https://github.com/AnEntrypoint/app-task-debugger.git
+	branch = main
+[submodule "packages/chat-component"]
+	path = packages/chat-component
+	url = https://github.com/AnEntrypoint/chat-component.git
+	branch = main

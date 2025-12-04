@@ -1,0 +1,36 @@
+{
+  "name": "@sequential/error-handling",
+  "version": "1.0.0",
+  "description": "Centralized error handling with AppError class, error factory, and logging utilities",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./*": "./src/*"
+  },
+  "files": [
+    "src"
+  ],
+  "keywords": [
+    "sequential",
+    "error-handling",
+    "app-error",
+    "logging"
+  ],
+  "author": "Sequential Ecosystem",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-error-handling"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "test": "node --test tests/*.js",
+    "test:coverage": "node --test --experimental-test-coverage tests/*.js"
+  },
+  "dependencies": {
+    "http-errors": "^2.0.0"
+  }
+}

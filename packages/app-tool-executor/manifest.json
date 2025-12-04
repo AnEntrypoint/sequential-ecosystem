@@ -1,0 +1,15 @@
+{
+  "id": "app-tool-executor",
+  "name": "Tool Executor",
+  "type": "app",
+  "version": "1.0.0",
+  "description": "Execute tools with test inputs and view results",
+  "entry": "dist/index.html",
+  "icon": "⚡",
+  "capabilities": ["execute-tools", "test-tools", "view-results"],
+  "window": {
+    "width": 1000,
+    "height": 700,
+    "resizable": true
+  }
+}

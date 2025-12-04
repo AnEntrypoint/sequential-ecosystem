@@ -1,0 +1,37 @@
+{
+  "name": "@sequential/sequential-validators",
+  "version": "1.0.0",
+  "description": "Validation utilities and field validators for sequential-ecosystem tasks",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./patterns": "./src/patterns.js",
+    "./result": "./src/result.js",
+    "./field-validators": "./src/field-validators.js",
+    "./schema-validators": "./src/schema-validators.js",
+    "./type-checkers": "./src/type-checkers.js"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "test": "node --test test/**/*.js"
+  },
+  "keywords": [
+    "sequential",
+    "validators",
+    "field-validators",
+    "schema-validation",
+    "type-checking"
+  ],
+  "author": "lanmower",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-sequential-validators"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

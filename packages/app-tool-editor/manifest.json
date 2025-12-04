@@ -1,0 +1,20 @@
+{
+  "id": "app-tool-editor",
+  "name": "Tool Editor",
+  "version": "1.0.0",
+  "description": "Tool definition editor with import/dependency management",
+  "icon": "🔧",
+  "entry": "dist/index.html",
+  "capabilities": ["zellous"],
+  "dependencies": {
+    "@sequential/zellous-client-sdk": "^1.0.0"
+  },
+  "window": {
+    "defaultWidth": 1000,
+    "defaultHeight": 700,
+    "minWidth": 700,
+    "minHeight": 500,
+    "resizable": true,
+    "maximizable": true
+  }
+}

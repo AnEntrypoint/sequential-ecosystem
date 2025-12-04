@@ -1,0 +1,118 @@
+import { createError, createValidationError } from '@sequential/error-handling';
+import { validateRequired, validateType } from '@sequential/param-validation';
+import { asyncHandler } from '../middleware/error-handler.js';
+import { executeTaskWithTimeout } from '@sequential/server-utilities';
+import { formatResponse } from '@sequential/response-formatting';
+import { nowISO } from '@sequential/timestamp-utilities';
+
+export function registerToolRoutes(app, container) {
+  const registry = container.resolve('ToolRegistry');
+
+  app.get('/api/tools', asyncHandler(async (req, res) => {
+    const tools = registry.getAllTools();
+    res.json(formatResponse({ tools }));
+  }));
+
+  app.get('/api/tools/by-app', asyncHandler(async (req, res) => {
+    const tools = registry.getToolsByApp();
+    res.json(formatResponse(tools));
+  }));
+
+  app.get('/api/tools/:toolId', asyncHandler(async (req, res) => {
+    const { toolId } = req.params;
+    const tool = registry.findToolByName(toolId);
+    if (!tool) {
+      return res.status(404).json(formatResponse({ error: 'Tool not found' }));
+    }
+    res.json(formatResponse({ tool }));
+  }));
+
+  app.post('/api/tools', asyncHandler(async (req, res) => {
+    const { name, definition } = req.body;
+
+    if (!name || typeof name !== 'string') {
+      throw createValidationError('name', 'Tool name is required and must be a string');
+    }
+    if (!definition || typeof definition !== 'object') {
+      throw createValidationError('definition', 'Tool definition is required');
+    }
+    if (!definition.implementation || typeof definition.implementation !== 'string') {
+      throw createValidationError('implementation', 'Tool implementation is required and must be a string');
+    }
+
+    const id = name.toLowerCase().replace(/\s+/g, '-');
+    const toolData = {
+      id,
+      name,
+      description: definition.description || '',
+      category: definition.category || 'Custom',
+      implementation: definition.implementation,
+      imports: definition.imports || { npm: [], cdn: [], esModules: '', importMap: null },
+      createdAt: nowISO(),
+      updatedAt: nowISO()
+    };
+
+    await registry.saveTool(toolData);
+    res.json(formatResponse({ success: true, id, message: 'Tool saved' }));
+  }));
+
+  app.delete('/api/tools/:toolId', asyncHandler(async (req, res) => {
+    const { toolId } = req.params;
+    await registry.deleteTool(toolId);
+    res.json(formatResponse({ success: true, message: 'Tool deleted' }));
+  }));
+
+  app.post('/api/tools/test', asyncHandler(async (req, res) => {
+    const { toolName, implementation, input } = req.body;
+
+    validateRequired('toolName', toolName);
+    validateRequired('implementation', implementation);
+    validateType('toolName', toolName, 'string');
+    validateType('implementation', implementation, 'string');
+
+    const startTime = Date.now();
+    const result = await executeTaskWithTimeout(toolName, implementation, input || {}, 30000);
+    const duration = Date.now() - startTime;
+    res.json(formatResponse({ output: result, duration }));
+  }));
+
+  app.post('/api/tools/validate-imports', asyncHandler(async (req, res) => {
+    const { packages } = req.body;
+
+    if (!Array.isArray(packages)) {
+      throw createValidationError('packages must be an array', 'packages');
+    }
+
+    const invalid = [];
+    const commonPackages = [
+      'axios', 'lodash', 'moment', 'date-fns', 'uuid', 'crypto-js',
+      'qs', 'dotenv', 'express', 'cors', 'multer', 'body-parser',
+      'jsonwebtoken', 'bcrypt', 'validator', 'joi', 'yup',
+      'node-fetch', 'xml2js', 'csv-parse', 'pdf-parse', 'cheerio'
+    ];
+
+    for (const pkg of packages) {
+      if (!commonPackages.includes(pkg.toLowerCase())) {
+        invalid.push(pkg);
+      }
+    }
+
+    res.json(formatResponse({
+      valid: invalid.length === 0,
+      validated: packages.length,
+      invalid,
+      warning: invalid.length > 0 ? `These packages may not be available in the execution environment: ${invalid.join(', ')}` : null
+    }));
+  }));
+
+  app.get('/api/tools/search', asyncHandler(async (req, res) => {
+    const { q } = req.query;
+    if (!q) return res.json(formatResponse([]));
+    const results = registry.searchTools(q);
+    res.json(formatResponse(results));
+  }));
+
+  app.get('/api/tools/stats', asyncHandler(async (req, res) => {
+    res.json(formatResponse(registry.getStats()));
+  }));
+}

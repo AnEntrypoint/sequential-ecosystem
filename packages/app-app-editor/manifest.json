@@ -1,0 +1,21 @@
+{
+  "id": "app-app-editor",
+  "name": "App Editor",
+  "version": "1.0.0",
+  "description": "Visual app builder and code editor for creating Sequential apps",
+  "icon": "🛠️",
+  "entry": "dist/index.html",
+  "capabilities": ["sequential-os", "zellous"],
+  "dependencies": {
+    "@sequential/app-sdk": "^1.0.0",
+    "@sequential/zellous-client-sdk": "^1.0.0"
+  },
+  "window": {
+    "defaultWidth": 1400,
+    "defaultHeight": 900,
+    "minWidth": 900,
+    "minHeight": 600,
+    "resizable": true,
+    "maximizable": true
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "name": "@sequential/sequential-adaptor",
+  "version": "1.0.6",
+  "description": "Base storage and service adaptor interfaces for sequential-runner",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./storage": "./src/interfaces/storage-adapter.js",
+    "./service": "./src/core/service-client.js",
+    "./executor": "./src/core/task-executor.js",
+    "./processor": "./src/core/stack-processor.js"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "test": "node --test test/**/*.js"
+  },
+  "keywords": [
+    "sequential",
+    "adapter",
+    "storage",
+    "base",
+    "interface"
+  ],
+  "author": "lanmower",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-sequential-adaptor"
+  },
+  "dependencies": {
+    "@sequential/sequential-logging": "^1.0.3",
+    "@sequential/sequential-storage-utils": "^1.0.1",
+    "@sequential/sequential-utils": "^1.0.0"
+  },
+  "peerDependencies": {
+    "@sequential/sequential-flow": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

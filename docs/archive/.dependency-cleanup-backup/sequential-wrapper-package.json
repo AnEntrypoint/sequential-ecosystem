@@ -1,0 +1,82 @@
+{
+  "name": "@sequential/sequential-wrapper",
+  "version": "2.0.1",
+  "description": "Zero-code SDK wrapping. Turn any JavaScript SDK into HTTP services with auto-detection, pause/resume for long operations, and declarative configuration.",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "wrap-sdk": "wrap-sdk.js"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./client": {
+      "import": "./src/client.js",
+      "require": "./src/client.cjs"
+    },
+    "./server": {
+      "import": "./src/server.js",
+      "require": "./src/server.cjs"
+    },
+    "./auto-detect": "./src/auto-detect.js"
+  },
+  "scripts": {
+    "start": "node wrap-sdk.js",
+    "wrap-sdk": "node wrap-sdk.js",
+    "dev": "nodemon src/server.js",
+    "test": "node test-client.js",
+    "test:cjs": "node test-client-cjs.cjs"
+  },
+  "keywords": [
+    "sdk",
+    "wrapper",
+    "auto-detect",
+    "zero-code",
+    "http",
+    "proxy",
+    "service",
+    "pause-resume",
+    "long-running",
+    "timeout-free",
+    "express",
+    "deno",
+    "bun",
+    "supabase",
+    "openai",
+    "llm",
+    "api-wrapper"
+  ],
+  "author": "lanmower",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-wrapper.git"
+  },
+  "files": [
+    "src",
+    "wrap-sdk.js"
+  ],
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.18.2",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  },
+  "peerDependencies": {
+    "@supabase/supabase-js": "^2.49.4",
+    "openai": ">=4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@supabase/supabase-js": {
+      "optional": true
+    },
+    "openai": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

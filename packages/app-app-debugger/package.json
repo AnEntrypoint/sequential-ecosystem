@@ -1,0 +1,21 @@
+{
+  "name": "app-app-debugger",
+  "version": "1.0.0",
+  "description": "App debugger and observability dashboard",
+  "main": "dist/index.html",
+  "files": [
+    "dist",
+    "manifest.json"
+  ],
+  "keywords": [
+    "debug",
+    "observability",
+    "monitoring"
+  ],
+  "author": "Sequential",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/app-app-debugger"
+  }
+}

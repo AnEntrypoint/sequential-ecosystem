@@ -1,0 +1,15 @@
+{
+  "id": "json-parser",
+  "name": "json-parser",
+  "description": "Parse and validate JSON data",
+  "category": "data",
+  "implementation": "export async function jsonParser(input) {\n  try {\n    const data = JSON.parse(input.json || '{}');\n    return { success: true, result: data };\n  } catch (e) {\n    return { success: false, error: e.message };\n  }\n}",
+  "imports": {
+    "npm": [],
+    "cdn": [],
+    "esModules": "",
+    "importMap": null
+  },
+  "createdAt": "2025-12-04T07:37:32.309Z",
+  "updatedAt": "2025-12-04T07:37:32.309Z"
+}

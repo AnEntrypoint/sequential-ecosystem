@@ -1,0 +1,13 @@
+{
+  "name": "@sequential/error-handler",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-error-handler"
+  }
+}

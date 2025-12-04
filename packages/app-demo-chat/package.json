@@ -1,0 +1,5 @@
+{
+  "name": "app-demo-chat",
+  "version": "1.0.0",
+  "description": "Demonstrates AppSDK capabilities: storage, realtime, and LLM"
+}

@@ -1,0 +1,97 @@
+{
+  "name": "sequential-ecosystem",
+  "version": "1.7.2",
+  "description": "Infinite-length task execution with automatic suspend/resume and flow/machine runners",
+  "type": "module",
+  "scripts": {
+    "start": "node cli.js",
+    "cli": "node cli.js",
+    "init": "node cli.js init",
+    "create": "node cli.js create-task",
+    "run": "node cli.js run",
+    "list": "node cli.js list",
+    "sync": "node cli.js sync-tasks",
+
+    "zellous": "node packages/zellous/server.js",
+    "dev": "node packages/desktop-server/src/server.js",
+    "test": "node scripts/test-all.js",
+    "test:watch": "find packages -name package.json -exec dirname {} \\; | xargs -I {} sh -c 'cd {} && npm run test:watch 2>/dev/null || true'",
+    "test:coverage": "c8 node scripts/test-all.js",
+    "lint": "eslint packages --ext .js --ignore-path .gitignore || true",
+    "lint:fix": "eslint packages --ext .js --ignore-path .gitignore --fix || true",
+    "build": "find packages -name package.json -exec dirname {} \\; | xargs -I {} sh -c 'cd {} && npm run build 2>/dev/null || true'"
+  },
+  "keywords": [
+    "sequential",
+    "task-execution",
+    "xstate",
+    "sequential-machine",
+    "sequential-flow",
+    "suspend-resume",
+    "deno",
+    "bun",
+    "node",
+    "infinite-tasks",
+    "workflow",
+    "state-machine",
+    "filesystem-layers",
+    "checkpoints"
+  ],
+  "author": "lanmower",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-ecosystem.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AnEntrypoint/sequential-ecosystem/issues"
+  },
+  "homepage": "https://github.com/AnEntrypoint/sequential-ecosystem#readme",
+  "bin": {
+    "sequential-ecosystem": "./cli.js",
+    "seq": "./cli.js"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "files": [
+    "cli.js",
+    "CLAUDE.md",
+    "CHANGELOG.md",
+    "README.md"
+  ],
+  "dependencies": {
+    "@sequential/cli-commands": "file:./packages/cli-commands",
+    "@sequential/timestamp-utilities": "file:./packages/@sequential/timestamp-utilities",
+    "@sequential/error-handling": "file:./packages/@sequential/error-handling",
+    "@sequential/server-utilities": "file:./packages/@sequential/server-utilities",
+    "@sequential/file-operations": "file:./packages/@sequential/file-operations",
+    "@sequential/param-validation": "file:./packages/@sequential/param-validation",
+    "@sequential/response-formatting": "file:./packages/@sequential/response-formatting",
+    "@sequential/request-validator": "file:./packages/@sequential/request-validator",
+    "@sequential/dependency-middleware": "file:./packages/@sequential/dependency-middleware",
+    "@sequential/route-helpers": "file:./packages/@sequential/route-helpers",
+    "@sequential/crud-router": "file:./packages/@sequential/crud-router",
+    "@sequential/async-patterns": "file:./packages/@sequential/async-patterns",
+    "@sequential/core": "file:./packages/@sequential/core",
+    "@sequential/sequential-logging": "file:./packages/sequential-logging",
+    "commander": "^11.0.0",
+    "@sequential/sequential-adaptor": "file:./packages/sequential-adaptor",
+    "@sequential/sequential-flow": "file:./packages/sequential-flow",
+    "@sequential/persistent-state": "file:./packages/@sequential/persistent-state",
+    "@sequential/realtime-sync": "file:./packages/@sequential/realtime-sync",
+    "@sequential/tool-registry": "file:./packages/@sequential/tool-registry",
+    "@sequential/dynamic-components": "file:./packages/@sequential/dynamic-components",
+    "express": "^4.18.2",
+    "ws": "^8.14.2",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2"
+  },
+  "devDependencies": {
+    "c8": "^8.0.1",
+    "eslint": "^8.54.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

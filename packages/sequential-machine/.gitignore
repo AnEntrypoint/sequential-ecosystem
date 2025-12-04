@@ -1,0 +1,5 @@
+node_modules/
+.statekit/
+.test-statekit/
+*.log
+README.md

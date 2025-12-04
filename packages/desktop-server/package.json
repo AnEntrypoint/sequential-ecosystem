@@ -1,0 +1,42 @@
+{
+  "name": "@sequential/desktop-server",
+  "version": "1.0.0",
+  "description": "Modular server for Sequential Desktop with app registry and plugin system",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test tests/**/*.test.js",
+    "test:watch": "node --test tests/**/*.test.js --watch",
+    "test:coverage": "node --test tests/**/*.test.js --coverage"
+  },
+  "keywords": [
+    "sequential",
+    "desktop",
+    "server",
+    "apps"
+  ],
+  "author": "Sequential Ecosystem",
+  "license": "MIT",
+  "dependencies": {
+    "@sequential/core": "*",
+    "@sequential/core-config": "*",
+    "@sequential/data-access-layer": "*",
+    "@sequential/dependency-injection": "*",
+    "@sequential/task-execution-service": "*",
+    "@sequential/error-handling": "*",
+    "@sequential/param-validation": "*",
+    "@sequential/file-operations": "*",
+    "@sequential/persistent-state": "*",
+    "@sequential/sequential-os-http": "*",
+    "@sequential/websocket-broadcaster": "*",
+    "@sequential/server-utilities": "*",
+    "express": "^4.18.2",
+    "fs-extra": "^11.1.1",
+    "ws": "^8.14.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-desktop-server"
+  }
+}

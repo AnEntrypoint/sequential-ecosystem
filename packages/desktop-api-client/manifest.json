@@ -1,0 +1,11 @@
+{
+  "id": "desktop-api-client",
+  "name": "@sequential/desktop-api-client",
+  "version": "1.0.0",
+  "description": "API client for Sequential-OS and VFS operations",
+  "type": "package",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sequential-ecosystem/desktop-api-client"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "id": "new-flow",
+  "initial": "state2",
+  "states": {
+    "state1": {},
+    "state2": {}
+  }
+}

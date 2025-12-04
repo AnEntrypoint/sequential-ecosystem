@@ -1,0 +1,51 @@
+{
+  "name": "@sequential/sequential-wrapped-services",
+  "version": "1.1.1",
+  "description": "Runtime-agnostic wrapped services for sequential-runner (Google APIs, keystore, database, etc.)",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./cli": "./cli.js",
+    "./shared/*": "./shared/*"
+  },
+  "bin": {
+    "sequential": "./cli.js"
+  },
+  "scripts": {
+    "start": "node cli.js",
+    "start:deno": "deno run --allow-all cli.ts",
+    "start:bun": "bun cli.ts",
+    "discover": "node discover-services.js"
+  },
+  "keywords": [
+    "sequential",
+    "wrapped",
+    "services",
+    "runtime-agnostic"
+  ],
+  "author": "lanmower",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-sequential-wrapped-services"
+  },
+  "files": [
+    "cli.js",
+    "services",
+    "shared"
+  ],
+  "dependencies": {
+    "@sequential/sequential-http-utils": "^1.0.0",
+    "@sequential/sequential-validators": "^1.0.0",
+    "@sequential/sequential-logging": "^1.0.0",
+    "@sequential/sequential-utils": "^1.0.0"
+  },
+  "peerDependencies": {
+    "@sequential/sequential-runner": "*",
+    "@sequential/sequential-adaptor": "*"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.7"
+  }
+}

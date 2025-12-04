@@ -1,0 +1,27 @@
+{
+  "name": "@sequential/app-mcp",
+  "version": "1.0.0",
+  "description": "MCP (Model Context Protocol) tool export for Sequential apps",
+  "main": "src/index.js",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./client": "./src/client.js",
+    "./schema": "./src/schema.js"
+  },
+  "files": [
+    "src"
+  ],
+  "keywords": [
+    "mcp",
+    "tools",
+    "llm",
+    "claude"
+  ],
+  "author": "Sequential",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-app-mcp"
+  }
+}
