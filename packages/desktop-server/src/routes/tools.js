@@ -4,6 +4,34 @@ import { asyncHandler } from '../middleware/error-handler.js';
 import { executeTaskWithTimeout } from '@sequential/server-utilities';
 import { formatResponse } from '@sequential/response-formatting';
 import { nowISO } from '@sequential/timestamp-utilities';
+import logger from '@sequential/sequential-logging';
+
+const toolTestLimiter = new Map();
+
+function createToolTestRateLimiter() {
+  return (req, res, next) => {
+    const ip = req.ip || req.connection.remoteAddress;
+    const now = Date.now();
+    const window = 60000;
+    const maxRequests = 5;
+
+    if (!toolTestLimiter.has(ip)) {
+      toolTestLimiter.set(ip, []);
+    }
+
+    const requests = toolTestLimiter.get(ip).filter(timestamp => now - timestamp < window);
+    toolTestLimiter.set(ip, requests);
+
+    if (requests.length >= maxRequests) {
+      logger.warn(`Rate limit exceeded for tool test endpoint from ${ip}`);
+      return res.status(429).json(formatResponse(null, { error: 'Too many tool test requests. Max 5 per minute.' }));
+    }
+
+    requests.push(now);
+    toolTestLimiter.set(ip, requests);
+    next();
+  };
+}
 
 export function registerToolRoutes(app, container) {
   const registry = container.resolve('ToolRegistry');
@@ -62,7 +90,7 @@ export function registerToolRoutes(app, container) {
     res.json(formatResponse({ success: true, message: 'Tool deleted' }));
   }));
 
-  app.post('/api/tools/test', asyncHandler(async (req, res) => {
+  app.post('/api/tools/test', createToolTestRateLimiter(), asyncHandler(async (req, res) => {
     const { toolName, implementation, input } = req.body;
 
     validateRequired('toolName', toolName);

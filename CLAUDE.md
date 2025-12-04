@@ -107,6 +107,57 @@ DELETE /api/errors/clear               Clear all error logs
 WS     /ws/realtime/:appId             Real-time communication (all apps)
 ```
 
+## API Response Format
+
+All HTTP endpoints return a consistent JSON response structure. Responses are automatically wrapped by the response formatter middleware to ensure consistency.
+
+**Success Response**:
+```json
+{
+  "success": true,
+  "data": { /* response payload */ },
+  "meta": {
+    "timestamp": "2025-12-04T12:34:56.789Z",
+    /* additional metadata */
+  }
+}
+```
+
+**Error Response**:
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Error description",
+    "code": "ERROR_CODE"
+  },
+  "meta": {
+    "timestamp": "2025-12-04T12:34:56.789Z"
+  }
+}
+```
+
+**Response Helpers**: Use these functions from `@sequential/response-formatting`:
+- `formatResponse(data, meta)` - Default success response wrapper
+- `formatList(items, count, offset, limit)` - Paginated list response
+- `formatPaginated(items, options)` - Alternative pagination format
+- `formatItem(item, meta)` - Single item response
+- `formatSuccess(message, data)` - Success with message
+- `formatCreated(item, meta)` - Created response (201)
+- `formatUpdated(item, meta)` - Updated response
+- `formatDeleted(resourceId, resourceType)` - Deleted response
+- `formatEmpty(meta)` - Empty list response
+- `formatError(httpCode, error)` - Error response wrapper
+
+**Client-side Unwrapping**: Apps must extract the `data` property before processing:
+```javascript
+const response = await fetch('/api/tasks');
+const { success, data } = await response.json();
+if (success) {
+  const tasks = data.tasks; // actual payload is in data
+}
+```
+
 ## Real-Time Communications & Tools Architecture
 
 **Unified Real-Time Layer** (`@sequential/realtime-sync`):

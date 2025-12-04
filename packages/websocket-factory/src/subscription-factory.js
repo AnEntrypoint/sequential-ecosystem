@@ -1,3 +1,5 @@
+import logger from '@sequential/sequential-logging';
+
 export function createSubscriptionHandler(config) {
   const {
     urlPattern,
@@ -34,7 +36,9 @@ export function createSubscriptionHandler(config) {
           limiter.remove(ws);
           try {
             ws.close(1011, 'Internal server error');
-          } catch (e) {}
+          } catch (e) {
+            logger.error(`Failed to close WebSocket [${label}]:`, e.message);
+          }
         });
 
         ws.on('close', () => {
@@ -47,7 +51,7 @@ export function createSubscriptionHandler(config) {
           ws.send(JSON.stringify(message));
         } catch (e) {
           const label = typeof contextLabel === 'function' ? contextLabel(params) : contextLabel;
-          console.error(`Failed to send initial message [${label}]:`, e.message);
+          logger.error(`Failed to send initial message [${label}]:`, e.message);
         }
       });
     }

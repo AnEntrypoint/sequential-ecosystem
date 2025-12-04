@@ -35,7 +35,8 @@ import { registerRealtimeRoutes, setupRealtimeWebSocket } from './routes/realtim
 import { registerStorageRoutes } from './routes/storage.js';
 import { registerComponentRoutes } from './routes/components.js';
 import { setupDIContainer } from './utils/di-setup.js';
-import { ensureDirectories, loadStateKit, initializeStateKit, validateEnvironment } from './utils/initialization.js';
+import { ensureDirectories, loadStateKit, initializeStateKit } from './utils/initialization.js';
+import { validateEnvironment } from './utils/env-validation.js';
 import { bootstrapComponents } from './utils/bootstrap-components.js';
 import { setupHotReload, closeFileWatchers } from './utils/hot-reload.js';
 import { setupWebSocket } from './utils/websocket-setup.js';
@@ -45,6 +46,7 @@ import { RealtimeBroadcaster } from '@sequential/realtime-sync';
 import { backgroundTaskManager } from '@sequential/server-utilities';
 import { broadcastBackgroundTaskEvent } from '@sequential/websocket-broadcaster';
 import { optionalAuth } from '../../zellous/server/auth-middleware.js';
+import { responseFormatterMiddleware } from './middleware/response-formatter-middleware.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -139,6 +141,7 @@ async function main() {
     app.use('/api/', createRequestLogger());
     app.use('/api/', createRateLimitMiddleware(100, 60000));
     app.use('/api/', optionalAuth);
+    app.use('/api/', responseFormatterMiddleware);
 
     registerDebugRoutes(app, container);
     registerAppRoutes(app, appRegistry, __dirname);

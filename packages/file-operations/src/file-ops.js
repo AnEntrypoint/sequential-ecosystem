@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import { randomUUID } from 'crypto';
+import logger from '@sequential/sequential-logging';
 
 export async function writeFileAtomic(filePath, content) {
   const dir = path.dirname(filePath);
@@ -19,7 +20,9 @@ export async function writeFileAtomic(filePath, content) {
   } catch (error) {
     try {
       await fs.remove(tempFile);
-    } catch (e) {}
+    } catch (e) {
+      logger.error(`Failed to remove temp file ${tempFile}:`, e.message);
+    }
     throw error;
   }
 }
@@ -36,7 +39,9 @@ export async function writeFileAtomicString(filePath, content) {
   } catch (error) {
     try {
       await fs.remove(tempFile);
-    } catch (e) {}
+    } catch (e) {
+      logger.error(`Failed to remove temp file ${tempFile}:`, e.message);
+    }
     throw error;
   }
 }
@@ -53,7 +58,9 @@ export async function writeFileAtomicJson(filePath, content) {
   } catch (error) {
     try {
       await fs.remove(tempFile);
-    } catch (e) {}
+    } catch (e) {
+      logger.error(`Failed to remove temp file ${tempFile}:`, e.message);
+    }
     throw error;
   }
 }

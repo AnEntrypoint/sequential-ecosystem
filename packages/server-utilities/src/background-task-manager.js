@@ -5,11 +5,12 @@ import logger from '@sequential/sequential-logging';
 import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
 
 export class BackgroundTaskManager extends EventEmitter {
-  constructor() {
+  constructor(maxTasks = 1000) {
     super();
     this.processes = new Map();
     this.nextId = 1;
     this.stateManager = null;
+    this.maxTasks = maxTasks;
   }
 
   setStateManager(stateManager) {
@@ -17,6 +18,14 @@ export class BackgroundTaskManager extends EventEmitter {
   }
 
   spawn(command, args = [], options = {}) {
+    if (this.processes.size >= this.maxTasks) {
+      const oldest = Array.from(this.processes.values()).reduce((min, task) =>
+        task.startTime < min.startTime ? task : min
+      );
+      this.processes.delete(oldest.id);
+      logger.warn(`Removed oldest task ${oldest.id} to respect maxTasks limit`);
+    }
+
     const id = this.nextId++;
     const startTime = Date.now();
     const cwd = options.cwd || process.cwd();
@@ -175,7 +184,9 @@ export class BackgroundTaskManager extends EventEmitter {
       } catch (e) {
         try {
           task.childProcess.kill();
-        } catch (e2) {}
+        } catch (e2) {
+          logger.error(`Failed to kill process ${task.pid}:`, e2.message);
+        }
       }
       this.emit('task:killed', { id, pid: task.pid, command: task.command });
       return true;

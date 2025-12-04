@@ -45,6 +45,17 @@ export class Container {
     }
   }
 
+  safeResolve(key, defaultValue = null) {
+    try {
+      return this.resolve(key);
+    } catch (error) {
+      if (error.message.includes('not found')) {
+        return defaultValue;
+      }
+      throw error;
+    }
+  }
+
   has(key) {
     return this.bindings.has(key) || this.singletons.has(key);
   }
