@@ -174,62 +174,47 @@ Read **CLAUDE.md** and **AGENTS.md**:
 ## Core Concepts (Simplified)
 
 ### Auto-Pause on HTTP
-```javascript
+\\\`\\\`\\\`javascript
 export async function myTask(input) {
-  // This automatically pauses here
   const data = await fetch(url).then(r => r.json());
-
-  // Resumes when response arrives - no timeouts!
   return { success: true, data };
 }
-```
+\\\`\\\`\\\`
 
 ### Task Calls Tool
-```javascript
+\\\`\\\`\\\`javascript
 export async function myTask(input) {
-  // Call a tool registered in ./tools/
   const result = await __callHostTool__('database', 'query', {
     sql: 'SELECT * FROM users'
   });
   return result;
 }
-```
+\\\`\\\`\\\`
 
 ### Task Calls Another Task
-```javascript
+\\\`\\\`\\\`javascript
 export async function myTask(input) {
-  // Call another task
   const validated = await __callHostTool__('task', 'example-validate-input', {
     email: input.email
   });
-
   if (!validated.success) {
     throw new Error('Validation failed');
   }
-
   return { validated };
 }
-```
-
-### Visual Components
-```javascript
-// Create once via builder, use everywhere
-// Components automatically access OS services
-// No build step needed - runs with Babel at runtime
-```
+\\\`\\\`\\\`
 
 ### State Machines (Flows)
-```javascript
+\\\`\\\`\\\`javascript
 export const graph = {
   initial: 'fetchData',
   states: {
-    fetchData: { onDone: 'processData', onError: 'handleError' },
+    fetchData: { onDone: 'processData' },
     processData: { onDone: 'complete' },
-    handleError: { type: 'final' },
     complete: { type: 'final' }
   }
 };
-```
+\\\`\\\`\\\`
 
 ---
 
@@ -357,7 +342,7 @@ npx sequential-ecosystem gui
 ## You're Ready! 🎉
 
 That's it. You have:
-- ✅ 5 example tasks to learn from
+- ✅ 8 example tasks to learn from
 - ✅ 3 example tools to use
 - ✅ 7 pre-built components
 - ✅ Visual editor for everything
