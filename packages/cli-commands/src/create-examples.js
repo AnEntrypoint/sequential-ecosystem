@@ -7,6 +7,7 @@ import { createBatchProcessingExample } from './examples/batch-processing.js';
 import { createPaymentFlowExample } from './examples/payment-flow.js';
 import { createResumableTaskExample } from './examples/resumable-task.js';
 import { createComprehensiveWorkflowExample } from './examples/comprehensive-workflow.js';
+import { createExampleFlowsCode } from './examples/example-flows-code.js';
 import { createExamplesReadme } from './examples/readme.js';
 import { createExampleTools } from './examples/example-tools.js';
 import { createExampleFlows } from './examples/example-flows.js';
@@ -38,10 +39,13 @@ export async function createExamples() {
     await createExample(tasksDir);
   }
 
+  logger.info('\nCreating example flows with code:');
+  await createExampleFlowsCode(tasksDir);
+
   logger.info('\nCreating example tools:');
   await createExampleTools(toolsDir);
 
-  logger.info('\nCreating example flows:');
+  logger.info('\nCreating example flow definitions:');
   createExampleFlows(tasksDir);
 
   createExamplesReadme(tasksDir);
