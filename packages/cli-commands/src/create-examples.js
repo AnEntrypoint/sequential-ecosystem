@@ -6,6 +6,7 @@ import { createApiIntegrationExample } from './examples/api-integration.js';
 import { createBatchProcessingExample } from './examples/batch-processing.js';
 import { createPaymentFlowExample } from './examples/payment-flow.js';
 import { createResumableTaskExample } from './examples/resumable-task.js';
+import { createComprehensiveWorkflowExample } from './examples/comprehensive-workflow.js';
 import { createExamplesReadme } from './examples/readme.js';
 import { createExampleTools } from './examples/example-tools.js';
 import { createExampleFlows } from './examples/example-flows.js';
@@ -29,7 +30,8 @@ export async function createExamples() {
     createBatchProcessingExample,
     createPaymentFlowExample,
     createResumableTaskExample,
-    createSequentialOSExample
+    createSequentialOSExample,
+    createComprehensiveWorkflowExample
   ];
 
   for (const createExample of taskExamples) {
