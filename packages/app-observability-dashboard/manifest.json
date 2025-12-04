@@ -1,0 +1,23 @@
+{
+  "id": "app-observability-dashboard",
+  "name": "Observability Dashboard",
+  "description": "Comprehensive monitoring dashboard with metrics, traces, and alerts",
+  "version": "1.0.0",
+  "category": "observability",
+  "icon": "📊",
+  "features": [
+    "Real-time metrics visualization",
+    "Execution trace explorer",
+    "Performance waterfall charts",
+    "Alert management",
+    "Custom metric dashboards",
+    "System health overview",
+    "Span and trace analysis"
+  ],
+  "permissions": [
+    "read:observability",
+    "read:metrics",
+    "read:traces",
+    "write:alerts"
+  ]
+}

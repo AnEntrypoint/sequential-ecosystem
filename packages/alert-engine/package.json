@@ -1,0 +1,9 @@
+{
+  "name": "@sequential/alert-engine",
+  "version": "1.0.0",
+  "description": "Alert threshold system with condition evaluation and actions",
+  "main": "src/index.js",
+  "keywords": ["alerts", "thresholds", "observability", "monitoring"],
+  "author": "Sequential",
+  "license": "MIT"
+}

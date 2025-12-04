@@ -1,0 +1,22 @@
+{
+  "id": "app-observability-console",
+  "name": "Observability Console",
+  "description": "Real-time event stream and system activity monitor",
+  "version": "1.0.0",
+  "category": "observability",
+  "icon": "📡",
+  "features": [
+    "Real-time event stream",
+    "Filter by type, app, severity",
+    "Tool call tracing",
+    "State transitions",
+    "HTTP requests",
+    "Custom events",
+    "Search and correlation ID tracking"
+  ],
+  "permissions": [
+    "read:observability",
+    "read:realtime",
+    "read:traces"
+  ]
+}

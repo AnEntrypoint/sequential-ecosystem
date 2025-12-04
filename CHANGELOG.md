@@ -2,6 +2,46 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] - Comprehensive Observability Suite (Dec 4, 2025)
+
+### Enterprise-Grade Observability System
+- **ExecutionTracer** (`@sequential/execution-tracer`): Distributed tracing with parent-child span hierarchy, automatic timing, and span attributes
+- **ToolCallTracer** (`@sequential/tool-call-tracer`): Automatic tracing of all tool invocations with parameters, results, and per-tool analytics
+- **StateTransitionLogger** (`@sequential/state-transition-logger`): Comprehensive logging of all state machine transitions with duration analysis
+- **StorageQueryTracer** (`@sequential/storage-query-tracer`): Full visibility into database/file operations with slow query detection
+- **CustomMetrics** (`@sequential/custom-metrics`): Application-level metrics for business events (counters, gauges, histograms)
+- **AlertEngine** (`@sequential/alert-engine`): Threshold-based alerting with flexible condition evaluation and action handlers
+- **ObservabilityConsole** (`app-observability-console`): Real-time event stream viewer with filtering and live statistics
+- **ObservabilityDashboard** (`app-observability-dashboard`): Comprehensive monitoring UI with metrics, traces, and alert management
+- **ObservabilityRoutes** (`observability-v2.js`): 36 new API endpoints for querying all observability data
+- **Automatic Integration**: All systems integrated at framework level with zero code changes required
+
+### Key Features
+- ✓ Real-time data broadcasting via RealtimeBroadcaster
+- ✓ In-memory storage with configurable window sizes (~17MB total)
+- ✓ Zero-injection design (no eval(), safe parsing only)
+- ✓ Correlation ID propagation across all systems
+- ✓ Automatic span nesting and parent-child relationships
+- ✓ Event-based architecture with EventEmitter integration
+- ✓ Webhook-based alert actions
+- ✓ Full operator precedence for alert conditions (AND/OR)
+
+### API Summary
+- `/api/observability/v2/traces` - Distributed trace queries
+- `/api/observability/v2/tool-calls` - Tool execution analytics
+- `/api/observability/v2/state-transitions` - State machine visibility
+- `/api/observability/v2/storage-queries` - Storage performance
+- `/api/observability/v2/custom-metrics` - Business metrics
+- `/api/observability/v2/alerts` - Alert management
+- `/api/observability/v2/events` - Real-time event stream
+- Plus 20 additional specialized endpoints
+
+### Documentation
+- New `OBSERVABILITY.md` file with complete integration guide
+- Example code for all tracing patterns
+- Performance tuning recommendations
+- Best practices and troubleshooting
+
 ## [Unreleased] - Security & Architecture Hardening
 
 ### Security Improvements
