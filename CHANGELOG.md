@@ -34,10 +34,18 @@ All notable changes to this project will be documented in this file.
   * `example-validate-input`: Helper task for email validation
   * `example-check-existing`: Helper task for database checks
   * `example-fetch-profile`: Helper task showing fetch with error handling
+- **Created example-flows-code.js**: 3 new example flows demonstrating orchestration patterns
+  * `example-flow-calls-task`: Flow → Task orchestration with multi-step validation
+  * `example-flow-calls-tool`: Flow → Tool coordination with result processing
+  * `example-flow-orchestration`: Complex flow with error handling and branching (order processing)
+- **Enhanced example apps with functional UIs**:
+  * `Task Dashboard`: Real-time task and flow monitoring with execution controls
+  * `Flow Visualizer`: Interactive flow state visualization with dynamic rendering
+  * `Task Explorer`: Searchable catalog of all tasks, tools, and flows
 - **Updated init-command.js**: Enhanced logging emphasizing GUI-first workflow
   * Clear "🎯 START HERE" messaging pointing to QUICKSTART.md
   * Pro tips for GUI usage (Task Explorer, Component Builder, Debugger)
-  * Auto-generates 8 example tasks (now includes all 5 comprehensive workflow examples)
+  * Auto-generates 11 example tasks and 3 functional apps
 - **Auto-generated QUICKSTART.md**: Delivered in every new project initialized with `npx sequential-ecosystem init`
 
 ## [Unreleased] - Documentation Updates for v1.7.2+ (Dec 4, 2025 - Documentation Complete)

@@ -25,6 +25,11 @@ Your project now includes:
 - **example-check-existing**: Reusable database check helper task
 - **example-fetch-profile**: Reusable API fetch helper task
 
+**Learn Flows & Orchestration:**
+- **example-flow-calls-task**: Flow calling multiple tasks in sequence
+- **example-flow-calls-tool**: Flow calling tools with coordination
+- **example-flow-orchestration**: Complex flow with error handling
+
 ### 🛠️ Example Tools (in \`./tools/\`)
 - **database.js**: Database query patterns
 - **api-client.js**: HTTP client with exponential backoff
@@ -69,6 +74,16 @@ The GUI has everything built-in:
 3. Click **Run**
 4. Watch it execute with auto-pause on HTTP calls
 5. See the complete execution timeline in the debugger
+
+### Explore Example Apps
+
+1. Click **App Manager** in the left sidebar
+2. You'll see 3 pre-built example apps:
+   - **Task Dashboard**: Monitor tasks and flows
+   - **Flow Visualizer**: See flow execution paths
+   - **Task Explorer**: Search and browse all examples
+3. Click any app to launch it
+4. Customize or replace with your own apps
 
 ### Build Your First Component
 
@@ -116,6 +131,13 @@ The GUI has everything built-in:
 - Demonstrates validation flow
 - Shows how to compose reusable tasks
 - Example: validate → check-existing → fetch-profile
+
+### I want to orchestrate with flows
+→ Open **example-flow-calls-task** or **example-flow-orchestration**
+- Shows flow calling multiple tasks
+- Demonstrates explicit state machines with xstate
+- Shows error handling and state transitions
+- Example: order processing with payment → shipment → notification
 
 ### I want to call database or tools
 → Open **example-task-calls-tool**
@@ -342,12 +364,14 @@ npx sequential-ecosystem gui
 ## You're Ready! 🎉
 
 That's it. You have:
-- ✅ 8 example tasks to learn from
-- ✅ 3 example tools to use
-- ✅ 7 pre-built components
-- ✅ Visual editor for everything
-- ✅ Debugger for monitoring
-- ✅ Component builder for UI
+- ✅ 11 example tasks (5 basic + 5 integration patterns + 1 sequential-os)
+- ✅ 3 example flows demonstrating orchestration
+- ✅ 3 example tools for database, API, and filesystem operations
+- ✅ 3 functional example apps (Dashboard, Flow Visualizer, Task Explorer)
+- ✅ 7 pre-built components in the visual builder
+- ✅ Visual editor for tasks, flows, and components
+- ✅ Debugger for real-time execution monitoring
+- ✅ Component builder for drag-drop UI creation
 
 **Next step**: \`npx sequential-ecosystem gui\`
 
