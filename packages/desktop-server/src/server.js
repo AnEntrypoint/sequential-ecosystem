@@ -34,6 +34,7 @@ import { registerLLMRoutes } from './routes/llm.js';
 import { registerRealtimeRoutes, setupRealtimeWebSocket } from './routes/realtime.js';
 import { registerStorageRoutes } from './routes/storage.js';
 import { registerComponentRoutes } from './routes/components.js';
+import { registerObservabilityV2Routes } from './routes/observability-v2.js';
 import { setupDIContainer } from './utils/di-setup.js';
 import { ensureDirectories, loadStateKit, initializeStateKit } from './utils/initialization.js';
 import { validateEnvironment } from './utils/env-validation.js';
@@ -47,8 +48,8 @@ import { backgroundTaskManager } from '@sequential/server-utilities';
 import { broadcastBackgroundTaskEvent } from '@sequential/websocket-broadcaster';
 import { optionalAuth } from '../../zellous/server/auth-middleware.js';
 import { responseFormatterMiddleware } from './middleware/response-formatter-middleware.js';
-import { correlationMiddleware, MetricsCollector, metricsMiddleware } from '@sequential/observability-utils';
-import { registerObservabilityRoutes } from './routes/observability.js';
+// import { correlationMiddleware, MetricsCollector, metricsMiddleware } from '@sequential/observability-utils';
+// import { registerObservabilityRoutes } from './routes/observability.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -88,6 +89,8 @@ async function main() {
         'app-app-editor',
         'app-app-debugger',
         'app-app-manager',
+        'app-observability-console',
+        'app-observability-dashboard',
         'app-demo-chat'
       ]
     });
@@ -140,9 +143,9 @@ async function main() {
       next();
     });
 
-    app.use(correlationMiddleware);
-    const metricsCollector = new MetricsCollector(10000);
-    app.use('/api/', metricsMiddleware(metricsCollector));
+    // app.use(correlationMiddleware);
+    // const metricsCollector = new MetricsCollector(10000);
+    // app.use('/api/', metricsMiddleware(metricsCollector));
 
     app.use('/api/', createRequestLogger());
     app.use('/api/', createRateLimitMiddleware(100, 60000));
@@ -178,7 +181,7 @@ async function main() {
     registerHealthRoutes(app);
     registerLLMRoutes(app, container);
     registerStorageRoutes(app, container);
-    registerObservabilityRoutes(app, container, metricsCollector);
+    registerObservabilityV2Routes(app);
 
     await bootstrapComponents(stateManager);
     registerComponentRoutes(app, container);

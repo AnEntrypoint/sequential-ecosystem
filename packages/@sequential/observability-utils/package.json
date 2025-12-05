@@ -1,0 +1,11 @@
+{
+  "name": "@sequential/observability-utils",
+  "version": "1.0.0",
+  "description": "Observability utilities for correlation tracking and metrics collection",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "main": "./src/index.js",
+  "files": ["src"]
+}

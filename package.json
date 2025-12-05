@@ -82,6 +82,7 @@
     "@sequential/realtime-sync": "file:./packages/@sequential/realtime-sync",
     "@sequential/tool-registry": "file:./packages/@sequential/tool-registry",
     "@sequential/dynamic-components": "file:./packages/@sequential/dynamic-components",
+    "@sequential/observability-utils": "file:./packages/@sequential/observability-utils",
     "express": "^4.18.2",
     "ws": "^8.14.2",
     "cors": "^2.8.5",
