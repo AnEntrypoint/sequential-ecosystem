@@ -81,15 +81,18 @@
 
 **Goal**: Reduce 72 files >200 lines to improve long-term maintainability
 
-### Completed (1 of 10 Top Offenders)
+### Completed (2 of 10 Top Offenders - 1,012 lines saved)
 - ✅ **deno-executor** (893L → 4 modules): utilities (37L) + service-registry (100L) + sandbox (350L) + index (249L)
+- ✅ **documentation-generator.js** (880L → 5 modules): core-concepts (127L) + patterns (223L) + operations (180L) + api-ref (181L) + main (32L)
 
-### In Progress / Todo (9 remaining)
-- documentation-generator.js (880L) - Extract section builders
-- service-registry.ts (839L) - Modularize service logic
-- simple-stack-processor/index.ts (821L) - Extract processor handlers
-- database-service.ts (698L) - Split pool, transactions, queries
-- 5 more files: gapi, base-service, http-client, various others
+### In Progress / Todo (8 remaining)
+- service-registry.ts (839L) - Service discovery, health, caching logic
+- simple-stack-processor/index.ts (821L) - Stack processing handlers
+- database-service.ts (698L) - Connection pool, transactions, queries
+- gapi/index.ts (685L) - Google APIs integration
+- base-service.ts (589L) - Base service class with decorators
+- http-client.ts (430L) - HTTP client with retry logic
+- 2 more high-impact files from 62 total >200L
 
 **Strategy**: Refactor one file at a time, each module <200 lines, clear separation of concerns.
 **Status**: Not blocking production, improving code quality incrementally.
