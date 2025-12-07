@@ -215,9 +215,31 @@ export function generateFlowVizAppTemplate(appId, name, appUUID, timestamp, desc
     </div>
   </div>
 
-  <script>
-    window.appId = '${appId}';
+  <script type="module">
+    let sdk = null;
     let allFlows = [];
+
+    async function initApp() {
+      try {
+        // Load AppSDK from server
+        const module = await import('/api/app-sdk.js');
+        const { AppSDK } = module;
+
+        sdk = new AppSDK({
+          appId: '${appId}',
+          baseUrl: window.location.origin,
+          wsUrl: window.location.origin.replace('http', 'ws')
+        });
+
+        console.log('Flow Visualizer initialized:', '${appId}');
+        await loadFlows();
+
+      } catch (error) {
+        document.getElementById('errorMsg').style.display = 'block';
+        document.getElementById('errorMsg').textContent = \`Error initializing app: \${error.message}\`;
+        console.error('Init error:', error);
+      }
+    }
 
     async function loadFlows() {
       try {
@@ -297,7 +319,7 @@ export function generateFlowVizAppTemplate(appId, name, appUUID, timestamp, desc
       diagram.innerHTML = html;
     }
 
-    document.addEventListener('DOMContentLoaded', loadFlows);
+    document.addEventListener('DOMContentLoaded', initApp);
   </script>
 </body>
 </html>

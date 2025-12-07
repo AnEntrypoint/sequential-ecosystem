@@ -157,14 +157,6 @@ export class AppSDK {
     }
   }
 
-  async initTools() {
-    const promises = Array.from(this.registeredTools.entries()).map(([name, toolDef]) => {
-      return this._registerToolRemote(name, toolDef.fn, toolDef.description, { category: toolDef.category });
-    });
-    await Promise.allSettled(promises);
-    return this.registeredTools.size;
-  }
-
   static initialize(config = {}) {
     return new AppSDK({
       baseUrl: config.baseUrl || window.location.origin,

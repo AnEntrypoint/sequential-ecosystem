@@ -201,36 +201,76 @@ export function generateDashboardAppTemplate(appId, name, appUUID, timestamp, de
     </div>
   </div>
 
-  <script>
-    window.appId = '${appId}';
+  <script type="module">
+    let sdk = null;
+    let metrics = {
+      tasksExecuted: 0,
+      successRate: 0,
+      avgDuration: 0,
+      toolsAvailable: 0
+    };
 
-    class DashboardApp {
-      constructor() {
-        this.metrics = {
-          tasksExecuted: 0,
-          successRate: 0,
-          avgDuration: 0,
-          toolsAvailable: 0
-        };
-      }
+    async function initApp() {
+      try {
+        // Load AppSDK from server
+        const module = await import('/api/app-sdk.js');
+        const { AppSDK } = module;
 
-      async init() {
-        console.log('Dashboard initialized:', window.appId);
-        this.updateMetrics();
-      }
-
-      updateMetrics() {
-        document.querySelectorAll('.card-value').forEach((el, i) => {
-          const value = Object.values(this.metrics)[i];
-          if (typeof value === 'number') {
-            el.textContent = value === 0 ? '0' : value.toFixed(1);
-          }
+        sdk = new AppSDK({
+          appId: '${appId}',
+          baseUrl: window.location.origin,
+          wsUrl: window.location.origin.replace('http', 'ws')
         });
+
+        console.log('Dashboard initialized:', '${appId}');
+
+        // Load initial metrics
+        await loadMetrics();
+
+        // Subscribe to real-time updates
+        if (sdk.realtime) {
+          try {
+            const realtime = sdk.realtime('connect', 'dashboard-metrics');
+            realtime.on('metrics', (data) => {
+              Object.assign(metrics, data);
+              updateMetrics();
+            });
+          } catch (error) {
+            console.log('Real-time metrics unavailable:', error.message);
+          }
+        }
+
+        // Refresh metrics every 30 seconds
+        setInterval(loadMetrics, 30000);
+
+      } catch (error) {
+        console.error('Dashboard initialization failed:', error);
+        document.body.innerHTML = '<p style="padding: 20px; color: red;">Error initializing dashboard: ' + error.message + '</p>';
       }
     }
 
-    const dashboard = new DashboardApp();
-    document.addEventListener('DOMContentLoaded', () => dashboard.init());
+    async function loadMetrics() {
+      try {
+        // TODO: Load metrics from /api/observability/metrics
+        // const response = await fetch('/api/observability/metrics');
+        // const data = await response.json();
+        // Object.assign(metrics, data.data);
+        updateMetrics();
+      } catch (error) {
+        console.error('Failed to load metrics:', error);
+      }
+    }
+
+    function updateMetrics() {
+      document.querySelectorAll('.card-value').forEach((el, i) => {
+        const value = Object.values(metrics)[i];
+        if (typeof value === 'number') {
+          el.textContent = value === 0 ? '0' : value.toFixed(1);
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', initApp);
   </script>
 </body>
 </html>

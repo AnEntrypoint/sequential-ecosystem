@@ -188,9 +188,32 @@ export function generateTaskExplorerAppTemplate(appId, name, appUUID, timestamp,
     </div>
   </div>
 
-  <script>
-    window.appId = '${appId}';
+  <script type="module">
+    let sdk = null;
     let allTasks = [];
+
+    async function initApp() {
+      try {
+        // Load AppSDK from server
+        const module = await import('/api/app-sdk.js');
+        const { AppSDK } = module;
+
+        sdk = new AppSDK({
+          appId: '${appId}',
+          baseUrl: window.location.origin,
+          wsUrl: window.location.origin.replace('http', 'ws')
+        });
+
+        console.log('Task Explorer initialized:', '${appId}');
+        await loadTasks();
+
+      } catch (error) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('errorDiv').style.display = 'block';
+        document.getElementById('errorDiv').textContent = \`Error initializing app: \${error.message}\`;
+        console.error('Init error:', error);
+      }
+    }
 
     async function loadTasks() {
       try {
@@ -249,9 +272,24 @@ export function generateTaskExplorerAppTemplate(appId, name, appUUID, timestamp,
       loadTasks();
     }
 
+    function filterTasks() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = allTasks.filter(t =>
+        t.name.toLowerCase().includes(query) ||
+        (t.description && t.description.toLowerCase().includes(query))
+      );
+      renderTasks(filtered);
+    }
+
+    function refreshTasks() {
+      document.getElementById('loading').style.display = 'block';
+      document.getElementById('taskList').innerHTML = '';
+      loadTasks();
+    }
+
     document.getElementById('searchInput')?.addEventListener('input', filterTasks);
 
-    document.addEventListener('DOMContentLoaded', loadTasks);
+    document.addEventListener('DOMContentLoaded', initApp);
   </script>
 </body>
 </html>

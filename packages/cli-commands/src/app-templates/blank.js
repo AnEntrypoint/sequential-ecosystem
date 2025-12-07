@@ -100,45 +100,44 @@ export function generateBlankAppTemplate(appId, name, appUUID, timestamp, descri
     </div>
   </div>
 
-  <script>
-    window.appId = '${appId}';
+  <script type="module">
+    let sdk = null;
 
-    class AppSDKBridge {
-      static instance = null;
+    async function initApp() {
+      try {
+        // Load AppSDK from server
+        const module = await import('/api/app-sdk.js');
+        const { AppSDK } = module;
 
-      static getInstance() {
-        if (!AppSDKBridge.instance) {
-          AppSDKBridge.instance = new AppSDKBridge();
-        }
-        return AppSDKBridge.instance;
-      }
+        sdk = new AppSDK({
+          appId: '${appId}',
+          baseUrl: window.location.origin,
+          wsUrl: window.location.origin.replace('http', 'ws')
+        });
 
-      async init() {
-        console.log('App initialized:', window.appId);
-      }
+        console.log('App initialized:', '${appId}');
 
-      async storage(action, key, value) {
-        // TODO: Connect to Sequential storage API
-        return null;
-      }
+        // Example: Use storage
+        // const data = await sdk.storage('get', 'myKey');
+        // await sdk.storage('set', 'myKey', { value: 'data' });
 
-      async realtime(action, roomId) {
-        // TODO: Connect to Sequential realtime API
-        return null;
-      }
+        // Example: Use realtime
+        // const realtime = sdk.realtime('connect', 'room-id');
+        // realtime.on('message', (data) => console.log('Received:', data));
+        // realtime.send('message', { text: 'Hello' });
 
-      tool(name, fn, description) {
-        // TODO: Register tool with Sequential
-        return this;
+        // Example: Register and use tools
+        // sdk.tool('myTool', async (input) => input * 2, 'Double a number');
+        // await sdk.initTools();
+        // const result = await sdk.tools('invoke', 'myTool', 42);
+
+      } catch (error) {
+        console.error('App initialization failed:', error);
+        document.body.innerHTML = '<p style="padding: 20px; color: red;">Error initializing app: ' + error.message + '</p>';
       }
     }
 
-    window.AppSDK = AppSDKBridge;
-
-    document.addEventListener('DOMContentLoaded', async () => {
-      const sdk = AppSDK.getInstance();
-      await sdk.init();
-    });
+    document.addEventListener('DOMContentLoaded', initApp);
   </script>
 </body>
 </html>
