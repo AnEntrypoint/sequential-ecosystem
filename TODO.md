@@ -77,6 +77,25 @@
 
 ---
 
+## Phase 2: File Size Refactoring (In Progress)
+
+**Goal**: Reduce 72 files >200 lines to improve long-term maintainability
+
+### Completed (1 of 10 Top Offenders)
+- ✅ **deno-executor** (893L → 4 modules): utilities (37L) + service-registry (100L) + sandbox (350L) + index (249L)
+
+### In Progress / Todo (9 remaining)
+- documentation-generator.js (880L) - Extract section builders
+- service-registry.ts (839L) - Modularize service logic
+- simple-stack-processor/index.ts (821L) - Extract processor handlers
+- database-service.ts (698L) - Split pool, transactions, queries
+- 5 more files: gapi, base-service, http-client, various others
+
+**Strategy**: Refactor one file at a time, each module <200 lines, clear separation of concerns.
+**Status**: Not blocking production, improving code quality incrementally.
+
+---
+
 ## Upcoming Work (Phase 2 - Non-Critical)
 
 ### Code Organization (Long-term Maintenance)
