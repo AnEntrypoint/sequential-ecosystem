@@ -1,3 +1,6 @@
+import { RealtimeConnection } from './realtime-connection.js';
+import { ToolRegistry } from './tool-registration.js';
+
 export class AppSDK {
   constructor(options = {}) {
     this.baseUrl = options.baseUrl || 'http://localhost:8003';
@@ -5,6 +8,8 @@ export class AppSDK {
     this.userId = options.userId;
     this.sessionToken = options.sessionToken;
     this.wsUrl = options.wsUrl || 'ws://localhost:8003';
+    this.tools = new ToolRegistry(this.baseUrl);
+    this.autoRegister = options.autoRegister !== false;
   }
 
   async storage(action, ...args) {
@@ -80,6 +85,20 @@ export class AppSDK {
     return await res.json();
   }
 
+  tool(name, fn, description = '', options = {}) {
+    this.tools.register(name, fn, description, options);
+    if (this.autoRegister) {
+      this.tools.remote(name, fn, description, options).catch(err => {
+        console.warn(`Failed to register tool "${name}":`, err.message);
+      });
+    }
+    return this;
+  }
+
+  async initTools() {
+    return await this.tools.initAll();
+  }
+
   async tools(action, ...args) {
     const [toolName, input = {}] = args;
 
@@ -138,6 +157,14 @@ export class AppSDK {
     }
   }
 
+  async initTools() {
+    const promises = Array.from(this.registeredTools.entries()).map(([name, toolDef]) => {
+      return this._registerToolRemote(name, toolDef.fn, toolDef.description, { category: toolDef.category });
+    });
+    await Promise.allSettled(promises);
+    return this.registeredTools.size;
+  }
+
   static initialize(config = {}) {
     return new AppSDK({
       baseUrl: config.baseUrl || window.location.origin,
@@ -149,106 +176,5 @@ export class AppSDK {
   }
 }
 
-export class RealtimeConnection {
-  constructor(wsUrl, roomId, options = {}) {
-    this.wsUrl = wsUrl;
-    this.roomId = roomId;
-    this.userId = options.userId;
-    this.appId = options.appId;
-    this.handlers = new Map();
-    this.ws = null;
-    this.connected = false;
-    this.autoConnect = options.autoConnect !== false;
-
-    if (this.autoConnect) {
-      this.connect();
-    }
-  }
-
-  connect() {
-    if (this.ws) return;
-
-    const url = new URL(this.wsUrl);
-    url.pathname = '/api/realtime/connect';
-    url.searchParams.set('roomId', this.roomId);
-
-    this.ws = new WebSocket(url.toString());
-
-    this.ws.onopen = () => {
-      this.connected = true;
-      if (this.userId) {
-        this.ws.send(JSON.stringify({
-          type: 'auth',
-          userId: this.userId,
-          appId: this.appId
-        }));
-      }
-      this.emit('connected', { roomId: this.roomId });
-    };
-
-    this.ws.onmessage = (event) => {
-      try {
-        const message = JSON.parse(event.data);
-        this.handleMessage(message);
-      } catch (e) {
-        console.error('Failed to parse message:', e);
-      }
-    };
-
-    this.ws.onerror = (error) => {
-      this.emit('error', error);
-    };
-
-    this.ws.onclose = () => {
-      this.connected = false;
-      this.ws = null;
-      this.emit('disconnected');
-    };
-  }
-
-  handleMessage(message) {
-    const { type, ...data } = message;
-    this.emit(type, data);
-    this.emit('message', message);
-  }
-
-  send(type, data = {}) {
-    if (!this.connected || !this.ws) {
-      throw new Error('WebSocket not connected');
-    }
-    this.ws.send(JSON.stringify({ type, ...data }));
-  }
-
-  on(event, handler) {
-    if (!this.handlers.has(event)) {
-      this.handlers.set(event, []);
-    }
-    this.handlers.get(event).push(handler);
-  }
-
-  off(event, handler) {
-    if (!this.handlers.has(event)) return;
-    const handlers = this.handlers.get(event);
-    const index = handlers.indexOf(handler);
-    if (index > -1) handlers.splice(index, 1);
-  }
-
-  emit(event, data) {
-    if (!this.handlers.has(event)) return;
-    this.handlers.get(event).forEach(handler => {
-      try {
-        handler(data);
-      } catch (e) {
-        console.error(`Error in ${event} handler:`, e);
-      }
-    });
-  }
-
-  disconnect() {
-    if (this.ws) {
-      this.ws.close();
-    }
-  }
-}
-
+export { RealtimeConnection };
 export default AppSDK;
