@@ -23,10 +23,27 @@ desktop-server, desktop-shell, app-* (15 apps including app-app-editor, app-app-
 ## Quick Start
 ```bash
 npm install -g sequential-ecosystem
-npx sequential-ecosystem create-task my-task
+
+# Create and run a task
+npx sequential-ecosystem create-task my-task --minimal
 npx sequential-ecosystem run my-task --input '{}'
+
+# Create tools, apps, and flows
+npx sequential-ecosystem create-tool my-tool --template compute
+npx sequential-ecosystem create-app my-app --template dashboard
+npx sequential-ecosystem create-flow my-flow --states 3
+
+# Launch GUI
 npx sequential-ecosystem gui  # http://localhost:3001
 ```
+
+**New DX Features** (Dec 7, 2025):
+- ✅ **CLI Generators**: create-tool, create-app, create-flow commands
+- ✅ **Tool Templates**: compute, api, database, validation
+- ✅ **App Templates**: blank, dashboard, task-explorer, flow-viz
+- ✅ **Boilerplate Reduction**: --minimal flag for lightweight tasks
+- ✅ **Developer Guides**: DX_GUIDE.md, TOOLS_GUIDE.md
+- ✅ **TypeScript Support**: AppSDK type definitions (index.d.ts)
 
 ## Critical Constraints
 | Constraint | Solution |
