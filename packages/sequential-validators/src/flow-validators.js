@@ -35,17 +35,17 @@ export function validateFlow(graph, handlers = {}) {
 
   // 1. Validate graph structure
   if (!graph.initial) {
-    errors.push('Graph must define an "initial" state');
+    errors.push('Graph must define an "initial" state - e.g., { initial: "step1", states: {...} }');
   }
 
   if (!graph.states || typeof graph.states !== 'object' || Object.keys(graph.states).length === 0) {
-    errors.push('Graph must define at least one state in "states" object');
+    errors.push('Graph must define at least one state in "states" object - e.g., { states: { step1: {...} } }');
     return { valid: false, errors, warnings };
   }
 
   // 2. Validate initial state exists
   if (graph.initial && !graph.states[graph.initial]) {
-    errors.push(`Initial state "${graph.initial}" not defined in states`);
+    errors.push(`Initial state "${graph.initial}" not found. Available states: ${Object.keys(graph.states).join(', ')}`);
   }
 
   // 3. Validate each state
@@ -67,11 +67,13 @@ export function validateFlow(graph, handlers = {}) {
 
     // Validate transitions
     if (state.onDone && !graph.states[state.onDone]) {
-      errors.push(`State "${stateName}" references non-existent state "${state.onDone}" in onDone`);
+      const available = Object.keys(graph.states).filter(s => s !== stateName);
+      errors.push(`State "${stateName}" transitions to non-existent state "${state.onDone}" on success. Available: ${available.join(', ')}`);
     }
 
     if (state.onError && !graph.states[state.onError]) {
-      errors.push(`State "${stateName}" references non-existent state "${state.onError}" in onError`);
+      const available = Object.keys(graph.states).filter(s => s !== stateName);
+      errors.push(`State "${stateName}" transitions to non-existent state "${state.onError}" on error. Available: ${available.join(', ')}`);
     }
 
     // Validate handler type

@@ -18,9 +18,13 @@ export class SchemaValidator {
       const result = validator(value);
 
       if (!result.isValid) {
+        const fieldErrors = result.errors.map(msg =>
+          `${msg} (received: ${typeof value === 'object' ? JSON.stringify(value) : value})`
+        );
         errors.push({
           field: fieldName,
-          errors: result.errors
+          errors: fieldErrors,
+          received: value
         });
       }
     }

@@ -5,6 +5,7 @@ export { createTool } from './create-tool.js';
 export { createApp } from './create-app.js';
 export { createFlow } from './create-flow.js';
 export { runTask } from './run-task.js';
+export { runTool } from './run-tool.js';
 export { syncTasks } from './sync-tasks.js';
 export { createExamples } from './create-examples.js';
 

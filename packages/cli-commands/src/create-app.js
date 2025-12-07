@@ -6,6 +6,7 @@ import { generateBlankAppTemplate } from './app-templates/blank.js';
 import { generateDashboardAppTemplate } from './app-templates/dashboard.js';
 import { generateTaskExplorerAppTemplate } from './app-templates/task-explorer.js';
 import { generateFlowVizAppTemplate } from './app-templates/flow-viz.js';
+import { generateAppPackageJson } from './generators/app-package-generator.js';
 import logger from '@sequential/sequential-logging';
 import { nowISO } from '@sequential/timestamp-utilities';
 
@@ -63,13 +64,17 @@ export async function createApp(options) {
       break;
   }
 
+  const packageJson = generateAppPackageJson(appId, name, description);
+
   await writeFileAtomicString(path.join(appDir, 'manifest.json'), manifest);
   await writeFileAtomicString(path.join(appDir, 'dist/index.html'), html);
+  await writeFileAtomicString(path.join(appDir, 'package.json'), JSON.stringify(packageJson, null, 2));
 
   logger.info(`✓ App '${name}' created at ${appDir}`);
   logger.info(`  - App ID: ${appId}`);
   logger.info(`  - Template: ${template}`);
-  logger.info(`  - Edit ${appDir}/dist/index.html to customize the UI`);
   logger.info(`  - View at: http://localhost:3001/?app=${appId}`);
-  logger.info(`  - Edit manifest.json to adjust app properties`);
+  logger.info(`  - Dev: npm run dev (enables hot reload)`);
+  logger.info(`  - Edit dist/index.html to customize UI`);
+  logger.info(`  - See package.json for npm scripts`);
 }
