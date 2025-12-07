@@ -5,11 +5,12 @@ import { ensureDirectory, writeFileAtomicString } from '@sequential/file-operati
 import { generateMachineTemplate } from './task-templates/machine.js';
 import { generateFlowGraphTemplate } from './task-templates/flow-graph.js';
 import { generateFlowSimpleTemplate } from './task-templates/flow-simple.js';
+import { generateFlowMinimalTemplate } from './task-templates/flow-minimal.js';
 import logger from '@sequential/sequential-logging';
 import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
 
 export async function createTask(options) {
-  const { name, withGraph = false, inputs = [], description = '', runner = 'flow' } = options;
+  const { name, withGraph = false, inputs = [], description = '', runner = 'flow', minimal = false } = options;
   const tasksDir = path.resolve(process.cwd(), 'tasks');
   const taskFile = path.join(tasksDir, `${name}.js`);
   const taskDataDir = path.join(tasksDir, name);
@@ -28,6 +29,8 @@ export async function createTask(options) {
   let code;
   if (runner === 'machine') {
     code = generateMachineTemplate(name, taskId, timestamp, inputs, description);
+  } else if (minimal) {
+    code = generateFlowMinimalTemplate(name, taskId, timestamp, inputs, description);
   } else if (withGraph) {
     code = generateFlowGraphTemplate(name, taskId, timestamp, inputs, description);
   } else {
@@ -38,15 +41,7 @@ export async function createTask(options) {
 
   logger.info(`✓ Task '${name}' created at ${taskFile}`);
   logger.info(`  - Runner: ${runner}`);
+  logger.info(`  - Template: ${minimal ? 'minimal' : withGraph ? 'graph' : 'simple'}`);
   logger.info(`  - Edit ${taskFile} to write task logic`);
-
-  if (runner === 'machine') {
-    logger.info(`  - Run with: npx sequential-ecosystem run ${name} --input '{}'`);
-    logger.info(`  - Or use sequential-machine CLI directly`);
-  } else {
-    if (withGraph) {
-      logger.info(`  - Modify graph export to define state transitions`);
-    }
-    logger.info(`  - Run with: npx sequential-ecosystem run ${name} --input '{}'`);
-  }
+  logger.info(`  - Run with: npx sequential-ecosystem run ${name} --input '{}'`);
 }

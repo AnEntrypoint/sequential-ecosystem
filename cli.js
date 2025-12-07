@@ -3,6 +3,9 @@
 import { program } from 'commander';
 import {
   createTask,
+  createTool,
+  createApp,
+  createFlow,
   syncTasks,
   runTask,
   getConfig,
@@ -35,6 +38,7 @@ program
 program
   .command('create-task <name>')
   .description('Create a new task')
+  .option('--minimal', 'Minimal template with less boilerplate')
   .option('--with-graph', 'Create with explicit state graph (xstate FlowState)')
   .option('--runner <type>', 'Runner type: flow or machine', 'flow')
   .option('--inputs <inputs>', 'Comma-separated input parameters')
@@ -43,9 +47,66 @@ program
     try {
       await createTask({
         name,
+        minimal: options.minimal || false,
         withGraph: options.withGraph || false,
         runner: options.runner || 'flow',
         inputs: options.inputs ? options.inputs.split(',') : [],
+        description: options.description || ''
+      });
+    } catch (e) {
+      console.error('Error:', e instanceof Error ? e.message : String(e));
+      process.exit(1);
+    }
+  });
+
+program
+  .command('create-tool <name>')
+  .description('Create a new tool')
+  .option('--template <type>', 'Tool template: database, api, compute, validation', 'compute')
+  .option('--description <desc>', 'Tool description')
+  .option('--category <cat>', 'Tool category', 'Custom')
+  .action(async (name, options) => {
+    try {
+      await createTool({
+        name,
+        template: options.template || 'compute',
+        description: options.description || '',
+        category: options.category || 'Custom'
+      });
+    } catch (e) {
+      console.error('Error:', e instanceof Error ? e.message : String(e));
+      process.exit(1);
+    }
+  });
+
+program
+  .command('create-app <name>')
+  .description('Create a new app')
+  .option('--template <type>', 'App template: blank, dashboard, task-explorer, flow-viz', 'blank')
+  .option('--description <desc>', 'App description')
+  .action(async (name, options) => {
+    try {
+      await createApp({
+        name,
+        template: options.template || 'blank',
+        description: options.description || ''
+      });
+    } catch (e) {
+      console.error('Error:', e instanceof Error ? e.message : String(e));
+      process.exit(1);
+    }
+  });
+
+program
+  .command('create-flow <name>')
+  .description('Create a new flow')
+  .option('--states <n>', 'Number of states (1-20)', '3')
+  .option('--description <desc>', 'Flow description')
+  .action(async (name, options) => {
+    try {
+      await createFlow({
+        name,
+        states: options.states || '3',
         description: options.description || ''
       });
     } catch (e) {

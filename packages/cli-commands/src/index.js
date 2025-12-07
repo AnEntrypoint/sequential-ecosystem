@@ -1,6 +1,9 @@
 export { loadCommands, getCommand, listCommands } from './command-loader.js';
 export { getConfig, setConfig, showConfig } from './config.js';
 export { createTask } from './create-task.js';
+export { createTool } from './create-tool.js';
+export { createApp } from './create-app.js';
+export { createFlow } from './create-flow.js';
 export { runTask } from './run-task.js';
 export { syncTasks } from './sync-tasks.js';
 export { createExamples } from './create-examples.js';
