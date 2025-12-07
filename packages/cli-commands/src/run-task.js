@@ -26,18 +26,47 @@ export async function runTask(options) {
 
   if (dryRun) {
     if (verbose) {
-      logger.info('Dry run mode - syntax check only');
+      logger.info('Dry run mode - execute without saving');
     }
     try {
+      const taskModule = await import(taskFile);
       const funcName = taskName.replace(/-/g, '_');
-      if (!code.includes(`function ${funcName}`) && !code.includes('export default')) {
-        throw new Error(`No function '${funcName}' or default export found`);
+      const taskFunction = taskModule[funcName] || taskModule[taskName] || taskModule.default;
+
+      if (typeof taskFunction !== 'function') {
+        throw new Error(`No function '${funcName}' or default export found in ${taskFile}`);
       }
-      logger.info('✓ Task syntax is valid');
-      return { dryRun: true, valid: true };
+
+      if (verbose) {
+        logger.info('✓ Task syntax is valid');
+        logger.info('Executing task...');
+      }
+
+      const result = await taskFunction(input);
+
+      if (verbose) {
+        logger.info('✓ Task executed successfully');
+        logger.info('Result:', JSON.stringify(result, null, 2));
+      }
+
+      return {
+        dryRun: true,
+        valid: true,
+        executed: true,
+        result
+      };
     } catch (e) {
-      logger.error('✗ Syntax error:', e instanceof Error ? e.message : String(e));
-      return { dryRun: true, valid: false, error: String(e) };
+      const error = e instanceof Error ? e.message : String(e);
+      logger.error('✗ Dry run failed:', error);
+      if (verbose && e instanceof Error && e.stack) {
+        logger.error('Stack trace:', e.stack);
+      }
+      return {
+        dryRun: true,
+        valid: false,
+        executed: false,
+        error
+      };
     }
   }
 
