@@ -37,7 +37,7 @@ npx sequential-ecosystem create-flow my-flow --states 3
 npx sequential-ecosystem gui  # http://localhost:3001
 ```
 
-**New DX Features** (Dec 7, 2025 - 7 Iterations):
+**New DX Features** (Dec 7, 2025 - 8 Iterations):
 - ✅ **CLI Generators**: create-tool, create-app, create-flow, debug-task, inspect-flow
 - ✅ **Tool Templates**: compute, api, database, validation
 - ✅ **App Templates**: blank, dashboard, task-explorer, flow-viz, react (with package.json)
@@ -60,6 +60,9 @@ npx sequential-ecosystem gui  # http://localhost:3001
 - ✅ **Performance Monitoring**: Metrics collection with percentiles and bottleneck detection
 - ✅ **Advanced Hooks**: Task and flow lifecycle hooks for extensibility
 - ✅ **Batch Operations**: Sequential, parallel, and batched execution with retry
+- ✅ **Input Schema Validation**: JSON schema validation for all inputs
+- ✅ **Flow Conditional Logic**: If/switch states for conditional routing
+- ✅ **Task Caching Framework**: TTL-based caching with eviction policies
 
 ## Critical Constraints
 | Constraint | Solution |
