@@ -6,11 +6,12 @@ import { generateBlankAppTemplate } from './app-templates/blank.js';
 import { generateDashboardAppTemplate } from './app-templates/dashboard.js';
 import { generateTaskExplorerAppTemplate } from './app-templates/task-explorer.js';
 import { generateFlowVizAppTemplate } from './app-templates/flow-viz.js';
+import { generateReactAppTemplate } from './app-templates/react.js';
 import { generateAppPackageJson } from './generators/app-package-generator.js';
 import logger from '@sequential/sequential-logging';
 import { nowISO } from '@sequential/timestamp-utilities';
 
-const VALID_TEMPLATES = ['blank', 'dashboard', 'task-explorer', 'flow-viz'];
+const VALID_TEMPLATES = ['blank', 'dashboard', 'task-explorer', 'flow-viz', 'react'];
 
 export async function createApp(options) {
   const { name, template = 'blank', description = '' } = options;
@@ -58,6 +59,12 @@ export async function createApp(options) {
       break;
     case 'flow-viz':
       { const result = generateFlowVizAppTemplate(appId, name, appUUID, timestamp, description);
+      manifest = result.manifest;
+      html = result.html;
+      }
+      break;
+    case 'react':
+      { const result = generateReactAppTemplate(appId, name, appUUID, timestamp, description);
       manifest = result.manifest;
       html = result.html;
       }
