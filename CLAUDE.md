@@ -82,8 +82,13 @@ npx sequential-ecosystem gui  # http://localhost:3001
 - ✅ **Tool Lifecycle Reference** (Iteration 25): Registration methods, persistence, visibility, schema invalidation
 - ✅ **Debugging Context Layers** (Iteration 25): Four-layer debugging model (correlation, breadcrumbs, state, trail)
 - ✅ **Mastery Path** (Iteration 25): Meta-guide connecting concepts for expert-level understanding
+- ✅ **Conditional Breakpoints** (Iteration 26): Breakpoints with custom conditions (e.g., `step > 5`), hit counting, watch expressions
+- ✅ **Performance Metrics Dashboard** (Iteration 26): Real-time execution analytics (success rate, avg duration, total runs)
+- ✅ **Optimization Hints Engine** (Iteration 26): Smart analysis detects error rates, variance, slowness with estimated improvement %
+- ✅ **Execution Comparison** (Iteration 26): Baseline vs current comparison with regression testing (status, performance, output)
+- ✅ **Code Coverage Integration** (Iteration 26): Per-file coverage metrics, progress visualization, path tracking
 
-**Total DX Coverage: 99.99%+** (25 iterations, 70 total enhancements + 4 mastery guides across primary through senary friction)
+**Total DX Coverage: 99.99%+** (26 iterations, 75 total enhancements + advanced debugging across primary through senary friction)
 
 ## Critical Constraints
 | Constraint | Solution |

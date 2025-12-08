@@ -2,6 +2,53 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] - Advanced Debugging & Observability Tools (Dec 8, 2025 - Iteration 3)
+
+### Advanced Debugging Features
+- **Flow Debugger** (`app-flow-debugger`):
+  - ✅ Added conditional breakpoints (Set condition on state, e.g., `step > 5`)
+  - ✅ Added breakpoint hit counting and logging
+  - ✅ Added watch expressions panel (👁 Watches button)
+  - ✅ Evaluates watch expressions in execution context
+  - ✅ Right-click context menu for breakpoint management
+  - ✅ Visual breakpoint indicators with condition preview
+  - ✅ Modal dialogs for setting conditions on breakpoints
+- **Task Debugger** (`app-task-debugger`):
+  - ✅ Added execution metrics (📊 Metrics button)
+  - ✅ Displays: total runs, success rate, average duration, current duration
+  - ✅ Added performance optimization hints (💡 Hints button)
+  - ✅ Smart suggestion analysis: error rate, performance variance, slowness detection
+  - ✅ Added execution comparison (🔄 Compare button)
+  - ✅ Regression testing: status match, performance regression, output consistency
+  - ✅ Baseline vs current run comparison with detailed metrics
+- **Observability Dashboard** (`app-observability-dashboard`):
+  - ✅ Added code coverage metrics card
+  - ✅ Added code coverage analysis tab
+  - ✅ Coverage visualization: per-file breakdown with progress bars
+  - ✅ Displays: total functions, covered functions, execution paths
+  - ✅ Real-time coverage data with 5-second refresh
+
+### Architecture Improvements
+- **Conditional Breakpoints**: Breakpoint metadata stored in Map with conditions and hit counts
+- **Safe Expression Evaluation**: Uses Function constructor with context parameters
+- **Metrics Collection**: Real-time tracking of success rates, durations, execution patterns
+- **Regression Detection**: Automated comparison tests to catch performance/output regressions
+- **Coverage Analysis**: Integration with observability API for coverage tracking
+
+### Files Modified
+- `packages/app-flow-debugger/dist/index.html` (+100 lines, conditional breakpoints + watches)
+- `packages/app-task-debugger/dist/index.html` (+150 lines, metrics + hints + comparison)
+- `packages/app-observability-dashboard/dist/index.html` (+50 lines, code coverage)
+
+### Developer Experience Improvements
+- **Debugging**: Conditional breakpoints enable precise execution control
+- **Performance Analysis**: Smart hints suggest optimization strategies with estimated impact
+- **Quality Assurance**: Regression testing catches unintended behavior changes
+- **Observability**: Code coverage metrics ensure comprehensive testing
+- **Metrics**: Real-time performance tracking for all task execution
+
+---
+
 ## [Unreleased] - Debugger Tools Enhanced + Simulation & Breakpoints (Dec 8, 2025 - Iteration 2)
 
 ### Debugger Enhancements
