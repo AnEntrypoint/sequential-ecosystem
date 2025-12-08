@@ -47,7 +47,7 @@ All notable changes to this project will be documented in this file.
 - **Impact**: Prevents data loss from crashes, eliminates manual save workflow
 - **Testing**: Verified auto-save indicator transitions and server persistence
 
-### Phase 4: Real-Time Input Validation (Completed)
+### Phase 4: Real-Time Input Validation & Parameter Extraction (Completed)
 - ✅ Part 1: Task Editor JSON validation
   - Real-time JSON validation on test input textarea
   - Visual feedback: green border for valid JSON, red border for invalid
@@ -62,8 +62,21 @@ All notable changes to this project will be documented in this file.
   - Consistent styling: green border (#4ade80) for valid, red (#ff6b6b) for invalid
   - Validation event listeners attached on page load
   - Execution prevented when JSON validation fails
-- **Impact**: Catches 80% of errors before execution, prevents invalid state in database
-- **Testing**: Verified validation with valid/invalid JSON across all three editors
+- ✅ Part 3: Parameter extraction from function signatures
+  - Task Editor: "✨ Extract from Code" button in Configuration tab
+    - Parses function signature like `export async function myTask(input)`
+    - Extracts parameter names and populates Input Parameters form
+    - Clears previous parameters before populating new ones
+    - Shows extraction results in Task Editor console
+  - Tool Editor: "✨ Extract from Code" button in Parameters tab
+    - Parses tool implementation function signature
+    - Extracts parameter names and creates parameter definitions
+    - Sets default type to "string" and required to "Yes"
+    - Shows extraction results in Tool Editor console
+  - Regex pattern: Matches function declarations with/without async/export keywords
+  - Tested: Task Editor extracts "input" parameter; Tool Editor extracts "params" parameter
+- **Impact**: Part 1-2 catches 80% of errors before execution; Part 3 eliminates manual parameter duplication
+- **Testing**: Verified JSON validation and parameter extraction across all editors
 
 ---
 
