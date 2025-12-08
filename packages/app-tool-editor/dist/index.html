@@ -2021,18 +2021,21 @@ ${document.getElementById('toolImpl').value}
     import { FindReplace } from './find-replace.js';
     import { CommandPalette } from './command-palette.js';
     import { ParameterHints } from './parameter-hints.js';
+    import { SnippetInsert } from './snippet-insert.js';
     const editorFeatures = new EditorFeatures('toolImpl');
     const toolAutocomplete = new ToolAutocomplete('toolImpl');
     const validationHints = new ValidationHints('toolImpl');
     const findReplace = new FindReplace('toolImpl');
     const commandPalette = new CommandPalette('toolImpl', 'tool');
     const parameterHints = new ParameterHints('toolImpl');
+    const snippetInsert = new SnippetInsert('toolImpl');
     window.editorFeatures = editorFeatures;
     window.toolAutocomplete = toolAutocomplete;
     window.validationHints = validationHints;
     window.findReplace = findReplace;
     window.commandPalette = commandPalette;
     window.parameterHints = parameterHints;
+    window.snippetInsert = snippetInsert;
     document.addEventListener('DOMContentLoaded', () => {
       editorFeatures.init();
       toolAutocomplete.init();
@@ -2040,6 +2043,7 @@ ${document.getElementById('toolImpl').value}
       findReplace.init();
       commandPalette.init();
       parameterHints.init();
+      snippetInsert.init();
     });
   </script>
   <script>

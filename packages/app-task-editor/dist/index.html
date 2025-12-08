@@ -2304,18 +2304,21 @@ function createStorageManager(appId) {
     import { FindReplace } from './find-replace.js';
     import { CommandPalette } from './command-palette.js';
     import { ParameterHints } from './parameter-hints.js';
+    import { SnippetInsert } from './snippet-insert.js';
     const editorFeatures = new EditorFeatures('codeEditor');
     const toolAutocomplete = new ToolAutocomplete('codeEditor');
     const validationHints = new ValidationHints('codeEditor');
     const findReplace = new FindReplace('codeEditor');
     const commandPalette = new CommandPalette('codeEditor', 'task');
     const parameterHints = new ParameterHints('codeEditor');
+    const snippetInsert = new SnippetInsert('codeEditor');
     window.editorFeatures = editorFeatures;
     window.toolAutocomplete = toolAutocomplete;
     window.validationHints = validationHints;
     window.findReplace = findReplace;
     window.commandPalette = commandPalette;
     window.parameterHints = parameterHints;
+    window.snippetInsert = snippetInsert;
     document.addEventListener('DOMContentLoaded', () => {
       editorFeatures.init();
       toolAutocomplete.init();
@@ -2323,6 +2326,7 @@ function createStorageManager(appId) {
       findReplace.init();
       commandPalette.init();
       parameterHints.init();
+      snippetInsert.init();
     });
   </script>
   <script>
