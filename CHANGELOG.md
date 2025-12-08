@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] - Developer Velocity & Friction Reduction (Dec 8, 2025 - Iteration 5)
 
-### Phase 1: Keyboard Shortcuts & Discoverability (In Progress)
+### Phase 1: Keyboard Shortcuts & Discoverability (Completed)
 - ✅ Added F5 and Ctrl+Enter keyboard shortcuts for execution in all editors
   - Task Editor: F5/Ctrl+Enter runs task
   - Tool Editor: F5/Ctrl+Enter runs test
@@ -13,7 +13,39 @@ All notable changes to this project will be documented in this file.
 - ✅ Added keyboard shortcut help modal (press ? to view shortcuts)
 - ✅ Added tooltips on Run/Save buttons showing keyboard shortcuts
 - **Impact**: Reduces mouse dependency, estimated 15-20 seconds saved per hour
-- **Status**: Task and Tool editors complete, Flow and App editors in progress
+
+### Phase 2: Tool Name Autocomplete (Completed)
+- ✅ Task Editor: Intelligent autocomplete for tool names
+  - Detects `__callHostTool__('tool', '` pattern
+  - Real-time dropdown with available tools
+  - Arrow key navigation, Enter/click selection
+  - Cursor-aware popup positioning
+  - Cached tool list for performance
+- **Impact**: Eliminates manual typing of tool names, saves 10-20 seconds per tool call
+
+### Phase 3: Server Auto-Save & Persistence (Completed)
+- ✅ Auto-save indicator with visual status (Unsaved/Saving/Saved)
+  - 3-second debounce to avoid excessive network requests
+  - Color-coded indicators: orange (unsaved), blue (saving), green (saved)
+  - Animated pulse effect during save operation
+- ✅ Task Editor: Auto-save code changes to server
+  - Tracks last saved state, compares on keystroke
+  - Posts to `/api/tasks/{taskName}` with code and config
+  - Graceful error handling with fallback to unsaved indicator
+- ✅ Tool Editor: Auto-save tool definitions
+  - Watches name, description, category, implementation, and imports
+  - Posts to `/api/tools` endpoint
+  - Initializes on tool selection, updates on each keystroke
+- ✅ Flow Editor: Auto-save flow state and layout
+  - Monitors state additions, drags, resizes
+  - Posts to `/api/flows` endpoint
+  - Preserves canvas positions and state types
+- ✅ App Editor: Auto-save file contents
+  - Watches code input changes
+  - Posts to `/api/user-apps/{appId}/files/{path}`
+  - Maintains unsavedChanges flag sync
+- **Impact**: Prevents data loss from crashes, eliminates manual save workflow
+- **Testing**: Verified auto-save indicator transitions and server persistence
 
 ---
 
