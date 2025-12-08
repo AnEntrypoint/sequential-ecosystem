@@ -1,0 +1,16 @@
+{
+  "id": "app-component-showcase",
+  "name": "Component Showcase",
+  "version": "1.0.0",
+  "description": "Interactive showcase of all dynamic components with live previews and property configuration",
+  "icon": "palette",
+  "entry": "dist/index.html",
+  "category": "development",
+  "capabilities": ["ui-building", "component-preview", "live-configuration"],
+  "pages": [
+    { "name": "Components", "path": "/components" },
+    { "name": "Templates", "path": "/templates" },
+    { "name": "Presets", "path": "/presets" },
+    { "name": "Export", "path": "/export" }
+  ]
+}

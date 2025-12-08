@@ -305,6 +305,28 @@ const tools = sdk.getTools();
 - Template scaffolding (blank, dashboard, task explorer, flow visualizer)
 - Storage through `/api/user-apps/*` endpoints
 
+**App Editor Component Architecture** (Iteration 8):
+- **DynamicComponentRegistry** (core): Babel-based JSX transformation, component registration, caching
+- **ReactExporter**: JSX code generation from component tree
+- **component-library.js**: Template persistence/browsing (localStorage-backed)
+- **props-validator.js**: Editor-specific prop validation schemas, hints, constraints
+- **advanced-styles.js**: Flex/grid layout editor UI, generates compatible style objects
+- **component-styles.css**: Unified CSS for all editor UI components, dark mode, responsive utilities
+- **component-showcase.js**: Storybook-style component preview grid
+- **live-canvas.js**: DOM-based component rendering (fallback system)
+
+All systems follow single-responsibility principle with clear integration boundaries. No duplication with existing @sequential systems.
+
+**Dynamic React Renderer System** (Iteration 8, Production-Ready):
+- **AppRenderer**: React DOM integration with lifecycle management, error handling, context propagation
+- **ComponentBuilder**: Programmatic component creation (layouts: flex/grid/stack/section, components: heading/paragraph/button/input/card)
+- **AppComponentLibrary**: 12+ pre-built shared components (debug-timeline, metrics-card, error-display, success-display, loading-spinner, button-group, property-list, section-header, two-column-layout, code-block, badge)
+- **AppRenderingBridge**: High-level app integration (state management, reactive observers, error/loading states, component exploration)
+- **Entry Point**: `import { initializeAppRendering } from '@sequential/dynamic-components'`
+- **Implementation Guide**: See DYNAMIC_RENDERER_GUIDE.md for architecture, patterns, migration guide, and examples
+
+Use across all apps to replace vanilla DOM string concatenation with composable, reusable React components.
+
 **App Debugger** (`app-app-debugger`):
 - Execution timeline visualization (task start/end)
 - Flow state transitions with timing

@@ -1,4 +1,7 @@
-export { DynamicComponentRegistry, useDynamicComponent, renderJSX } from './core.js';
+export { DynamicComponentRegistry, useDynamicComponent, renderJSX, AppRenderer, ComponentBuilder } from './core.js';
+export { createAppComponentRegistry, AppComponentLibrary } from './app-components.js';
+export { AppRenderingBridge, createAppBridge, initializeAppRendering } from './app-rendering-bridge.js';
+export { ComponentTreeEditor, ComponentPropertyEditor, ComponentPreviewRenderer, createComponentEditor } from './editor-integration.js';
 export {
   SessionContext,
   SessionProvider,
@@ -24,3 +27,86 @@ export {
   ViewportBoundary,
   MetadataBoundary
 } from './boundaries/index.js';
+export {
+  baseStyles,
+  createClassName,
+  mergeStyles,
+  responsiveValue
+} from './styling.js';
+export {
+  LAYOUT_COMPONENTS,
+  createLayoutComponent
+} from './layouts.js';
+export {
+  ComponentComposer,
+  createSlottedComponent,
+  withLayout,
+  withError,
+  withProps,
+  HOC
+} from './composition.js';
+export {
+  PerformanceMonitor,
+  useRenderMetrics,
+  benchmarkComponent
+} from './performance.js';
+export {
+  ComponentComposer as AdvancedComponentComposer,
+  ComponentConstraints,
+  ComponentVariants,
+  ComponentLibrary,
+  ComponentPattern,
+  createComposer,
+  createConstraints,
+  createVariants,
+  createLibrary,
+  createPattern
+} from './composition-advanced.js';
+export {
+  ThemeEngine,
+  ComponentThemeAdapter,
+  createThemeEngine,
+  createThemeAdapter
+} from './theme-engine.js';
+export {
+  AdvancedComponentBuilder,
+  createAdvancedBuilder
+} from './advanced-builder.js';
+export {
+  createExtendedComponentLibrary,
+  createExtendedLibrary
+} from './extended-components.js';
+export {
+  VisualBuilderUI,
+  createVisualBuilder
+} from './visual-builder.js';
+export {
+  DragDropManager,
+  createDragDropManager
+} from './drag-drop-manager.js';
+export {
+  DOMtoComponentMigrator,
+  ComponentDocGenerator,
+  createDOMtoComponentMigrator,
+  createComponentDocGenerator
+} from './migration-tools.js';
+export {
+  EnhancedPropertyEditor,
+  LiveCodePreview,
+  createEnhancedPropertyEditor,
+  createLiveCodePreview
+} from './editor-enhanced.js';
+export {
+  ComponentCodeGenerator,
+  TemplateCodeGenerator,
+  createComponentCodeGenerator,
+  createTemplateCodeGenerator
+} from './code-generator.js';
+export {
+  ComponentPatternLibrary,
+  createComponentPatternLibrary
+} from './component-patterns.js';
+export {
+  LayoutSystem,
+  createLayoutSystem
+} from './layout-system.js';

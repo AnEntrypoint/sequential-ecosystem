@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>App Editor</title>
+  <link rel="stylesheet" href="./component-styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <style>
@@ -66,6 +67,11 @@
       <button onclick="newApp()">+ New App</button>
       <button onclick="saveApp()" title="Save app (Ctrl+S)">💾 Save</button>
       <button onclick="previewApp()">👁️ Preview</button>
+      <select id="themeSelector" onchange="changeTheme(this.value)" style="background: #3a3a3a; border: none; color: #e0e0e0; padding: 6px 14px; border-radius: 5px; cursor: pointer; font-size: 13px;">
+        <option value="light">☀️ Light</option>
+        <option value="dark">🌙 Dark</option>
+        <option value="vibrant">✨ Vibrant</option>
+      </select>
       <div class="auto-save-indicator saved" id="autoSaveIndicator" title="Auto-save status">
         <div class="auto-save-dot saved"></div>
         <span>Saved</span>
@@ -86,28 +92,56 @@
 
       <div class="editor-panel">
         <div class="editor-tabs">
-          <div class="editor-tab active" onclick="switchTab('code')">💻 Code</div>
-          <div class="editor-tab" onclick="switchTab('visual')">🎨 Visual</div>
-          <div class="editor-tab" onclick="switchTab('manifest')">📦 Manifest</div>
+          <div class="editor-tab active" onclick="if(typeof switchTab==='function') switchTab('code')">💻 Code</div>
+          <div class="editor-tab" onclick="if(typeof switchTab==='function') switchTab('visual')">🎨 Visual</div>
+          <div class="editor-tab" onclick="if(typeof switchTab==='function') switchTab('manifest')">📦 Manifest</div>
         </div>
         <div class="editor-content">
           <div class="code-editor" id="codeEditor">
             <textarea id="codeInput" placeholder="Write your code here..."></textarea>
           </div>
-          <div id="visualEditor" style="display: none; flex: 1; padding: 16px; background: #2d2d30; border-left: 1px solid #3e3e42; overflow-y: auto;">
-            <div style="margin-bottom: 16px;">
-              <h3 style="font-size: 12px; margin-bottom: 8px;">📦 Components</h3>
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-                <button onclick="addVisualElement('heading')" style="background: #3e3e42; border: 1px solid #555; color: #e0e0e0; padding: 6px; font-size: 11px; cursor: pointer; border-radius: 2px;">+ Heading</button>
-                <button onclick="addVisualElement('paragraph')" style="background: #3e3e42; border: 1px solid #555; color: #e0e0e0; padding: 6px; font-size: 11px; cursor: pointer; border-radius: 2px;">+ Paragraph</button>
-                <button onclick="addVisualElement('input')" style="background: #3e3e42; border: 1px solid #555; color: #e0e0e0; padding: 6px; font-size: 11px; cursor: pointer; border-radius: 2px;">+ Input</button>
-                <button onclick="addVisualElement('button')" style="background: #3e3e42; border: 1px solid #555; color: #e0e0e0; padding: 6px; font-size: 11px; cursor: pointer; border-radius: 2px;">+ Button</button>
+          <div id="visualEditor" style="display: none; flex: 1; display: flex; background: #2d2d30; overflow: hidden;">
+            <div style="width: 200px; border-right: 1px solid #3e3e42; display: flex; flex-direction: column; overflow: hidden;">
+              <div style="display: flex; border-bottom: 1px solid #3e3e42;">
+                <div id="quickAddTab" style="flex: 1; padding: 8px; text-align: center; background: #667eea; color: white; cursor: pointer; font-size: 10px; font-weight: 600; border-right: 1px solid #3e3e42;" onclick="switchComponentPanel('quickAdd')">Quick</div>
+                <div id="searchTab" style="flex: 1; padding: 8px; text-align: center; background: #3e3e42; color: #e0e0e0; cursor: pointer; font-size: 10px; font-weight: 600;" onclick="switchComponentPanel('search')">Search</div>
               </div>
+              <div id="quickAddPanel" style="flex: 1; overflow-y: auto; padding: 8px;">
+                <div style="margin-bottom: 12px;">
+                  <button onclick="addVisualElement('heading')" style="width:100%;background:#3e3e42;border:1px solid #555;color:#e0e0e0;padding:6px;font-size:11px;cursor:pointer;border-radius:2px;margin-bottom:4px;">+ Heading</button>
+                  <button onclick="addVisualElement('paragraph')" style="width:100%;background:#3e3e42;border:1px solid #555;color:#e0e0e0;padding:6px;font-size:11px;cursor:pointer;border-radius:2px;margin-bottom:4px;">+ Paragraph</button>
+                  <button onclick="addVisualElement('input')" style="width:100%;background:#3e3e42;border:1px solid #555;color:#e0e0e0;padding:6px;font-size:11px;cursor:pointer;border-radius:2px;margin-bottom:4px;">+ Input</button>
+                  <button onclick="addVisualElement('button')" style="width:100%;background:#3e3e42;border:1px solid #555;color:#e0e0e0;padding:6px;font-size:11px;cursor:pointer;border-radius:2px;margin-bottom:4px;">+ Button</button>
+                  <button onclick="addVisualElement('card')" style="width:100%;background:#3e3e42;border:1px solid #555;color:#e0e0e0;padding:6px;font-size:11px;cursor:pointer;border-radius:2px;margin-bottom:4px;">+ Card</button>
+                  <button onclick="addVisualElement('grid')" style="width:100%;background:#3e3e42;border:1px solid #555;color:#e0e0e0;padding:6px;font-size:11px;cursor:pointer;border-radius:2px;margin-bottom:4px;">+ Grid</button>
+                </div>
+              </div>
+              <div id="searchPanel" style="display: none; flex: 1; overflow: hidden; background: #1e1e1e;"></div>
+              <div style="padding: 12px; border-top: 1px solid #3e3e42; font-size: 11px; font-weight: 600; color: #858585;">HIERARCHY</div>
+              <div id="componentTree" style="flex: 1; overflow-y: auto; background: #252526;"></div>
             </div>
-            <div style="border-top: 1px solid #555; padding-top: 12px;">
-              <h3 style="font-size: 12px; margin-bottom: 8px;">🎨 Canvas</h3>
-              <div id="visualCanvas" style="background: white; border: 1px solid #555; border-radius: 4px; padding: 16px; min-height: 300px; color: black;">
+
+            <div style="flex: 1; display: flex; flex-direction: column;">
+              <div style="display: flex; border-bottom: 1px solid #3e3e42; background: #252526; align-items: center; gap: 8px; padding: 4px;">
+                <div id="editCanvasTab" style="flex: 1; padding: 8px; text-align: center; background: #667eea; color: white; cursor: pointer; font-size: 10px; font-weight: 600; border-right: 1px solid #3e3e42; border-radius: 3px;" onclick="switchCanvasMode('edit')">✏️ Edit</div>
+                <div id="responsiveCanvasTab" style="flex: 1; padding: 8px; text-align: center; background: #3e3e42; color: #e0e0e0; cursor: pointer; font-size: 10px; font-weight: 600; border-radius: 3px;" onclick="switchCanvasMode('responsive')">📐 Responsive</div>
+                <button onclick="exportReactCode()" style="padding: 6px 10px; background: #28a745; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 10px; font-weight: 600; white-space: nowrap;">⚛️ React</button>
+                <button id="gridToggleBtn" onclick="toggleGrid()" style="padding: 6px 10px; background: #0e639c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 10px; font-weight: 600; white-space: nowrap;" title="Toggle grid">📏 Grid</button>
+                <button id="guidesToggleBtn" onclick="toggleGuides()" style="padding: 6px 10px; background: #0e639c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 10px; font-weight: 600; white-space: nowrap;" title="Toggle guides">🎯 Guides</button>
+                <button onclick="openPreview()" style="padding: 6px 10px; background: #6f42c1; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 10px; font-weight: 600; white-space: nowrap;" title="Preview components">👁️ Preview</button>
+                <button onclick="saveSelectedAsTemplate()" style="padding: 6px 10px; background: #f59e0b; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 10px; font-weight: 600; white-space: nowrap;" title="Save selected component as template">💾 Save</button>
+                <button onclick="showComponentLibrary()" style="padding: 6px 10px; background: #8b5cf6; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 10px; font-weight: 600; white-space: nowrap;" title="Open component library">📚 Library</button>
+                <button onclick="openShowcase()" style="padding: 6px 10px; background: #06a77d; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 10px; font-weight: 600; white-space: nowrap;" title="View component showcase">🎬 Showcase</button>
               </div>
+              <div id="editCanvasPanel" style="flex: 1; overflow: auto; padding: 16px; background: #fff;">
+                <div id="liveCanvas" style="color: black;"></div>
+              </div>
+              <div id="responsiveCanvasPanel" style="display: none; flex: 1; overflow: hidden;"></div>
+            </div>
+
+            <div style="width: 250px; border-left: 1px solid #3e3e42; display: flex; flex-direction: column; overflow: hidden;">
+              <div style="padding: 12px; border-bottom: 1px solid #3e3e42; font-size: 11px; font-weight: 600; color: #858585;">PROPERTIES</div>
+              <div id="propsInspector" style="flex: 1; overflow-y: auto;"></div>
             </div>
           </div>
         </div>
@@ -157,6 +191,22 @@
   </div>
 
   <script>
+    function switchTab(tab) {
+      document.querySelectorAll('.editor-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.editor-content > *').forEach(e => e.style.display = 'none');
+      if (event && event.target) event.target.classList.add('active');
+
+      if (tab === 'code') {
+        document.getElementById('codeEditor').style.display = 'block';
+        setTimeout(() => highlightAppCode(), 0);
+      } else if (tab === 'visual') {
+        document.getElementById('visualEditor').style.display = 'block';
+        renderVisualCanvas();
+      } else if (tab === 'manifest') {
+        showManifestEditor();
+      }
+    }
+
     let currentApp = null;
     let currentFile = null;
     let apps = [];
@@ -294,22 +344,6 @@
         } catch (e) {
           // Silent fail if highlight.js not loaded
         }
-      }
-    }
-
-    function switchTab(tab) {
-      document.querySelectorAll('.editor-tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.editor-content > *').forEach(e => e.style.display = 'none');
-      event.target.classList.add('active');
-
-      if (tab === 'code') {
-        document.getElementById('codeEditor').style.display = 'block';
-        setTimeout(() => highlightAppCode(), 0);
-      } else if (tab === 'visual') {
-        document.getElementById('visualEditor').style.display = 'block';
-        renderVisualCanvas();
-      } else if (tab === 'manifest') {
-        showManifestEditor();
       }
     }
 
@@ -743,6 +777,235 @@
         e.preventDefault();
         saveApp();
       }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const visualEditor = document.getElementById('visualEditor');
+        if (visualEditor && typeof ComponentPalette !== 'undefined') {
+          new ComponentPalette(visualEditor);
+        }
+      }, 100);
+    });
+  </script>
+  <script src="./component-palette.js"></script>
+  <script src="./component-tree.js"></script>
+  <script src="./props-inspector.js"></script>
+  <script src="./live-canvas.js"></script>
+  <script src="./component-search.js"></script>
+  <script src="./responsive-preview.js"></script>
+  <script src="./undo-redo.js"></script>
+  <script src="./react-exporter.js"></script>
+  <script src="./theme-system.js"></script>
+  <script src="./layout-guides.js"></script>
+  <script src="./preview-modal.js"></script>
+  <script src="./component-library.js"></script>
+  <script src="./props-validator.js"></script>
+  <script src="./advanced-styles.js"></script>
+  <script src="./component-showcase.js"></script>
+  <script src="./dynamic-canvas.js"></script>
+  <script>
+    let componentTree = null;
+    let propsInspector = null;
+    let liveCanvas = null;
+    let componentSearch = null;
+    let responsivePreview = null;
+    let undoRedoManager = null;
+    let reactExporter = null;
+    let themeSystem = null;
+    let layoutGuides = null;
+    let previewModal = null;
+
+    window.switchComponentPanel = function(panel) {
+      const quickAddPanel = document.getElementById('quickAddPanel');
+      const searchPanel = document.getElementById('searchPanel');
+      const quickAddTab = document.getElementById('quickAddTab');
+      const searchTab = document.getElementById('searchTab');
+
+      if (panel === 'quickAdd') {
+        quickAddPanel.style.display = 'block';
+        searchPanel.style.display = 'none';
+        quickAddTab.style.background = '#667eea';
+        searchTab.style.background = '#3e3e42';
+      } else {
+        quickAddPanel.style.display = 'none';
+        searchPanel.style.display = 'block';
+        quickAddTab.style.background = '#3e3e42';
+        searchTab.style.background = '#667eea';
+      }
+    };
+
+    window.switchCanvasMode = function(mode) {
+      const editPanel = document.getElementById('editCanvasPanel');
+      const responsivePanel = document.getElementById('responsiveCanvasPanel');
+      const editTab = document.getElementById('editCanvasTab');
+      const responsiveTab = document.getElementById('responsiveCanvasTab');
+
+      if (mode === 'edit') {
+        editPanel.style.display = 'block';
+        responsivePanel.style.display = 'none';
+        editTab.style.background = '#667eea';
+        responsiveTab.style.background = '#3e3e42';
+      } else {
+        editPanel.style.display = 'none';
+        responsivePanel.style.display = 'block';
+        editTab.style.background = '#3e3e42';
+        responsiveTab.style.background = '#667eea';
+        if (responsivePreview) {
+          responsivePreview.updateContent();
+        }
+      }
+    };
+
+    window.exportReactCode = function() {
+      if (!componentTree || componentTree.components.length === 0) {
+        alert('No components to export');
+        return;
+      }
+      reactExporter = new ReactExporter();
+      const code = reactExporter.exportToReact(componentTree);
+      const blob = new Blob([code], { type: 'text/javascript' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'app.jsx';
+      a.click();
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const visualEditor = document.getElementById('visualEditor');
+
+        componentTree = new ComponentTree('#componentTree');
+        window.componentTree = componentTree;
+        propsInspector = new PropsInspector('#propsInspector');
+        liveCanvas = new LiveCanvas('#liveCanvas');
+        componentSearch = new ComponentSearch('#searchPanel');
+        responsivePreview = new ResponsivePreview('#responsiveCanvasPanel', liveCanvas);
+        reactExporter = new ReactExporter();
+        themeSystem = new ThemeSystem();
+        themeSystem.setTheme('dark');
+        layoutGuides = new LayoutGuides('#liveCanvas');
+        previewModal = new PreviewModal();
+
+        liveCanvas.setComponentTree(componentTree);
+
+        visualEditor.addEventListener('component-selected', (e) => {
+          propsInspector.setComponent(e.detail.component);
+        });
+
+        visualEditor.addEventListener('component-changed', (e) => {
+          liveCanvas.updateComponent(e.detail.component.id, e.detail.component);
+          if (responsivePreview) {
+            responsivePreview.updateContent();
+          }
+        });
+
+        window.addVisualElement = function(type) {
+          const id = 'elem-' + Date.now() + Math.random();
+          const name = type.charAt(0).toUpperCase() + type.slice(1);
+          componentTree.addComponent(id, name, type);
+          componentTree.selectComponent(id);
+        };
+
+        window.changeTheme = function(themeName) {
+          if (themeSystem && themeSystem.setTheme(themeName)) {
+            localStorage.setItem('editorTheme', themeName);
+          }
+        };
+
+        window.toggleGrid = function() {
+          if (layoutGuides) {
+            const enabled = layoutGuides.toggleGrid();
+            document.getElementById('gridToggleBtn').style.background = enabled ? '#28a745' : '#0e639c';
+          }
+        };
+
+        window.toggleGuides = function() {
+          if (layoutGuides) {
+            const enabled = layoutGuides.toggleGuides();
+            document.getElementById('guidesToggleBtn').style.background = enabled ? '#28a745' : '#0e639c';
+          }
+        };
+
+        window.openPreview = function() {
+          if (previewModal && componentTree) {
+            previewModal.open(componentTree);
+          }
+        };
+
+        window.saveSelectedAsTemplate = function() {
+          if (!componentTree) {
+            alert('No components loaded');
+            return;
+          }
+          const selected = componentTree.components.find(c => c.selected);
+          if (!selected) {
+            alert('Please select a component to save');
+            return;
+          }
+          const name = prompt('Template name:', selected.name);
+          if (name) {
+            window.saveComponentAsTemplate(selected, name);
+          }
+        };
+
+        window.addComponentToCanvas = function(component) {
+          if (!componentTree) {
+            alert('Component canvas not initialized');
+            return;
+          }
+          const newComponent = JSON.parse(JSON.stringify(component));
+          newComponent.id = 'comp-' + Date.now() + Math.random().toString(36).substr(2, 9);
+          newComponent.name = component.name + ' (Copy)';
+          newComponent.parentId = null;
+          newComponent.children = newComponent.children || [];
+          componentTree.components.push(newComponent);
+          componentTree.render();
+          if (window.showSuccess) {
+            window.showSuccess('✓ Component added to canvas');
+          }
+        };
+
+        window.openShowcase = function() {
+          if (window.showComponentShowcase && componentTree) {
+            window.showComponentShowcase(componentTree);
+          } else {
+            alert('No components to showcase');
+          }
+        };
+
+        const savedTheme = localStorage.getItem('editorTheme') || 'dark';
+        document.getElementById('themeSelector').value = savedTheme;
+        themeSystem.setTheme(savedTheme);
+
+        undoRedoManager = new UndoRedoManager(50);
+        undoRedoManager.pushState(componentTree.components, 'Initial state');
+
+        document.addEventListener('keydown', (e) => {
+          if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+            e.preventDefault();
+            const state = undoRedoManager.undo();
+            if (state) {
+              componentTree.components = state;
+              componentTree.render();
+            }
+          }
+          if ((e.ctrlKey || e.metaKey) && (e.key === 'z' && e.shiftKey || e.key === 'y')) {
+            e.preventDefault();
+            const state = undoRedoManager.redo();
+            if (state) {
+              componentTree.components = state;
+              componentTree.render();
+            }
+          }
+        });
+
+        visualEditor.addEventListener('component-selected', (e) => {
+          if (undoRedoManager) {
+            undoRedoManager.pushState(componentTree.components, 'Component selected');
+          }
+        });
+      }, 100);
     });
   </script>
   <script type="module">

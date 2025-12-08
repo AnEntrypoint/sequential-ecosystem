@@ -5,6 +5,7 @@
   "version": "1.0.0",
   "category": "observability",
   "icon": "📊",
+  "entry": "dist/dynamic-index.html",
   "features": [
     "Real-time metrics visualization",
     "Execution trace explorer",
