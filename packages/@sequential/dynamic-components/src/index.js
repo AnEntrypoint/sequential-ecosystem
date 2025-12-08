@@ -214,3 +214,7 @@ export {
   PatternSuggestionsUI,
   createPatternSuggestionsUI
 } from './pattern-suggestions-ui.js';
+export {
+  ResponsiveRenderer,
+  createResponsiveRenderer
+} from './responsive-renderer.js';
