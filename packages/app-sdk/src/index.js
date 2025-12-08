@@ -13,6 +13,9 @@ import { createFeatureDetection } from './feature-detection.js';
 import { createConfigManager } from './config-manager.js';
 import { createTaskValidationMiddleware } from './task-validation-middleware.js';
 import { createFlowHandlerGenerator } from './flow-handler-generator.js';
+import { createAppSDKFactory } from './app-sdk-factory.js';
+import { createExecutionBreadcrumbs } from './execution-breadcrumbs.js';
+import { createValidationErrorSuggestions } from './validation-error-suggestions.js';
 
 export class AppSDK {
   constructor(options = {}) {
@@ -192,4 +195,5 @@ export { createRealtimeSubscription, createExecutionContext, setExecutionContext
 export { createToolParameterIntrospection };
 export { createErrorClarity, createFeatureDetection, createConfigManager };
 export { createTaskValidationMiddleware, createFlowHandlerGenerator };
+export { createAppSDKFactory, createExecutionBreadcrumbs, createValidationErrorSuggestions };
 export default AppSDK;
