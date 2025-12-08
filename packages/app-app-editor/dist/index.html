@@ -1021,9 +1021,11 @@
     });
   </script>
   <div id="patternDiscoveryModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 10000; background: rgba(0,0,0,0.5); overflow: auto;"></div>
+  <div id="commandPaletteContainer" style="display: none;"></div>
 
   <script src="./pattern-discovery-modal.js"></script>
   <script src="./pattern-discovery-integration.js"></script>
+  <script src="./command-palette-patterns.js"></script>
   <script>
     let patternDiscoveryIntegration = null;
 
@@ -1049,6 +1051,8 @@
       }
     }
 
+    let commandPalette = null;
+
     function initPatternDiscovery(libraries) {
       const modal = document.getElementById('patternDiscoveryModal');
       if (!modal) return;
@@ -1067,6 +1071,25 @@ const ${pattern.id} = ${JSON.stringify(pattern.definition, null, 2)};
         }
         closePatternDiscovery();
       });
+
+      const paletteContainer = document.getElementById('commandPaletteContainer');
+      if (paletteContainer && window.createCommandPalettePatterns && window.SimplePatternDiscovery) {
+        const simpleDiscovery = new SimplePatternDiscovery(libraries);
+        commandPalette = createCommandPalettePatterns(simpleDiscovery);
+        commandPalette.attachTo(paletteContainer);
+        commandPalette.init((pattern) => {
+          if (!pattern) return;
+          const codeEditor = document.getElementById('codeInput');
+          if (codeEditor) {
+            const patternCode = `
+// ${pattern.name} - ${pattern.codeReduction} reduction
+const ${pattern.id} = ${JSON.stringify(pattern.definition, null, 2)};
+`;
+            codeEditor.value += patternCode;
+            codeEditor.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+        });
+      }
     }
   </script>
   <script type="module">
