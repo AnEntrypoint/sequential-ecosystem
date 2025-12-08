@@ -142,3 +142,7 @@ export {
   ModalPatternLibrary,
   createModalPatternLibrary
 } from './modal-patterns.js';
+export {
+  GridPatternLibrary,
+  createGridPatternLibrary
+} from './grid-patterns.js';
