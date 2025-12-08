@@ -2,6 +2,57 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] - Developer App Integration & UX Enhancements (Dec 8, 2025 - Iteration 4)
+
+### Planning & Analysis (Completed)
+- ✅ Comprehensive audit of all 10 developer apps (editors, executors, debuggers)
+- ✅ Identified 40+ pain points and friction areas
+- ✅ Created detailed cross-app capability matrix
+- ✅ Planned 5-phase implementation roadmap
+- ✅ Designed unified IDE architecture
+
+### Planned Features (Ready for Implementation)
+**Phase 1: Syntax Highlighting**
+- Add highlight.js to Flow Editor, App Editor, Tool Editor
+- Support JavaScript, JSON, HTML, CSS syntax highlighting
+
+**Phase 2: Integrated Execution**
+- Task Editor: Add "Run & Debug" panel
+- Tool Editor: Add execution/test console
+- Flow Editor: Add real-time execution panel below canvas
+
+**Phase 3: Enhanced Templates**
+- Task Editor: 7 templates (was 3)
+- Tool Editor: 5 new templates
+- Flow Editor: 5 new templates
+- App Editor: 3 new templates
+
+**Phase 4: Artifact Cross-References**
+- Dependency graph visualization
+- "Used by" and "Uses" panels in all editors
+- One-click navigation between related artifacts
+
+**Phase 5: Error Suggestion Engine**
+- Intelligent error categorization
+- Suggested fixes for common errors
+- Quick-fix buttons for auto-correction
+
+### Architecture Decisions
+- Use highlight.js (not CodeMirror) for lightweight syntax highlighting
+- Reuse existing executor components for consistency
+- Server-side dependency resolution with client-side caching
+- Integrated split-pane layout for unified IDE experience
+
+### Success Metrics
+- Context switches per workflow: 5-7 → 1-2 (70% reduction)
+- Artifact creation time: 10-15 min → 3-5 min (60% faster)
+- Error resolution time: 10 min → 3 min (70% faster)
+- Template usage: 20% → 60% (3x adoption)
+
+**Status**: Planning complete, ready for implementation sprint
+
+---
+
 ## [Unreleased] - Advanced Debugging & Observability Tools (Dec 8, 2025 - Iteration 3)
 
 ### Advanced Debugging Features
