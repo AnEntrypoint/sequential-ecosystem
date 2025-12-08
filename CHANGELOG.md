@@ -33,8 +33,18 @@ All notable changes to this project will be documented in this file.
   - Split view integration: Panel auto-opens with ⬌ Run & Debug, closes with split view
   - Execution state preserved during debugging session
   - Impact: Eliminates context switching (5-10 min/session), enables inline variable inspection
+- ✅ Part 3-4: Execution wrapper + task runner integration
+  - ExecutionWrapper class for breakpoint injection
+  - wrapCodeWithCheckpoints(): Inserts checkpoint calls at breakpoint lines
+  - getExecutableCode(): Returns instrumented code ready for eval
+  - injectGlobals(): Sets up __checkBreakpoint__ function
+  - executeWithBreakpoints(): Wraps code execution with state capture
+  - Integration in runTask(): Auto-detects breakpoints, uses wrapper instead of API
+  - Split view compatibility: Auto-opens execution panel when debugging
+  - Execution state synced: status transitions (running → completed)
+  - Impact: Enables live debugging without round-trips to server
 - **Impact**: Phase 5 reduces debugging friction significantly (25-40 min/day for typical workflow)
-- **Status**: Execution panel UI complete, ready for execution wrapper integration (Part 3)
+- **Status**: Execution wrapper integrated with task runner, ready for variable capture refinement
 
 ---
 
