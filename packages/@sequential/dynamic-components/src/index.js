@@ -297,3 +297,7 @@ export {
   ResponsiveBuilder,
   createResponsiveBuilder
 } from './responsive-builder.js';
+export {
+  PatternVersioning,
+  createPatternVersioning
+} from './pattern-versioning.js';
