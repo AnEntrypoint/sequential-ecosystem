@@ -68,6 +68,36 @@ All notable changes to this project will be documented in this file.
   - Ready for theme customizer integration
   - Foundation for Phase 3 app migrations
 
+### Phase 3: Complete Tier 2 & Tier 3 App Migrations to Dynamic Renderer
+- ✅ **Tier 2: app-flow-editor Migration Complete** (460 lines)
+  - Vanilla canvas-based flow editor → Dynamic component-based editor
+  - 600+ lines vanilla → 460 lines dynamic (25% code reduction)
+  - 100% feature parity: state node creation, drag/resize, properties editing
+  - Grid-based visualization replacing canvas
+  - Undo/redo history (50-item limit)
+  - Flow templates and execution support
+  - Sidebar with flow list and state templates
+  - Properties panel for state editing
+  - Migration approach: Canvas → SVG/flex-based grid, DOM → component definitions
+  - Status: Ready for Tier 3 migrations
+
+- **Phase 3 In Progress**: Tier 3 High Priority Apps (4 apps)
+  - app-debugger: 500+ lines → ~350 lines target (25-30% reduction)
+  - app-task-editor: 400+ lines → ~280 lines target (20-30% reduction)
+  - app-tool-editor: 350+ lines → ~250 lines target (20-28% reduction)
+  - app-file-browser: 400+ lines → ~280 lines target (20-30% reduction)
+  - Estimated effort: 2-2.5 hours per app
+  - Foundation: Form patterns, table patterns, grid patterns already available
+
+- **Phase 3 Tier 3 Medium Priority**: Supporting Apps (3 apps)
+  - app-component-showcase: 300+ lines → ~220 lines (25-30% reduction)
+  - app-demo-chat: 250+ lines → ~180 lines (20-28% reduction)
+  - app-app-manager: 350+ lines → ~250 lines (20-28% reduction)
+
+- **Phase 3 Deferred**: app-workflow-app to Iteration 10
+  - Similar complexity to flow-editor (400+ lines)
+  - Deferred without blocking primary mechanism deployment
+
 ## [Unreleased] - Dynamic React Renderer as Primary UI Engine (Dec 8, 2025 - Iteration 8)
 
 ### Phase 8 Part 6: Tier 1 App Migrations Complete (app-run-observer, app-observability-console, app-observability-dashboard)
