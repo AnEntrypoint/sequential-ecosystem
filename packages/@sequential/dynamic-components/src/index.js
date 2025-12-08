@@ -257,3 +257,19 @@ export {
   PatternLayoutSystem,
   createPatternLayoutSystem
 } from './pattern-layouts.js';
+export {
+  PatternPreview,
+  createPatternPreview
+} from './pattern-preview.js';
+export {
+  PatternCodeGenerator,
+  createPatternCodeGenerator
+} from './pattern-codegen.js';
+export {
+  AccessibilityAuditor,
+  createAccessibilityAuditor
+} from './pattern-a11y-auditor.js';
+export {
+  PatternExporter,
+  createPatternExporter
+} from './pattern-exporter.js';
