@@ -262,7 +262,7 @@ class PatternInteractionStates {
     };
   }
 
-  applyStateToCo mponent(component) {
+  applyStateToComponent(component) {
     const state = this.states.get(this.currentState);
     if (!state) return component;
 
