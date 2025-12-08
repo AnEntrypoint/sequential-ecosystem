@@ -273,3 +273,7 @@ export {
   PatternExporter,
   createPatternExporter
 } from './pattern-exporter.js';
+export {
+  UniversalRenderer,
+  createUniversalRenderer
+} from './universal-renderer.js';
