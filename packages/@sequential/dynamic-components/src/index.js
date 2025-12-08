@@ -333,3 +333,7 @@ export {
   ThemeCustomizerUI,
   createThemeCustomizerUI
 } from './theme-customizer-ui.js';
+export {
+  AccessibilityValidatorUI,
+  createAccessibilityValidatorUI
+} from './a11y-validator-ui.js';
