@@ -230,3 +230,10 @@ export {
   PatternThemeManager,
   createPatternThemeManager
 } from './pattern-theming.js';
+export {
+  PatternTestSuite,
+  TestContext,
+  AssertionError,
+  Assertion,
+  createPatternTestSuite
+} from './pattern-testing.js';
