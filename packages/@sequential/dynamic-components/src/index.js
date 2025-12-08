@@ -130,3 +130,7 @@ export {
   ListPatternLibrary,
   createListPatternLibrary
 } from './list-patterns.js';
+export {
+  ChartPatternLibrary,
+  createChartPatternLibrary
+} from './chart-patterns.js';
