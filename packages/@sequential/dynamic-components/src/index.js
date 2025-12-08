@@ -218,3 +218,7 @@ export {
   ResponsiveRenderer,
   createResponsiveRenderer
 } from './responsive-renderer.js';
+export {
+  PatternDocsGenerator,
+  createPatternDocsGenerator
+} from './pattern-docs-generator.js';
