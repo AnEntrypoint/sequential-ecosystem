@@ -1,0 +1,94 @@
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+}
+
+.toast {
+  animation: slideIn 0.3s ease-out;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.stopped {
+  background: #666;
+  color: white;
+}
+
+.status-badge.paused {
+  background: #f59e0b;
+  color: white;
+}
+
+.status-badge.running {
+  background: #3b82f6;
+  color: white;
+  animation: pulse 1.5s infinite;
+}
+
+.status-badge.completed {
+  background: #22c55e;
+  color: white;
+}
+
+.status-badge.error {
+  background: #ef4444;
+  color: white;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.auto-save-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #999;
+}
+
+.auto-save-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #999;
+}
+
+.auto-save-indicator.saved .auto-save-dot {
+  background: #22c55e;
+}
+
+.auto-save-indicator.saving .auto-save-dot {
+  background: #3b82f6;
+  animation: pulse 1s infinite;
+}
+
+.auto-save-indicator.unsaved .auto-save-dot {
+  background: #f59e0b;
+}

@@ -1,0 +1,23 @@
+{
+  "name": "@sequential/ui-components",
+  "version": "1.0.0",
+  "description": "Shared UI components and utilities for Sequential editors and apps",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./toast": "./src/toast.js",
+    "./storage": "./src/storage.js",
+    "./utils": "./src/utils.js",
+    "./keyboard": "./src/keyboard.js"
+  },
+  "files": [
+    "src"
+  ],
+  "keywords": [
+    "ui",
+    "components",
+    "editor",
+    "toast",
+    "notifications"
+  ]
+}
