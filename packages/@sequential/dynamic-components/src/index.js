@@ -123,6 +123,9 @@ export {
   createThemeCustomizer
 } from './theme-customizer.js';
 export {
+  PatternLibraryBase
+} from './pattern-library-base.js';
+export {
   FormPatternLibrary,
   createFormPatternLibrary
 } from './form-patterns.js';
