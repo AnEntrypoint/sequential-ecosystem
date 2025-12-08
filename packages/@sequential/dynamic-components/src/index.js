@@ -305,3 +305,7 @@ export {
   PatternCollaborationManager,
   createPatternCollaborationManager
 } from './pattern-collaboration-mgr.js';
+export {
+  PatternMarketplace,
+  createPatternMarketplace
+} from './pattern-marketplace.js';
