@@ -2299,10 +2299,14 @@ function createStorageManager(appId) {
   <script type="module">
     import { EditorFeatures } from './editor-features.js';
     import { TemplateGallery } from './template-gallery.js';
+    import { ToolAutocomplete } from './tool-autocomplete.js';
     const editorFeatures = new EditorFeatures('codeEditor');
+    const toolAutocomplete = new ToolAutocomplete('codeEditor');
     window.editorFeatures = editorFeatures;
+    window.toolAutocomplete = toolAutocomplete;
     document.addEventListener('DOMContentLoaded', () => {
       editorFeatures.init();
+      toolAutocomplete.init();
     });
   </script>
   <script>

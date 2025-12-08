@@ -1,0 +1,2093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tool Editor</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background: #1a1a1a;
+      color: #e0e0e0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .header {
+      background: #2a2a2a;
+      padding: 12px 16px;
+      border-bottom: 1px solid #3a3a3a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .title { font-weight: bold; color: #4ade80; font-size: 16px; }
+    .toolbar {
+      display: flex;
+      gap: 8px;
+    }
+    .toolbar button {
+      background: #3a3a3a;
+      border: none;
+      color: #e0e0e0;
+      padding: 6px 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .toolbar button:hover { background: #4a4a4a; }
+    .toolbar button.primary {
+      background: #4ade80;
+      color: #1a1a1a;
+    }
+    .toolbar button.primary:hover { background: #22c55e; }
+    .toolbar button:disabled {
+      background: #2a2a2a;
+      color: #666;
+      cursor: not-allowed;
+    }
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    .sidebar {
+      width: 260px;
+      background: #242424;
+      border-right: 1px solid #3a3a3a;
+      overflow-y: auto;
+      padding: 16px;
+    }
+    .sidebar h3 {
+      color: #4ade80;
+      margin-bottom: 12px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .tool-list {
+      list-style: none;
+    }
+    .tool-item {
+      background: #2a2a2a;
+      padding: 10px 12px;
+      margin: 6px 0;
+      border-radius: 6px;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+    }
+    .tool-item:hover {
+      background: #333;
+      border-left-color: #4ade80;
+    }
+    .tool-item.active {
+      background: #3a3a3a;
+      border-left-color: #4ade80;
+    }
+    .tool-name { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+    .tool-desc { font-size: 11px; color: #999; }
+    .editor-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .tabs {
+      display: flex;
+      background: #252525;
+      border-bottom: 1px solid #3a3a3a;
+      padding: 0 12px;
+    }
+    .tab {
+      padding: 10px 16px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      font-size: 13px;
+    }
+    .tab:hover { background: #2a2a2a; }
+    .tab.active {
+      border-bottom-color: #4ade80;
+      color: #4ade80;
+    }
+    .content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: #ccc;
+      font-weight: 600;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      background: #2a2a2a;
+      border: 1px solid #3a3a3a;
+      color: #e0e0e0;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    .form-group textarea {
+      font-family: 'Courier New', monospace;
+      min-height: 120px;
+      resize: vertical;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none;
+      border-color: #4ade80;
+    }
+    .param-list {
+      background: #2a2a2a;
+      border: 1px solid #3a3a3a;
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .param-item {
+      background: #1e1e1e;
+      border: 1px solid #3a3a3a;
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .param-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .param-header h4 {
+      color: #4ade80;
+      font-size: 14px;
+    }
+    .param-header button {
+      background: #ff5f56;
+      border: none;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .param-field {
+      margin-bottom: 12px;
+    }
+    .param-field label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+      color: #999;
+    }
+    .param-field input, .param-field select {
+      width: 100%;
+      background: #2a2a2a;
+      border: 1px solid #3a3a3a;
+      color: #e0e0e0;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    .add-param-btn {
+      background: #4ade80;
+      border: none;
+      color: #1a1a1a;
+      padding: 10px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      width: 100%;
+    }
+    .add-param-btn:hover { background: #22c55e; }
+    .test-panel {
+      background: #242424;
+      border-top: 1px solid #3a3a3a;
+      padding: 20px;
+    }
+    .test-panel h3 {
+      color: #4ade80;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+    .test-result {
+      background: #1e1e1e;
+      border: 1px solid #3a3a3a;
+      border-radius: 6px;
+      padding: 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .test-result.success { border-color: #4ade80; color: #4ade80; }
+    .test-result.error { border-color: #ff5f56; color: #ff5f56; }
+    .schema-preview {
+      background: #1e1e1e;
+      border: 1px solid #3a3a3a;
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      overflow-x: auto;
+    }
+    .code-block {
+      background: #1e1e1e;
+      border: 1px solid #3a3a3a;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 12px;
+    }
+    .code-block pre {
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #e0e0e0;
+      overflow-x: auto;
+    }
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #2a2a2a;
+      border: 1px solid #3a3a3a;
+      border-radius: 8px;
+      padding: 16px 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 1000;
+      max-width: 400px;
+      animation: slideIn 0.3s ease;
+    }
+    .notification.success { border-left: 4px solid #4ade80; }
+    .notification.error { border-left: 4px solid #ff5f56; }
+    .notification.info { border-left: 4px solid #4a9eff; }
+    @keyframes slideIn {
+      from { transform: translateX(400px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+    }
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    .help-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 3000; align-items: center; justify-content: center; }
+    .help-modal.active { display: flex; }
+    .help-modal-content { background: #2a2a2a; border: 1px solid #3a3a3a; border-radius: 8px; padding: 24px; max-width: 500px; max-height: 80vh; overflow-y: auto; }
+    .help-modal-content h2 { color: #4ade80; margin-bottom: 16px; font-size: 18px; }
+    .help-modal-content .shortcut-group { margin-bottom: 20px; }
+    .help-modal-content .shortcut-item { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
+    .help-modal-content .shortcut-key { background: #3a3a3a; color: #4ade80; padding: 4px 8px; border-radius: 3px; font-family: monospace; font-weight: 600; min-width: 120px; }
+    .help-modal-content .shortcut-desc { color: #999; }
+    .help-modal-content button { background: #4ade80; color: #1a1a1a; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-top: 16px; font-weight: 600; }
+    .auto-save-indicator { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #999; margin-left: auto; }
+    .auto-save-indicator.unsaved { color: #ff9800; }
+    .auto-save-indicator.saving { color: #4a9eff; }
+    .auto-save-indicator.saved { color: #4ade80; }
+    .auto-save-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .auto-save-dot.saving { background: #4a9eff; animation: pulse 1s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .json-input { position: relative; }
+    .json-input textarea {
+      border: 2px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .json-input.valid textarea { border-color: #4ade80; }
+    .json-input.invalid textarea { border-color: #ff6b6b; }
+    .validation-error {
+      position: absolute;
+      bottom: -24px;
+      left: 0;
+      font-size: 11px;
+      color: #ff6b6b;
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .validation-hint {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      background: rgba(74, 158, 255, 0.2);
+      color: #4a9eff;
+      pointer-events: none;
+    }
+    .breakpoint-gutter {
+      width: 30px;
+      background: #1a1a1a;
+      border-right: 1px solid #3a3a3a;
+      display: flex;
+      flex-direction: column;
+      padding: 16px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      user-select: none;
+      overflow-y: hidden;
+      overflow-x: hidden;
+      flex-shrink: 0;
+    }
+    .gutter-line {
+      display: flex;
+      align-items: center;
+      height: 22.4px;
+      padding: 0 4px;
+      text-align: right;
+      color: #666;
+      cursor: pointer;
+      position: relative;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .breakpoint-indicator {
+      position: absolute;
+      right: 2px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      display: none;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .gutter-line.has-breakpoint .breakpoint-indicator {
+      display: block;
+      background: #ff5f56;
+      box-shadow: 0 0 3px rgba(255, 95, 86, 0.5);
+    }
+    .execution-panel {
+      width: 350px;
+      background: #242424;
+      border-left: 1px solid #3a3a3a;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: -2px 0 8px rgba(0, 0, 0, 0.3);
+    }
+    .execution-panel-header {
+      background: #2a2a2a;
+      border-bottom: 1px solid #3a3a3a;
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .execution-state {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: #e0e0e0;
+    }
+    .status-badge {
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      text-transform: uppercase;
+      background: #3a3a3a;
+      color: #999;
+    }
+    .status-badge.paused {
+      background: #ff9800;
+      color: white;
+    }
+    .status-badge.running {
+      background: #64b5f6;
+      color: white;
+    }
+    .status-badge.completed {
+      background: #4ade80;
+      color: #1a1a1a;
+    }
+    .execution-controls {
+      display: flex;
+      gap: 6px;
+    }
+    .execution-controls button {
+      background: #3a3a3a;
+      border: none;
+      color: #e0e0e0;
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .execution-section {
+      flex: 1;
+      border-bottom: 1px solid #3a3a3a;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .section-header {
+      background: #2a2a2a;
+      padding: 8px 12px;
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #999;
+      font-weight: 600;
+      border-bottom: 1px solid #3a3a3a;
+    }
+    .variables-list, .call-stack, .timeline-view {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+      font-size: 12px;
+    }
+    .variable-item {
+      background: #1e1e1e;
+      padding: 8px;
+      margin-bottom: 6px;
+      border-radius: 4px;
+      border-left: 3px solid #4ade80;
+      font-family: 'Courier New', monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="help-modal" id="helpModal">
+    <div class="help-modal-content">
+      <h2>⌨️ Keyboard Shortcuts</h2>
+      <div class="shortcut-group">
+        <div class="shortcut-item"><span class="shortcut-key">F5</span> <span class="shortcut-desc">Run test</span></div>
+        <div class="shortcut-item"><span class="shortcut-key">Ctrl+Enter</span> <span class="shortcut-desc">Run test</span></div>
+        <div class="shortcut-item"><span class="shortcut-key">?</span> <span class="shortcut-desc">Show this help</span></div>
+      </div>
+      <button onclick="toggleHelpModal()">Close</button>
+    </div>
+  </div>
+  <div class="header">
+    <div class="title">🔧 Tool Editor</div>
+    <div class="toolbar">
+      <select id="toolTemplateSelect" onchange="applyToolTemplate(this.value)" style="background: #3a3a3a; border: none; color: #e0e0e0; padding: 6px 14px; border-radius: 5px; cursor: pointer; font-size: 13px;">
+        <option value="">Templates...</option>
+        <option value="api-client">API Client</option>
+        <option value="data-transformer">Data Transformer</option>
+        <option value="validator">Data Validator</option>
+        <option value="calculator">Calculator</option>
+        <option value="database-query">Database Query</option>
+      </select>
+      <button onclick="newTool()">New Tool</button>
+      <button onclick="formatToolCode()" class="primary" title="Format code (Ctrl+Shift+F)">🎨 Format</button>
+      <button onclick="toggleSnippetMenu()" class="primary" title="Insert code snippet (Ctrl+Shift+S)">📋 Snippets</button>
+      <button onclick="saveTool()" class="primary" id="saveBtn">Save</button>
+      <button onclick="deleteTool()" id="deleteBtn">Delete</button>
+      <button onclick="exportTool()">Export</button>
+      <button onclick="generateDocs()">Generate Docs</button>
+      <div class="auto-save-indicator saved" id="autoSaveIndicator" title="Auto-save status">
+        <div class="auto-save-dot saved"></div>
+        <span>Saved</span>
+      </div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="sidebar">
+      <h3>Tools</h3>
+      <ul class="tool-list" id="toolList">
+        <div class="empty-state">
+          <div class="empty-state-icon">🔧</div>
+          <div>Loading tools...</div>
+        </div>
+      </ul>
+    </div>
+    <div class="editor-container">
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('definition')">Definition</div>
+        <div class="tab" onclick="switchTab('imports')">Imports</div>
+        <div class="tab" onclick="switchTab('parameters')">Parameters</div>
+        <div class="tab" onclick="switchTab('test')">Test</div>
+        <div class="tab" onclick="switchTab('schema')">Schema</div>
+        <div class="tab" onclick="switchTab('mcp')">MCP Preview</div>
+        <div class="tab" onclick="switchTab('help')" style="margin-left: auto; background: #4a9eff; color: #1a1a1a;">💡 Help</div>
+      </div>
+      <div class="content" id="definitionTab">
+        <div class="form-group">
+          <label>Tool Name</label>
+          <input type="text" id="toolName" placeholder="my-tool" />
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="toolDesc" placeholder="Describe what this tool does"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="toolCategory">
+            <option value="data">Data</option>
+            <option value="api">API</option>
+            <option value="file">File System</option>
+            <option value="util">Utility</option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Implementation</label>
+          <div class="code-editor-wrapper" style="display: flex; border: 1px solid #3a3a3a; border-radius: 6px; overflow: hidden;">
+            <div class="breakpoint-gutter" id="breakpointGutter"></div>
+            <div class="code-highlight" id="codeHighlight" style="flex: 1; overflow-y: hidden; overflow-x: hidden;"><code class="language-javascript"></code></div>
+            <textarea id="toolImpl" style="flex: 1; min-height: 200px; border: none; background: #1a1a1a; color: #e0e0e0; font-family: 'Courier New', monospace; font-size: 13px; padding: 16px; resize: none; line-height: 1.6;" placeholder="async function executeTool(params) {
+  // Tool implementation
+  return { success: true };
+}"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="content" id="importsTab" style="display: none;">
+        <h3 style="color: #4ade80; margin-bottom: 16px;">Imports & Dependencies</h3>
+
+        <div class="form-group">
+          <label>NPM Packages</label>
+          <p style="font-size: 12px; color: #999; margin-bottom: 8px;">Comma-separated list of npm packages (e.g., axios, lodash, moment)</p>
+          <textarea id="npmPackages" style="min-height: 80px;" placeholder="axios, lodash, moment"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>CDN URLs</label>
+          <p style="font-size: 12px; color: #999; margin-bottom: 8px;">External library URLs (one per line)</p>
+          <textarea id="cdnUrls" style="min-height: 100px;" placeholder="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js
+https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>ES Module Imports</label>
+          <p style="font-size: 12px; color: #999; margin-bottom: 8px;">Import statements for your tool implementation</p>
+          <textarea id="esImports" style="min-height: 120px;" placeholder="import axios from 'axios';
+import { debounce } from 'lodash';
+import moment from 'moment';"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Import Map (Advanced)</label>
+          <p style="font-size: 12px; color: #999; margin-bottom: 8px;">Custom import map for module resolution</p>
+          <textarea id="importMap" style="min-height: 150px;" placeholder='{
+  "imports": {
+    "axios": "https://cdn.jsdelivr.net/npm/axios@1.6.0/+esm",
+    "lodash": "https://cdn.jsdelivr.net/npm/lodash@4.17.21/+esm"
+  }
+}'></textarea>
+        </div>
+
+        <div class="code-block">
+          <h4 style="color: #4ade80; margin-bottom: 12px;">Generated Import Configuration</h4>
+          <pre id="importPreview">Configure imports above to see preview</pre>
+        </div>
+
+        <button class="primary" style="width: 100%; padding: 12px; margin-top: 20px;" onclick="validateImports()">✓ Validate Imports</button>
+      </div>
+      <div class="content" id="parametersTab" style="display: none;">
+        <h3 style="color: #4ade80; margin-bottom: 16px;">Parameters</h3>
+        <div class="param-list" id="paramList">
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="add-param-btn" onclick="addParameter()">+ Add Parameter</button>
+          <button class="add-param-btn" onclick="extractToolParameters()" style="background: #4a9eff; flex: 1;">✨ Extract from Code</button>
+        </div>
+      </div>
+      <div class="content" id="testTab" style="display: none;">
+        <div class="test-panel">
+          <h3>Test Input</h3>
+          <div class="form-group">
+            <label>Parameters (JSON)</label>
+            <div class="json-input valid" id="testInputWrapper" style="position: relative; margin-bottom: 30px;">
+              <textarea id="testInput" style="min-height: 150px;" placeholder='{
+  "operation": "query",
+  "query": "SELECT * FROM users WHERE id = 1"
+}'></textarea>
+              <div class="validation-hint" id="testInputHint" style="display: none;">Valid JSON</div>
+              <div class="validation-error" id="testInputError" style="display: none;"></div>
+            </div>
+          </div>
+          <button class="primary" style="width: 100%; padding: 12px;" onclick="runTest()" title="Run test (F5 or Ctrl+Enter)">▶ Run Test</button>
+          <h3 style="margin-top: 24px;">Execution Console</h3>
+          <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+            <button style="background: #3a3a3a; border: none; color: #e0e0e0; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;" onclick="clearToolConsole()">Clear Console</button>
+          </div>
+          <div id="toolConsole" style="background: #1a1a1a; border: 1px solid #3a3a3a; border-radius: 6px; padding: 12px; font-family: 'Courier New', monospace; font-size: 13px; max-height: 300px; overflow-y: auto; color: #e0e0e0;">
+            <div style="color: #999;">Console ready. Click "Run Test" to execute.</div>
+          </div>
+          <h3 style="margin-top: 24px;">Test Result</h3>
+          <div class="test-result" id="testResult">
+            Click "Run Test" to execute the tool with test input
+          </div>
+        </div>
+      </div>
+      <div class="content" id="schemaTab" style="display: none;">
+        <h3 style="color: #4ade80; margin-bottom: 16px;">JSON Schema</h3>
+        <p style="color: #999; margin-bottom: 16px; font-size: 13px;">
+          Auto-generated schema based on your parameter definitions
+        </p>
+        <div class="schema-preview" id="schemaPreview">
+          <pre>Define parameters to see schema</pre>
+        </div>
+        <h3 style="color: #4ade80; margin: 24px 0 16px;">Usage Example</h3>
+        <div class="code-block">
+          <pre id="usageExample">// Call the tool in your task
+const result = await __callHostTool__('my-tool', {
+  // parameters here
+});
+
+console.log('Result:', result);</pre>
+        </div>
+      </div>
+      <div class="content" id="mcpTab" style="display: none;">
+        <h3 style="color: #4ade80; margin-bottom: 16px;">Model Context Protocol (MCP)</h3>
+        <p style="color: #999; margin-bottom: 16px; font-size: 13px;">
+          Preview how this tool appears in MCP clients and LLM integrations
+        </p>
+        <div style="background: #1a1a1a; padding: 16px; border-radius: 6px; margin-bottom: 16px;">
+          <h4 style="color: #64b5f6; margin-bottom: 12px;">Tool Definition</h4>
+          <pre id="mcpDefinition" style="background: #242424; padding: 12px; border-radius: 4px; overflow-x: auto; font-size: 12px;">Loading...</pre>
+        </div>
+        <div style="background: #1a1a1a; padding: 16px; border-radius: 6px;">
+          <h4 style="color: #64b5f6; margin-bottom: 12px;">Resource</h4>
+          <pre id="mcpResource" style="background: #242424; padding: 12px; border-radius: 4px; overflow-x: auto; font-size: 12px;">Loading...</pre>
+        </div>
+        <button class="primary" style="width: 100%; padding: 12px; margin-top: 16px;" onclick="generateMCPDefinition()">⟳ Regenerate Preview</button>
+      </div>
+      <div class="content" id="helpTab" style="display: none; padding: 24px; overflow-y: auto;">
+        <h3 style="color: #4ade80; margin-bottom: 24px;">💡 Tool Editor Help</h3>
+        <div style="display: grid; gap: 24px;">
+          <div>
+            <h4 style="color: #4ade80; margin-bottom: 8px;">Tool Structure</h4>
+            <div style="background: #2a2a2a; border-left: 3px solid #4ade80; padding: 12px; border-radius: 4px; font-size: 13px; line-height: 1.6;">
+              Tools are functions that accept parameters and return results. Define in Definition tab, extract parameters from code, test with JSON input, and preview MCP schema.
+            </div>
+          </div>
+          <div>
+            <h4 style="color: #4ade80; margin-bottom: 8px;">✨ Features</h4>
+            <div style="background: #2a2a2a; border-left: 3px solid #4ade80; padding: 12px; border-radius: 4px; font-size: 13px; line-height: 1.6;">
+              <div style="margin-bottom: 8px;"><strong>Format Code:</strong> Ctrl+Shift+F - Auto-indent your tool implementation</div>
+              <div style="margin-bottom: 8px;"><strong>Extract Parameters:</strong> Parameters tab → Extract from Code button</div>
+              <div style="margin-bottom: 8px;"><strong>JSON Validation:</strong> Test tab shows green/red indicators</div>
+              <div style="margin-bottom: 8px;"><strong>MCP Preview:</strong> See how your tool appears to AI/LLM clients</div>
+              <div><strong>Run Test:</strong> F5 or Ctrl+Enter</div>
+            </div>
+          </div>
+          <div>
+            <h4 style="color: #4ade80; margin-bottom: 8px;">Parameters</h4>
+            <div style="background: #2a2a2a; border-left: 3px solid #4ade80; padding: 12px; border-radius: 4px; font-size: 13px; line-height: 1.6;">
+              Use Parameters tab to define inputs. Click "Extract from Code" to auto-detect parameters from your function signature. Each parameter has name, type, description, and required flag.
+            </div>
+          </div>
+          <div>
+            <h4 style="color: #4ade80; margin-bottom: 8px;">Imports & Dependencies</h4>
+            <div style="background: #2a2a2a; border-left: 3px solid #4ade80; padding: 12px; border-radius: 4px; font-size: 13px; line-height: 1.6;">
+              Add NPM packages (comma-separated), CDN URLs, or ES module imports. Import Map for advanced module resolution. Validates imports on blur.
+            </div>
+          </div>
+          <div>
+            <h4 style="color: #4ade80; margin-bottom: 8px;">Testing</h4>
+            <div style="background: #2a2a2a; border-left: 3px solid #4ade80; padding: 12px; border-radius: 4px; font-size: 13px; line-height: 1.6;">
+              Enter JSON matching your parameters in Test tab. Green border = valid, red border = invalid. Results show in Test Result section.
+            </div>
+          </div>
+          <div>
+            <h4 style="color: #4ade80; margin-bottom: 8px;">MCP Integration</h4>
+            <div style="background: #2a2a2a; border-left: 3px solid #4ade80; padding: 12px; border-radius: 4px; font-size: 13px; line-height: 1.6;">
+              Model Context Protocol allows Claude and other LLMs to use your tool. Preview tab shows how your tool will appear in MCP clients with parameter schema.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // [Storage-Manager-Injected]
+
+function createStorageManager(appId) {
+  const stateKey = `app-state:${appId}`;
+  const expiryKey = `app-state-expiry:${appId}`;
+  return {
+    save(state, ttlMs = null) {
+      try {
+        localStorage.setItem(stateKey, JSON.stringify(state));
+        if (ttlMs) {
+          const expiryTime = Date.now() + ttlMs;
+          localStorage.setItem(expiryKey, expiryTime.toString());
+        }
+      } catch (error) {
+        console.error(`[Storage] Failed to save state for ${appId}:`, error);
+      }
+    },
+    load() {
+      try {
+        const expiryTime = localStorage.getItem(expiryKey);
+        if (expiryTime && Date.now() > parseInt(expiryTime)) {
+          this.clear();
+          return null;
+        }
+        const stateStr = localStorage.getItem(stateKey);
+        return stateStr ? JSON.parse(stateStr) : null;
+      } catch (error) {
+        console.error(`[Storage] Failed to load state for ${appId}:`, error);
+        return null;
+      }
+    },
+    clear() {
+      try {
+        localStorage.removeItem(stateKey);
+        localStorage.removeItem(expiryKey);
+      } catch (error) {
+        console.error(`[Storage] Failed to clear state for ${appId}:`, error);
+      }
+    }
+  };
+}
+
+    let selectedTool = null;
+    let editingTool = null;
+    const storage = createStorageManager('app-tool-editor');
+    const savedState = storage.load();
+    if (savedState) {
+      selectedTool = savedState.selectedTool || selectedTool;
+      editingTool = savedState.editingTool || editingTool;
+    }
+    window.addEventListener('beforeunload', () => {
+      storage.save({ selectedTool, editingTool });
+    });
+  
+
+    let currentTool = null;
+    let tools = [];
+    let parameters = [];
+
+    function showNotification(message, type = 'info') {
+      const existing = document.querySelector('.notification');
+      if (existing) existing.remove();
+
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.textContent = message;
+      document.body.appendChild(notification);
+
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+
+    function addToolConsoleLog(message, type = 'info') {
+      const toolConsole = document.getElementById('toolConsole');
+      const line = document.createElement('div');
+      line.style.color = type === 'error' ? '#ff5f56' : type === 'success' ? '#4ade80' : '#999';
+      line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      toolConsole.appendChild(line);
+      toolConsole.scrollTop = toolConsole.scrollHeight;
+    }
+
+    function clearToolConsole() {
+      const toolConsole = document.getElementById('toolConsole');
+      toolConsole.innerHTML = '<div style="color: #999;">Console cleared</div>';
+      addToolConsoleLog('Console cleared', 'info');
+    }
+
+    async function loadTools() {
+      try {
+        const res = await fetch('/api/tools');
+        if (!res.ok) {
+          showNotification('Failed to load tools', 'error');
+          return;
+        }
+        const response = await res.json();
+        tools = (response.data && Array.isArray(response.data)) ? response.data : (response || []);
+        if (!Array.isArray(tools)) tools = [];
+        renderToolList();
+
+        if (tools.length > 0) {
+          selectToolById(tools[0].id);
+        }
+      } catch (error) {
+        console.error('Failed to load tools:', error);
+        showNotification('Error loading tools: ' + error.message, 'error');
+        renderEmptyState();
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function renderToolList() {
+      const list = document.getElementById('toolList');
+      if (tools.length === 0) {
+        renderEmptyState();
+        return;
+      }
+
+      list.innerHTML = tools.map((tool, idx) => `
+        <li class="tool-item ${idx === 0 ? 'active' : ''}" onclick="selectToolById('${escapeHtml(tool.id)}')" data-tool-id="${escapeHtml(tool.id)}">
+          <div class="tool-name">${escapeHtml(tool.name || tool.id)}</div>
+          <div class="tool-desc">${escapeHtml(tool.description || 'No description')}</div>
+        </li>
+      `).join('');
+    }
+
+    function renderEmptyState() {
+      const list = document.getElementById('toolList');
+      list.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">🔧</div>
+          <div>No tools yet</div>
+          <div style="font-size: 12px; margin-top: 8px;">Click "New Tool" to create one</div>
+        </div>
+      `;
+    }
+
+    function selectToolById(toolId) {
+      const tool = tools.find(t => t.id === toolId);
+      if (!tool) return;
+
+      currentTool = tool;
+
+      document.querySelectorAll('.tool-item').forEach(t => t.classList.remove('active'));
+      const item = document.querySelector(`[data-tool-id="${toolId}"]`);
+      if (item) item.classList.add('active');
+
+      document.getElementById('toolName').value = tool.name || '';
+      document.getElementById('toolDesc').value = tool.description || '';
+      document.getElementById('toolCategory').value = tool.category || 'custom';
+      document.getElementById('toolImpl').value = tool.implementation || '';
+      document.getElementById('npmPackages').value = (tool.imports?.npm || []).join(', ');
+      document.getElementById('cdnUrls').value = (tool.imports?.cdn || []).join('\n');
+      document.getElementById('esImports').value = tool.imports?.esModules || '';
+      document.getElementById('importMap').value = tool.imports?.importMap ? JSON.stringify(tool.imports.importMap, null, 2) : '';
+
+      lastSavedToolData = JSON.stringify({
+        name: tool.name || '',
+        description: tool.description || '',
+        category: tool.category || 'custom',
+        implementation: tool.implementation || '',
+        parameters: tool.parameters || []
+      });
+
+      parameters = tool.parameters || [];
+      renderParameters();
+      updateSchema();
+      updateImportPreview();
+      attachAutoSaveListeners();
+      updateAutoSaveIndicator('saved');
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+
+      document.getElementById('definitionTab').style.display = tab === 'definition' ? 'block' : 'none';
+      document.getElementById('importsTab').style.display = tab === 'imports' ? 'block' : 'none';
+      document.getElementById('parametersTab').style.display = tab === 'parameters' ? 'block' : 'none';
+      document.getElementById('testTab').style.display = tab === 'test' ? 'block' : 'none';
+      document.getElementById('schemaTab').style.display = tab === 'schema' ? 'block' : 'none';
+      document.getElementById('mcpTab').style.display = tab === 'mcp' ? 'block' : 'none';
+      document.getElementById('helpTab').style.display = tab === 'help' ? 'block' : 'none';
+
+      if (tab === 'schema') {
+        updateSchema();
+      }
+      if (tab === 'imports') {
+        updateImportPreview();
+      }
+      if (tab === 'definition') {
+        setTimeout(() => highlightToolCode(), 0);
+      }
+    }
+
+    function highlightToolCode() {
+      const toolImpl = document.getElementById('toolImpl');
+      if (toolImpl && toolImpl.value) {
+        try {
+          toolImpl.className = 'language-javascript';
+          hljs.highlightElement(toolImpl);
+        } catch (e) {}
+      }
+
+      const npmPackages = document.getElementById('npmPackages');
+      if (npmPackages && npmPackages.value) {
+        try {
+          npmPackages.className = 'language-javascript';
+          hljs.highlightElement(npmPackages);
+        } catch (e) {}
+      }
+
+      const cdnUrls = document.getElementById('cdnUrls');
+      if (cdnUrls && cdnUrls.value) {
+        try {
+          cdnUrls.className = 'language-javascript';
+          hljs.highlightElement(cdnUrls);
+        } catch (e) {}
+      }
+
+      const esImports = document.getElementById('esImports');
+      if (esImports && esImports.value) {
+        try {
+          esImports.className = 'language-javascript';
+          hljs.highlightElement(esImports);
+        } catch (e) {}
+      }
+
+      const importMap = document.getElementById('importMap');
+      if (importMap && importMap.value) {
+        try {
+          importMap.className = 'language-json';
+          hljs.highlightElement(importMap);
+        } catch (e) {}
+      }
+
+      const testInput = document.getElementById('testInput');
+      if (testInput && testInput.value) {
+        try {
+          testInput.className = 'language-json';
+          hljs.highlightElement(testInput);
+        } catch (e) {}
+      }
+    }
+
+    function renderParameters() {
+      const list = document.getElementById('paramList');
+      if (parameters.length === 0) {
+        list.innerHTML = '<div style="color: #666; text-align: center; padding: 20px;">No parameters defined</div>';
+        return;
+      }
+
+      list.innerHTML = parameters.map((param, idx) => `
+        <div class="param-item">
+          <div class="param-header">
+            <h4>${escapeHtml(param.name)}</h4>
+            <button onclick="removeParameter(${idx})">Remove</button>
+          </div>
+          <div class="param-field">
+            <label>Name</label>
+            <input type="text" value="${escapeHtml(param.name)}" onchange="updateParameter(${idx}, 'name', this.value)" />
+          </div>
+          <div class="param-field">
+            <label>Type</label>
+            <select onchange="updateParameter(${idx}, 'type', this.value)">
+              <option ${param.type === 'string' ? 'selected' : ''}>string</option>
+              <option ${param.type === 'number' ? 'selected' : ''}>number</option>
+              <option ${param.type === 'boolean' ? 'selected' : ''}>boolean</option>
+              <option ${param.type === 'object' ? 'selected' : ''}>object</option>
+              <option ${param.type === 'array' ? 'selected' : ''}>array</option>
+            </select>
+          </div>
+          <div class="param-field">
+            <label>Description</label>
+            <input type="text" value="${escapeHtml(param.description || '')}" onchange="updateParameter(${idx}, 'description', this.value)" />
+          </div>
+          <div class="param-field">
+            <label>Required</label>
+            <select onchange="updateParameter(${idx}, 'required', this.value === 'Yes')">
+              <option ${param.required ? 'selected' : ''}>Yes</option>
+              <option ${!param.required ? 'selected' : ''}>No</option>
+            </select>
+          </div>
+          <div class="param-field">
+            <label>Default Value</label>
+            <input type="text" value="${escapeHtml(param.default || '')}" onchange="updateParameter(${idx}, 'default', this.value)" placeholder="Leave empty for none" />
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addParameter() {
+      parameters.push({
+        name: 'newParam',
+        type: 'string',
+        description: '',
+        required: false,
+        default: ''
+      });
+      renderParameters();
+      updateSchema();
+    }
+
+    function extractToolParameters() {
+      const code = document.getElementById('toolImpl').value;
+      const params = extractFunctionParameters(code);
+      if (params.length === 0) {
+        addToolConsoleLog('✗ No parameters found in function signature', 'error');
+        return;
+      }
+      parameters = [];
+      params.forEach(p => {
+        parameters.push({
+          name: p.name,
+          type: p.type || 'string',
+          description: '',
+          required: true,
+          default: ''
+        });
+      });
+      renderParameters();
+      updateSchema();
+      addToolConsoleLog(`✓ Extracted ${params.length} parameter(s) from function signature`, 'info');
+      params.forEach(p => {
+        addToolConsoleLog(`  • ${p.name}: ${p.type || 'string'}`, 'info');
+      });
+    }
+
+    function extractFunctionParameters(fnString) {
+      const match = fnString.match(/(?:export\s+)?(?:async\s+)?function\s+\w+\s*\(([^)]*)\)|(?:export\s+)?(?:async\s+)?\(([^)]*)\)/);
+      if (!match) return [];
+      const paramString = match[1] || match[2] || '';
+      if (!paramString.trim()) return [];
+      const params = paramString.split(',').map(p => p.trim()).filter(p => p.length > 0).map(p => {
+        const parts = p.split('=');
+        const name = parts[0].trim();
+        return { name: name, type: 'string' };
+      });
+      return params;
+    }
+
+    function removeParameter(idx) {
+      parameters.splice(idx, 1);
+      renderParameters();
+      updateSchema();
+    }
+
+    function updateParameter(idx, field, value) {
+      if (parameters[idx]) {
+        parameters[idx][field] = value;
+        updateSchema();
+      }
+    }
+
+    function updateSchema() {
+      const schema = {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {},
+        "required": []
+      };
+
+      parameters.forEach(param => {
+        schema.properties[param.name] = {
+          type: param.type,
+          description: param.description || ''
+        };
+        if (param.default) {
+          schema.properties[param.name].default = param.default;
+        }
+        if (param.required) {
+          schema.required.push(param.name);
+        }
+      });
+
+      document.getElementById('schemaPreview').innerHTML = `<pre>${JSON.stringify(schema, null, 2)}</pre>`;
+
+      const toolName = document.getElementById('toolName').value || 'my-tool';
+      const exampleParams = parameters.reduce((acc, param) => {
+        acc[param.name] = param.default || (param.type === 'string' ? 'value' : param.type === 'number' ? 0 : null);
+        return acc;
+      }, {});
+
+      document.getElementById('usageExample').textContent = `// Call the tool in your task
+const result = await __callHostTool__('${toolName}', ${JSON.stringify(exampleParams, null, 2)});
+
+console.log('Result:', result);`;
+    }
+
+    function updateImportPreview() {
+      const npmText = document.getElementById('npmPackages').value;
+      const cdnText = document.getElementById('cdnUrls').value;
+      const esImports = document.getElementById('esImports').value;
+      const importMapText = document.getElementById('importMap').value;
+
+      const config = {
+        npm: npmText ? npmText.split(',').map(s => s.trim()).filter(Boolean) : [],
+        cdn: cdnText ? cdnText.split('\n').map(s => s.trim()).filter(Boolean) : [],
+        esModules: esImports,
+        importMap: null
+      };
+
+      try {
+        if (importMapText) {
+          config.importMap = JSON.parse(importMapText);
+        }
+      } catch (e) {
+        console.error('Invalid import map JSON:', e);
+      }
+
+      const previewEl = document.getElementById('importPreview');
+      previewEl.textContent = JSON.stringify(config, null, 2);
+
+      try {
+        previewEl.className = 'language-json';
+        hljs.highlightElement(previewEl);
+      } catch (e) {}
+    }
+
+    async function saveTool() {
+      const name = document.getElementById('toolName').value.trim();
+      if (!name) {
+        showNotification('Tool name is required', 'error');
+        return;
+      }
+
+      const npmText = document.getElementById('npmPackages').value;
+      const cdnText = document.getElementById('cdnUrls').value;
+      const esImports = document.getElementById('esImports').value;
+      const importMapText = document.getElementById('importMap').value;
+
+      let importMap = null;
+      try {
+        if (importMapText) {
+          importMap = JSON.parse(importMapText);
+        }
+      } catch (e) {
+        showNotification('Invalid import map JSON', 'error');
+        return;
+      }
+
+      const definition = {
+        description: document.getElementById('toolDesc').value,
+        category: document.getElementById('toolCategory').value,
+        implementation: document.getElementById('toolImpl').value,
+        parameters: parameters,
+        imports: {
+          npm: npmText ? npmText.split(',').map(s => s.trim()).filter(Boolean) : [],
+          cdn: cdnText ? cdnText.split('\n').map(s => s.trim()).filter(Boolean) : [],
+          esModules: esImports,
+          importMap: importMap
+        }
+      };
+
+      try {
+        const res = await fetch('/api/tools', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, definition })
+        });
+
+        if (!res.ok) {
+          const error = await res.json();
+          showNotification('Failed to save: ' + (error.error || 'Unknown error'), 'error');
+          return;
+        }
+
+        const saved = await res.json();
+        showNotification('Tool saved successfully', 'success');
+
+        const existingIdx = tools.findIndex(t => t.id === saved.id);
+        if (existingIdx >= 0) {
+          tools[existingIdx] = saved;
+        } else {
+          tools.push(saved);
+        }
+
+        renderToolList();
+        selectToolById(saved.id);
+      } catch (error) {
+        console.error('Save error:', error);
+        showNotification('Error saving tool: ' + error.message, 'error');
+      }
+    }
+
+    async function deleteTool() {
+      const name = document.getElementById('toolName').value.trim();
+      if (!name) {
+        showNotification('No tool selected to delete', 'error');
+        return;
+      }
+
+      if (!confirm(`Delete tool "${name}"? This cannot be undone.`)) {
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/tools/${name}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (!res.ok) {
+          const error = await res.json();
+          showNotification('Failed to delete: ' + (error.error || 'Unknown error'), 'error');
+          return;
+        }
+
+        showNotification('Tool deleted successfully', 'success');
+        tools = tools.filter(t => t.id !== name);
+        renderToolList();
+        currentTool = { name: '', description: '', category: '', implementation: '', parameters: [] };
+        renderTool(currentTool);
+      } catch (error) {
+        console.error('Delete error:', error);
+        showNotification('Error deleting tool: ' + error.message, 'error');
+      }
+    }
+
+    let autoSaveTimer = null;
+    const AUTO_SAVE_DELAY = 3000;
+    let lastSavedToolData = '';
+    let isToolSaving = false;
+
+    function updateAutoSaveIndicator(status) {
+      const indicator = document.getElementById('autoSaveIndicator');
+      if (!indicator) return;
+
+      indicator.className = `auto-save-indicator ${status}`;
+      indicator.querySelector('.auto-save-dot').className = `auto-save-dot ${status}`;
+
+      if (status === 'saved') {
+        indicator.querySelector('span').textContent = 'Saved';
+      } else if (status === 'saving') {
+        indicator.querySelector('span').textContent = 'Saving...';
+      } else if (status === 'unsaved') {
+        indicator.querySelector('span').textContent = 'Unsaved changes';
+      }
+    }
+
+    async function performAutoSave() {
+      if (isToolSaving || !currentTool) return;
+
+      const name = document.getElementById('toolName').value.trim();
+      if (!name) return;
+
+      const toolData = JSON.stringify({
+        name,
+        description: document.getElementById('toolDesc').value,
+        category: document.getElementById('toolCategory').value,
+        implementation: document.getElementById('toolImpl').value,
+        parameters
+      });
+
+      if (lastSavedToolData === toolData) return;
+
+      isToolSaving = true;
+      updateAutoSaveIndicator('saving');
+
+      try {
+        const npmText = document.getElementById('npmPackages').value;
+        const cdnText = document.getElementById('cdnUrls').value;
+        const esImports = document.getElementById('esImports').value;
+        const importMapText = document.getElementById('importMap').value;
+
+        let importMap = null;
+        try {
+          if (importMapText) importMap = JSON.parse(importMapText);
+        } catch (e) {
+          console.warn('Invalid import map for auto-save');
+          isToolSaving = false;
+          return;
+        }
+
+        const definition = {
+          description: document.getElementById('toolDesc').value,
+          category: document.getElementById('toolCategory').value,
+          implementation: document.getElementById('toolImpl').value,
+          parameters: parameters,
+          imports: {
+            npm: npmText ? npmText.split(',').map(s => s.trim()).filter(Boolean) : [],
+            cdn: cdnText ? cdnText.split('\n').map(s => s.trim()).filter(Boolean) : [],
+            esModules: esImports,
+            importMap: importMap
+          }
+        };
+
+        const response = await fetch('/api/tools', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, definition })
+        });
+
+        if (response.ok) {
+          lastSavedToolData = toolData;
+          updateAutoSaveIndicator('saved');
+        } else {
+          updateAutoSaveIndicator('unsaved');
+          console.warn('Auto-save failed:', response.statusText);
+        }
+      } catch (err) {
+        updateAutoSaveIndicator('unsaved');
+        console.warn('Auto-save error:', err);
+      } finally {
+        isToolSaving = false;
+      }
+    }
+
+    function scheduleAutoSave() {
+      clearTimeout(autoSaveTimer);
+      const name = document.getElementById('toolName').value.trim();
+      if (!name) return;
+
+      updateAutoSaveIndicator('unsaved');
+      autoSaveTimer = setTimeout(() => {
+        performAutoSave();
+      }, AUTO_SAVE_DELAY);
+    }
+
+    function attachAutoSaveListeners() {
+      ['toolName', 'toolDesc', 'toolCategory', 'toolImpl', 'npmPackages', 'cdnUrls', 'esImports', 'importMap'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('input', scheduleAutoSave);
+        }
+      });
+    }
+
+    function exportTool() {
+      const name = document.getElementById('toolName').value || 'unnamed-tool';
+      const tool = {
+        name,
+        description: document.getElementById('toolDesc').value,
+        category: document.getElementById('toolCategory').value,
+        implementation: document.getElementById('toolImpl').value,
+        parameters: parameters
+      };
+
+      const json = JSON.stringify(tool, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${name}-tool.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+
+      showNotification('Tool exported', 'success');
+    }
+
+    function generateDocs() {
+      const name = document.getElementById('toolName').value || 'unnamed-tool';
+      const desc = document.getElementById('toolDesc').value || 'No description';
+
+      let paramDocs = '';
+      if (parameters.length > 0) {
+        paramDocs = '\n## Parameters\n\n' + parameters.map(p =>
+          `- **${p.name}** (${p.type}${p.required ? ', required' : ', optional'}): ${p.description || 'No description'}`
+        ).join('\n');
+      }
+
+      const exampleParams = parameters.reduce((acc, param) => {
+        acc[param.name] = param.default || (param.type === 'string' ? 'value' : param.type === 'number' ? 0 : null);
+        return acc;
+      }, {});
+
+      const docs = `# ${name} Tool
+
+${desc}
+${paramDocs}
+
+## Usage
+
+\`\`\`javascript
+const result = await __callHostTool__('${name}', ${JSON.stringify(exampleParams, null, 2)});
+console.log('Result:', result);
+\`\`\`
+
+## Implementation
+
+\`\`\`javascript
+${document.getElementById('toolImpl').value}
+\`\`\`
+`;
+
+      const blob = new Blob([docs], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${name}-README.md`;
+      a.click();
+      URL.revokeObjectURL(url);
+
+      showNotification('Documentation generated', 'success');
+    }
+
+    function generateMCPDefinition() {
+      const toolName = document.getElementById('toolName')?.value || 'my-tool';
+      const toolDesc = document.getElementById('toolDesc')?.value || 'A tool';
+
+      const toolDef = {
+        name: toolName,
+        description: toolDesc,
+        inputSchema: {
+          type: 'object',
+          properties: parameters.reduce((acc, p) => {
+            acc[p.name] = {
+              type: p.type || 'string',
+              description: p.description || ''
+            };
+            return acc;
+          }, {}),
+          required: parameters.filter(p => p.required).map(p => p.name)
+        }
+      };
+
+      const resourceDef = {
+        uri: `tool://${toolName}`,
+        name: toolName,
+        description: toolDesc,
+        mimeType: 'application/json',
+        contents: JSON.stringify(toolDef, null, 2)
+      };
+
+      document.getElementById('mcpDefinition').textContent = JSON.stringify(toolDef, null, 2);
+      document.getElementById('mcpResource').textContent = JSON.stringify(resourceDef, null, 2);
+      showNotification('MCP definition regenerated', 'success');
+    }
+
+    function newTool() {
+      currentTool = null;
+      document.getElementById('toolName').value = 'new-tool';
+      document.getElementById('toolDesc').value = '';
+      document.getElementById('toolCategory').value = 'custom';
+      document.getElementById('toolImpl').value = 'async function executeTool(params) {\n  // Implementation\n  return { success: true };\n}';
+      document.getElementById('npmPackages').value = '';
+      document.getElementById('cdnUrls').value = '';
+      document.getElementById('esImports').value = '';
+      document.getElementById('importMap').value = '';
+
+      parameters = [];
+      renderParameters();
+      updateSchema();
+      updateImportPreview();
+      generateMCPDefinition();
+
+      document.querySelectorAll('.tool-item').forEach(t => t.classList.remove('active'));
+      showNotification('New tool created', 'info');
+    }
+
+    function formatToolCode() {
+      const editor = document.getElementById('toolImpl');
+      const code = editor.value;
+      const formatted = formatJavaScriptCode(code);
+      editor.value = formatted;
+      addToolConsoleLog('✓ Code formatted', 'info');
+    }
+
+    function formatJavaScriptCode(code) {
+      let lines = code.split('\n');
+      let formatted = [];
+      let indentLevel = 0;
+      const indentStr = '  ';
+      for (let i = 0; i < lines.length; i++) {
+        let line = lines[i].trim();
+        if (!line) {
+          formatted.push('');
+          continue;
+        }
+        if (line.match(/^[}\]]/)) indentLevel = Math.max(0, indentLevel - 1);
+        formatted.push(indentStr.repeat(indentLevel) + line);
+        const openCount = (line.match(/[{[]/g) || []).length;
+        const closeCount = (line.match(/[}\]]/g) || []).length;
+        indentLevel += openCount - closeCount;
+      }
+      return formatted.join('\n');
+    }
+
+    function applyToolTemplate(templateId) {
+      if (!templateId) return;
+      const templates = {
+        'api-client': {
+          name: 'api-client',
+          desc: 'Tool for making HTTP API calls with error handling',
+          category: 'api',
+          impl: `async function executeTool(params) {
+  const { url, method = 'GET', headers = {}, body } = params;
+  if (!url) throw new Error('url parameter required');
+
+  const response = await fetch(url, {
+    method,
+    headers: { 'Content-Type': 'application/json', ...headers },
+    ...(body && { body: JSON.stringify(body) })
+  });
+
+  if (!response.ok) throw new Error(\`API error: \${response.status}\`);
+  const data = await response.json();
+  return { success: true, data };
+}`,
+          npm: 'axios, node-fetch'
+        },
+        'data-transformer': {
+          name: 'data-transformer',
+          desc: 'Tool for transforming and normalizing data structures',
+          category: 'data',
+          impl: `async function executeTool(params) {
+  const { data, operations = [] } = params;
+  if (!data) throw new Error('data parameter required');
+
+  let result = data;
+  for (const op of operations) {
+    if (op.type === 'map') {
+      result = Array.isArray(result) ? result.map(item => ({
+        ...item,
+        [op.field]: item[op.source]
+      })) : result;
+    } else if (op.type === 'filter') {
+      result = Array.isArray(result) ? result.filter(item =>
+        item[op.field] === op.value
+      ) : result;
+    }
+  }
+  return { success: true, data: result };
+}`
+        },
+        'validator': {
+          name: 'validator',
+          desc: 'Tool for validating data against schema rules',
+          category: 'util',
+          impl: `async function executeTool(params) {
+  const { data, rules = {} } = params;
+  const errors = [];
+
+  for (const [field, rule] of Object.entries(rules)) {
+    const value = data[field];
+    if (rule.required && !value) errors.push(\`\${field} is required\`);
+    if (rule.type && typeof value !== rule.type) errors.push(\`\${field} must be \${rule.type}\`);
+    if (rule.minLength && value.length < rule.minLength) errors.push(\`\${field} too short\`);
+    if (rule.maxLength && value.length > rule.maxLength) errors.push(\`\${field} too long\`);
+  }
+
+  return { success: errors.length === 0, errors, data };
+}`
+        },
+        'calculator': {
+          name: 'calculator',
+          desc: 'Tool for performing mathematical calculations',
+          category: 'util',
+          impl: `async function executeTool(params) {
+  const { operation, values = [] } = params;
+  if (!operation || values.length === 0) throw new Error('operation and values required');
+
+  let result;
+  switch (operation.toLowerCase()) {
+    case 'sum': result = values.reduce((a, b) => a + b, 0); break;
+    case 'average': result = values.reduce((a, b) => a + b, 0) / values.length; break;
+    case 'min': result = Math.min(...values); break;
+    case 'max': result = Math.max(...values); break;
+    default: throw new Error(\`Unknown operation: \${operation}\`);
+  }
+
+  return { success: true, result, count: values.length };
+}`
+        },
+        'database-query': {
+          name: 'database-query',
+          desc: 'Tool for querying database (template)',
+          category: 'database',
+          impl: `async function executeTool(params) {
+  const { query, params: queryParams = {} } = params;
+  if (!query) throw new Error('query parameter required');
+
+  // Replace :param placeholders with actual values
+  let sql = query;
+  for (const [key, value] of Object.entries(queryParams)) {
+    sql = sql.replace(\`:\${key}\`, \`'\${value}'\`);
+  }
+
+  // Example: call database (implementation specific)
+  const results = await executeQuery(sql);
+  return { success: true, data: results, rowCount: results.length };
+}`
+        }
+      };
+
+      if (templates[templateId]) {
+        const template = templates[templateId];
+        document.getElementById('toolName').value = template.name;
+        document.getElementById('toolDesc').value = template.desc;
+        document.getElementById('toolCategory').value = template.category;
+        document.getElementById('toolImpl').value = template.impl;
+        if (template.npm) document.getElementById('npmPackages').value = template.npm;
+
+        updateSchema();
+        updateImportPreview();
+        generateMCPDefinition();
+        showNotification('Tool template applied!', 'info');
+      }
+      document.getElementById('toolTemplateSelect').value = '';
+    }
+
+    function validateJSON(jsonString) {
+      try {
+        JSON.parse(jsonString);
+        return { valid: true, error: null };
+      } catch (e) {
+        return { valid: false, error: e.message };
+      }
+    }
+
+    function updateJSONValidation(inputElement, wrapperId, hintId, errorId) {
+      const wrapper = document.getElementById(wrapperId);
+      const hint = document.getElementById(hintId);
+      const error = document.getElementById(errorId);
+      const value = inputElement.value.trim();
+
+      if (!value) {
+        wrapper.className = 'json-input';
+        hint.style.display = 'none';
+        error.style.display = 'none';
+        return;
+      }
+
+      const validation = validateJSON(value);
+      if (validation.valid) {
+        wrapper.classList.remove('invalid');
+        wrapper.classList.add('valid');
+        hint.textContent = 'Valid JSON';
+        hint.style.display = 'block';
+        error.style.display = 'none';
+      } else {
+        wrapper.classList.remove('valid');
+        wrapper.classList.add('invalid');
+        hint.style.display = 'none';
+        error.textContent = 'Invalid JSON: ' + validation.error;
+        error.style.display = 'block';
+      }
+    }
+
+    const testInputEl = document.getElementById('testInput');
+    if (testInputEl) {
+      testInputEl.addEventListener('input', () => {
+        updateJSONValidation(testInputEl, 'testInputWrapper', 'testInputHint', 'testInputError');
+      });
+      updateJSONValidation(testInputEl, 'testInputWrapper', 'testInputHint', 'testInputError');
+    }
+
+    async function runTest() {
+      const result = document.getElementById('testResult');
+      result.className = 'test-result';
+      result.textContent = 'Executing tool...';
+
+      addToolConsoleLog('Starting test execution...', 'info');
+
+      try {
+        const testInputStr = document.getElementById('testInput').value;
+        const validation = validateJSON(testInputStr.trim() || '{}');
+        if (!validation.valid && testInputStr.trim()) {
+          result.className = 'test-result error';
+          result.textContent = 'Invalid JSON input: ' + validation.error;
+          addToolConsoleLog('✗ Cannot run test: Invalid JSON in parameters', 'error');
+          addToolConsoleLog('Error: ' + validation.error, 'error');
+          return;
+        }
+        let input = {};
+        try {
+          input = JSON.parse(testInputStr);
+        } catch (e) {
+          result.className = 'test-result error';
+          result.textContent = `✗ Invalid JSON: ${e.message}`;
+          addToolConsoleLog(`✗ Invalid JSON: ${e.message}`, 'error');
+          if (window.ErrorSuggestions) {
+            const suggestions = window.ErrorSuggestions.generateSuggestions(e);
+            addToolConsoleLog('', 'info');
+            addToolConsoleLog('💡 Fix suggestions:', 'info');
+            suggestions.forEach((s, idx) => {
+              addToolConsoleLog((idx + 1) + '. ' + s.title + ' - ' + s.description, 'warning');
+              addToolConsoleLog('   ' + s.hint, 'info');
+              if (s.hint2) addToolConsoleLog('   ' + s.hint2, 'info');
+            });
+          }
+          return;
+        }
+
+        addToolConsoleLog(`Input: ${JSON.stringify(input)}`, 'info');
+
+        const toolName = document.getElementById('toolName').value || 'unnamed-tool';
+        const implementation = document.getElementById('toolImpl').value;
+
+        addToolConsoleLog(`Executing tool: ${toolName}`, 'info');
+
+        const hasBreakpoints = debugModule && debugModule.getBreakpoints().size > 0;
+
+        if (hasBreakpoints) {
+          addToolConsoleLog('🔴 Running with breakpoints (' + debugModule.getBreakpoints().size + ' breakpoint(s))', 'info');
+          debugModule.openExecutionPanel();
+          try {
+            const execCode = 'async function executeTool(params) {' + implementation.substring(implementation.indexOf('{') + 1);
+            await debugModule.executeWithBreakpoints(execCode);
+            result.className = 'test-result success';
+            result.textContent = '✓ Execution completed with breakpoints';
+            addToolConsoleLog('✓ Execution completed', 'success');
+          } catch (error) {
+            result.className = 'test-result error';
+            result.textContent = `✗ Execution error: ${error.message}`;
+            addToolConsoleLog(`✗ Execution error: ${error.message}`, 'error');
+          }
+          return;
+        }
+
+        const res = await fetch('/api/tools/test', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ toolName, implementation, input })
+        });
+
+        const execResult = await res.json();
+        if (execResult.success) {
+          result.className = 'test-result success';
+          result.textContent = `✓ Success (${execResult.duration}ms)\n\n${JSON.stringify(execResult.output, null, 2)}`;
+          addToolConsoleLog(`✓ Success (${execResult.duration}ms)`, 'success');
+          addToolConsoleLog(`Output: ${JSON.stringify(execResult.output, null, 2)}`, 'success');
+        } else {
+          result.className = 'test-result error';
+          result.textContent = `✗ Error:\n${execResult.error}\n\nStack:\n${execResult.stack || 'N/A'}`;
+          addToolConsoleLog(`✗ Error: ${execResult.error}`, 'error');
+          if (execResult.stack) addToolConsoleLog(`Stack: ${execResult.stack}`, 'error');
+          if (window.ErrorSuggestions) {
+            const suggestions = window.ErrorSuggestions.generateSuggestions(execResult.error);
+            addToolConsoleLog('', 'info');
+            addToolConsoleLog('💡 Fix suggestions:', 'info');
+            suggestions.forEach((s, idx) => {
+              addToolConsoleLog((idx + 1) + '. ' + s.title + ' - ' + s.description, 'warning');
+              addToolConsoleLog('   ' + s.hint, 'info');
+              if (s.hint2) addToolConsoleLog('   ' + s.hint2, 'info');
+            });
+          }
+        }
+      } catch (error) {
+        result.className = 'test-result error';
+        result.textContent = `✗ Execution error: ${error.message}`;
+        addToolConsoleLog(`✗ Execution error: ${error.message}`, 'error');
+        if (window.ErrorSuggestions) {
+          const suggestions = window.ErrorSuggestions.generateSuggestions(error);
+          addToolConsoleLog('', 'info');
+          addToolConsoleLog('💡 Fix suggestions:', 'info');
+          suggestions.forEach((s, idx) => {
+            addToolConsoleLog((idx + 1) + '. ' + s.title + ' - ' + s.description, 'warning');
+            addToolConsoleLog('   ' + s.hint, 'info');
+            if (s.hint2) addToolConsoleLog('   ' + s.hint2, 'info');
+          });
+        }
+      }
+    }
+
+    async function validateImports() {
+      const npmText = document.getElementById('npmPackages').value;
+      const packages = npmText ? npmText.split(',').map(s => s.trim()).filter(Boolean) : [];
+
+      if (packages.length === 0) {
+        showNotification('No npm packages to validate', 'info');
+        return;
+      }
+
+      showNotification(`Validating ${packages.length} package(s)...`, 'info');
+
+      try {
+        const res = await fetch('/api/tools/validate-imports', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ packages })
+        });
+
+        const result = await res.json();
+        if (result.valid) {
+          showNotification(`✓ All ${packages.length} packages are valid`, 'success');
+        } else {
+          const invalid = result.invalid || [];
+          showNotification(`✗ Invalid packages: ${invalid.join(', ')}`, 'error');
+        }
+      } catch (error) {
+        showNotification(`Validation error: ${error.message}`, 'error');
+      }
+    }
+
+    loadTools();
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'F5' || (e.ctrlKey && e.key === 'Enter')) {
+        e.preventDefault();
+        runTest();
+      }
+      if (e.key === '?') {
+        e.preventDefault();
+        toggleHelpModal();
+      }
+      if (e.ctrlKey && e.shiftKey && e.key === 'F') {
+        e.preventDefault();
+        formatToolCode();
+      }
+    });
+
+    function toggleHelpModal() {
+      const modal = document.getElementById('helpModal');
+      modal.classList.toggle('active');
+    }
+
+    document.getElementById('helpModal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('helpModal')) {
+        document.getElementById('helpModal').classList.remove('active');
+      }
+    });
+
+    // Snippet library for Tool Editor
+    const TOOL_SNIPPETS = {
+      validation: [{id: 'tool-param-validation', name: 'Parameter Validation', category: 'Validation', description: 'Validate tool parameters', code: 'if (!params.{{fieldName}}) {\n  return {\n    success: false,\n    error: \'Missing required parameter: {{fieldName}}\',\n    code: \'MISSING_PARAM\'\n  };\n}', templateVars: [{name: 'fieldName', prompt: 'Parameter name to validate?'}], language: 'javascript', complexity: 'beginner'}, {id: 'tool-type-check', name: 'Type Check', category: 'Validation', description: 'Validate parameter types', code: 'const {{fieldName}}Type = typeof params.{{fieldName}};\nif ({{fieldName}}Type !== \'{{expectedType}}\') {\n  return {\n    success: false,\n    error: `Parameter {{fieldName}} must be {{expectedType}}, got ${{{fieldName}}Type}`,\n    code: \'INVALID_TYPE\'\n  };\n}', templateVars: [{name: 'fieldName', prompt: 'Parameter name?'}, {name: 'expectedType', prompt: 'Expected type?'}], language: 'javascript', complexity: 'beginner'}], errorHandling: [{id: 'tool-error-response', name: 'Error Response', category: 'Error Handling', description: 'Return structured error response', code: 'return {\n  success: false,\n  error: \'{{errorMessage}}\',\n  code: \'{{errorCode}}\',\n  context: {\n    timestamp: new Date().toISOString(),\n    params: params\n  }\n};', templateVars: [{name: 'errorMessage', prompt: 'Error message?'}, {name: 'errorCode', prompt: 'Error code (e.g., INVALID_INPUT)?'}], language: 'javascript', complexity: 'beginner'}, {id: 'tool-try-catch', name: 'Try/Catch Error Handling', category: 'Error Handling', description: 'Execute with try/catch', code: 'try {\n  {{toolLogic}}\n} catch (error) {\n  console.error(\'[{{toolName}}] Error:\', error);\n  return {\n    success: false,\n    error: error.message,\n    code: \'EXECUTION_ERROR\',\n    timestamp: new Date().toISOString()\n  };\n}', templateVars: [{name: 'toolName', prompt: 'Tool name for logging?'}, {name: 'toolLogic', prompt: 'Tool logic to execute?'}], language: 'javascript', complexity: 'intermediate'}], logging: [{id: 'tool-contextual-log', name: 'Contextual Logging', category: 'Logging', description: 'Log with request context', code: 'const requestId = params.requestId || \'{{defaultId}}\';\nconsole.log(`[${requestId}] {{toolName}} invoked`, {\n  params,\n  timestamp: new Date().toISOString()\n});\n\n{{toolLogic}}\n\nconsole.log(`[${requestId}] {{toolName}} completed`, {\n  success: true,\n  duration: Date.now() - startTime\n});', templateVars: [{name: 'defaultId', prompt: 'Default request ID?'}, {name: 'toolName', prompt: 'Tool name?'}, {name: 'toolLogic', prompt: 'Tool logic?'}], language: 'javascript', complexity: 'intermediate'}, {id: 'tool-perf-log', name: 'Performance Logging', category: 'Logging', description: 'Log execution performance', code: 'const startTime = Date.now();\nconsole.log(\'[PERF] {{toolName}} starting\');\n\n{{toolLogic}}\n\nconst duration = Date.now() - startTime;\nconsole.log(\'[PERF] {{toolName}} completed in\', duration, \'ms\');', templateVars: [{name: 'toolName', prompt: 'Tool name?'}, {name: 'toolLogic', prompt: 'Tool logic?'}], language: 'javascript', complexity: 'beginner'}], transforms: [{id: 'tool-map-transform', name: 'Array Map Transform', category: 'Transforms', description: 'Transform array elements', code: 'const {{outputName}} = params.{{inputName}}.map(item => ({\n  {{mappedFields}}\n}));\n\nreturn {\n  success: true,\n  data: {{outputName}},\n  count: {{outputName}}.length\n};', templateVars: [{name: 'inputName', prompt: 'Input array parameter?'}, {name: 'outputName', prompt: 'Output variable name?'}, {name: 'mappedFields', prompt: 'Mapped fields (e.g., id: item.id, name: item.name)?'}], language: 'javascript', complexity: 'intermediate'}, {id: 'tool-filter-data', name: 'Array Filter', category: 'Transforms', description: 'Filter array based on predicate', code: 'const {{outputName}} = params.{{inputName}}.filter(item => {\n  return {{predicate}};\n});\n\nreturn {\n  success: true,\n  data: {{outputName}},\n  count: {{outputName}}.length,\n  filtered: params.{{inputName}}.length - {{outputName}}.length\n};', templateVars: [{name: 'inputName', prompt: 'Input array parameter?'}, {name: 'outputName', prompt: 'Output variable name?'}, {name: 'predicate', prompt: 'Filter predicate (e.g., item.status === "active")?'}], language: 'javascript', complexity: 'intermediate'}], responses: [{id: 'tool-success-response', name: 'Success Response', category: 'Response Formatting', description: 'Formatted success response', code: 'return {\n  success: true,\n  data: {{responseData}},\n  meta: {\n    timestamp: new Date().toISOString(),\n    duration: Date.now() - startTime\n  }\n};', templateVars: [{name: 'responseData', prompt: 'Response data (variable or value)?'}], language: 'javascript', complexity: 'beginner'}, {id: 'tool-paginated-response', name: 'Paginated Response', category: 'Response Formatting', description: 'Return paginated data', code: 'return {\n  success: true,\n  data: {{items}},\n  pagination: {\n    offset: {{offset}},\n    limit: {{limit}},\n    total: {{total}},\n    hasMore: {{offset}} + {{limit}} < {{total}}\n  },\n  timestamp: new Date().toISOString()\n};', templateVars: [{name: 'items', prompt: 'Items array?'}, {name: 'offset', prompt: 'Pagination offset?'}, {name: 'limit', prompt: 'Page limit?'}, {name: 'total', prompt: 'Total count?'}], language: 'javascript', complexity: 'intermediate'}]
+    };
+
+    class ToolSnippetManager {
+      constructor() {
+        this.snippets = TOOL_SNIPPETS;
+      }
+      getSnippetsByCategory(category) {
+        const allSnippets = Object.values(this.snippets).flat();
+        return allSnippets.filter(s => s.category === category);
+      }
+      getAllCategories() {
+        const allSnippets = Object.values(this.snippets).flat();
+        const categories = new Set(allSnippets.map(s => s.category));
+        return Array.from(categories).sort();
+      }
+      getAllSnippets() {
+        return Object.values(this.snippets).flat();
+      }
+      getSnippetById(id) {
+        const allSnippets = this.getAllSnippets();
+        return allSnippets.find(s => s.id === id);
+      }
+      getIndentLevel(text, cursorPos) {
+        const lineStart = text.lastIndexOf('\n', cursorPos - 1) + 1;
+        const lineText = text.substring(lineStart, cursorPos);
+        const match = lineText.match(/^(\s*)/);
+        return match ? match[1].length : 0;
+      }
+      insertSnippetAtCursor(editorElement, snippet, templateVars) {
+        const textarea = editorElement;
+        const cursorPos = textarea.selectionStart;
+        const text = textarea.value;
+        const indentLevel = this.getIndentLevel(text, cursorPos);
+        const indentStr = ' '.repeat(indentLevel);
+        let code = snippet.code;
+        for (const varDef of snippet.templateVars) {
+          const value = templateVars[varDef.name] || varDef.name;
+          code = code.replace(new RegExp(`{{${varDef.name}}}`, 'g'), value);
+        }
+        const indentedCode = code.split('\n').map((line, i) => i === 0 ? line : indentStr + line).join('\n');
+        const newText = text.substring(0, cursorPos) + indentedCode + text.substring(cursorPos);
+        textarea.value = newText;
+        textarea.selectionStart = textarea.selectionEnd = cursorPos + indentedCode.length;
+        if (textarea.onchange) textarea.onchange();
+        if (textarea.oninput) textarea.oninput();
+      }
+    }
+
+    let toolSnippetManager = new ToolSnippetManager();
+    let toolSnippetMenuOpen = false;
+    let selectedToolSnippet = null;
+
+    function toggleSnippetMenu() {
+      toolSnippetMenuOpen = !toolSnippetMenuOpen;
+      if (toolSnippetMenuOpen) {
+        showSnippetCategories();
+      } else {
+        hideSnippetMenu();
+      }
+    }
+
+    function showSnippetCategories() {
+      const categories = toolSnippetManager.getAllCategories();
+      let html = '<div style="position: absolute; top: 100px; left: 100px; background: #2a2a2a; border: 1px solid #4ade80; border-radius: 4px; box-shadow: 0 8px 16px rgba(0,0,0,0.3); z-index: 10000; min-width: 300px; max-height: 500px; overflow-y: auto;">';
+
+      for (const category of categories) {
+        const snippets = toolSnippetManager.getSnippetsByCategory(category);
+        const categoryKey = category.replace(/\s+/g, '-').toLowerCase();
+        html += `<div style="padding: 0;"><div style="padding: 8px 12px; background: #1a1a1a; color: #4ade80; font-weight: 600; cursor: pointer; border-bottom: 1px solid #3a3a3a;" onclick="toggleSnippetCategory('${categoryKey}')">${category} <span id="arrow-${categoryKey}">▶</span></div><div class="snippet-items-${categoryKey}" style="display: none; background: #2a2a2a;">`;
+
+        for (const snippet of snippets) {
+          html += `<div style="padding: 8px 12px; border-bottom: 1px solid #3a3a3a; cursor: pointer; font-size: 13px;" onclick="selectSnippetForTool('${snippet.id}')" onmouseover="this.style.background='#3a3a3a'" onmouseout="this.style.background='transparent'"><div style="color: #fff; font-weight: 500;">${snippet.name}</div><div style="color: #888; font-size: 12px; margin-top: 2px;">${snippet.description}</div></div>`;
+        }
+        html += '</div></div>';
+      }
+      html += '</div>';
+
+      const container = document.createElement('div');
+      container.id = 'snippet-menu-container';
+      container.innerHTML = html;
+      document.body.appendChild(container);
+    }
+
+    function toggleSnippetCategory(categoryKey) {
+      const items = document.querySelector(`.snippet-items-${categoryKey}`);
+      const arrow = document.getElementById(`arrow-${categoryKey}`);
+      if (items) {
+        const isHidden = items.style.display === 'none';
+        items.style.display = isHidden ? 'block' : 'none';
+        arrow.textContent = isHidden ? '▼' : '▶';
+      }
+    }
+
+    function selectSnippetForTool(snippetId) {
+      selectedToolSnippet = toolSnippetManager.getSnippetById(snippetId);
+      if (!selectedToolSnippet) return;
+
+      if (selectedToolSnippet.templateVars.length === 0) {
+        insertSnippetWithVars({});
+        return;
+      }
+
+      let modalHtml = '<div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 10001;" id="snippet-modal" onclick="if(event.target.id === \'snippet-modal\') document.getElementById(\'snippet-modal\').remove()"><div style="background: #2a2a2a; border: 1px solid #4ade80; border-radius: 4px; padding: 20px; max-width: 500px; max-height: 600px; overflow-y: auto; color: #fff;"><div style="color: #4ade80; font-weight: 600; margin-bottom: 16px; font-size: 16px;">' + selectedToolSnippet.name + '</div>';
+
+      for (const varDef of selectedToolSnippet.templateVars) {
+        modalHtml += '<div style="margin-bottom: 16px;"><label style="display: block; color: #4ade80; font-weight: 500; font-size: 13px; margin-bottom: 4px;">' + varDef.prompt + '</label><input type="text" data-var="' + varDef.name + '" style="width: 100%; background: #1a1a1a; color: #fff; border: 1px solid #4ade80; padding: 8px; border-radius: 3px; font-size: 13px; box-sizing: border-box;" placeholder="' + varDef.name + '"></div>';
+      }
+
+      modalHtml += '<div style="display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end;"><button style="padding: 8px 16px; background: #3a3a3a; color: #fff; border: none; border-radius: 3px; cursor: pointer; font-weight: 500;" onclick="document.getElementById(\'snippet-modal\').remove()">Cancel</button><button style="padding: 8px 16px; background: #4ade80; color: #1a1a1a; border: none; border-radius: 3px; cursor: pointer; font-weight: 500;" onclick="insertSnippetWithVarsFromModal()">Insert</button></div></div></div>';
+
+      const modal = document.createElement('div');
+      modal.innerHTML = modalHtml;
+      document.body.appendChild(modal.firstElementChild);
+
+      const firstInput = document.querySelector('[data-var]');
+      if (firstInput) firstInput.focus();
+    }
+
+    function insertSnippetWithVarsFromModal() {
+      const templateVars = {};
+      const inputs = document.querySelectorAll('[data-var]');
+      for (const input of inputs) {
+        const varName = input.getAttribute('data-var');
+        templateVars[varName] = input.value || varName;
+      }
+      insertSnippetWithVars(templateVars);
+      document.getElementById('snippet-modal').remove();
+    }
+
+    function insertSnippetWithVars(templateVars) {
+      const editor = document.getElementById('toolImpl');
+      toolSnippetManager.insertSnippetAtCursor(editor, selectedToolSnippet, templateVars);
+      hideSnippetMenu();
+      showNotification('✓ Inserted snippet: ' + selectedToolSnippet.name, 'success');
+    }
+
+    function hideSnippetMenu() {
+      toolSnippetMenuOpen = false;
+      const container = document.getElementById('snippet-menu-container');
+      if (container) container.remove();
+    }
+
+    window.navigateToEditor = function(app, resourceName) {
+      const apps = {
+        'task': 'app-task-editor',
+        'tool': 'app-tool-editor',
+        'flow': 'app-flow-editor',
+        'app': 'app-app-editor'
+      };
+
+      const appId = apps[app];
+      if (!appId) {
+        console.error('Unknown app type: ' + app);
+        return;
+      }
+
+      const url = `/?app=${appId}${resourceName ? '&resource=' + encodeURIComponent(resourceName) : ''}`;
+      window.location.href = url;
+    };
+
+    window.goToTool = function(toolName) {
+      window.navigateToEditor('tool', toolName);
+    };
+
+    window.goToTask = function(taskName) {
+      window.navigateToEditor('task', taskName);
+    };
+
+    window.goToFlow = function(flowId) {
+      window.navigateToEditor('flow', flowId);
+    };
+
+    window.goToApp = function(appId) {
+      window.navigateToEditor('app', appId);
+    };
+  </script>
+  <script src="/error-suggestions.js"></script>
+  <script src="/error-handler.js"></script>
+  <script type="module">
+    import { EditorFeatures } from './editor-features.js';
+    import { ToolAutocomplete } from './tool-autocomplete.js';
+    const editorFeatures = new EditorFeatures('toolImpl');
+    const toolAutocomplete = new ToolAutocomplete('toolImpl');
+    window.editorFeatures = editorFeatures;
+    window.toolAutocomplete = toolAutocomplete;
+    document.addEventListener('DOMContentLoaded', () => {
+      editorFeatures.init();
+      toolAutocomplete.init();
+    });
+  </script>
+  <script>
+    const errorHandler = new ErrorHandler('app-tool-editor');
+    window.errorHandler = errorHandler;
+  </script>
+  <div class="execution-panel" id="executionPanel" style="display: none;">
+    <div class="execution-panel-header">
+      <div class="execution-state">
+        <span id="stepCounter">Step 0/0</span>
+        <span class="status-badge" id="execStatus">stopped</span>
+      </div>
+      <div class="execution-controls">
+        <button id="pauseBtn" onclick="debugModule.pauseExecution()" title="Pause" style="display: none;">⏸</button>
+        <button id="resumeBtn" onclick="debugModule.resumeExecution()" title="Resume" style="display: none;">▶</button>
+        <button id="stepBackBtn" onclick="debugModule.stepBackward()" title="Step Back">⬅</button>
+        <button id="stepForwardBtn" onclick="debugModule.stepForward()" title="Step Forward">➡</button>
+        <button id="closeDebugBtn" onclick="debugModule.closeExecutionPanel()" title="Close">✕</button>
+      </div>
+    </div>
+    <div class="execution-section">
+      <div class="section-header">Variables</div>
+      <div class="variables-list" id="variablesList">
+        <div style="color: #999; font-size: 12px; padding: 8px;">No variables captured</div>
+      </div>
+    </div>
+    <div class="execution-section">
+      <div class="section-header">Call Stack</div>
+      <div class="call-stack" id="callStack">
+        <div style="color: #999; font-size: 12px; padding: 8px;">No calls yet</div>
+      </div>
+    </div>
+    <div class="execution-section">
+      <div class="section-header">Timeline</div>
+      <div class="timeline-view" id="executionTimeline">
+        <div style="color: #999; font-size: 12px; padding: 8px;">No steps executed</div>
+      </div>
+    </div>
+  </div>
+  <script src="debug-module.js"></script>
+  <script>
+    window.debugModule = window.createDebugModule({
+      editorId: 'toolImpl',
+      breakpointGutterId: 'breakpointGutter',
+      executionPanelId: 'executionPanel',
+      statusBadgeId: 'execStatus',
+      stepCounterId: 'stepCounter',
+      variablesListId: 'variablesList',
+      callStackId: 'callStack',
+      timelineId: 'executionTimeline',
+      pauseBtn: 'pauseBtn',
+      resumeBtn: 'resumeBtn',
+      onConsoleLog: function(message, type) {
+        addToolConsoleLog(message, type);
+      }
+    });
+
+    document.getElementById('toolImpl').addEventListener('input', () => {
+      debugModule.renderBreakpointGutter();
+    });
+
+    window.addEventListener('load', () => {
+      debugModule.renderBreakpointGutter();
+    });
+  </script>
+</body>
+</html>
