@@ -1,7 +1,8 @@
-class FormPatternLibrary {
+import { PatternLibraryBase } from './pattern-library-base.js';
+
+class FormPatternLibrary extends PatternLibraryBase {
   constructor(themeEngine) {
-    this.theme = themeEngine;
-    this.patterns = new Map();
+    super(themeEngine);
     this.registerAllPatterns();
   }
 
@@ -712,26 +713,6 @@ class FormPatternLibrary {
     });
   }
 
-  getAllPatterns() {
-    return Array.from(this.patterns.values());
-  }
-
-  getPattern(id) {
-    return this.patterns.get(id);
-  }
-
-  getPatternsByCategory(category = 'forms') {
-    return Array.from(this.patterns.values()).filter(p => p.category === category);
-  }
-
-  searchPatterns(query) {
-    const lowerQuery = query.toLowerCase();
-    return Array.from(this.patterns.values()).filter(p =>
-      p.name.toLowerCase().includes(lowerQuery) ||
-      p.description.toLowerCase().includes(lowerQuery) ||
-      p.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
-    );
-  }
 }
 
 function createFormPatternLibrary(themeEngine) {

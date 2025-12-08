@@ -1,6 +1,8 @@
-class ChartPatternLibrary {
+import { PatternLibraryBase } from './pattern-library-base.js';
+
+class ChartPatternLibrary extends PatternLibraryBase {
   constructor() {
-    this.patterns = new Map();
+    super(null);
     this.registerAllPatterns();
   }
 
@@ -703,26 +705,6 @@ class ChartPatternLibrary {
     });
   }
 
-  getAllPatterns() {
-    return Array.from(this.patterns.values());
-  }
-
-  getPattern(id) {
-    return this.patterns.get(id);
-  }
-
-  getPatternsByCategory(category) {
-    return this.getAllPatterns().filter(p => p.category === category);
-  }
-
-  searchPatterns(query) {
-    const q = query.toLowerCase();
-    return this.getAllPatterns().filter(p =>
-      p.name.toLowerCase().includes(q) ||
-      p.description.toLowerCase().includes(q) ||
-      p.tags.some(t => t.toLowerCase().includes(q))
-    );
-  }
 }
 
 function createChartPatternLibrary() {

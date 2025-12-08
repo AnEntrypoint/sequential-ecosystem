@@ -1,6 +1,8 @@
-class ModalPatternLibrary {
+import { PatternLibraryBase } from './pattern-library-base.js';
+
+class ModalPatternLibrary extends PatternLibraryBase {
   constructor() {
-    this.patterns = new Map();
+    super(null);
     this.registerAllPatterns();
   }
 
@@ -450,26 +452,6 @@ class ModalPatternLibrary {
     });
   }
 
-  getAllPatterns() {
-    return Array.from(this.patterns.values());
-  }
-
-  getPattern(id) {
-    return this.patterns.get(id);
-  }
-
-  getPatternsByCategory(category) {
-    return this.getAllPatterns().filter(p => p.category === category);
-  }
-
-  searchPatterns(query) {
-    const q = query.toLowerCase();
-    return this.getAllPatterns().filter(p =>
-      p.name.toLowerCase().includes(q) ||
-      p.description.toLowerCase().includes(q) ||
-      p.tags.some(t => t.toLowerCase().includes(q))
-    );
-  }
 }
 
 function createModalPatternLibrary() {
