@@ -99,12 +99,42 @@ export class RealtimeClient {
     }
   }
 
-  close() {
-    if (this.ws) {
-      this.ws.close();
-      this.ws = null;
+  on(event, handler) {
+    if (!this.listeners.has(event)) {
+      this.listeners.set(event, []);
     }
-    this.isConnected = false;
+    this.listeners.get(event).push(handler);
+    return () => this.off(event, handler);
+  }
+
+  off(event, handler) {
+    if (!this.listeners.has(event)) return;
+    const handlers = this.listeners.get(event);
+    const idx = handlers.indexOf(handler);
+    if (idx >= 0) handlers.splice(idx, 1);
+  }
+
+  emit(event, data) {
+    const handlers = this.listeners.get(event) || [];
+    handlers.forEach(h => {
+      try {
+        h(data);
+      } catch (e) {
+        console.error(`Handler error on ${event}:`, e);
+      }
+    });
+  }
+
+  getChannels() {
+    return Array.from(this.channels);
+  }
+
+  disconnect() {
+    this.close();
+  }
+
+  isConnectedStatus() {
+    return this.isConnected;
   }
 }
 
