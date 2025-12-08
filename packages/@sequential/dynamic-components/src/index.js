@@ -134,3 +134,7 @@ export {
   ChartPatternLibrary,
   createChartPatternLibrary
 } from './chart-patterns.js';
+export {
+  TablePatternLibrary,
+  createTablePatternLibrary
+} from './table-patterns.js';
