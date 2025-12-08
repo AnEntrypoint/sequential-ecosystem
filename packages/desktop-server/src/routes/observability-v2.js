@@ -1,10 +1,10 @@
-const { ExecutionTracer } = require('@sequential/execution-tracer');
-const { ToolCallTracer } = require('@sequential/tool-call-tracer');
-const { CustomMetrics } = require('@sequential/custom-metrics');
-const { StateTransitionLogger } = require('@sequential/state-transition-logger');
-const { StorageQueryTracer } = require('@sequential/storage-query-tracer');
-const { AlertEngine, AlertConditions } = require('@sequential/alert-engine');
-const { formatResponse } = require('@sequential/response-formatting');
+import { ExecutionTracer } from '@sequential/execution-tracer';
+import { ToolCallTracer } from '@sequential/tool-call-tracer';
+import { CustomMetrics } from '@sequential/custom-metrics';
+import { StateTransitionLogger } from '@sequential/state-transition-logger';
+import { StorageQueryTracer } from '@sequential/storage-query-tracer';
+import { AlertEngine, AlertConditions } from '@sequential/alert-engine';
+import { formatResponse } from '@sequential/response-formatting';
 
 const tracer = new ExecutionTracer();
 const toolTracer = new ToolCallTracer();
@@ -222,7 +222,7 @@ function registerObservabilityV2Routes(app, container) {
   });
 }
 
-module.exports = {
+export {
   registerObservabilityV2Routes,
   tracer,
   toolTracer,
