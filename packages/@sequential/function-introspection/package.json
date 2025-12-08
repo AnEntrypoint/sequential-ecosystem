@@ -1,0 +1,12 @@
+{
+  "name": "@sequential/function-introspection",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./extract": "./src/extract.js",
+    "./types": "./src/types.js",
+    "./jsdoc": "./src/jsdoc.js"
+  },
+  "main": "src/index.js"
+}

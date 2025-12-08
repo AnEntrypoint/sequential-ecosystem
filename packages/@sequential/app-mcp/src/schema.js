@@ -1,65 +1,43 @@
+import { extractParameters, normalizeType } from '@sequential/function-introspection';
+
 export function extractParameterSchema(fn) {
-  const fnStr = fn.toString();
-  const paramMatch = fnStr.match(/async\s+\(\s*({[^}]+}|[^)]+)\s*\)|function\s+\w+\s*\(\s*({[^}]+}|[^)]+)\s*\)/);
+  const parameters = extractParameters(fn);
 
-  if (!paramMatch) {
-    return { type: 'object', properties: {} };
-  }
+  const properties = {};
+  const required = [];
 
-  const paramStr = paramMatch[1];
-  if (paramStr.startsWith('{')) {
-    return parseObjectDestructure(paramStr);
-  }
-
-  return {
-    type: 'object',
-    properties: {
-      [paramStr.trim()]: { type: 'string' }
+  for (const param of parameters) {
+    if (param.isDestructured) {
+      const fieldProps = {};
+      for (const field of param.fields) {
+        fieldProps[field.name] = {
+          type: normalizeType(field.type),
+          description: field.name
+        };
+      }
+      properties[param.name] = {
+        type: 'object',
+        properties: fieldProps
+      };
+      if (param.required) required.push(param.name);
+    } else {
+      properties[param.name] = { type: 'string' };
+      if (param.required) required.push(param.name);
     }
-  };
-}
-
-function parseObjectDestructure(str) {
-  const props = {};
-  const fields = str
-    .slice(1, -1)
-    .split(',')
-    .map(s => s.trim())
-    .filter(Boolean);
-
-  fields.forEach(field => {
-    const [name, type] = field.split(':').map(s => s.trim());
-    props[name] = {
-      type: inferType(type) || 'string',
-      description: name
-    };
-  });
+  }
 
   return {
     type: 'object',
-    properties: props,
-    required: Object.keys(props)
+    properties,
+    required
   };
-}
-
-function inferType(typeStr) {
-  if (!typeStr) return 'string';
-  if (typeStr.includes('number') || typeStr.includes('int')) return 'number';
-  if (typeStr.includes('boolean')) return 'boolean';
-  if (typeStr.includes('array') || typeStr.includes('[]')) return 'array';
-  if (typeStr.includes('object') || typeStr.includes('{}')) return 'object';
-  return 'string';
 }
 
 export function generateMCPTool(name, fn, description = '') {
   return {
     name,
     description: description || fn.name || 'Sequential app tool',
-    inputSchema: {
-      type: 'object',
-      properties: extractParameterSchema(fn).properties,
-      required: Object.keys(extractParameterSchema(fn).properties)
-    }
+    inputSchema: extractParameterSchema(fn)
   };
 }
 
