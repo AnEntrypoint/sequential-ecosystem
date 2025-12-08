@@ -2301,16 +2301,20 @@ function createStorageManager(appId) {
     import { TemplateGallery } from './template-gallery.js';
     import { ToolAutocomplete } from './tool-autocomplete.js';
     import { ValidationHints } from './validation-hints.js';
+    import { FindReplace } from './find-replace.js';
     const editorFeatures = new EditorFeatures('codeEditor');
     const toolAutocomplete = new ToolAutocomplete('codeEditor');
     const validationHints = new ValidationHints('codeEditor');
+    const findReplace = new FindReplace('codeEditor');
     window.editorFeatures = editorFeatures;
     window.toolAutocomplete = toolAutocomplete;
     window.validationHints = validationHints;
+    window.findReplace = findReplace;
     document.addEventListener('DOMContentLoaded', () => {
       editorFeatures.init();
       toolAutocomplete.init();
       validationHints.init();
+      findReplace.init();
     });
   </script>
   <script>

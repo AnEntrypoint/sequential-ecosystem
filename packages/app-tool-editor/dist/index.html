@@ -2018,16 +2018,20 @@ ${document.getElementById('toolImpl').value}
     import { EditorFeatures } from './editor-features.js';
     import { ToolAutocomplete } from './tool-autocomplete.js';
     import { ValidationHints } from './validation-hints.js';
+    import { FindReplace } from './find-replace.js';
     const editorFeatures = new EditorFeatures('toolImpl');
     const toolAutocomplete = new ToolAutocomplete('toolImpl');
     const validationHints = new ValidationHints('toolImpl');
+    const findReplace = new FindReplace('toolImpl');
     window.editorFeatures = editorFeatures;
     window.toolAutocomplete = toolAutocomplete;
     window.validationHints = validationHints;
+    window.findReplace = findReplace;
     document.addEventListener('DOMContentLoaded', () => {
       editorFeatures.init();
       toolAutocomplete.init();
       validationHints.init();
+      findReplace.init();
     });
   </script>
   <script>
