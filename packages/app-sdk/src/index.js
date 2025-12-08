@@ -11,6 +11,8 @@ import { createToolParameterIntrospection } from './tool-parameter-introspection
 import { createErrorClarity } from './error-clarity.js';
 import { createFeatureDetection } from './feature-detection.js';
 import { createConfigManager } from './config-manager.js';
+import { createTaskValidationMiddleware } from './task-validation-middleware.js';
+import { createFlowHandlerGenerator } from './flow-handler-generator.js';
 
 export class AppSDK {
   constructor(options = {}) {
@@ -189,4 +191,5 @@ export { createToolOrchestrator, createToolStateBroadcaster, createFlowContractT
 export { createRealtimeSubscription, createExecutionContext, setExecutionContext, getExecutionContext, withContext, createChildContext, injectContext, getCorrelationId };
 export { createToolParameterIntrospection };
 export { createErrorClarity, createFeatureDetection, createConfigManager };
+export { createTaskValidationMiddleware, createFlowHandlerGenerator };
 export default AppSDK;
