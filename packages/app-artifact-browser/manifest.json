@@ -4,7 +4,7 @@
   "type": "app",
   "version": "1.0.0",
   "description": "Browse, view, and manage all tools, tasks, and flows",
-  "entry": "dist/index.html",
+  "entry": "dist/dynamic-index.html",
   "icon": "📋",
   "capabilities": ["view-tools", "view-tasks", "view-flows", "manage-artifacts"],
   "window": {
