@@ -329,3 +329,7 @@ export {
   PatternCodeGenerator,
   createPatternCodeGenerator
 } from './pattern-code-gen.js';
+export {
+  ThemeCustomizerUI,
+  createThemeCustomizerUI
+} from './theme-customizer-ui.js';
