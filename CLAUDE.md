@@ -37,7 +37,7 @@ npx sequential-ecosystem create-flow my-flow --states 3
 npx sequential-ecosystem gui  # http://localhost:3001
 ```
 
-**New DX Features** (Dec 8, 2025 - Iteration 5: 3 Phases, Developer Velocity & Friction Reduction):
+**New DX Features** (Dec 8, 2025 - Iteration 6: Cross-Editor Debugging & Navigation):
 - ✅ **CLI Generators**: create-tool, create-app, create-flow, debug-task, inspect-flow
 - ✅ **Tool Templates**: compute, api, database, validation
 - ✅ **App Templates**: blank, dashboard, task-explorer, flow-viz, react (with package.json)
@@ -48,7 +48,11 @@ npx sequential-ecosystem gui  # http://localhost:3001
 - ✅ **Flow Validation**: Catch errors before execution
 - ✅ **Actionable Errors**: Improved error messages with fix suggestions
 - ✅ **App npm Workflow**: package.json with dev/test/lint/build scripts
-- ✅ **Task Debugging**: Built-in breakpoints, measurements, timeline reports
+- ✅ **Task Debugging** (Iteration 6): IDE-style breakpoint gutter, execution panel, step-through debugging
+- ✅ **Tool Debugging** (Iteration 6): Port of debugging module with identical capabilities
+- ✅ **Flow Debugging** (Iteration 6): State handler breakpoint debugging with execution tracking
+- ✅ **Cross-Editor Navigation** (Iteration 6): URL-based routing between Task/Tool/Flow/App editors
+- ✅ **Reusable Debug Module** (Iteration 6): Universal debugging infrastructure (4-6 hour integration per editor)
 - ✅ **Flow Visualization**: ASCII diagrams, state analysis, inspection command
 - ✅ **Dependency Management**: Auto-detect npm/CDN imports in tools
 - ✅ **React Apps**: Modern React 18 template with hooks and AppSDK
