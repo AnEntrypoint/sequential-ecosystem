@@ -170,3 +170,7 @@ export {
   PatternRegistry,
   createExtendedPatternIntegration
 } from './extended-pattern-integration.js';
+export {
+  CommandPalettePatterns,
+  createCommandPalettePatterns
+} from './command-palette-patterns.js';
