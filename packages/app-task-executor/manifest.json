@@ -4,7 +4,7 @@
   "type": "app",
   "version": "1.0.0",
   "description": "Execute pure-logic tasks with test inputs and view results",
-  "entry": "dist/index.html",
+  "entry": "dist/dynamic-index.html",
   "icon": "✓",
   "capabilities": ["execute-tasks", "test-tasks", "view-results"],
   "window": {

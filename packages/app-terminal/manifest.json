@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Full CLI with layer management, tags, and command execution",
   "icon": "📟",
-  "entry": "dist/index.html",
+  "entry": "dist/dynamic-index.html",
   "capabilities": ["sequential-os"],
   "window": {
     "defaultWidth": 800,

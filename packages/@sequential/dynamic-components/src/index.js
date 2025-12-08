@@ -110,3 +110,15 @@ export {
   LayoutSystem,
   createLayoutSystem
 } from './layout-system.js';
+export {
+  TemplateEditor,
+  createTemplateEditor
+} from './template-editor.js';
+export {
+  ExtendedPatternLibrary,
+  createExtendedPatternLibrary
+} from './extended-patterns.js';
+export {
+  ThemeCustomizer,
+  createThemeCustomizer
+} from './theme-customizer.js';
