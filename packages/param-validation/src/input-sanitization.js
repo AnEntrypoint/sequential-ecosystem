@@ -1,14 +1,8 @@
+import { escapeHtml as escape, sanitizeInput as sanitize } from '@sequential/text-encoding';
+
 export function escapeHtml(text) {
   if (!text || typeof text !== 'string') return text;
-  const map = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;',
-    '/': '&#x2F;'
-  };
-  return text.replace(/[&<>"'\\/]/g, char => map[char]);
+  return escape(text);
 }
 
 export function sanitizeInput(input, allowHtml = false) {

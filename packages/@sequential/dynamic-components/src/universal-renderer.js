@@ -1,3 +1,5 @@
+import { escapeHtml as escape } from '@sequential/text-encoding';
+
 class UniversalRenderer {
   constructor(options = {}) {
     this.rootElement = null;
@@ -436,9 +438,12 @@ class UniversalRenderer {
   }
 
   escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+    if (typeof document !== 'undefined') {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    return escape(text);
   }
 
   getCacheKey(def) {

@@ -1,7 +1,12 @@
+import { escapeHtml as escape } from '@sequential/text-encoding';
+
 export function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
+  if (typeof document !== 'undefined') {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+  return escape(text);
 }
 
 export function formatCode(html) {

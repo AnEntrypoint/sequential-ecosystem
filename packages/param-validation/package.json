@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@sequential/unified-validation": "*",
+    "@sequential/text-encoding": "*",
     "ajv": "^8.17.1",
     "ajv-formats": "^2.1.1"
   }

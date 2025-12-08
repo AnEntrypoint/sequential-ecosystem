@@ -1,3 +1,5 @@
+import { escapeHtml as escape } from '@sequential/text-encoding';
+
 class PatternHotReload {
   constructor(renderer, options = {}) {
     this.renderer = renderer;
@@ -189,9 +191,12 @@ class PatternHotReload {
   }
 
   escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+    if (typeof document !== 'undefined') {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    return escape(text);
   }
 
   recordChange(changes) {

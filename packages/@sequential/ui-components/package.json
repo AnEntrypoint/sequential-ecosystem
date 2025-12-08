@@ -19,5 +19,8 @@
     "editor",
     "toast",
     "notifications"
-  ]
+  ],
+  "dependencies": {
+    "@sequential/text-encoding": "*"
+  }
 }

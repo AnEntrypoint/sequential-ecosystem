@@ -1,3 +1,5 @@
+import { escapeHtml as escape } from '@sequential/text-encoding';
+
 class PatternDocsGenerator {
   constructor() {
     this.patterns = new Map();
@@ -406,14 +408,7 @@ class PatternDocsGenerator {
   }
 
   escapeHtml(text) {
-    const map = {
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#039;'
-    };
-    return text.replace(/[&<>"']/g, m => map[m]);
+    return escape(text);
   }
 
   exportDocumentation(patternIds = null, format = 'markdown') {
