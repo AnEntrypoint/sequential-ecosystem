@@ -8,6 +8,9 @@ import { createFlowContractTester } from './flow-contract-tester.js';
 import { createRealtimeSubscription } from './realtime-subscription.js';
 import { createExecutionContext, setExecutionContext, getExecutionContext, withContext, createChildContext, injectContext, getCorrelationId } from './execution-context.js';
 import { createToolParameterIntrospection } from './tool-parameter-introspection.js';
+import { createErrorClarity } from './error-clarity.js';
+import { createFeatureDetection } from './feature-detection.js';
+import { createConfigManager } from './config-manager.js';
 
 export class AppSDK {
   constructor(options = {}) {
@@ -185,4 +188,5 @@ export { RealtimeConnection };
 export { createToolOrchestrator, createToolStateBroadcaster, createFlowContractTester };
 export { createRealtimeSubscription, createExecutionContext, setExecutionContext, getExecutionContext, withContext, createChildContext, injectContext, getCorrelationId };
 export { createToolParameterIntrospection };
+export { createErrorClarity, createFeatureDetection, createConfigManager };
 export default AppSDK;
