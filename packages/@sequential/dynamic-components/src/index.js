@@ -325,3 +325,7 @@ export {
   MarketplaceUI,
   createMarketplaceUI
 } from './marketplace-ui.js';
+export {
+  PatternCodeGenerator,
+  createPatternCodeGenerator
+} from './pattern-code-gen.js';
