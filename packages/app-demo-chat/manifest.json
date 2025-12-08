@@ -2,7 +2,7 @@
   "id": "app-demo-chat",
   "name": "Demo Chat",
   "icon": "💬",
-  "entry": "dist/index.html",
+  "entry": "dist/dynamic-app.html",
   "description": "Demonstrates AppSDK capabilities: storage, realtime, and LLM",
   "window": {
     "defaultWidth": 700,
