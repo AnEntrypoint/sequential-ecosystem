@@ -2,6 +2,9 @@ import { RealtimeConnection } from './realtime-connection.js';
 import { ToolRegistry } from './tool-registration.js';
 import { detectEnvironment, getEnvironment, initializeGlobalEnv } from './environment-detector.js';
 import { createResponseUnwrapper } from './response-unwrapper.js';
+import { createToolOrchestrator } from './tool-orchestrator.js';
+import { createToolStateBroadcaster } from './tool-state-broadcast.js';
+import { createFlowContractTester } from './flow-contract-tester.js';
 
 export class AppSDK {
   constructor(options = {}) {
@@ -176,4 +179,5 @@ export class AppSDK {
 }
 
 export { RealtimeConnection };
+export { createToolOrchestrator, createToolStateBroadcaster, createFlowContractTester };
 export default AppSDK;
