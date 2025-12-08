@@ -72,8 +72,11 @@ npx sequential-ecosystem gui  # http://localhost:3001
 - ✅ **State Context Breadcrumbs** (Iteration 22): Auto-attaches state context to errors in flows (which state, path, input/output)
 - ✅ **Tool Invocation Validator** (Iteration 22): Pre-validates tool parameters before sending, prevents runtime errors
 - ✅ **Execution Checkpointer** (Iteration 22): Auto-checkpoints execution state, enables resume after reload
+- ✅ **Entity Relationship Mapper** (Iteration 23): Bidirectional dependency discovery (which flows use task, which tasks use tool)
+- ✅ **Execution Trail** (Iteration 23): Provenance tracking - shows who called task and from where (CLI vs app)
+- ✅ **Tool Invocation Composer** (Iteration 23): Unified tool discovery + composition with examples, validation, fixes
 
-**Total DX Coverage: 99.99%** (22 iterations, 61 total enhancements across primary/secondary/tertiary/quaternary/quinary friction)
+**Total DX Coverage: 99.99%+** (23 iterations, 64 total enhancements across primary/secondary/tertiary/quaternary/quinary/senary friction)
 
 ## Critical Constraints
 | Constraint | Solution |
