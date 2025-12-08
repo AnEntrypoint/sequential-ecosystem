@@ -37,7 +37,7 @@ npx sequential-ecosystem create-flow my-flow --states 3
 npx sequential-ecosystem gui  # http://localhost:3001
 ```
 
-**New DX Features** (Dec 7-8, 2025 - 21 Iterations, 99.97% DX Coverage):
+**New DX Features** (Dec 8, 2025 - Iteration 5: 3 Phases, Developer Velocity & Friction Reduction):
 - ✅ **CLI Generators**: create-tool, create-app, create-flow, debug-task, inspect-flow
 - ✅ **Tool Templates**: compute, api, database, validation
 - ✅ **App Templates**: blank, dashboard, task-explorer, flow-viz, react (with package.json)
@@ -87,8 +87,11 @@ npx sequential-ecosystem gui  # http://localhost:3001
 - ✅ **Optimization Hints Engine** (Iteration 26): Smart analysis detects error rates, variance, slowness with estimated improvement %
 - ✅ **Execution Comparison** (Iteration 26): Baseline vs current comparison with regression testing (status, performance, output)
 - ✅ **Code Coverage Integration** (Iteration 26): Per-file coverage metrics, progress visualization, path tracking
+- ✅ **Keyboard Shortcuts** (Iteration 5, Phase 1): F5/Ctrl+Enter execution, Ctrl+S save, ? help modal in all editors
+- ✅ **Tool Name Autocomplete** (Iteration 5, Phase 2): Pattern-aware autocomplete for `__callHostTool__` calls with cached tool list
+- ✅ **Server Auto-Save** (Iteration 5, Phase 3): 3-second debounced auto-save across Task/Tool/Flow/App editors with visual status indicators
 
-**Total DX Coverage: 99.99%+** (26 iterations, 75 total enhancements + advanced debugging across primary through senary friction)
+**Total DX Coverage: 99.99%+** (Iteration 5 complete: 3 phases, 78+ total enhancements across 26+ iterations)
 
 ## Critical Constraints
 | Constraint | Solution |
