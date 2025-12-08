@@ -249,3 +249,11 @@ export {
   PatternInteractionStates,
   createPatternInteractionStates
 } from './pattern-interactions.js';
+export {
+  PatternAnimations,
+  createPatternAnimations
+} from './pattern-animations.js';
+export {
+  PatternLayoutSystem,
+  createPatternLayoutSystem
+} from './pattern-layouts.js';
