@@ -2302,19 +2302,23 @@ function createStorageManager(appId) {
     import { ToolAutocomplete } from './tool-autocomplete.js';
     import { ValidationHints } from './validation-hints.js';
     import { FindReplace } from './find-replace.js';
+    import { CommandPalette } from './command-palette.js';
     const editorFeatures = new EditorFeatures('codeEditor');
     const toolAutocomplete = new ToolAutocomplete('codeEditor');
     const validationHints = new ValidationHints('codeEditor');
     const findReplace = new FindReplace('codeEditor');
+    const commandPalette = new CommandPalette('codeEditor', 'task');
     window.editorFeatures = editorFeatures;
     window.toolAutocomplete = toolAutocomplete;
     window.validationHints = validationHints;
     window.findReplace = findReplace;
+    window.commandPalette = commandPalette;
     document.addEventListener('DOMContentLoaded', () => {
       editorFeatures.init();
       toolAutocomplete.init();
       validationHints.init();
       findReplace.init();
+      commandPalette.init();
     });
   </script>
   <script>
