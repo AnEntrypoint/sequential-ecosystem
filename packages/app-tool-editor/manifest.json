@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Tool definition editor with import/dependency management",
   "icon": "🔧",
-  "entry": "dist/index.html",
+  "entry": "dist/dynamic-app.html",
   "capabilities": ["zellous"],
   "dependencies": {
     "@sequential/zellous-client-sdk": "^1.0.0"
