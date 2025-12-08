@@ -78,8 +78,12 @@ npx sequential-ecosystem gui  # http://localhost:3001
 - ✅ **Schema Invalidation Tracker** (Iteration 24): Prevents stale tool schema cache during CLI→App transitions
 - ✅ **Broadcast Sequence Controller** (Iteration 24): Guarantees ordering in concurrent tool execution updates
 - ✅ **Atomic Write Controller** (Iteration 24): Prevents filesystem corruption during concurrent storage writes
+- ✅ **Paradigm Choice Guide** (Iteration 25): Decision framework for Task vs Flow (branching, error handling, audit)
+- ✅ **Tool Lifecycle Reference** (Iteration 25): Registration methods, persistence, visibility, schema invalidation
+- ✅ **Debugging Context Layers** (Iteration 25): Four-layer debugging model (correlation, breadcrumbs, state, trail)
+- ✅ **Mastery Path** (Iteration 25): Meta-guide connecting concepts for expert-level understanding
 
-**Total DX Coverage: 99.99%+** (24 iterations, 67 total enhancements across primary/secondary/tertiary/quaternary/quinary/senary/septenary friction)
+**Total DX Coverage: 99.99%+** (25 iterations, 70 total enhancements + 4 mastery guides across primary through senary friction)
 
 ## Critical Constraints
 | Constraint | Solution |
