@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Advanced observability and debugging dashboard for Sequential apps",
   "icon": "🔍",
-  "entry": "dist/index.html",
+  "entry": "dist/dynamic-index.html",
   "capabilities": ["sequential-os"],
   "window": {
     "defaultWidth": 1400,
