@@ -1,6 +1,6 @@
 # Sequential Ecosystem - Completed Work & Roadmap
 
-**Status**: Phase 3a, 3b, & 3c COMPLETE (Dec 8, 2025) | 99% Feature Completeness | Production Ready
+**Status**: Phase 3a, 3b, 3c, & 3d COMPLETE (Dec 8, 2025) | 99% Feature Completeness | Production Ready
 
 **Latest Session Completions** (Dec 8, 2025 - Code Consolidation & Architecture Deduplication):
 
@@ -39,9 +39,15 @@
   - Commit: 231a9f8
   - Build: ✅ PASSING
 
-- **PENDING**: Phase 3d - Realtime Client Consolidation
-  - Unify WebSocket subscription logic (2 implementations, ~450 LOC)
-  - Create enhanced @sequential/realtime-client module
+- ✅ **Phase 3d: Realtime Client Consolidation Complete** (CRITICAL)
+  - Enhanced @sequential/realtime-sync/src/client.js (RealtimeClient) with event API
+  - Added: on(), off(), emit(), getChannels(), disconnect(), isConnectedStatus()
+  - Created migration wrappers: realtime-connection.js (extends RealtimeClient), realtime-subscription.js (factory)
+  - Updated app-sdk package.json with @sequential/realtime-sync dependency
+  - Consolidated: ~450 LOC of duplicate WebSocket subscription logic
+  - Single source of truth for realtime communication across ecosystem
+  - Commit: 8da269f
+  - Build: ✅ PASSING
 
 - **PENDING**: Phase 3e+ - Additional Consolidations
   - Text encoding (input sanitization): ~280 LOC
