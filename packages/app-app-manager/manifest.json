@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Manage, create, and configure Sequential apps",
   "icon": "📦",
-  "entry": "dist/index.html",
+  "entry": "dist/dynamic-app.html",
   "capabilities": ["sequential-os"],
   "window": {
     "defaultWidth": 1000,
