@@ -130,6 +130,10 @@ export {
   createFormPatternLibrary
 } from './form-patterns.js';
 export {
+  FormPatternsExtended,
+  createFormPatternsExtended
+} from './form-patterns-extended.js';
+export {
   ListPatternLibrary,
   createListPatternLibrary
 } from './list-patterns.js';
