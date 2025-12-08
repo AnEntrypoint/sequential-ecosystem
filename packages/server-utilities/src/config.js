@@ -1,3 +1,7 @@
+import { createSimpleCache, createCacheKey } from '@sequential/config-management';
+
+const cacheManager = createSimpleCache({ ttl: parseInt(process.env.CACHE_TTL_MS || '30000') });
+
 export const CONFIG = {
   server: {
     port: parseInt(process.env.PORT || '8003'),
@@ -38,10 +42,24 @@ export const CONFIG = {
     defaultLogLimit: parseInt(process.env.DEFAULT_LOG_LIMIT || '100')
   },
   cache: {
-    ttlMs: parseInt(process.env.CACHE_TTL_MS || '30000')
+    ttlMs: parseInt(process.env.CACHE_TTL_MS || '30000'),
+    manager: cacheManager,
+    createKey: (category, params) => createCacheKey(category, params)
   },
   hotReload: {
     enabled: process.env.HOT_RELOAD !== 'false',
     debounceDelay: 100
   }
 };
+
+export function getFromCache(key) {
+  return cacheManager.get(key);
+}
+
+export function setCache(key, data) {
+  cacheManager.set(key, data);
+}
+
+export function invalidateCache(pattern) {
+  cacheManager.invalidate(pattern);
+}
