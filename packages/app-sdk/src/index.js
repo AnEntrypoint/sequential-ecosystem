@@ -22,6 +22,9 @@ import { createExecutionCheckpointer } from './execution-checkpointer.js';
 import { createEntityRelationshipMapper } from './entity-relationship-mapper.js';
 import { createExecutionTrail } from './execution-trail.js';
 import { createToolInvocationComposer } from './tool-invocation-composer.js';
+import { createSchemaInvalidationTracker } from './schema-invalidation-tracker.js';
+import { createBroadcastSequenceController } from './broadcast-sequence-controller.js';
+import { createAtomicWriteController } from './atomic-write-controller.js';
 
 export class AppSDK {
   constructor(options = {}) {
@@ -204,4 +207,5 @@ export { createTaskValidationMiddleware, createFlowHandlerGenerator };
 export { createAppSDKFactory, createExecutionBreadcrumbs, createValidationErrorSuggestions };
 export { createStateContextBreadcrumbs, createToolInvocationValidator, createExecutionCheckpointer };
 export { createEntityRelationshipMapper, createExecutionTrail, createToolInvocationComposer };
+export { createSchemaInvalidationTracker, createBroadcastSequenceController, createAtomicWriteController };
 export default AppSDK;
