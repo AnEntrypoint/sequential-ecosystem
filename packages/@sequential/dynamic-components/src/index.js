@@ -313,3 +313,7 @@ export {
   PatternAISuggestions,
   createPatternAISuggestions
 } from './pattern-ai-suggestions.js';
+export {
+  PerformanceOptimizer,
+  createPerformanceOptimizer
+} from './performance-optimizer.js';
