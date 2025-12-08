@@ -226,3 +226,7 @@ export {
   PatternSearchIndex,
   createPatternSearchIndex
 } from './pattern-search.js';
+export {
+  PatternThemeManager,
+  createPatternThemeManager
+} from './pattern-theming.js';
