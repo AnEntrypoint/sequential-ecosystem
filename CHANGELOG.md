@@ -66,19 +66,32 @@ All notable changes to this project will be documented in this file.
   - Impact: Unified HTML escaping API, centralized sensitive data redaction, simplified base64 handling
   - Build verification: ✅ PASSING
 
-#### Phase 3f+: Remaining Consolidation Roadmap (PENDING)
+#### Phase 3f: Function Introspection Consolidation (CRITICAL) - Commit 0a70cb3
+- ✅ **@sequential/function-introspection Module Created**
+  - Consolidated parameter extraction, type inference, and JSDoc parsing
+  - New module: 231 lines across 4 focused files
+  - extract.js (68L): extractParameters, extractFunctionMetadata, createParameterValidator
+  - types.js (88L): normalizeType, inferType, generateJsonSchema, createTypeValidator
+  - jsdoc.js (75L): extractJSDoc, parseJSDocParam, extractReturnType, mergeParameterWithJSDoc
+  - Created migration wrapper: app-mcp/schema.js now uses function-introspection exports
+  - Consolidated: ~250 LOC of duplicate parameter extraction and type inference logic
+  - Single source of truth for function introspection, type normalization, and JSDoc parsing
+  - Features: Destructured parameter support, caching, JSDoc metadata extraction, JSON Schema generation
+  - Impact: Unified parameter extraction API across tool-parameter-introspection, app-mcp, task-validation
+  - Build verification: ✅ PASSING
+
+#### Phase 3g+: Remaining Consolidation Roadmap (PENDING)
 - 📊 **Comprehensive Code Duplication Audit Progress**
   - Scanned 639 JavaScript files across 50+ packages
   - Identified 10 major duplication categories (~4,180 LOC total across codebase)
-  - Completed 5 major consolidations (Phase 3a-3e): ~2,680 LOC eliminated
-  - Phase 3f+: Additional consolidations (~1,500 LOC remaining):
-    - Introspection logic (76% duplication, ~350 LOC)
+  - Completed 6 major consolidations (Phase 3a-3f): ~2,930 LOC eliminated
+  - Phase 3g+: Final consolidations (~1,250 LOC remaining):
     - Config/caching utilities (74% duplication, ~280 LOC)
     - Error serialization (80% duplication, ~320 LOC)
     - Handler wrappers (72% duplication, ~250 LOC)
-    - And 1 additional category (~300 LOC)
-  - Phase 3 Progress: ~2,680 LOC consolidated into 4 new @sequential/* modules
-  - Estimated total impact after all phases: 65-75% reduction in utility/shared code duplication
+    - And remaining categories (~400 LOC)
+  - Phase 3 Progress: ~2,930 LOC consolidated into 5 new @sequential/* modules
+  - Estimated total impact after all phases: 70% reduction in utility/shared code duplication
   - Full consolidation roadmap: 10 new @sequential/* modules planned
 
 ## [Unreleased] - Comprehensive Architecture Refactoring (Dec 8, 2025 - Phase 2)

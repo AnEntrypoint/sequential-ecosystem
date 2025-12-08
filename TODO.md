@@ -1,6 +1,6 @@
 # Sequential Ecosystem - Completed Work & Roadmap
 
-**Status**: Phase 3a-3e COMPLETE (Dec 8, 2025) | 99% Feature Completeness | Production Ready
+**Status**: Phase 3a-3f COMPLETE (Dec 8, 2025) | 99% Feature Completeness | Production Ready
 
 **Latest Session Completions** (Dec 8, 2025 - Code Consolidation & Architecture Deduplication):
 
@@ -59,10 +59,22 @@
   - Commit: e27e869
   - Build: ✅ PASSING
 
-- **PENDING**: Phase 3f+ - Additional Consolidations
-  - Introspection (parameter/JSDoc parsing): ~350 LOC
+- ✅ **Phase 3f: Function Introspection Consolidation Complete** (CRITICAL)
+  - Created @sequential/function-introspection module with parameter and type utilities
+  - New module: 231 lines across 4 focused files (extract 68L, types 88L, jsdoc 75L)
+  - Unified exports: extractParameters, normalizeType, inferType, generateJsonSchema, extractJSDoc, mergeParameterWithJSDoc
+  - Created migration wrapper: app-mcp schema.js now delegates to function-introspection
+  - Consolidated: ~250 LOC of duplicate parameter extraction and type inference
+  - Single source of truth for function introspection across ecosystem
+  - Supports destructured parameters, JSDoc parsing, type normalization
+  - Commit: 0a70cb3
+  - Build: ✅ PASSING
+
+- **PENDING**: Phase 3g+ - Final Consolidations
   - Config/caching utilities: ~280 LOC
-  - And 2 additional categories (~500 LOC total)
+  - Error serialization: ~320 LOC
+  - Handler wrappers: ~250 LOC
+  - And remaining categories (~300 LOC total)
 
 **Previous Phase Completions** (Dec 8, 2025 - File Size Refactoring):
 
