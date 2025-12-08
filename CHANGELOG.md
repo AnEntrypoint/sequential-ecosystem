@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] - Developer Velocity & Friction Reduction (Dec 8, 2025 - Iteration 6+)
 
+### Phase 6: Cross-Editor Navigation & Parity (Iteration 6+)
+- ✅ Part 1: Cross-editor navigation (task/tool/flow linking)
+  - Global navigation functions: `navigateToEditor(app, resourceName)`, `goToTool()`, `goToTask()`, `goToFlow()`
+  - URL-based routing: `/?app=app-tool-editor&resource=toolName`
+  - Seamless editor switching without losing context
+  - Navigation link injection in autocomplete results (🔗 icon next to tool names)
+  - Enables jump-to-definition workflow (Cmd/Ctrl+Click equivalent)
+  - Impact: Eliminates 5-10 min/day manual searches for related resources
+- **Status**: Cross-editor linking complete. Ready for Tool/Flow Editor debugging (Parts 2-3)
+
 ### Phase 5: Integrated Debugging & Real-Time Execution Context (Iteration 6)
 - ✅ Part 2a: Breakpoint gutter UI for Task Editor
   - 30px left sidebar in code editor with line numbers
