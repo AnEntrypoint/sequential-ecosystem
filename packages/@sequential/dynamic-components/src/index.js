@@ -198,3 +198,11 @@ export {
   PatternCollaborationUI,
   createPatternCollaborationUI
 } from './pattern-collaboration-ui.js';
+export {
+  PatternProfiler,
+  createPatternProfiler
+} from './pattern-profiler.js';
+export {
+  PatternProfilerUI,
+  createPatternProfilerUI
+} from './pattern-profiler-ui.js';
