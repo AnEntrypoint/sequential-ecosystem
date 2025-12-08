@@ -317,3 +317,11 @@ export {
   PerformanceOptimizer,
   createPerformanceOptimizer
 } from './performance-optimizer.js';
+export {
+  PatternEditor,
+  createPatternEditor
+} from './pattern-editor.js';
+export {
+  MarketplaceUI,
+  createMarketplaceUI
+} from './marketplace-ui.js';
