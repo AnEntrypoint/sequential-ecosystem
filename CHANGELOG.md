@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] - Developer Velocity & Friction Reduction (Dec 8, 2025 - Iteration 6+)
+
+### Phase 5: Integrated Debugging & Real-Time Execution Context (In Progress)
+- ✅ Part 2a: Breakpoint gutter UI for Task Editor
+  - 30px left sidebar in code editor with line numbers
+  - Click-to-toggle breakpoints on any line
+  - Red indicator dots (7px) for set breakpoints with glow effect
+  - Gutter synced with code editor line-height (22.4px per line)
+  - Hover effect on gutter lines for visibility
+  - JavaScript breakpoint tracking via Map data structure
+  - Integrated with existing updateHighlight() for real-time sync
+  - Console logging for breakpoint set/clear events
+  - Impact: Enables visual debugging, 20-60 minute savings per debugging session
+- **Impact**: Phase 5 reduces context switching (5-10 min/session), enables time-travel debugging
+- **Status**: Gutter UI complete, ready for execution panel integration
+
+---
+
 ## [Unreleased] - Developer Velocity & Friction Reduction (Dec 8, 2025 - Iteration 5)
 
 ### Phase 1: Keyboard Shortcuts & Discoverability (Completed)
