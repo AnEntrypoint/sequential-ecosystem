@@ -309,3 +309,7 @@ export {
   PatternMarketplace,
   createPatternMarketplace
 } from './pattern-marketplace.js';
+export {
+  PatternAISuggestions,
+  createPatternAISuggestions
+} from './pattern-ai-suggestions.js';
