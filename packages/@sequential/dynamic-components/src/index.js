@@ -186,3 +186,7 @@ export {
   AccessibilityPatternLibrary,
   createAccessibilityPatternLibrary
 } from './accessibility-patterns.js';
+export {
+  PatternDependencyGraph,
+  createPatternDependencyGraph
+} from './pattern-dependency-graph.js';
