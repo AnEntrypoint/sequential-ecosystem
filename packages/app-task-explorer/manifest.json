@@ -1,0 +1,25 @@
+{
+  "id": "app-task-explorer",
+  "name": "Task Explorer",
+  "description": "Comprehensive task discovery, execution, and monitoring interface",
+  "version": "1.0.0",
+  "category": "tasks",
+  "icon": "🎯",
+  "entry": "dist/index.html",
+  "features": [
+    "Task discovery and search",
+    "Real-time execution monitoring",
+    "Task input validation",
+    "Execution history explorer",
+    "Performance metrics",
+    "Error tracking and debugging",
+    "Task composition and chaining",
+    "Custom input/output visualization"
+  ],
+  "permissions": [
+    "read:tasks",
+    "execute:tasks",
+    "read:execution-history",
+    "read:metrics"
+  ]
+}
