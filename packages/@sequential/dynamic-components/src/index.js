@@ -190,3 +190,11 @@ export {
   PatternDependencyGraph,
   createPatternDependencyGraph
 } from './pattern-dependency-graph.js';
+export {
+  PatternCollaborationManager,
+  createPatternCollaborationManager
+} from './pattern-collaboration.js';
+export {
+  PatternCollaborationUI,
+  createPatternCollaborationUI
+} from './pattern-collaboration-ui.js';
