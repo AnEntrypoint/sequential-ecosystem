@@ -2,6 +2,46 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] - Developer Tools Enhanced + Shared Utilities (Dec 8, 2025)
+
+### Developer Tools Enhancements
+- **App Editor** (`app-app-editor`):
+  - ✅ Added auto-save with 3-second debounce
+  - ✅ Added manifest editor with JSON validation
+  - ✅ Added keyboard shortcut: Ctrl+S for save
+  - ✅ Added unsaved changes indicator
+  - ✅ Added app export to JSON with full state
+  - ✅ Enhanced file persistence with proper API handling
+- **Task Editor** (`app-task-editor`):
+  - ✅ Added code templates dropdown (3 templates: simple, async, error-handling)
+  - ✅ Enhanced template system with quick-apply functionality
+  - ✅ Improved task creation and switching
+- **Tool Editor** (`app-tool-editor`):
+  - ✅ Added MCP (Model Context Protocol) preview tab
+  - ✅ Real-time MCP definition generation
+  - ✅ Tool resource URI generation
+  - ✅ Input schema auto-generation from parameters
+- **Shared Utilities** (`dev-tools-shared.js`):
+  - ✅ Created unified keyboard shortcuts system
+  - ✅ Added toast notification system
+  - ✅ Created code template library for tasks and flows
+  - ✅ Added built-in validators (task code, flow JSON)
+  - ✅ Created auto-save manager utility
+  - ✅ Added code formatting utility wrapper
+
+### Files Modified
+- `packages/app-app-editor/dist/index.html` (+100 lines, enhanced features)
+- `packages/app-task-editor/dist/index.html` (+40 lines, templates)
+- `packages/app-tool-editor/dist/index.html` (+50 lines, MCP preview)
+- `packages/desktop-shell/public/dev-tools-shared.js` (NEW, 180 lines)
+
+### Developer Experience Improvements
+- **Keyboard Shortcuts**: Ctrl+S (save), Ctrl+E (export), Ctrl+H (help), F1 (docs)
+- **Template System**: Pre-built code snippets for common patterns
+- **MCP Visibility**: Preview how tools appear to LLM clients
+- **Auto-Save**: Automatic periodic save to prevent data loss
+- **Manifest Editing**: Direct JSON editing for app configuration
+
 ## [Unreleased] - Session Complete: Observability Enabled + AppSDK Enhanced (Dec 5, 2025)
 
 ### Project Completeness Summary
