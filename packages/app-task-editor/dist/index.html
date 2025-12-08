@@ -2300,13 +2300,17 @@ function createStorageManager(appId) {
     import { EditorFeatures } from './editor-features.js';
     import { TemplateGallery } from './template-gallery.js';
     import { ToolAutocomplete } from './tool-autocomplete.js';
+    import { ValidationHints } from './validation-hints.js';
     const editorFeatures = new EditorFeatures('codeEditor');
     const toolAutocomplete = new ToolAutocomplete('codeEditor');
+    const validationHints = new ValidationHints('codeEditor');
     window.editorFeatures = editorFeatures;
     window.toolAutocomplete = toolAutocomplete;
+    window.validationHints = validationHints;
     document.addEventListener('DOMContentLoaded', () => {
       editorFeatures.init();
       toolAutocomplete.init();
+      validationHints.init();
     });
   </script>
   <script>
