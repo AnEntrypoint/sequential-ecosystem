@@ -5,29 +5,42 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased] - Code Consolidation & Deduplication (Dec 8, 2025 - Phase 3)
 
 ### Architecture & Maintenance
-- ✅ **@sequential/unified-validation Module Created** (CRITICAL)
+
+#### Phase 3a: Validation Consolidation (CRITICAL) - Commit e72ee3a
+- ✅ **@sequential/unified-validation Module Created**
   - Consolidated 5 duplicate validation implementations into single shared module
   - New module: 552 lines across 8 focused files (<90L each)
+  - Exports: ajv-instance, schema-compiler, field-validators, type-validators, validation-result, error-formatter
   - Unified AJV singleton, schema compiler, field validators, type checking
   - Backward-compatible migration completed for param-validation and app-sdk
   - Eliminated: ~800 LOC of duplicate validation code across codebase
   - Impact: Single AJV instance system-wide (reduced memory overhead)
   - Build verification: ✅ PASSING
 
-- 📊 **Comprehensive Code Duplication Audit** (Phase 3 Roadmap)
+#### Phase 3b: Response Formatting Consolidation (CRITICAL) - Commit e8425a1
+- ✅ **@sequential/response-formatting Enhanced as Single Source of Truth**
+  - Enhanced package with unified response builder functions
+  - Added 7 new functions: createSuccessResponse, createErrorResponse, createListResponse, createPaginatedResponse, createMetricsResponse, createBatchResponse, formatErrorForResponse
+  - Updated core/modules/response to re-export from response-formatting (backward compatible)
+  - Eliminated: ~650 LOC of duplicate response formatting code across 3 locations (core, error-handling, response-formatting)
+  - Single consistent response envelope format across entire codebase
+  - Impact: Guaranteed consistent API response structure system-wide
+  - Build verification: ✅ PASSING
+
+#### Phase 3c-e: Remaining Consolidation Roadmap (PENDING)
+- 📊 **Comprehensive Code Duplication Audit**
   - Scanned 639 JavaScript files across 50+ packages
-  - Identified 10 major duplication categories (~4,180 LOC total)
-  - Validation logic: 95% duplication (5 implementations) → RESOLVED (Phase 3a)
-  - Error handling: 92% duplication (3 implementations) → PENDING (Phase 3b)
-  - Breadcrumb tracking: 88% duplication (4 implementations) → PENDING (Phase 3c)
-  - WebSocket management: 85% duplication (2 implementations) → PENDING (Phase 3d)
-  - Input sanitization: 82% duplication (3 implementations)
-  - Error serialization: 80% duplication (2 implementations)
-  - Introspection logic: 76% duplication (2 implementations)
-  - Config/cache: 74% duplication (3 implementations)
-  - Handler wrappers: 72% duplication (3 implementations)
-  - Consolidation roadmap: 10 new @sequential/* modules planned
-  - Estimated total impact: 65-75% reduction in utility/shared code duplication
+  - Identified 10 major duplication categories (~4,180 LOC total across codebase)
+  - Phase 3c: Breadcrumb tracking consolidation (4 implementations, ~500 LOC)
+  - Phase 3d: WebSocket/Realtime consolidation (2 implementations, ~450 LOC)
+  - Phase 3e+: Additional consolidations (~1,480 LOC):
+    - Text encoding/sanitization (82% duplication, ~280 LOC)
+    - Introspection logic (76% duplication, ~350 LOC)
+    - Config/caching utilities (74% duplication, ~280 LOC)
+    - Error serialization (80% duplication, ~320 LOC)
+    - Handler wrappers (72% duplication, ~250 LOC)
+  - Estimated total impact after all phases: 65-75% reduction in utility/shared code duplication
+  - Full consolidation roadmap: 10 new @sequential/* modules planned
 
 ## [Unreleased] - Comprehensive Architecture Refactoring (Dec 8, 2025 - Phase 2)
 
