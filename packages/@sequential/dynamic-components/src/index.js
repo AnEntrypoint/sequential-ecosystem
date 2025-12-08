@@ -138,3 +138,7 @@ export {
   TablePatternLibrary,
   createTablePatternLibrary
 } from './table-patterns.js';
+export {
+  ModalPatternLibrary,
+  createModalPatternLibrary
+} from './modal-patterns.js';
