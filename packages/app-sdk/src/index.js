@@ -1,15 +1,22 @@
 import { RealtimeConnection } from './realtime-connection.js';
 import { ToolRegistry } from './tool-registration.js';
+import { detectEnvironment, getEnvironment, initializeGlobalEnv } from './environment-detector.js';
+import { createResponseUnwrapper } from './response-unwrapper.js';
 
 export class AppSDK {
   constructor(options = {}) {
-    this.baseUrl = options.baseUrl || 'http://localhost:8003';
+    const env = options.detectEnv !== false ? getEnvironment() : {};
+    this.baseUrl = options.baseUrl || env.baseUrl || 'http://localhost:8003';
     this.appId = options.appId;
     this.userId = options.userId;
     this.sessionToken = options.sessionToken;
-    this.wsUrl = options.wsUrl || 'ws://localhost:8003';
+    this.wsUrl = options.wsUrl || env.wsUrl || 'ws://localhost:8003';
     this.tools = new ToolRegistry(this.baseUrl);
     this.autoRegister = options.autoRegister !== false;
+    this.unwrapper = options.autoUnwrap !== false ? createResponseUnwrapper() : null;
+    if (this.unwrapper && options.installGlobalFetch !== false) {
+      this.unwrapper.install();
+    }
   }
 
   async storage(action, ...args) {
