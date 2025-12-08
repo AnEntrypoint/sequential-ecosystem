@@ -241,3 +241,11 @@ export {
   PatternMigration,
   createPatternMigration
 } from './pattern-migration.js';
+export {
+  PatternVisualComposer,
+  createPatternVisualComposer
+} from './pattern-visual-composer.js';
+export {
+  PatternInteractionStates,
+  createPatternInteractionStates
+} from './pattern-interactions.js';
