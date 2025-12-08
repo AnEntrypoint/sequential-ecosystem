@@ -281,3 +281,11 @@ export {
   UIToolkit,
   createUIToolkit
 } from './ui-toolkit.js';
+export {
+  PatternHotReload,
+  createPatternHotReload
+} from './pattern-hot-reload.js';
+export {
+  PatternCompositionBuilder,
+  createPatternCompositionBuilder
+} from './pattern-composition-builder.js';
