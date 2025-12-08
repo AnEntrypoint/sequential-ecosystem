@@ -37,7 +37,7 @@ npx sequential-ecosystem create-flow my-flow --states 3
 npx sequential-ecosystem gui  # http://localhost:3001
 ```
 
-**New DX Features** (Dec 8, 2025 - Iteration 6: Cross-Editor Debugging & Navigation):
+**New DX Features** (Dec 8, 2025 - Iteration 7: Advanced Editing & Code Assistance):
 - ✅ **CLI Generators**: create-tool, create-app, create-flow, debug-task, inspect-flow
 - ✅ **Tool Templates**: compute, api, database, validation
 - ✅ **App Templates**: blank, dashboard, task-explorer, flow-viz, react (with package.json)
@@ -53,6 +53,12 @@ npx sequential-ecosystem gui  # http://localhost:3001
 - ✅ **Flow Debugging** (Iteration 6): State handler breakpoint debugging with execution tracking
 - ✅ **Cross-Editor Navigation** (Iteration 6): URL-based routing between Task/Tool/Flow/App editors
 - ✅ **Reusable Debug Module** (Iteration 6): Universal debugging infrastructure (4-6 hour integration per editor)
+- ✅ **Find & Replace** (Iteration 7): Ctrl+H for complete find/replace with regex support and match navigation
+- ✅ **Command Palette** (Iteration 7): Ctrl+K with 20+ fuzzy-filterable commands across all editors
+- ✅ **Tool Name Autocomplete** (Iteration 7): Fuzzy matching with parameter hints, top 10 ranked results
+- ✅ **Real-Time Validation Hints** (Iteration 7): Detect missing await, error handling, unused vars, syntax issues
+- ✅ **Inline Parameter Hints** (Iteration 7): Context-aware __callHostTool__ parameter schema display
+- ✅ **Shared UI Components** (Iteration 7): Consolidated toast, storage, keyboard utilities (-300 LOC)
 - ✅ **Flow Visualization**: ASCII diagrams, state analysis, inspection command
 - ✅ **Dependency Management**: Auto-detect npm/CDN imports in tools
 - ✅ **React Apps**: Modern React 18 template with hooks and AppSDK
