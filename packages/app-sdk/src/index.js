@@ -16,6 +16,9 @@ import { createFlowHandlerGenerator } from './flow-handler-generator.js';
 import { createAppSDKFactory } from './app-sdk-factory.js';
 import { createExecutionBreadcrumbs } from './execution-breadcrumbs.js';
 import { createValidationErrorSuggestions } from './validation-error-suggestions.js';
+import { createStateContextBreadcrumbs } from './state-context-breadcrumbs.js';
+import { createToolInvocationValidator } from './tool-invocation-validator.js';
+import { createExecutionCheckpointer } from './execution-checkpointer.js';
 
 export class AppSDK {
   constructor(options = {}) {
@@ -196,4 +199,5 @@ export { createToolParameterIntrospection };
 export { createErrorClarity, createFeatureDetection, createConfigManager };
 export { createTaskValidationMiddleware, createFlowHandlerGenerator };
 export { createAppSDKFactory, createExecutionBreadcrumbs, createValidationErrorSuggestions };
+export { createStateContextBreadcrumbs, createToolInvocationValidator, createExecutionCheckpointer };
 export default AppSDK;
