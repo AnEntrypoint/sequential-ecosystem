@@ -888,6 +888,17 @@
         layoutGuides = new LayoutGuides('#liveCanvas');
         previewModal = new PreviewModal();
 
+        const patternLibraries = {
+          form: window.patternLibraries?.form || { getAllPatterns: () => [] },
+          list: window.patternLibraries?.list || { getAllPatterns: () => [] },
+          chart: window.patternLibraries?.chart || { getAllPatterns: () => [] },
+          table: window.patternLibraries?.table || { getAllPatterns: () => [] },
+          modal: window.patternLibraries?.modal || { getAllPatterns: () => [] },
+          grid: window.patternLibraries?.grid || { getAllPatterns: () => [] }
+        };
+        initPatternDiscovery(patternLibraries);
+        window.patternDiscoveryIntegration = patternDiscoveryIntegration;
+
         liveCanvas.setComponentTree(componentTree);
 
         visualEditor.addEventListener('component-selected', (e) => {
