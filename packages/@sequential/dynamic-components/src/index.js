@@ -237,3 +237,7 @@ export {
   Assertion,
   createPatternTestSuite
 } from './pattern-testing.js';
+export {
+  PatternMigration,
+  createPatternMigration
+} from './pattern-migration.js';
