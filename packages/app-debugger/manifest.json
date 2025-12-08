@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Layer history, status dashboard, and file change tracking",
   "icon": "🔍",
-  "entry": "dist/index.html",
+  "entry": "dist/dynamic-app.html",
   "capabilities": ["sequential-os"],
   "window": {
     "defaultWidth": 1000,
