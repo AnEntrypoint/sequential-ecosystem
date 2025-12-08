@@ -1,0 +1,20 @@
+{
+  "name": "@sequential/execution-context",
+  "version": "1.0.0",
+  "description": "Unified execution context tracking: breadcrumbs, trails, state context, and async local storage",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./async": "./src/async-context.js",
+    "./breadcrumb": "./src/breadcrumb-tracker.js",
+    "./trail": "./src/trail-tracker.js"
+  },
+  "keywords": [
+    "execution-context",
+    "breadcrumbs",
+    "tracing",
+    "async-context",
+    "correlation"
+  ]
+}
