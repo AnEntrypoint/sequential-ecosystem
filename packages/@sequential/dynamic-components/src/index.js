@@ -161,3 +161,7 @@ export {
   EditorPatternIntegration,
   createEditorPatternIntegration
 } from './editor-pattern-integration.js';
+export {
+  PatternDiscoveryModal,
+  createPatternDiscoveryModal
+} from './pattern-discovery-modal.js';

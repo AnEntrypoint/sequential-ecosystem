@@ -132,6 +132,7 @@
                 <button onclick="saveSelectedAsTemplate()" style="padding: 6px 10px; background: #f59e0b; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 10px; font-weight: 600; white-space: nowrap;" title="Save selected component as template">💾 Save</button>
                 <button onclick="showComponentLibrary()" style="padding: 6px 10px; background: #8b5cf6; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 10px; font-weight: 600; white-space: nowrap;" title="Open component library">📚 Library</button>
                 <button onclick="openShowcase()" style="padding: 6px 10px; background: #06a77d; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 10px; font-weight: 600; white-space: nowrap;" title="View component showcase">🎬 Showcase</button>
+                <button onclick="openPatternDiscovery()" style="padding: 6px 10px; background: #d946ef; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 10px; font-weight: 600; white-space: nowrap;" title="Discover and insert patterns">✨ Patterns</button>
               </div>
               <div id="editCanvasPanel" style="flex: 1; overflow: auto; padding: 16px; background: #fff;">
                 <div id="liveCanvas" style="color: black;"></div>
@@ -1007,6 +1008,55 @@
         });
       }, 100);
     });
+  </script>
+  <div id="patternDiscoveryModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 10000; background: rgba(0,0,0,0.5); overflow: auto;"></div>
+
+  <script src="./pattern-discovery-modal.js"></script>
+  <script src="./pattern-discovery-integration.js"></script>
+  <script>
+    let patternDiscoveryIntegration = null;
+
+    function openPatternDiscovery() {
+      if (!patternDiscoveryIntegration) {
+        console.warn('Pattern discovery not initialized');
+        return;
+      }
+      const modal = document.getElementById('patternDiscoveryModal');
+      if (modal) {
+        modal.style.display = 'block';
+        patternDiscoveryIntegration.open();
+      }
+    }
+
+    function closePatternDiscovery() {
+      const modal = document.getElementById('patternDiscoveryModal');
+      if (modal) {
+        modal.style.display = 'none';
+        if (patternDiscoveryIntegration) {
+          patternDiscoveryIntegration.close();
+        }
+      }
+    }
+
+    function initPatternDiscovery(libraries) {
+      const modal = document.getElementById('patternDiscoveryModal');
+      if (!modal) return;
+
+      patternDiscoveryIntegration = createPatternDiscoveryIntegration(libraries);
+      patternDiscoveryIntegration.init(modal, (pattern) => {
+        if (!pattern) return;
+        const codeEditor = document.getElementById('codeInput');
+        if (codeEditor) {
+          const patternCode = `
+// ${pattern.name} - ${pattern.codeReduction} reduction
+const ${pattern.id} = ${JSON.stringify(pattern.definition, null, 2)};
+`;
+          codeEditor.value += patternCode;
+          codeEditor.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        closePatternDiscovery();
+      });
+    }
   </script>
   <script type="module">
     import { AppTemplateGallery } from './app-templates.js';
