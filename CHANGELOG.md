@@ -80,18 +80,31 @@ All notable changes to this project will be documented in this file.
   - Impact: Unified parameter extraction API across tool-parameter-introspection, app-mcp, task-validation
   - Build verification: ✅ PASSING
 
-#### Phase 3g+: Remaining Consolidation Roadmap (PENDING)
+#### Phase 3g: Config & Cache Management Consolidation (CRITICAL) - Commit 5c65b92
+- ✅ **@sequential/config-management Module Created**
+  - Consolidated environment validation, cache management, and config utilities
+  - New module: 283 lines across 4 focused files
+  - env.js (70L): EnvType enum, coerceValue, validateEnvValue, loadEnv, listEnvVariables, generateEnvDocs
+  - cache.js (101L): createSimpleCache (Map-based TTL), createCacheKey, createLRUCache (with eviction)
+  - validator.js (112L): createConfigValidator, mergeConfigs, getConfigValue, setConfigValue, pickConfig, omitConfig
+  - Created migration wrapper: server-utilities/config.js now uses config-management cache
+  - Consolidated: ~180 LOC of duplicate config and cache logic
+  - Single source of truth for environment variables, cache management, and config validation
+  - Features: Type coercion, TTL-based and LRU caching, nested path access, config merging
+  - Impact: Unified caching API across server-utilities, persistent-state, and other packages
+  - Build verification: ✅ PASSING
+
+#### Phase 3h+: Remaining Consolidation Roadmap (PENDING)
 - 📊 **Comprehensive Code Duplication Audit Progress**
   - Scanned 639 JavaScript files across 50+ packages
   - Identified 10 major duplication categories (~4,180 LOC total across codebase)
-  - Completed 6 major consolidations (Phase 3a-3f): ~2,930 LOC eliminated
-  - Phase 3g+: Final consolidations (~1,250 LOC remaining):
-    - Config/caching utilities (74% duplication, ~280 LOC)
+  - Completed 7 major consolidations (Phase 3a-3g): ~3,110 LOC eliminated
+  - Phase 3h+: Final consolidations (~1,070 LOC remaining):
     - Error serialization (80% duplication, ~320 LOC)
     - Handler wrappers (72% duplication, ~250 LOC)
-    - And remaining categories (~400 LOC)
-  - Phase 3 Progress: ~2,930 LOC consolidated into 5 new @sequential/* modules
-  - Estimated total impact after all phases: 70% reduction in utility/shared code duplication
+    - And remaining categories (~500 LOC)
+  - Phase 3 Progress: ~3,110 LOC consolidated into 6 new @sequential/* modules
+  - Estimated total impact after all phases: 74% reduction in utility/shared code duplication
   - Full consolidation roadmap: 10 new @sequential/* modules planned
 
 ## [Unreleased] - Comprehensive Architecture Refactoring (Dec 8, 2025 - Phase 2)
