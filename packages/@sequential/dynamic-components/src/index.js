@@ -150,3 +150,7 @@ export {
   PatternDiscovery,
   createPatternDiscovery
 } from './pattern-discovery.js';
+export {
+  EditorPatternIntegration,
+  createEditorPatternIntegration
+} from './editor-pattern-integration.js';
