@@ -165,3 +165,8 @@ export {
   PatternDiscoveryModal,
   createPatternDiscoveryModal
 } from './pattern-discovery-modal.js';
+export {
+  ExtendedPatternIntegration,
+  PatternRegistry,
+  createExtendedPatternIntegration
+} from './extended-pattern-integration.js';

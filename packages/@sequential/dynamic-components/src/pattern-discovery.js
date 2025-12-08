@@ -6,10 +6,11 @@ import { ModalPatternLibrary } from './modal-patterns.js';
 import { GridPatternLibrary } from './grid-patterns.js';
 
 class PatternDiscovery {
-  constructor() {
+  constructor(includeExtended = true) {
     this.libraries = new Map();
     this.allPatterns = [];
     this.index = new Map();
+    this.includeExtended = includeExtended;
     this.initializeLibraries();
     this.buildSearchIndex();
   }
@@ -37,6 +38,20 @@ class PatternDiscovery {
       ...modalLib.getAllPatterns(),
       ...gridLib.getAllPatterns()
     ];
+
+    if (this.includeExtended) {
+      this.loadExtendedPatterns();
+    }
+  }
+
+  loadExtendedPatterns() {
+    try {
+      const ExtendedPatternIntegration = require('./extended-pattern-integration.js').ExtendedPatternIntegration;
+      const extLib = new ExtendedPatternIntegration();
+      this.libraries.set('extended', extLib);
+      this.allPatterns.push(...extLib.getAllPatterns());
+    } catch (e) {
+    }
   }
 
   buildSearchIndex() {
