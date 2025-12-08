@@ -133,6 +133,8 @@
                 <button onclick="showComponentLibrary()" style="padding: 6px 10px; background: #8b5cf6; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 10px; font-weight: 600; white-space: nowrap;" title="Open component library">📚 Library</button>
                 <button onclick="openShowcase()" style="padding: 6px 10px; background: #06a77d; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 10px; font-weight: 600; white-space: nowrap;" title="View component showcase">🎬 Showcase</button>
                 <button onclick="openPatternDiscovery()" style="padding: 6px 10px; background: #d946ef; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 10px; font-weight: 600; white-space: nowrap;" title="Discover and insert patterns">✨ Patterns</button>
+                <button onclick="openPatternComposer()" style="padding: 6px 10px; background: #9333ea; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 10px; font-weight: 600; white-space: nowrap;" title="Compose multiple patterns">🎨 Compose</button>
+                <button onclick="openPatternCustomizer()" style="padding: 6px 10px; background: #7c3aed; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 10px; font-weight: 600; white-space: nowrap;" title="Create pattern variants">🎭 Customize</button>
               </div>
               <div id="editCanvasPanel" style="flex: 1; overflow: auto; padding: 16px; background: #fff;">
                 <div id="liveCanvas" style="color: black;"></div>
@@ -1022,10 +1024,16 @@
   </script>
   <div id="patternDiscoveryModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 10000; background: rgba(0,0,0,0.5); overflow: auto;"></div>
   <div id="commandPaletteContainer" style="display: none;"></div>
+  <div id="patternComposerContainer" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 10001;"></div>
+  <div id="patternCustomizerContainer" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 10002;"></div>
 
   <script src="./pattern-discovery-modal.js"></script>
   <script src="./pattern-discovery-integration.js"></script>
   <script src="./command-palette-patterns.js"></script>
+  <script src="./pattern-composer-core.js"></script>
+  <script src="./pattern-customizer-core.js"></script>
+  <script src="./pattern-composer-ui.js"></script>
+  <script src="./pattern-customizer-ui.js"></script>
   <script>
     let patternDiscoveryIntegration = null;
 
@@ -1052,6 +1060,10 @@
     }
 
     let commandPalette = null;
+    let patternComposerUI = null;
+    let patternCustomizerUI = null;
+    let patternComposer = null;
+    let patternCustomizer = null;
 
     function initPatternDiscovery(libraries) {
       const modal = document.getElementById('patternDiscoveryModal');
@@ -1090,7 +1102,69 @@ const ${pattern.id} = ${JSON.stringify(pattern.definition, null, 2)};
           }
         });
       }
+
+      if (typeof PatternComposer !== 'undefined' && typeof createPatternComposerUI === 'function') {
+        patternComposer = new PatternComposer();
+        patternComposerUI = createPatternComposerUI();
+        const discovery = new SimplePatternDiscovery(libraries);
+        patternComposerUI.init(patternComposer, discovery);
+      }
+
+      if (typeof PatternCustomizer !== 'undefined' && typeof createPatternCustomizerUI === 'function') {
+        patternCustomizer = new PatternCustomizer();
+        patternCustomizerUI = createPatternCustomizerUI();
+        const discovery = new SimplePatternDiscovery(libraries);
+        patternCustomizerUI.init(patternCustomizer, discovery);
+      }
     }
+
+    window.openPatternComposer = function() {
+      if (!patternComposerUI) {
+        console.warn('Pattern composer not initialized');
+        return;
+      }
+      patternComposerUI.open();
+      const container = document.getElementById('patternComposerContainer');
+      if (container) {
+        patternComposerUI.render(container);
+      }
+    };
+
+    window.openPatternCustomizer = function() {
+      if (!patternCustomizerUI) {
+        console.warn('Pattern customizer not initialized');
+        return;
+      }
+      patternCustomizerUI.open();
+      const container = document.getElementById('patternCustomizerContainer');
+      if (container) {
+        patternCustomizerUI.render(container);
+      }
+    };
+
+    window.addCompositionToCode = function(composition) {
+      const codeEditor = document.getElementById('codeInput');
+      if (codeEditor) {
+        const compositionCode = `
+// Composition: ${composition.name} (${composition.patterns.length} patterns)
+const ${composition.id} = ${JSON.stringify(composition, null, 2)};
+`;
+        codeEditor.value += compositionCode;
+        codeEditor.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    };
+
+    window.addVariantToCode = function(variant) {
+      const codeEditor = document.getElementById('codeInput');
+      if (codeEditor) {
+        const variantCode = `
+// Variant: ${variant.id}
+const ${variant.id} = ${JSON.stringify(variant, null, 2)};
+`;
+        codeEditor.value += variantCode;
+        codeEditor.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    };
   </script>
   <script type="module">
     import { AppTemplateGallery } from './app-templates.js';
