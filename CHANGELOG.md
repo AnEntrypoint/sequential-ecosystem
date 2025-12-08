@@ -2,7 +2,40 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased] - Developer Tools Enhanced + Shared Utilities (Dec 8, 2025)
+## [Unreleased] - Debugger Tools Enhanced + Simulation & Breakpoints (Dec 8, 2025 - Iteration 2)
+
+### Debugger Enhancements
+- **Flow Debugger** (`app-flow-debugger`):
+  - ✅ Added simulation mode (🎬 Simulate button) for visual execution preview
+  - ✅ Added breakpoint support (🔴 Breakpoints button) with state-level breakpoints
+  - ✅ Breakpoint management: set/clear via UI interaction
+  - ✅ Execution halts at breakpoints with logging
+  - ✅ Visual breakpoint indicators on flow states
+  - ✅ Integrated with step controls (forward/backward/run-to-end)
+- **Task Debugger** (`app-task-debugger`):
+  - ✅ Added timeline visualization (⏱ Timeline button)
+  - ✅ Timeline shows execution history with status indicators
+  - ✅ Color-coded status markers: green (success), red (error), orange (pending)
+  - ✅ Execution timestamp and duration display
+  - ✅ Vertical timeline layout with connecting lines
+  - ✅ Toggle timeline view on/off without affecting history
+- **Run Observer** (`app-run-observer`):
+  - Confirmed: Performance metrics dashboard already implemented
+  - Metrics: Active runs, success rate, average duration, total runs
+  - Detailed metrics modal with task breakdown analysis
+
+### Files Modified
+- `packages/app-flow-debugger/dist/index.html` (+60 lines, simulation + breakpoints)
+- `packages/app-task-debugger/dist/index.html` (+40 lines, timeline visualization)
+- `packages/desktop-shell/public/DEBUGGER_ENHANCEMENTS.md` (NEW, comprehensive guide)
+
+### Developer Experience Improvements
+- **Debugging Workflow**: Simulation mode enables safe execution preview
+- **Execution Control**: Breakpoints provide precise execution stopping points
+- **Visibility**: Timeline shows execution history with status and performance
+- **Monitoring**: Real-time metrics track system performance
+
+## [Unreleased] - Developer Tools Enhanced + Shared Utilities (Dec 8, 2025 - Iteration 1)
 
 ### Developer Tools Enhancements
 - **App Editor** (`app-app-editor`):
