@@ -337,3 +337,7 @@ export {
   AccessibilityValidatorUI,
   createAccessibilityValidatorUI
 } from './a11y-validator-ui.js';
+export {
+  PatternDataBinding,
+  createPatternDataBinding
+} from './pattern-data-binding.js';
