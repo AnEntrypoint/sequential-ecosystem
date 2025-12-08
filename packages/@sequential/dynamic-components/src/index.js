@@ -122,3 +122,7 @@ export {
   ThemeCustomizer,
   createThemeCustomizer
 } from './theme-customizer.js';
+export {
+  FormPatternLibrary,
+  createFormPatternLibrary
+} from './form-patterns.js';
