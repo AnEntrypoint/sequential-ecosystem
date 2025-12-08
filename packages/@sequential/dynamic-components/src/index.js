@@ -146,3 +146,7 @@ export {
   GridPatternLibrary,
   createGridPatternLibrary
 } from './grid-patterns.js';
+export {
+  PatternDiscovery,
+  createPatternDiscovery
+} from './pattern-discovery.js';
