@@ -2020,22 +2020,26 @@ ${document.getElementById('toolImpl').value}
     import { ValidationHints } from './validation-hints.js';
     import { FindReplace } from './find-replace.js';
     import { CommandPalette } from './command-palette.js';
+    import { ParameterHints } from './parameter-hints.js';
     const editorFeatures = new EditorFeatures('toolImpl');
     const toolAutocomplete = new ToolAutocomplete('toolImpl');
     const validationHints = new ValidationHints('toolImpl');
     const findReplace = new FindReplace('toolImpl');
     const commandPalette = new CommandPalette('toolImpl', 'tool');
+    const parameterHints = new ParameterHints('toolImpl');
     window.editorFeatures = editorFeatures;
     window.toolAutocomplete = toolAutocomplete;
     window.validationHints = validationHints;
     window.findReplace = findReplace;
     window.commandPalette = commandPalette;
+    window.parameterHints = parameterHints;
     document.addEventListener('DOMContentLoaded', () => {
       editorFeatures.init();
       toolAutocomplete.init();
       validationHints.init();
       findReplace.init();
       commandPalette.init();
+      parameterHints.init();
     });
   </script>
   <script>
