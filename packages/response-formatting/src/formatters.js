@@ -1,5 +1,7 @@
 import { nowISO } from '@sequential/timestamp-utilities';
 
+const DEFAULT_PAGINATION_SIZE = 50;
+
 export function formatResponse(data, meta = {}) {
   return {
     success: true,
@@ -9,6 +11,27 @@ export function formatResponse(data, meta = {}) {
       ...meta
     }
   };
+}
+
+export function createSuccessResponse(data, meta = {}) {
+  return formatResponse(data, meta);
+}
+
+export function createErrorResponse(code, message, extra = {}) {
+  return {
+    error: {
+      code,
+      message,
+      timestamp: nowISO(),
+      ...extra
+    }
+  };
+}
+
+export function createListResponse(items, count = null) {
+  return formatResponse(items, {
+    count: count !== null ? count : items.length
+  });
 }
 
 export function formatList(items, count = null, offset = 0, limit = 50) {
@@ -66,6 +89,30 @@ export function formatError(httpCode, error) {
     meta: {
       timestamp: nowISO()
     }
+  };
+}
+
+export function createPaginatedResponse(items, page, pageSize, total) {
+  return formatList(items, total, (page - 1) * pageSize, pageSize);
+}
+
+export function createMetricsResponse(metrics) {
+  return formatResponse(metrics, { operation: 'metrics' });
+}
+
+export function createBatchResponse(results, failed = []) {
+  return formatResponse({
+    processed: results.length,
+    failed: failed.length,
+    results,
+    ...(failed.length > 0 && { failedItems: failed })
+  }, { operation: 'batch' });
+}
+
+export function formatErrorForResponse(error, statusCode = 500) {
+  return {
+    statusCode,
+    body: formatError(statusCode, error)
   };
 }
 
