@@ -174,3 +174,11 @@ export {
   CommandPalettePatterns,
   createCommandPalettePatterns
 } from './command-palette-patterns.js';
+export {
+  PatternComposer,
+  createPatternComposer
+} from './pattern-composition.js';
+export {
+  PatternCustomizer,
+  createPatternCustomizer
+} from './pattern-customizer.js';
