@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Visual app builder and code editor for creating Sequential apps",
   "icon": "🛠️",
-  "entry": "dist/index.html",
+  "entry": "dist/dynamic-index.html",
   "capabilities": ["sequential-os", "zellous"],
   "dependencies": {
     "@sequential/app-sdk": "^1.0.0",
