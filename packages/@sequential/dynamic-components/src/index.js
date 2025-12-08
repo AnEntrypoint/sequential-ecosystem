@@ -301,3 +301,7 @@ export {
   PatternVersioning,
   createPatternVersioning
 } from './pattern-versioning.js';
+export {
+  PatternCollaborationManager,
+  createPatternCollaborationManager
+} from './pattern-collaboration-mgr.js';
