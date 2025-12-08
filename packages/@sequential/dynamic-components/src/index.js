@@ -206,3 +206,11 @@ export {
   PatternProfilerUI,
   createPatternProfilerUI
 } from './pattern-profiler-ui.js';
+export {
+  PatternSuggestionsEngine,
+  createPatternSuggestionsEngine
+} from './pattern-suggestions.js';
+export {
+  PatternSuggestionsUI,
+  createPatternSuggestionsUI
+} from './pattern-suggestions-ui.js';
