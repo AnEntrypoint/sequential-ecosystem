@@ -5,6 +5,9 @@ import { createResponseUnwrapper } from './response-unwrapper.js';
 import { createToolOrchestrator } from './tool-orchestrator.js';
 import { createToolStateBroadcaster } from './tool-state-broadcast.js';
 import { createFlowContractTester } from './flow-contract-tester.js';
+import { createRealtimeSubscription } from './realtime-subscription.js';
+import { createExecutionContext, setExecutionContext, getExecutionContext, withContext, createChildContext, injectContext, getCorrelationId } from './execution-context.js';
+import { createToolParameterIntrospection } from './tool-parameter-introspection.js';
 
 export class AppSDK {
   constructor(options = {}) {
@@ -180,4 +183,6 @@ export class AppSDK {
 
 export { RealtimeConnection };
 export { createToolOrchestrator, createToolStateBroadcaster, createFlowContractTester };
+export { createRealtimeSubscription, createExecutionContext, setExecutionContext, getExecutionContext, withContext, createChildContext, injectContext, getCorrelationId };
+export { createToolParameterIntrospection };
 export default AppSDK;
