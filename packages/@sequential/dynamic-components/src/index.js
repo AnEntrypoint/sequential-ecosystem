@@ -222,3 +222,7 @@ export {
   PatternDocsGenerator,
   createPatternDocsGenerator
 } from './pattern-docs-generator.js';
+export {
+  PatternSearchIndex,
+  createPatternSearchIndex
+} from './pattern-search.js';
