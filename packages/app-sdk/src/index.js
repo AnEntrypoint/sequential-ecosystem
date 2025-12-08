@@ -19,6 +19,9 @@ import { createValidationErrorSuggestions } from './validation-error-suggestions
 import { createStateContextBreadcrumbs } from './state-context-breadcrumbs.js';
 import { createToolInvocationValidator } from './tool-invocation-validator.js';
 import { createExecutionCheckpointer } from './execution-checkpointer.js';
+import { createEntityRelationshipMapper } from './entity-relationship-mapper.js';
+import { createExecutionTrail } from './execution-trail.js';
+import { createToolInvocationComposer } from './tool-invocation-composer.js';
 
 export class AppSDK {
   constructor(options = {}) {
@@ -200,4 +203,5 @@ export { createErrorClarity, createFeatureDetection, createConfigManager };
 export { createTaskValidationMiddleware, createFlowHandlerGenerator };
 export { createAppSDKFactory, createExecutionBreadcrumbs, createValidationErrorSuggestions };
 export { createStateContextBreadcrumbs, createToolInvocationValidator, createExecutionCheckpointer };
+export { createEntityRelationshipMapper, createExecutionTrail, createToolInvocationComposer };
 export default AppSDK;
