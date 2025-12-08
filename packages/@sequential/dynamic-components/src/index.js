@@ -289,3 +289,11 @@ export {
   PatternCompositionBuilder,
   createPatternCompositionBuilder
 } from './pattern-composition-builder.js';
+export {
+  ResponsivePatternSystem,
+  createResponsivePatternSystem
+} from './responsive-patterns.js';
+export {
+  ResponsiveBuilder,
+  createResponsiveBuilder
+} from './responsive-builder.js';
