@@ -182,3 +182,7 @@ export {
   PatternCustomizer,
   createPatternCustomizer
 } from './pattern-customizer.js';
+export {
+  AccessibilityPatternLibrary,
+  createAccessibilityPatternLibrary
+} from './accessibility-patterns.js';
