@@ -7,6 +7,37 @@ import { formatResponse, formatError } from '@sequential/response-formatting';
 import { registerCRUDRoutes } from '@sequential/crud-router';
 import { createServiceFactory } from '@sequential/service-factory';
 
+const flowExecutions = new Map();
+
+class CancellationToken {
+  constructor(executionId) {
+    this.executionId = executionId;
+    this.cancelled = false;
+    this.cancelledAt = null;
+    this.cancelReason = null;
+    this.cancelledBy = null;
+  }
+
+  cancel(reason, source = 'api') {
+    if (this.cancelled) return false;
+    this.cancelled = true;
+    this.cancelledAt = Date.now();
+    this.cancelReason = reason;
+    this.cancelledBy = source;
+    return true;
+  }
+
+  isCancelled() {
+    return this.cancelled;
+  }
+
+  throwIfCancelled() {
+    if (this.cancelled) {
+      throw new Error(`Flow execution cancelled: ${this.cancelReason}`);
+    }
+  }
+}
+
 export function registerFlowRoutes(app, container) {
   const { getFlowRepository, getTaskRepository, getTaskService } = createServiceFactory(container);
   const repository = getFlowRepository();
@@ -76,6 +107,10 @@ export function registerFlowRoutes(app, container) {
       const { flow, input } = req.body;
       if (!flow?.states) throwValidationError('flow', 'flow with states is required');
 
+      const executionId = `flow-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+      const cancellationToken = new CancellationToken(executionId);
+      flowExecutions.set(executionId, cancellationToken);
+
       const startTime = Date.now();
       const statesArray = Array.isArray(flow.states) ? flow.states : Object.entries(flow.states).map(([id, state]) => ({ id, ...state }));
       let currentState = statesArray.find(s => s.type === 'initial' || s.id === flow.initial);
@@ -84,13 +119,18 @@ export function registerFlowRoutes(app, container) {
       const executionLog = [];
       let result = input || {};
       let error = null;
+      let cancelled = false;
+      const executedStates = [];
       const MAX_ITERATIONS = 1000;
       let iterations = 0;
 
-      while (currentState?.type !== 'final' && iterations < MAX_ITERATIONS) {
-        iterations++;
-        executionLog.push(`Executing state: ${currentState.id}`);
-        try {
+      try {
+        while (currentState?.type !== 'final' && iterations < MAX_ITERATIONS) {
+          iterations++;
+          cancellationToken.throwIfCancelled();
+          executionLog.push(`Executing state: ${currentState.id}`);
+          try {
+          executedStates.push(currentState.id);
           if (currentState.type === 'if') {
             let conditionResult = false;
             try {
@@ -274,6 +314,11 @@ export function registerFlowRoutes(app, container) {
           }
           currentState = nextState;
         } catch (err) {
+          if (err.message.includes('cancelled')) {
+            cancelled = true;
+            executionLog.push(`Flow cancelled: ${err.message}`);
+            break;
+          }
           error = err.message;
           executionLog.push(`Error: ${err.message}`);
           const fallbackStateId = currentState.onError;
@@ -297,10 +342,42 @@ export function registerFlowRoutes(app, container) {
       }
 
       const duration = Date.now() - startTime;
-      if (error) {
-        res.status(500).json(formatError(500, { code: 'FLOW_EXECUTION_FAILED', message: error, duration, executionLog }));
+      const response = {
+        duration,
+        finalState: currentState?.id || 'unknown',
+        executedStates,
+        result,
+        executionLog
+      };
+
+      if (cancelled || cancellationToken.isCancelled()) {
+        response.cancelled = true;
+        response.cancelledAt = cancellationToken.cancelledAt;
+        response.cancelledBy = cancellationToken.cancelledBy;
+        response.cancelReason = cancellationToken.cancelReason;
+        res.json(formatResponse(response));
+      } else if (error) {
+        res.status(500).json(formatError(500, { code: 'FLOW_EXECUTION_FAILED', message: error, duration, executedStates, executionLog }));
       } else {
-        res.json(formatResponse({ duration, finalState: currentState?.id || 'unknown', result, executionLog }));
+        res.json(formatResponse(response));
+      }
+      } catch (err) {
+        flowExecutions.delete(executionId);
+        if (err.message.includes('cancelled')) {
+          res.json(formatResponse({
+            cancelled: true,
+            cancelledAt: cancellationToken.cancelledAt,
+            cancelledBy: cancellationToken.cancelledBy,
+            cancelReason: cancellationToken.cancelReason,
+            executedStates,
+            executionLog,
+            duration: Date.now() - startTime
+          }));
+        } else {
+          res.status(500).json(formatError(500, { code: 'FLOW_EXECUTION_FAILED', message: err.message, executedStates, executionLog }));
+        }
+      } finally {
+        flowExecutions.delete(executionId);
       }
     })
   };
@@ -332,6 +409,21 @@ export function registerFlowRoutes(app, container) {
     const { flowId } = req.params;
     const history = await repository.getHistory?.(flowId) || [];
     res.json(formatResponse({ flowId, runs: history, count: history.length }));
+  }));
+
+  app.post('/api/flows/:executionId/cancel', asyncHandler(async (req, res) => {
+    const { executionId } = req.params;
+    const { reason } = req.body || {};
+    const token = flowExecutions.get(executionId);
+    if (!token) {
+      return res.status(404).json(formatError(404, { message: `Flow execution not found: ${executionId}` }));
+    }
+    const success = token.cancel(reason || 'User requested cancellation', 'api');
+    if (success) {
+      res.json(formatResponse({ executionId, cancelled: true, cancelReason: token.cancelReason }));
+    } else {
+      res.json(formatResponse({ executionId, cancelled: false, message: 'Flow already cancelled' }));
+    }
   }));
 
   app.post('/api/flows', flowHandlers.create);
