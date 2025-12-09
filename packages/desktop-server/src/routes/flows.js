@@ -164,6 +164,24 @@ export function registerFlowRoutes(app, container) {
     res.json(formatResponse({ flow }));
   }));
 
+  app.post('/api/flows/:flowId/execute', asyncHandler(async (req, res) => {
+    const { flowId } = req.params;
+    const { input } = req.body;
+    const flow = await repository.get(flowId);
+    if (!flow) {
+      return res.status(404).json(formatError(404, { message: `Flow not found: ${flowId}` }));
+    }
+    const executionId = `flow-${flowId}-${Date.now()}`;
+    await backgroundTaskManager.spawn(`flow:${flowId}`, [flow, input], { executionId });
+    res.json(formatResponse({ executionId, flowId, status: 'started' }));
+  }));
+
+  app.get('/api/flows/:flowId/history', asyncHandler(async (req, res) => {
+    const { flowId } = req.params;
+    const history = await repository.getHistory?.(flowId) || [];
+    res.json(formatResponse({ flowId, runs: history, count: history.length }));
+  }));
+
   app.post('/api/flows', flowHandlers.create);
   app.post('/api/flows/run', flowHandlers.run);
 }
