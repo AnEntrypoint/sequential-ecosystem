@@ -230,6 +230,89 @@ export class ToolRegistry {
     return tool.dependencies || [];
   }
 
+  getToolSchema(toolName, version = null) {
+    const tool = this.findToolByName(toolName);
+    if (!tool) return null;
+
+    if (!tool.mcp || !tool.mcp.inputSchema) {
+      return null;
+    }
+
+    const schema = tool.mcp.inputSchema;
+    if (!version) return schema;
+
+    return schema.version === version ? schema : null;
+  }
+
+  validateToolInput(toolName, input, version = null) {
+    const schema = this.getToolSchema(toolName, version);
+    if (!schema) return { valid: false, error: 'Tool or schema not found' };
+
+    const errors = [];
+    const required = schema.required || [];
+
+    for (const field of required) {
+      if (!input.hasOwnProperty(field)) {
+        errors.push(`Missing required field: ${field}`);
+      }
+    }
+
+    if (errors.length > 0) {
+      return { valid: false, errors };
+    }
+
+    return { valid: true };
+  }
+
+  registerSchemaVersion(toolName, version, schema, changelog = []) {
+    const tool = this.findToolByName(toolName);
+    if (!tool) return { success: false, error: 'Tool not found' };
+
+    if (!tool.mcp) tool.mcp = {};
+    if (!tool.schemaHistory) tool.schemaHistory = [];
+
+    const existingSchema = tool.mcp.inputSchema;
+    if (existingSchema) {
+      tool.schemaHistory.push({
+        version: existingSchema.version || 1,
+        schema: existingSchema,
+        timestamp: Date.now()
+      });
+    }
+
+    tool.mcp.inputSchema = {
+      ...schema,
+      version,
+      changelog,
+      timestamp: Date.now()
+    };
+
+    return { success: true, version };
+  }
+
+  migrateToolInput(toolName, input, fromVersion, toVersion) {
+    const tool = this.findToolByName(toolName);
+    if (!tool) return { success: false, error: 'Tool not found' };
+
+    if (!tool.migrations) {
+      return { success: false, error: 'No migrations defined for tool' };
+    }
+
+    const migrationKey = `${fromVersion}->${toVersion}`;
+    const migration = tool.migrations[migrationKey];
+
+    if (!migration) {
+      return { success: false, error: `No migration path from ${fromVersion} to ${toVersion}` };
+    }
+
+    try {
+      const migratedInput = typeof migration === 'function' ? migration(input) : input;
+      return { success: true, data: migratedInput };
+    } catch (err) {
+      return { success: false, error: `Migration failed: ${err.message}` };
+    }
+  }
+
   getStats() {
     const persistedCount = this.getPersistedTools().length;
     const appCount = this.apps.size;
