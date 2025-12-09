@@ -1,0 +1,14 @@
+{
+  "name": "@sequential/rate-limiter",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./http": "./src/http.js",
+    "./websocket": "./src/websocket.js"
+  },
+  "main": "src/index.js",
+  "dependencies": {
+    "express-rate-limit": "^6.0.0"
+  }
+}
