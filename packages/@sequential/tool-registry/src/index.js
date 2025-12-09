@@ -165,6 +165,61 @@ export class ToolRegistry {
     );
   }
 
+  detectCircularDependency(toolName, visited = new Set()) {
+    if (visited.has(toolName)) return true;
+    visited.add(toolName);
+
+    const tool = this.findToolByName(toolName);
+    if (!tool || !tool.dependencies) return false;
+
+    for (const dep of tool.dependencies) {
+      if (this.detectCircularDependency(dep, new Set(visited))) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  resolveDependencyOrder(toolName, resolved = [], visiting = new Set()) {
+    if (visiting.has(toolName)) return null;
+
+    if (resolved.includes(toolName)) return resolved;
+
+    visiting.add(toolName);
+    const tool = this.findToolByName(toolName);
+    if (!tool) return null;
+
+    const deps = tool.dependencies || [];
+    for (const dep of deps) {
+      const result = this.resolveDependencyOrder(dep, resolved, new Set(visiting));
+      if (!result) return null;
+      resolved = result;
+    }
+
+    resolved.push(toolName);
+    return resolved;
+  }
+
+  validateToolChain(toolName) {
+    const isCircular = this.detectCircularDependency(toolName);
+    if (isCircular) {
+      return { isValid: false, circular: true, order: null, error: `Circular dependency detected in ${toolName}` };
+    }
+
+    const order = this.resolveDependencyOrder(toolName);
+    if (!order) {
+      return { isValid: false, circular: false, order: null, error: `Failed to resolve dependencies for ${toolName}` };
+    }
+
+    return { isValid: true, circular: false, order };
+  }
+
+  getToolDependencies(toolName) {
+    const tool = this.findToolByName(toolName);
+    if (!tool) return null;
+    return tool.dependencies || [];
+  }
+
   getStats() {
     const persistedCount = this.getPersistedTools().length;
     const appCount = this.apps.size;
