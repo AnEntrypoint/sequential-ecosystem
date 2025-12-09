@@ -41,7 +41,7 @@ export {
   formatValidationErrors
 } from './error-formatter.js';
 
-export function createValidator(schemaName) {
+export async function createValidator(schemaName) {
   const { getPredefinedSchema, validateSchema: validate } = await import('./schema-compiler.js');
   const schema = getPredefinedSchema(schemaName);
   if (!schema) {

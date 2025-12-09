@@ -26,7 +26,8 @@ class AppRegistry {
       errors.push('name is required and must be a string');
     }
     if (!manifest.entry || typeof manifest.entry !== 'string') {
-      errors.push('entry is required and must be a string');
+      const debugInfo = `[entry=${JSON.stringify(manifest.entry)}, type=${typeof manifest.entry}]`;
+      errors.push(`entry is required and must be a string ${debugInfo}`);
     }
 
     if (manifest.version && typeof manifest.version !== 'string') {
@@ -66,6 +67,9 @@ class AppRegistry {
       try {
         if (await fs.pathExists(manifestPath)) {
           const manifest = await fs.readJSON(manifestPath);
+          if (process.env.DEBUG_APP_REGISTRY) {
+            logger.info(`  DEBUG ${appDir}: manifest entry =`, manifest.entry, 'type:', typeof manifest.entry);
+          }
           this.validateManifest(manifest, appDir);
           this.apps.set(manifest.id, {
             manifest,
@@ -74,6 +78,9 @@ class AppRegistry {
           logger.info(`  ✓ Registered app: ${manifest.name} (${manifest.id})`);
         }
       } catch (error) {
+        if (process.env.DEBUG_APP_REGISTRY) {
+          logger.error(`  DEBUG ${appDir}: Full error:`, error);
+        }
         logger.error(`  ✗ Failed to load ${appDir}:`, error.message);
       }
     }
