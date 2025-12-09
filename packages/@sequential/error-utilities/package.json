@@ -1,0 +1,12 @@
+{
+  "name": "@sequential/error-utilities",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./serialize": "./src/serialize.js",
+    "./categorize": "./src/categorize.js",
+    "./format": "./src/format.js"
+  },
+  "main": "src/index.js"
+}
