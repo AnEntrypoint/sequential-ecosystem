@@ -23,6 +23,16 @@ export class StateManager extends EventEmitter {
     return `${type}:${id}`;
   }
 
+  _cloneData(data) {
+    if (data === null || data === undefined) return data;
+    if (typeof data !== 'object') return data;
+    try {
+      return JSON.parse(JSON.stringify(data));
+    } catch (e) {
+      return data;
+    }
+  }
+
   async get(type, id) {
     if (this.isShutdown) {
       throw new Error('StateManager is shutdown');
@@ -33,7 +43,7 @@ export class StateManager extends EventEmitter {
 
     if (cached !== undefined) {
       if (Date.now() - cached.timestamp < this.cacheTTL) {
-        return cached.data;
+        return this._cloneData(cached.data);
       }
       this.memoryCache.delete(cacheKey);
       return null;
@@ -55,13 +65,14 @@ export class StateManager extends EventEmitter {
     const oldData = this.memoryCache.get(cacheKey)?.data;
     const isNew = !oldData;
 
-    await this.adapter.set(type, id, data);
-    this.memoryCache.set(cacheKey, { data, timestamp: Date.now() });
+    const clonedData = this._cloneData(data);
+    await this.adapter.set(type, id, clonedData);
+    this.memoryCache.set(cacheKey, { data: clonedData, timestamp: Date.now() });
 
     if (isNew) {
-      this.emit('created', { type, id, data, timestamp: nowISO() });
+      this.emit('created', { type, id, data: clonedData, timestamp: nowISO() });
     } else {
-      this.emit('updated', { type, id, data, oldData, timestamp: nowISO() });
+      this.emit('updated', { type, id, data: clonedData, oldData, timestamp: nowISO() });
     }
   }
 
