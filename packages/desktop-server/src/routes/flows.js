@@ -8,8 +8,10 @@ import { registerCRUDRoutes } from '@sequential/crud-router';
 import { createServiceFactory } from '@sequential/service-factory';
 import { TimeoutPolicyEngine, handleFlowTimeout, handleStateTimeout } from './timeout-policies.js';
 import { DistributedFlowOrchestrator, createDistributedFlowDefinition } from './distributed-flows.js';
+import { FlowMetricsCollector } from './flow-analytics.js';
 
 const flowExecutions = new Map();
+const metricsCollector = new FlowMetricsCollector();
 
 class FlowAnalyzer {
   constructor(statesArray, initial) {
@@ -758,6 +760,31 @@ export function registerFlowRoutes(app, container) {
     };
 
     res.json(formatResponse({ flowId, analysis }));
+  }));
+
+  app.get('/api/flows/analytics/metrics', asyncHandler(async (req, res) => {
+    const metrics = metricsCollector.getExecutionMetrics();
+    res.json(formatResponse({ metrics }));
+  }));
+
+  app.get('/api/flows/analytics/summary', asyncHandler(async (req, res) => {
+    const snapshot = metricsCollector.getSnapshot();
+    res.json(formatResponse({ snapshot }));
+  }));
+
+  app.get('/api/flows/analytics/services', asyncHandler(async (req, res) => {
+    const services = metricsCollector.getServicePerformance();
+    res.json(formatResponse({ services }));
+  }));
+
+  app.get('/api/flows/analytics/slowest', asyncHandler(async (req, res) => {
+    const slowestStates = metricsCollector.getSlowestStates();
+    res.json(formatResponse({ slowestStates }));
+  }));
+
+  app.get('/api/flows/analytics/percentiles', asyncHandler(async (req, res) => {
+    const percentiles = metricsCollector.getPercentiles();
+    res.json(formatResponse({ percentiles }));
   }));
 
   app.post('/api/flows', flowHandlers.create);
