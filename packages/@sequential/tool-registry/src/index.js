@@ -156,6 +156,16 @@ export class ToolRegistry {
     return null;
   }
 
+  findToolsByName(toolName) {
+    const matches = [];
+    for (const [, tool] of this.tools.entries()) {
+      if (tool.name === toolName || tool.id === toolName) {
+        matches.push(tool);
+      }
+    }
+    return matches;
+  }
+
   searchTools(query) {
     const q = query.toLowerCase();
     return Array.from(this.tools.values()).filter(tool =>
