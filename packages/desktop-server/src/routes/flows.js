@@ -9,9 +9,11 @@ import { createServiceFactory } from '@sequential/service-factory';
 import { TimeoutPolicyEngine, handleFlowTimeout, handleStateTimeout } from './timeout-policies.js';
 import { DistributedFlowOrchestrator, createDistributedFlowDefinition } from './distributed-flows.js';
 import { FlowMetricsCollector } from './flow-analytics.js';
+import { FlowStateTransitionValidator, createFlowStateValidator } from './flow-state-transitions.js';
 
 const flowExecutions = new Map();
 const metricsCollector = new FlowMetricsCollector();
+const stateValidator = createFlowStateValidator();
 
 class FlowAnalyzer {
   constructor(statesArray, initial) {
@@ -785,6 +787,26 @@ export function registerFlowRoutes(app, container) {
   app.get('/api/flows/analytics/percentiles', asyncHandler(async (req, res) => {
     const percentiles = metricsCollector.getPercentiles();
     res.json(formatResponse({ percentiles }));
+  }));
+
+  app.post('/api/flows/:flowId/validate-transitions', asyncHandler(async (req, res) => {
+    const { flowId } = req.params;
+    const flow = await repository.get(flowId);
+    if (!flow) {
+      return res.status(404).json(formatError(404, { message: `Flow not found: ${flowId}` }));
+    }
+
+    const statesArray = Array.isArray(flow.states) ? flow.states : Object.entries(flow.states).map(([id, state]) => ({ id, ...state }));
+    const validation = stateValidator.validateStateTransitions(flow, statesArray);
+    const unreachable = stateValidator.detectUnreachableStates(flow, statesArray);
+
+    res.json(formatResponse({
+      flowId,
+      validation: {
+        ...validation,
+        unreachable
+      }
+    }));
   }));
 
   app.post('/api/flows', flowHandlers.create);
