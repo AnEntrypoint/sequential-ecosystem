@@ -4,6 +4,7 @@ import { asyncHandler } from '../middleware/error-handler.js';
 import { CONFIG } from '@sequential/server-utilities';
 import { formatResponse } from '@sequential/response-formatting';
 import { throwValidationError, throwPathTraversal } from '@sequential/error-handling';
+import { validatePathInDirectory } from '@sequential/path-validation';
 
 const VALID_SCOPES = ['run', 'task', 'global'];
 
@@ -12,22 +13,13 @@ function validateScope(scope) {
 }
 
 function validatePath(realPath, vfsDir) {
-  const resolvedVfsDir = path.resolve(vfsDir);
-  const resolvedPath = path.resolve(realPath);
   try {
-    const realPathResolved = fs.realpathSync(realPath);
-    const vfsDirReal = fs.realpathSync(resolvedVfsDir);
-    if (!realPathResolved.startsWith(vfsDirReal + path.sep) && realPathResolved !== vfsDirReal) {
+    validatePathInDirectory(realPath, vfsDir);
+  } catch (e) {
+    if (e.code === 'FORBIDDEN') {
       throwPathTraversal(realPath);
     }
-  } catch (e) {
-    if (e.code === 'ENOENT') {
-      if (!resolvedPath.startsWith(resolvedVfsDir + path.sep) && resolvedPath !== resolvedVfsDir) {
-        throwPathTraversal(realPath);
-      }
-    } else {
-      throw e;
-    }
+    throw e;
   }
 }
 

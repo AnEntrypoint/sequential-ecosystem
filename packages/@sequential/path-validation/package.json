@@ -1,0 +1,17 @@
+{
+  "name": "@sequential/path-validation",
+  "version": "1.0.0",
+  "description": "Consolidated path validation utilities with traversal protection and security checks",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "keywords": [
+    "path",
+    "validation",
+    "security",
+    "traversal"
+  ],
+  "dependencies": {}
+}

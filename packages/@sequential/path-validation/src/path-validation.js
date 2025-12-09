@@ -83,3 +83,37 @@ export function validatePathRelative(filePath) {
 
   return realPath;
 }
+
+export function validatePathInDirectory(filePath, baseDir) {
+  if (!filePath || typeof filePath !== 'string') {
+    const err = new Error('Invalid file path');
+    err.status = 400;
+    err.code = 'VALIDATION_ERROR';
+    throw err;
+  }
+
+  const resolvedVfsDir = path.resolve(baseDir);
+  const resolvedPath = path.resolve(filePath);
+
+  try {
+    const realPathResolved = fs.realpathSync(filePath);
+    const vfsDirReal = fs.realpathSync(resolvedVfsDir);
+    if (!realPathResolved.startsWith(vfsDirReal + path.sep) && realPathResolved !== vfsDirReal) {
+      const err = new Error('Access denied: path traversal detected');
+      err.status = 403;
+      err.code = 'FORBIDDEN';
+      throw err;
+    }
+  } catch (e) {
+    if (e.code === 'ENOENT') {
+      if (!resolvedPath.startsWith(resolvedVfsDir + path.sep) && resolvedPath !== resolvedVfsDir) {
+        const err = new Error('Access denied: path traversal detected');
+        err.status = 403;
+        err.code = 'FORBIDDEN';
+        throw err;
+      }
+    } else {
+      throw e;
+    }
+  }
+}
