@@ -1,3 +1,4 @@
+import { asyncHandler } from '@sequential/handler-wrappers';
 import { formatResponse, formatError } from '@sequential/response-formatting';
 import { requireResource, parsePagination } from '@sequential/route-helpers';
 
@@ -8,7 +9,7 @@ export function createCRUDRouter(config) {
     pluralName = resourceName + 's',
     validation = {},
     handlers = {},
-    asyncHandler = defaultAsyncHandler
+    asyncHandler: customAsyncHandler = asyncHandler
   } = config;
 
   const router = {};
@@ -69,6 +70,3 @@ export function registerCRUDRoutes(app, basePath, config) {
   return router;
 }
 
-function defaultAsyncHandler(fn) {
-  return (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
-}

@@ -1,4 +1,5 @@
 import { createErrorHandler as createAppErrorHandler } from '@sequential/error-handling';
+import { asyncHandler } from '@sequential/handler-wrappers';
 import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
 
 const MAX_LOG_SIZE = 1000;
@@ -8,9 +9,7 @@ export function createErrorHandler() {
   return createAppErrorHandler();
 }
 
-export function asyncHandler(fn) {
-  return (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
-}
+export { asyncHandler };
 
 export function logOperation(type, data) {
   operationLog.push({

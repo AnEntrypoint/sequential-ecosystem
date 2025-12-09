@@ -1,3 +1,4 @@
+import { asyncHandler } from '@sequential/handler-wrappers';
 import { formatResponse, formatError } from '@sequential/response-formatting';
 import { requireResource, parsePagination } from '@sequential/route-helpers';
 
@@ -8,7 +9,7 @@ export function createResourceController(config) {
     repository,
     requiredFields = [],
     optionalFields = [],
-    asyncHandler = defaultAsyncHandler
+    asyncHandler: customAsyncHandler = asyncHandler
   } = config;
 
   return {
@@ -113,6 +114,3 @@ export function registerResourceRoutes(app, config) {
   app.delete(`${path}/:id`, parseIdMiddleware || ((req, res, next) => next()), ctrl.delete);
 }
 
-function defaultAsyncHandler(fn) {
-  return (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
-}
