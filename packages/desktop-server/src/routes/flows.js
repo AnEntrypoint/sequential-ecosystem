@@ -83,7 +83,53 @@ export function registerFlowRoutes(app, container) {
         iterations++;
         executionLog.push(`Executing state: ${currentState.id}`);
         try {
-          if (currentState.handlerType === 'background-task' && currentState.taskName) {
+          if (currentState.type === 'if') {
+            let conditionResult = false;
+            try {
+              if (currentState.condition) {
+                const conditionFn = typeof currentState.condition === 'string'
+                  ? new Function('input', `return ${currentState.condition}`)
+                  : currentState.condition;
+                conditionResult = await conditionFn(result);
+              }
+            } catch (err) {
+              executionLog.push(`Condition evaluation error: ${err.message}`);
+              conditionResult = false;
+            }
+            const nextStateId = conditionResult ? currentState.onTrue : currentState.onFalse;
+            executionLog.push(`If condition evaluated to: ${conditionResult}, routing to ${nextStateId}`);
+            if (!nextStateId) {
+              throw new Error(`No routing defined for if-state ${currentState.id}`);
+            }
+            const nextState = statesArray.find(s => s.id === nextStateId);
+            if (!nextState) {
+              throw new Error(`State '${nextStateId}' not found in flow`);
+            }
+            currentState = nextState;
+          } else if (currentState.type === 'switch') {
+            let switchValue = result;
+            try {
+              if (currentState.expression) {
+                const exprFn = typeof currentState.expression === 'string'
+                  ? new Function('input', `return ${currentState.expression}`)
+                  : currentState.expression;
+                switchValue = await exprFn(result);
+              }
+            } catch (err) {
+              executionLog.push(`Switch expression error: ${err.message}`);
+              switchValue = 'error';
+            }
+            const nextStateId = currentState.cases?.[switchValue] || currentState.default;
+            executionLog.push(`Switch expression evaluated to: ${switchValue}, routing to ${nextStateId}`);
+            if (!nextStateId) {
+              throw new Error(`No case or default defined for switch-state ${currentState.id}`);
+            }
+            const nextState = statesArray.find(s => s.id === nextStateId);
+            if (!nextState) {
+              throw new Error(`State '${nextStateId}' not found in flow`);
+            }
+            currentState = nextState;
+          } else if (currentState.handlerType === 'background-task' && currentState.taskName) {
             const { id: bgTaskId } = backgroundTaskManager.spawn(currentState.taskName, [], {});
             const timeout = currentState.timeout || 30000;
             const bgResult = await Promise.race([
