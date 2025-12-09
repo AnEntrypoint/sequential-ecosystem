@@ -147,8 +147,11 @@ async function main() {
     // const metricsCollector = new MetricsCollector(10000);
     // app.use('/api/', metricsMiddleware(metricsCollector));
 
+    const rateLimitRequests = parseInt(process.env.RATE_LIMIT_REQUESTS || '100');
+    const rateLimitWindow = parseInt(process.env.RATE_LIMIT_WINDOW_MS || '60000');
+
     app.use('/api/', createRequestLogger());
-    app.use('/api/', createRateLimitMiddleware(100, 60000));
+    app.use('/api/', createRateLimitMiddleware(rateLimitRequests, rateLimitWindow));
     app.use('/api/', optionalAuth);
     app.use('/api/', responseFormatterMiddleware);
 
