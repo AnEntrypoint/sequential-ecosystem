@@ -7,6 +7,7 @@ import { formatResponse, formatError } from '@sequential/response-formatting';
 import { registerCRUDRoutes } from '@sequential/crud-router';
 import { createServiceFactory } from '@sequential/service-factory';
 import { TimeoutPolicyEngine, handleFlowTimeout, handleStateTimeout } from './timeout-policies.js';
+import { DistributedFlowOrchestrator, createDistributedFlowDefinition } from './distributed-flows.js';
 
 const flowExecutions = new Map();
 
@@ -688,6 +689,73 @@ export function registerFlowRoutes(app, container) {
 
     const analyzer = new FlowAnalyzer(statesArray, initial);
     const analysis = analyzer.analyze();
+
+    res.json(formatResponse({ flowId, analysis }));
+  }));
+
+  app.post('/api/flows/:flowId/distributed/execute', asyncHandler(async (req, res) => {
+    const { flowId } = req.params;
+    const { input, services } = req.body;
+
+    const flow = await repository.get(flowId);
+    if (!flow) {
+      return res.status(404).json(formatError(404, { message: `Flow not found: ${flowId}` }));
+    }
+
+    const orchestrator = new DistributedFlowOrchestrator();
+
+    if (services) {
+      services.forEach(svc => {
+        orchestrator.registerService(svc.name, svc.endpoint, svc.tasks || {});
+      });
+    }
+
+    const statesArray = Array.isArray(flow.states) ? flow.states : Object.entries(flow.states).map(([id, state]) => ({ id, ...state }));
+    const distributedFlow = { states: statesArray };
+
+    const result = await orchestrator.executeDistributedFlow(distributedFlow, input || {});
+
+    res.json(formatResponse({
+      flowId,
+      executionId: `dist-${Date.now()}`,
+      success: result.success,
+      duration: result.duration,
+      completedStates: result.completedStates,
+      result: result.result,
+      errors: result.errors,
+      executionLog: result.executionLog
+    }));
+  }));
+
+  app.get('/api/flows/:flowId/distributed/analysis', asyncHandler(async (req, res) => {
+    const { flowId } = req.params;
+    const flow = await repository.get(flowId);
+    if (!flow) {
+      return res.status(404).json(formatError(404, { message: `Flow not found: ${flowId}` }));
+    }
+
+    const statesArray = Array.isArray(flow.states) ? flow.states : Object.entries(flow.states).map(([id, state]) => ({ id, ...state }));
+
+    const serviceStates = statesArray.filter(s => s.service);
+    const services = [...new Set(serviceStates.map(s => s.service))];
+    const parallelStates = statesArray.filter(s => s.type === 'parallel');
+    const compensationStates = statesArray.filter(s => s.compensation);
+
+    const analysis = {
+      flowId,
+      totalStates: statesArray.length,
+      services,
+      serviceCount: services.length,
+      parallelBranches: parallelStates.length,
+      compensationRequired: compensationStates.length > 0,
+      distributedPattern: serviceStates.length > 1 ? 'multi-service' : 'single-service',
+      complexity: {
+        hasParallelism: parallelStates.length > 0,
+        hasConditionalRouting: statesArray.some(s => s.type === 'if' || s.type === 'switch'),
+        hasCompensation: compensationStates.length > 0,
+        requiresCoordination: services.length > 1
+      }
+    };
 
     res.json(formatResponse({ flowId, analysis }));
   }));
