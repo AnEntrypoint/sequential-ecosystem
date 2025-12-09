@@ -8,7 +8,7 @@ import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp
 export function setupWebSocket(httpServer, getActiveTasks) {
   const wss = new WebSocketServer({ noServer: true });
 
-  createWebSocketRateLimiter();
+  const limiterInstance = createWebSocketRateLimiter();
 
   const subscriptionHandlers = [
     createSubscriptionHandler({
@@ -24,7 +24,11 @@ export function setupWebSocket(httpServer, getActiveTasks) {
     }),
     createSubscriptionHandler({
       urlPattern: /^\/api\/tasks\/([^/]+)\/subscribe$/,
-      paramExtractor: (url) => url.match(/^\/api\/tasks\/([^/]+)\/subscribe$/)[1],
+      paramExtractor: (url) => {
+        const match = url.match(/^\/api\/tasks\/([^/]+)\/subscribe$/);
+        if (!match || !match[1]) throw new Error(`Invalid task subscription URL: ${url}`);
+        return match[1];
+      },
       onSubscribe: (taskName, ws) => addTaskSubscriber(taskName, ws),
       onUnsubscribe: (taskName, ws) => removeTaskSubscriber(taskName, ws),
       getInitialMessage: (taskName) => ({ type: 'connected', taskName }),
@@ -57,19 +61,21 @@ export function setupWebSocket(httpServer, getActiveTasks) {
 
   httpServer.on('upgrade', (req, socket, head) => {
     const clientIp = req.socket.remoteAddress || req.headers['x-forwarded-for'] || '127.0.0.1';
-    const limiter = checkWebSocketRateLimit(clientIp);
+    const isAllowed = limiterInstance.checkLimit(clientIp);
 
-    if (!limiter.isAllowed()) {
+    if (!isAllowed) {
       socket.write('HTTP/1.1 429 Too Many Requests\r\nContent-Type: application/json\r\n\r\n');
-      socket.write(JSON.stringify({ error: 'Too many WebSocket connections from this IP', remaining: 0 }));
+      socket.write(JSON.stringify({ error: 'Too many WebSocket connections from this IP' }));
       socket.destroy();
       return;
     }
 
     const handler = subscriptionHandlers.find(h => h.matches(req.url));
     if (handler) {
-      handler.handle(wss, req, socket, head, limiter, getActiveTasks);
+      handler.handle(wss, req, socket, head, limiterInstance, getActiveTasks);
     } else {
+      socket.write('HTTP/1.1 404 Not Found\r\nContent-Type: application/json\r\n\r\n');
+      socket.write(JSON.stringify({ error: 'WebSocket endpoint not found' }));
       socket.destroy();
     }
   });
