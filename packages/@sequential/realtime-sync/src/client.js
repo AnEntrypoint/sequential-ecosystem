@@ -20,10 +20,10 @@ export class RealtimeClient {
         const wsUrl = `${protocol}//${host}/ws/realtime/${this.appId}`;
 
         this.ws = new WebSocket(wsUrl);
-        this.ws.onopen = () => {
+        this.ws.onopen = async () => {
           this.isConnected = true;
           this.reconnectAttempts = 0;
-          this.flushMessageQueue();
+          await this.flushMessageQueueAsync();
           resolve();
         };
 
@@ -63,6 +63,14 @@ export class RealtimeClient {
     while (this.messageQueue.length > 0) {
       const msg = this.messageQueue.shift();
       this.send(msg);
+    }
+  }
+
+  async flushMessageQueueAsync() {
+    while (this.messageQueue.length > 0 && this.isConnected && this.ws) {
+      const msg = this.messageQueue.shift();
+      this.ws.send(JSON.stringify(msg));
+      await new Promise(resolve => setTimeout(resolve, 5));
     }
   }
 
