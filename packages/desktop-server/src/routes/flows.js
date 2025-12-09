@@ -46,14 +46,22 @@ export function registerFlowRoutes(app, container) {
         initial: states?.find(s => s.type === 'initial')?.id || states?.[0]?.id || 'start',
         states: (states || []).reduce((acc, state) => {
           acc[state.id] = {
-            type: state.type === 'final' ? 'final' : undefined,
+            type: state.type === 'final' || state.type === 'parallel' ? state.type : (state.type === 'initial' ? undefined : state.type),
             handlerType: state.handlerType,
             taskName: state.taskName,
             taskInput: state.taskInput,
             timeout: state.timeout || undefined,
             code: state.code,
             onDone: state.onDone || undefined,
-            onError: state.onError || undefined
+            onError: state.onError || undefined,
+            condition: state.condition || undefined,
+            onTrue: state.onTrue || undefined,
+            onFalse: state.onFalse || undefined,
+            expression: state.expression || undefined,
+            cases: state.cases || undefined,
+            default: state.default || undefined,
+            branches: state.branches || undefined,
+            joinCondition: state.joinCondition || undefined
           };
           Object.keys(acc[state.id]).forEach(key => acc[state.id][key] === undefined && delete acc[state.id][key]);
           return acc;
@@ -123,6 +131,104 @@ export function registerFlowRoutes(app, container) {
             executionLog.push(`Switch expression evaluated to: ${switchValue}, routing to ${nextStateId}`);
             if (!nextStateId) {
               throw new Error(`No case or default defined for switch-state ${currentState.id}`);
+            }
+            const nextState = statesArray.find(s => s.id === nextStateId);
+            if (!nextState) {
+              throw new Error(`State '${nextStateId}' not found in flow`);
+            }
+            currentState = nextState;
+          } else if (currentState.type === 'parallel') {
+            const branchIds = currentState.branches || [];
+            if (branchIds.length === 0) {
+              throw new Error(`Parallel state ${currentState.id} has no branches defined`);
+            }
+            const branchStates = branchIds.map(bid => statesArray.find(s => s.id === bid)).filter(Boolean);
+            if (branchStates.length !== branchIds.length) {
+              throw new Error(`One or more branch states not found in parallel state ${currentState.id}`);
+            }
+            executionLog.push(`Executing ${branchIds.length} parallel branches: ${branchIds.join(', ')}`);
+
+            const branchResults = [];
+            const branchErrors = [];
+            const executeParallelBranch = async (branchState, branchIndex) => {
+              try {
+                let branchResult = result;
+                let branchCurrent = branchState;
+                let branchIterations = 0;
+
+                while (branchCurrent && branchCurrent.type !== 'final' && branchIterations < 100) {
+                  branchIterations++;
+                  if (branchCurrent.handlerType === 'task' && branchCurrent.taskName) {
+                    const task = await taskRepository.get(branchCurrent.taskName);
+                    if (!task) throw new Error(`Task not found: ${branchCurrent.taskName}`);
+                    const runId = taskService.createRunId();
+                    let taskInput = {};
+                    if (branchCurrent.taskInput) {
+                      try {
+                        taskInput = JSON.parse(branchCurrent.taskInput);
+                      } catch {
+                        throw new Error(`Invalid JSON in taskInput: ${branchCurrent.taskInput}`);
+                      }
+                    }
+                    branchResult = await taskService.executeTask(runId, branchCurrent.taskName, task.code, taskInput);
+                  } else if (branchCurrent.code) {
+                    branchResult = await executeTaskWithTimeout(branchCurrent.id, branchCurrent.code, branchResult, 30000);
+                  }
+
+                  const nextStateId = branchCurrent.onDone;
+                  if (!nextStateId) break;
+                  branchCurrent = statesArray.find(s => s.id === nextStateId);
+                }
+
+                return { index: branchIndex, result: branchResult, error: null, completed: true };
+              } catch (err) {
+                return { index: branchIndex, result: null, error: err.message, completed: false };
+              }
+            };
+
+            const parallelPromises = branchStates.map((bs, idx) => executeParallelBranch(bs, idx));
+            const outcomes = await Promise.all(parallelPromises);
+
+            outcomes.forEach(outcome => {
+              if (outcome.completed) {
+                branchResults[outcome.index] = outcome.result;
+              } else {
+                branchErrors.push({ branch: branchIds[outcome.index], error: outcome.error });
+              }
+            });
+
+            const joinCondition = currentState.joinCondition || 'all';
+            let joinMet = false;
+
+            if (joinCondition === 'all') {
+              joinMet = branchErrors.length === 0;
+              if (!joinMet) {
+                throw new Error(`Parallel join condition 'all' failed: ${branchErrors.map(e => `${e.branch}: ${e.error}`).join('; ')}`);
+              }
+            } else if (joinCondition === 'any') {
+              joinMet = branchResults.length > 0;
+              if (!joinMet) {
+                throw new Error(`Parallel join condition 'any' failed: all branches failed`);
+              }
+            } else if (joinCondition === 'all-or-error') {
+              joinMet = true;
+            }
+
+            result = {
+              branches: branchResults,
+              errors: branchErrors,
+              joinCondition,
+              branchCount: branchIds.length,
+              successCount: branchResults.length,
+              errorCount: branchErrors.length
+            };
+
+            executionLog.push(`Parallel execution completed: ${branchResults.length}/${branchIds.length} branches succeeded (join: ${joinCondition})`);
+
+            const nextStateId = currentState.onDone;
+            if (!nextStateId) {
+              executionLog.push(`No onDone state defined for parallel ${currentState.id}, ending execution`);
+              break;
             }
             const nextState = statesArray.find(s => s.id === nextStateId);
             if (!nextState) {
