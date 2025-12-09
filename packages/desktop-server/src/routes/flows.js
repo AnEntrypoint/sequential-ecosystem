@@ -6,6 +6,7 @@ import { executeTaskWithTimeout, backgroundTaskManager } from '@sequential/serve
 import { formatResponse, formatError } from '@sequential/response-formatting';
 import { registerCRUDRoutes } from '@sequential/crud-router';
 import { createServiceFactory } from '@sequential/service-factory';
+import { TimeoutPolicyEngine, handleFlowTimeout, handleStateTimeout } from './timeout-policies.js';
 
 const flowExecutions = new Map();
 
@@ -322,11 +323,30 @@ export function registerFlowRoutes(app, container) {
       const executedStates = [];
       const MAX_ITERATIONS = 1000;
       let iterations = 0;
+      const timeoutEngine = new TimeoutPolicyEngine(flow.flowTimeout || 30000);
+      let timedOut = false;
+      let timeoutInfo = null;
 
       try {
         while (currentState?.type !== 'final' && iterations < MAX_ITERATIONS) {
           iterations++;
           cancellationToken.throwIfCancelled();
+
+          const flowTimeoutCheck = timeoutEngine.checkFlowTimeout();
+          if (flowTimeoutCheck.timedOut) {
+            timedOut = true;
+            timeoutInfo = { type: 'flow', ...flowTimeoutCheck };
+            executionLog.push(`Flow timeout exceeded: ${flowTimeoutCheck.elapsed}ms > ${flowTimeoutCheck.limit}ms`);
+            if (flow.onFlowTimeout) {
+              const timeoutHandler = statesArray.find(s => s.id === flow.onFlowTimeout);
+              if (timeoutHandler) {
+                currentState = timeoutHandler;
+                continue;
+              }
+            }
+            throw new Error(`Flow execution timeout: ${flowTimeoutCheck.exceeded}ms over limit`);
+          }
+
           executionLog.push(`Executing state: ${currentState.id}`);
           try {
           executedStates.push(currentState.id);
@@ -502,6 +522,32 @@ export function registerFlowRoutes(app, container) {
             result = await executeTaskWithTimeout(currentState.id, currentState.code, result, 30000);
             executionLog.push(`Code output: ${JSON.stringify(result)}`);
           }
+
+          if (currentState.timeout) {
+            const stateTimeoutCheck = timeoutEngine.checkStateTimeout(currentState.id, timeoutEngine.getElapsedTime(), currentState.timeout);
+            if (stateTimeoutCheck.timedOut) {
+              timedOut = true;
+              timeoutInfo = { type: 'state', state: currentState.id, ...stateTimeoutCheck };
+              executionLog.push(`State timeout exceeded: ${stateTimeoutCheck.elapsed}ms > ${stateTimeoutCheck.limit}ms`);
+
+              if (currentState.onTimeout) {
+                const timeoutHandler = statesArray.find(s => s.id === currentState.onTimeout);
+                if (timeoutHandler) {
+                  executionLog.push(`Routing to timeout handler: ${currentState.onTimeout}`);
+                  currentState = timeoutHandler;
+                  continue;
+                }
+              }
+
+              if (currentState.fallbackData !== undefined) {
+                result = currentState.fallbackData;
+                executionLog.push(`Using fallback data due to timeout`);
+              } else {
+                throw new Error(`State '${currentState.id}' timeout: ${stateTimeoutCheck.exceeded}ms over limit`);
+              }
+            }
+          }
+
           const nextStateId = currentState.onDone;
           if (!nextStateId) {
             executionLog.push(`No onDone state defined for ${currentState.id}, ending execution`);
@@ -549,6 +595,11 @@ export function registerFlowRoutes(app, container) {
         executionLog
       };
 
+      if (timedOut && timeoutInfo) {
+        response.timedOut = true;
+        response.timeoutInfo = timeoutInfo;
+      }
+
       if (cancelled || cancellationToken.isCancelled()) {
         response.cancelled = true;
         response.cancelledAt = cancellationToken.cancelledAt;
@@ -556,7 +607,7 @@ export function registerFlowRoutes(app, container) {
         response.cancelReason = cancellationToken.cancelReason;
         res.json(formatResponse(response));
       } else if (error) {
-        res.status(500).json(formatError(500, { code: 'FLOW_EXECUTION_FAILED', message: error, duration, executedStates, executionLog }));
+        res.status(500).json(formatError(500, { code: 'FLOW_EXECUTION_FAILED', message: error, duration, executedStates, executionLog, timedOut, timeoutInfo }));
       } else {
         res.json(formatResponse(response));
       }
