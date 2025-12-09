@@ -61,9 +61,9 @@ export function setupWebSocket(httpServer, getActiveTasks) {
 
   httpServer.on('upgrade', (req, socket, head) => {
     const clientIp = req.socket.remoteAddress || req.headers['x-forwarded-for'] || '127.0.0.1';
-    const isAllowed = limiterInstance.checkLimit(clientIp);
+    const limiter = limiterInstance.checkLimit(clientIp);
 
-    if (!isAllowed) {
+    if (!limiter.isAllowed()) {
       socket.write('HTTP/1.1 429 Too Many Requests\r\nContent-Type: application/json\r\n\r\n');
       socket.write(JSON.stringify({ error: 'Too many WebSocket connections from this IP' }));
       socket.destroy();
@@ -72,7 +72,7 @@ export function setupWebSocket(httpServer, getActiveTasks) {
 
     const handler = subscriptionHandlers.find(h => h.matches(req.url));
     if (handler) {
-      handler.handle(wss, req, socket, head, limiterInstance, getActiveTasks);
+      handler.handle(wss, req, socket, head, limiter, getActiveTasks);
     } else {
       socket.write('HTTP/1.1 404 Not Found\r\nContent-Type: application/json\r\n\r\n');
       socket.write(JSON.stringify({ error: 'WebSocket endpoint not found' }));

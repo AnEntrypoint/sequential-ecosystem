@@ -19,7 +19,17 @@ export function createSubscriptionHandler(config) {
     },
 
     handle: (wss, req, socket, head, limiter, getActiveTasks) => {
-      const params = paramExtractor(req.url);
+      let params;
+      try {
+        params = paramExtractor(req.url);
+      } catch (e) {
+        const label = typeof contextLabel === 'function' ? contextLabel('?') : contextLabel;
+        logger.error(`Parameter extraction failed [${label}]:`, e.message);
+        socket.write('HTTP/1.1 400 Bad Request\r\nContent-Type: application/json\r\n\r\n');
+        socket.write(JSON.stringify({ error: e.message }));
+        socket.destroy();
+        return;
+      }
 
       wss.handleUpgrade(req, socket, head, (ws) => {
         if (!limiter.add(ws)) {
@@ -52,6 +62,7 @@ export function createSubscriptionHandler(config) {
         } catch (e) {
           const label = typeof contextLabel === 'function' ? contextLabel(params) : contextLabel;
           logger.error(`Failed to send initial message [${label}]:`, e.message);
+          ws.close(1011, 'Failed to send initial message');
         }
       });
     }
