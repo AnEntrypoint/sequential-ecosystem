@@ -4,8 +4,10 @@ const channels = new Map();
 export class RealtimeBroadcaster {
   static broadcast(channel, type, data) {
     const msg = { channel, type, data, timestamp: Date.now() };
-    const subs = subscriptions.get(channel) || [];
-    subs.forEach(ws => {
+    const subs = subscriptions.get(channel);
+    if (!subs) return;
+    const snapshot = Array.from(subs);
+    snapshot.forEach(ws => {
       if (ws.readyState === 1) {
         ws.send(JSON.stringify(msg));
       }
@@ -14,9 +16,9 @@ export class RealtimeBroadcaster {
 
   static subscribe(channel, ws) {
     if (!subscriptions.has(channel)) {
-      subscriptions.set(channel, []);
+      subscriptions.set(channel, new Set());
     }
-    subscriptions.get(channel).push(ws);
+    subscriptions.get(channel).add(ws);
     if (!channels.has(channel)) {
       channels.set(channel, { created: Date.now(), subscribers: 0 });
     }
@@ -26,11 +28,10 @@ export class RealtimeBroadcaster {
   static unsubscribe(channel, ws) {
     const subs = subscriptions.get(channel);
     if (subs) {
-      const idx = subs.indexOf(ws);
-      if (idx >= 0) subs.splice(idx, 1);
+      subs.delete(ws);
       const meta = channels.get(channel);
       if (meta) meta.subscribers--;
-      if (subs.length === 0) {
+      if (subs.size === 0) {
         subscriptions.delete(channel);
         channels.delete(channel);
       }
@@ -41,7 +42,7 @@ export class RealtimeBroadcaster {
     return {
       channels: channels.size,
       activeSubscriptions: Array.from(subscriptions.values())
-        .reduce((sum, subs) => sum + subs.length, 0),
+        .reduce((sum, subs) => sum + subs.size, 0),
       channelDetails: Array.from(channels.entries()).map(([name, meta]) => ({
         name,
         subscribers: meta.subscribers,
@@ -77,8 +78,7 @@ export function setupRealtimeWebSocket(server) {
 
     ws.on('close', () => {
       subscriptions.forEach((subs) => {
-        const idx = subs.indexOf(ws);
-        if (idx >= 0) subs.splice(idx, 1);
+        subs.delete(ws);
       });
     });
   });
