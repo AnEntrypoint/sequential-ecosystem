@@ -21,5 +21,6 @@
     "test": "node --test tests/*.js",
     "test:coverage": "node --test --experimental-test-coverage tests/*.js"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "owner": "Utilities"
 }

@@ -4,7 +4,12 @@
   "version": "1.0.0",
   "description": "Custom metrics and instrumentation API for applications",
   "main": "src/index.js",
-  "keywords": ["metrics", "instrumentation", "observability"],
+  "keywords": [
+    "metrics",
+    "instrumentation",
+    "observability"
+  ],
   "author": "Sequential",
-  "license": "MIT"
+  "license": "MIT",
+  "owner": "Observability"
 }

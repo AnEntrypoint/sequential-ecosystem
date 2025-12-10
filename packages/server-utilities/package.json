@@ -20,5 +20,6 @@
   "dependencies": {
     "@sequential/config-management": "*",
     "node-cron": "^3.0.3"
-  }
+  },
+  "owner": "Utilities"
 }

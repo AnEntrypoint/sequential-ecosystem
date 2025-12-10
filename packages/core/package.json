@@ -27,5 +27,6 @@
   ],
   "author": "Sequential Ecosystem <contact@sequential.dev>",
   "license": "MIT",
-  "dependencies": {}
+  "dependencies": {},
+  "owner": "Utilities"
 }

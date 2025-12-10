@@ -12,5 +12,6 @@
     "@sequential/execution-context": "file:../@sequential/execution-context",
     "response-formatting": "file:../response-formatting",
     "@sequential/realtime-sync": "file:../@sequential/realtime-sync"
-  }
+  },
+  "owner": "SDK"
 }

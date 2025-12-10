@@ -4,7 +4,13 @@
   "version": "1.0.0",
   "description": "Tracing and metrics for all storage operations",
   "main": "src/index.js",
-  "keywords": ["storage", "database", "queries", "observability"],
+  "keywords": [
+    "storage",
+    "database",
+    "queries",
+    "observability"
+  ],
   "author": "Sequential",
-  "license": "MIT"
+  "license": "MIT",
+  "owner": "Observability"
 }

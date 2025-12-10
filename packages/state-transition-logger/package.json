@@ -4,7 +4,13 @@
   "version": "1.0.0",
   "description": "Track all state transitions in tasks, flows, and state machines",
   "main": "src/index.js",
-  "keywords": ["state", "transitions", "observability", "xstate"],
+  "keywords": [
+    "state",
+    "transitions",
+    "observability",
+    "xstate"
+  ],
   "author": "Sequential",
-  "license": "MIT"
+  "license": "MIT",
+  "owner": "Observability"
 }

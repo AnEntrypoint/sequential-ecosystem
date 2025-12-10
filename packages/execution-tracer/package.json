@@ -7,7 +7,12 @@
   "scripts": {
     "test": "node test.js"
   },
-  "keywords": ["tracing", "spans", "observability"],
+  "keywords": [
+    "tracing",
+    "spans",
+    "observability"
+  ],
   "author": "Sequential",
-  "license": "MIT"
+  "license": "MIT",
+  "owner": "Observability"
 }
