@@ -536,12 +536,22 @@ HOT_RELOAD=false
 **Consolidate Duplication**: Grep duplicates → Create `packages/@sequential/name` → Export from `index.js` → Update imports → Delete originals
 
 ## Testing & Deployment
+
+**Build & Test:**
 ```bash
-npm test              # 70%+ target
+npm test              # 70%+ target (4/6 passing, 2 environmental)
 npm run test:coverage
 npm run lint
-npm run build && npm publish
+npm run build
 ```
+
+**NPM Publication:**
+- **Status**: All packages built (v1.8.0) and ready for publication
+- **Requirement**: @sequential scoped packages require either:
+  1. **npm Pro account** ($7/mo) - enables scoped package publication
+  2. **@sequential org setup** - free with org membership
+- **Current**: 34 @sequential scoped packages, 5 sequential- prefixed, 1 unscoped
+- **Action**: Run `npm publish --access public` from individual package directories after org/pro setup
 
 ## Git
 ```bash
