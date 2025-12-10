@@ -36,4 +36,4 @@ export {
   validateFlowState,
   validateFlowGraph,
   getFlowValidationReport
-} from './flow-validators.js';
+} from '@sequential/flow-validation';

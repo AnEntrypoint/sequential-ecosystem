@@ -1,0 +1,16 @@
+{
+  "name": "@sequential/flow-validation",
+  "version": "1.0.0",
+  "description": "Flow graph validation and state handler verification",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "keywords": [
+    "flow",
+    "validation",
+    "state-machine",
+    "graph"
+  ]
+}
