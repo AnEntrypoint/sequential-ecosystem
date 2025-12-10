@@ -1,6 +1,6 @@
-import { backgroundTaskManager } from 'server-utilities';
+import { backgroundTaskManager } from '@sequential/server-utilities';
 import { asyncHandler } from '../middleware/error-handler.js';
-import { formatResponse } from 'response-formatting';
+import { formatResponse } from '@sequential/response-formatting';
 import { parseResourceId, requireResource, parsePagination } from '@sequential/route-helpers';
 import { throwValidationError, throwNotFound } from '@sequential/error-handling';
 

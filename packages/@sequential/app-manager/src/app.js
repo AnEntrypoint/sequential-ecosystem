@@ -2,7 +2,7 @@ import { AppSDK } from '@sequential/app-sdk';
 
 class AppManager {
   constructor() {
-    this.sdk = AppSDK.init('app-app-manager');
+    this.sdk = AppSDK.init('@sequential/app-manager');
     this.storage = this.createStorageManager();
     this.userApps = [];
     this.builtinApps = [];
@@ -13,7 +13,7 @@ class AppManager {
   }
 
   createStorageManager() {
-    const appId = 'app-app-manager';
+    const appId = '@sequential/app-manager';
     const stateKey = `app-state:${appId}`;
     const expiryKey = `app-state-expiry:${appId}`;
     return {

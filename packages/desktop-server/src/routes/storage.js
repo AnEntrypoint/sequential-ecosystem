@@ -1,5 +1,5 @@
 import { asyncHandler } from '../middleware/error-handler.js';
-import { formatResponse } from 'response-formatting';
+import { formatResponse } from '@sequential/response-formatting';
 import { createValidationError } from '@sequential/error-handling';
 
 export function registerStorageRoutes(app, container) {

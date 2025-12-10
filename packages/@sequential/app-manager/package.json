@@ -1,7 +1,7 @@
 {
-  "name": "app-app-editor",
+  "name": "@sequential/app-manager",
   "version": "1.0.0",
-  "description": "Visual app builder and code editor",
+  "description": "App lifecycle and marketplace manager",
   "main": "dist/index.html",
   "files": [
     "dist",
@@ -9,14 +9,14 @@
   ],
   "keywords": [
     "app",
-    "editor",
-    "builder"
+    "manager",
+    "marketplace"
   ],
   "author": "Sequential",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/AnEntrypoint/app-app-editor"
+    "url": "https://github.com/AnEntrypoint/app-app-manager"
   },
   "owner": "App Editor"
 }

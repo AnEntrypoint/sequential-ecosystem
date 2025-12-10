@@ -9,7 +9,7 @@ import {
   readJsonFile,
   writeFileAtomicJson,
   ensureDirectory
-} from 'file-operations';
+} from '@sequential/file-operations';
 
 export class FolderAdapter extends StorageAdapter {
   constructor(basePath = './tasks') {

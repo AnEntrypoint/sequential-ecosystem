@@ -29,7 +29,7 @@
   "author": "Sequential Ecosystem <contact@sequential.dev>",
   "license": "MIT",
   "dependencies": {
-    "core": "*",
+    "@sequential/core": "*",
     "fs-extra": "^11.1.1"
   }
 }

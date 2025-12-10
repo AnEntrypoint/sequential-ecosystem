@@ -4,7 +4,7 @@ import { BaseRepository } from './base-repository.js';
 import {
   ensureDirectory,
   writeFileAtomicJson
-} from 'file-operations';
+} from '@sequential/file-operations';
 
 export class AppRepository extends BaseRepository {
   constructor(baseDir = null) {

@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs-extra';
-import { ensureDirectory } from 'file-operations';
+import { ensureDirectory } from '@sequential/file-operations';
 import { BaseRepository } from './base-repository.js';
 
 export class FlowRepository extends BaseRepository {

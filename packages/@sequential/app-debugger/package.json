@@ -1,22 +1,22 @@
 {
-  "name": "app-app-manager",
+  "name": "@sequential/app-debugger",
   "version": "1.0.0",
-  "description": "App lifecycle and marketplace manager",
+  "description": "App debugger and observability dashboard",
   "main": "dist/index.html",
   "files": [
     "dist",
     "manifest.json"
   ],
   "keywords": [
-    "app",
-    "manager",
-    "marketplace"
+    "debug",
+    "observability",
+    "monitoring"
   ],
   "author": "Sequential",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/AnEntrypoint/app-app-manager"
+    "url": "https://github.com/AnEntrypoint/app-app-debugger"
   },
   "owner": "App Editor"
 }

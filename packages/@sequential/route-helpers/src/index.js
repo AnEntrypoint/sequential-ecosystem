@@ -1,4 +1,4 @@
-import { formatError } from 'response-formatting';
+import { formatError } from '@sequential/response-formatting';
 
 export function parseResourceId(paramName = 'id') {
   return (req, res, next) => {

@@ -1,7 +1,7 @@
 import path from 'path';
 import { createCLICommand } from '@sequential/cli-handler';
 import { existsSync } from 'fs';
-import { listFiles } from 'file-operations';
+import { listFiles } from '@sequential/file-operations';
 import logger from '@sequential/sequential-logging';
 
 export const listCommand = createCLICommand(async (options) => {

@@ -8,7 +8,7 @@ import http from 'http';
 import logger from '@sequential/sequential-logging';
 import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
 
-import { createRequestLogger } from 'server-utilities';
+import { createRequestLogger } from '@sequential/server-utilities';
 import { createRateLimitMiddleware } from '@sequential/input-sanitization';
 import { createErrorHandler } from './middleware/error-handler.js';
 import { securityHeaders } from './middleware/security-headers.js';
@@ -26,7 +26,7 @@ import { registerStorageObserverRoutes } from './routes/storage-observer.js';
 import { registerBackgroundTaskRoutes } from './routes/background-tasks.js';
 import { registerErrorLoggingRoutes } from './routes/error-logging.js';
 import { registerHealthRoutes } from './routes/health.js';
-import { CONFIG, taskQueueManager, queueWorkerPool, taskScheduler } from 'server-utilities';
+import { CONFIG, taskQueueManager, queueWorkerPool, taskScheduler } from '@sequential/server-utilities';
 import { registerWorkerRoutes } from './routes/workers.js';
 import { registerSchedulerRoutes } from './routes/scheduler.js';
 import { registerUserAppRoutes } from './routes/user-apps.js';
@@ -44,7 +44,7 @@ import { setupWebSocket } from './utils/websocket-setup.js';
 import { setupGracefulShutdown } from './utils/graceful-shutdown.js';
 import { StateManager, FileSystemAdapter, setupBroadcastMiddleware } from '@sequential/persistent-state';
 import { RealtimeBroadcaster } from '@sequential/realtime-sync';
-import { backgroundTaskManager } from 'server-utilities';
+import { backgroundTaskManager } from '@sequential/server-utilities';
 import { broadcastBackgroundTaskEvent } from '@sequential/websocket-broadcaster';
 import { optionalAuth } from '../../zellous/server/auth-middleware.js';
 import { responseFormatterMiddleware } from './middleware/response-formatter-middleware.js';
@@ -86,9 +86,9 @@ async function main() {
         'app-flow-debugger',
         'app-run-observer',
         'app-file-browser',
-        'app-app-editor',
-        'app-app-debugger',
-        'app-app-manager',
+        '@sequential/app-editor',
+        '@sequential/app-debugger',
+        '@sequential/app-manager',
         'app-observability-console',
         'app-observability-dashboard',
         'app-demo-chat'

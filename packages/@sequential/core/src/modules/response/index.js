@@ -19,4 +19,4 @@ export {
   createListResponse,
   createBatchResponse,
   formatErrorForResponse
-} from 'response-formatting';
+} from '@sequential/response-formatting';

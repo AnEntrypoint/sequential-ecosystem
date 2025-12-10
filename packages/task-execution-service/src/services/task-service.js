@@ -1,4 +1,4 @@
-import { executeTaskWithTimeout } from 'server-utilities';
+import { executeTaskWithTimeout } from '@sequential/server-utilities';
 import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
 import { delay, withRetry } from '@sequential/async-patterns';
 

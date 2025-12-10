@@ -1,4 +1,4 @@
-import { backgroundTaskManager } from 'server-utilities';
+import { backgroundTaskManager } from '@sequential/server-utilities';
 import logger from '@sequential/sequential-logging';
 import { delay, withRetry } from '@sequential/async-patterns';
 

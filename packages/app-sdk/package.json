@@ -10,7 +10,7 @@
   "dependencies": {
     "@sequential/validation": "file:../@sequential/validation",
     "@sequential/execution-context": "file:../@sequential/execution-context",
-    "response-formatting": "file:../response-formatting",
+    "response-formatting": "file:../../../../packages/@sequential/response-formatting",
     "@sequential/realtime-sync": "file:../@sequential/realtime-sync"
   },
   "owner": "SDK"

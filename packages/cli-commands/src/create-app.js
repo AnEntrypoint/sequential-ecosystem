@@ -1,7 +1,7 @@
 import path from 'path';
 import { randomUUID } from 'crypto';
 import { existsSync } from 'fs';
-import { ensureDirectory, writeFileAtomicString } from 'file-operations';
+import { ensureDirectory, writeFileAtomicString } from '@sequential/file-operations';
 import { generateBlankAppTemplate } from './app-templates/blank.js';
 import { generateDashboardAppTemplate } from './app-templates/dashboard.js';
 import { generateTaskExplorerAppTemplate } from './app-templates/task-explorer.js';

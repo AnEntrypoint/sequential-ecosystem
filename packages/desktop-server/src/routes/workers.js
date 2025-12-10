@@ -1,5 +1,5 @@
 import { asyncHandler } from '../middleware/error-handler.js';
-import { formatResponse } from 'response-formatting';
+import { formatResponse } from '@sequential/response-formatting';
 import { parseResourceId, requireResource } from '@sequential/route-helpers';
 import { throwNotFound } from '@sequential/error-handling';
 import { createServiceFactory } from '@sequential/service-factory';

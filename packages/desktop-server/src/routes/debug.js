@@ -1,7 +1,7 @@
 import { asyncHandler, getOperationLog } from '../middleware/error-handler.js';
-import { getFromCache, getRequestLog, CONFIG } from 'server-utilities';
+import { getFromCache, getRequestLog, CONFIG } from '@sequential/server-utilities';
 import { createError } from '@sequential/error-handling';
-import { formatResponse } from 'response-formatting';
+import { formatResponse } from '@sequential/response-formatting';
 import { createServiceFactory } from '@sequential/service-factory';
 
 export function registerDebugRoutes(app, container) {

@@ -1,22 +1,22 @@
 {
-  "name": "app-app-debugger",
+  "name": "@sequential/app-editor",
   "version": "1.0.0",
-  "description": "App debugger and observability dashboard",
+  "description": "Visual app builder and code editor",
   "main": "dist/index.html",
   "files": [
     "dist",
     "manifest.json"
   ],
   "keywords": [
-    "debug",
-    "observability",
-    "monitoring"
+    "app",
+    "editor",
+    "builder"
   ],
   "author": "Sequential",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/AnEntrypoint/app-app-debugger"
+    "url": "https://github.com/AnEntrypoint/app-app-editor"
   },
   "owner": "App Editor"
 }

@@ -1,7 +1,7 @@
 import path from 'path';
 import { randomUUID } from 'crypto';
 import { existsSync } from 'fs';
-import { ensureDirectory, writeFileAtomicString } from 'file-operations';
+import { ensureDirectory, writeFileAtomicString } from '@sequential/file-operations';
 import { generateDatabaseToolTemplate } from './tool-templates/database.js';
 import { generateApiToolTemplate } from './tool-templates/api.js';
 import { generateComputeToolTemplate } from './tool-templates/compute.js';

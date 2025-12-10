@@ -1,5 +1,5 @@
 import path from 'path';
-import { readJsonFile, writeFileAtomicJson } from 'file-operations';
+import { readJsonFile, writeFileAtomicJson } from '@sequential/file-operations';
 
 const CONFIG_FILE = path.join(process.cwd(), '.sequentialrc.json');
 

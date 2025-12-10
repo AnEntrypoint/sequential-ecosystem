@@ -1,5 +1,5 @@
 import path from 'path';
-import { ensureDirectory } from 'file-operations';
+import { ensureDirectory } from '@sequential/file-operations';
 import { createSimpleFlowExample } from './examples/simple-flow.js';
 import { createComplexFlowExample } from './examples/complex-flow.js';
 import { createApiIntegrationExample } from './examples/api-integration.js';

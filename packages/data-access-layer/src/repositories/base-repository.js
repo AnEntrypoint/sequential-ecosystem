@@ -7,7 +7,7 @@ import {
   readJsonFileOptional as readJsonFileOptionalUtil,
   writeFileAtomicJson,
   listFiles
-} from 'file-operations';
+} from '@sequential/file-operations';
 
 /**
  * BaseRepository - Abstract base class for all repositories

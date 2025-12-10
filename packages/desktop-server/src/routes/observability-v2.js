@@ -4,7 +4,7 @@ import { CustomMetrics } from '@sequential/custom-metrics';
 import { StateTransitionLogger } from '@sequential/state-transition-logger';
 import { StorageQueryTracer } from '@sequential/storage-query-tracer';
 import { AlertEngine, AlertConditions } from '@sequential/alert-engine';
-import { formatResponse } from 'response-formatting';
+import { formatResponse } from '@sequential/response-formatting';
 
 const tracer = new ExecutionTracer();
 const toolTracer = new ToolCallTracer();

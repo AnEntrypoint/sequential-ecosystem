@@ -1,4 +1,4 @@
-import { formatResponse } from 'response-formatting';
+import { formatResponse } from '@sequential/response-formatting';
 
 const rooms = new Map();
 const connections = new Map();

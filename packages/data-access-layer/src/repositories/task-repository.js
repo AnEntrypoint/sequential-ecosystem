@@ -5,7 +5,7 @@ import {
   ensureDirectory,
   writeFileAtomicJson,
   readJsonFiles
-} from 'file-operations';
+} from '@sequential/file-operations';
 
 export class TaskRepository extends BaseRepository {
   constructor(baseDir = null) {

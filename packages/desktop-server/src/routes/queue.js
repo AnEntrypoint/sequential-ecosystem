@@ -1,6 +1,6 @@
 import { asyncHandler } from '../middleware/error-handler.js';
-import { taskQueueManager } from 'server-utilities';
-import { formatResponse } from 'response-formatting';
+import { taskQueueManager } from '@sequential/server-utilities';
+import { formatResponse } from '@sequential/response-formatting';
 import { parseResourceId, requireResource } from '@sequential/route-helpers';
 import { throwNotFound, throwValidationError } from '@sequential/error-handling';
 
