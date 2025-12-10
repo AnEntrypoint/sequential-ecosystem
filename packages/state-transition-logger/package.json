@@ -1,5 +1,6 @@
 {
   "name": "@sequential/state-transition-logger",
+  "type": "module",
   "version": "1.0.0",
   "description": "Track all state transitions in tasks, flows, and state machines",
   "main": "src/index.js",

@@ -1,5 +1,6 @@
 {
   "name": "@sequential/execution-tracer",
+  "type": "module",
   "version": "1.0.0",
   "description": "Distributed execution tracing with span hierarchy and waterfall visualization",
   "main": "src/index.js",

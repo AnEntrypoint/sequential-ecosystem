@@ -1,13 +1,14 @@
 {
   "name": "@sequential/app-sdk",
   "version": "1.0.0",
+  "description": "SDK for building Sequential apps with real-time sync and tool registry",
   "type": "module",
   "exports": {
     ".": "./src/index.js"
   },
   "main": "src/index.js",
   "dependencies": {
-    "@sequential/unified-validation": "file:../@sequential/unified-validation",
+    "@sequential/validation": "file:../@sequential/validation",
     "@sequential/execution-context": "file:../@sequential/execution-context",
     "response-formatting": "file:../response-formatting",
     "@sequential/realtime-sync": "file:../@sequential/realtime-sync"

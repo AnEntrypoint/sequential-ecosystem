@@ -1,5 +1,6 @@
 {
   "name": "@sequential/storage-query-tracer",
+  "type": "module",
   "version": "1.0.0",
   "description": "Tracing and metrics for all storage operations",
   "main": "src/index.js",
