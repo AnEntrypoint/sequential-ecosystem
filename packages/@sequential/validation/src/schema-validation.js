@@ -3,7 +3,7 @@ import {
   validateSchema,
   PREDEFINED_SCHEMAS,
   getAjvInstance
-} from '@sequential/unified-validation';
+} from '@sequential/validation';
 
 function createValidator(schemaName) {
   const schema = PREDEFINED_SCHEMAS[schemaName];
