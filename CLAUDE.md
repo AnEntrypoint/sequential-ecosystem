@@ -12,36 +12,66 @@
 - **Debugging**: Advanced observability dashboard for execution flow, state, errors, and performance
 - Auto-saved, resume on next call | Folder/SQLite/PostgreSQL/Supabase storage
 
-## Packages (~65 total)
+## Packages (~66 total, organized by owner)
 
-**Core Execution (5):**
+**Task Executor (1):**
 - sequential-fetch (resumable fetch with auto-checkpoint)
+
+**Flow Engine (2):**
 - sequential-flow (explicit state machine orchestrator)
+- @sequential/flow-validation (graph validation, handler verification)
+
+**Task Runner (1):**
 - sequential-runner (task executor with auto-suspend/resume)
+
+**Storage Layer (4):**
 - sequential-adaptor (storage abstraction: file/SQL/cloud)
+- sequential-adaptor-sqlite, sequential-adaptor-postgres, sequential-adaptor-supabase
+
+**Machine Runner (1):**
 - sequential-machine (persistent compute via content-addressable layers)
 
-**Server & CLI (3):**
+**API Server (1):**
 - desktop-server (API server + real-time broker)
+
+**Desktop UI (1):**
 - desktop-shell (desktop interface)
+
+**CLI Interface (1):**
 - cli-commands (command generators)
 
 **Built-in Apps (10):**
-- app-app-editor, app-app-debugger, app-app-manager (core apps)
+- app-app-editor, app-app-debugger, app-app-manager (core)
 - app-file-browser, app-flow-debugger, app-observability-* (observability)
-- app-task-*, app-tool-*, app-chat-* (workflow tools)
+- app-task-*, app-tool-*, app-chat-* (workflow)
 
-**@sequential/ Core Libraries (15+):**
-- **validation**: @sequential/validation (AJV schema + param + type validation)
-- **validation**: @sequential/path-validation (path traversal prevention)
-- **error-handling**: @sequential/error-handling (serialization, categorization, formatting)
-- **utilities**: @sequential/{app-sdk, tool-registry, realtime-sync, dynamic-components, app-mcp, execution-context}
-- **observability**: @sequential/{execution-tracer, tool-call-tracer, state-transition-logger, storage-query-tracer, custom-metrics, alert-engine}
-- **misc**: response-formatting, server-utilities, core, file-operations, sequential-validators
+**Validation Framework (2):**
+- @sequential/validation (AJV schema + param + type validation)
+- sequential-validators (field validators, schema validators, body validators)
 
-**Adapters & Services (5+):**
-- sequential-adaptor-{sqlite, postgres, supabase, mongodb}
-- task-execution-service, sequential-logging, sequential-utils
+**Security (1):**
+- @sequential/path-validation (path traversal prevention, unified source)
+
+**Error Management (1):**
+- @sequential/error-handling (serialization, categorization, formatting)
+
+**Real-time Layer (2):**
+- @sequential/realtime-sync (pub/sub over WebSocket)
+- @sequential/websocket-broadcaster (message broadcasting)
+
+**SDK (1):**
+- @sequential/app-sdk (app development kit)
+
+**Tool System (2):**
+- @sequential/tool-registry (tool registration, discovery, execution)
+- @sequential/app-mcp (Model Context Protocol bridge)
+
+**Observability (6):**
+- @sequential/{execution-tracer, tool-call-tracer, state-transition-logger, storage-query-tracer, custom-metrics, alert-engine}
+
+**Utilities (8):**
+- response-formatting, server-utilities, core, file-operations, sequential-logging, sequential-utils
+- @sequential/{dynamic-components, execution-context}
 
 ## Quick Start
 ```bash
@@ -549,16 +579,18 @@ Commits: fix, feat, refactor, docs, test, chore
 
 ## System Status
 
-**Production Ready** ✓ | All core systems tested | 44 testing iterations completed | Codebase consolidated
+**Production Ready** ✓ | All core systems tested | 44 testing iterations completed | Codebase consolidated & documented
 
-**Recent Work (Dec 10, 2025):**
-- Deleted 15 dead validator files (9,750+ LOC)
-- Created @sequential/path-validation (unified path validation)
-- Consolidated error handling: 3 packages → @sequential/error-handling
-- Consolidated validation: 4 packages → @sequential/validation
-- Removed 5 re-export wrapper packages (body-validator, core, file-operations, response-formatting, server-utilities)
-- Standardized package.json across all packages
-- Reduced package count: ~76 → ~65
+**Cleanup Complete (Dec 10, 2025):**
+- ✅ Deleted 15 dead validator files (9,750+ LOC)
+- ✅ Created @sequential/path-validation (unified path validation)
+- ✅ Consolidated error handling: 3 packages → @sequential/error-handling
+- ✅ Consolidated validation: 4 packages → @sequential/validation
+- ✅ Created @sequential/flow-validation (moved flow validators)
+- ✅ Removed 5 re-export wrapper packages (body-validator, core, file-operations, response-formatting, server-utilities)
+- ✅ Standardized package.json across all packages
+- ✅ Documented ownership for 15 packages
+- **Result**: ~76 → ~66 packages, single sources of truth for cross-cutting concerns, clear ownership structure
 ## Technical Caveats
 
 **Memory Management**: Server requires `--max-old-space-size=4096` to avoid heap OOM on extended runs. Monitor for memory growth over time.
