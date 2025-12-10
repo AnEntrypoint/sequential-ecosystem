@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "command": "pwd",
+  "code": 0,
+  "stdout": "/home/user/sequential-ecosystem",
+  "stderr": "",
+  "timestamp": "2025-12-10T18:55:49.760Z",
+  "input": {
+    "command": "pwd"
+  }
+}

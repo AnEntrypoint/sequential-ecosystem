@@ -1,4 +1,5 @@
 import { parentPort } from 'worker_threads';
+import { execSync } from 'child_process';
 
 function extractFunctionBody(code) {
   const trimmed = code.trim();
@@ -65,8 +66,8 @@ parentPort.on('message', async (message) => {
 
     try {
       const body = extractFunctionBody(taskCode);
-      const fn = new Function('input', '__callHostTool__', `return (async (input) => { ${body} })(input)`);
-      const result = await fn(input || {}, __callHostTool__);
+      const fn = new Function('input', '__callHostTool__', 'execSync', `return (async (input) => { ${body} })(input)`);
+      const result = await fn(input || {}, __callHostTool__, execSync);
       parentPort.postMessage({ success: true, result });
     } catch (error) {
       parentPort.postMessage({

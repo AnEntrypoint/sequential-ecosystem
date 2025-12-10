@@ -13,15 +13,18 @@ import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timesta
 export async function createTask(options) {
   const { name, withGraph = false, inputs = [], description = '', runner = 'flow', minimal = false } = options;
   const tasksDir = path.resolve(process.cwd(), 'tasks');
-  const taskFile = path.join(tasksDir, `${name}.js`);
   const taskDataDir = path.join(tasksDir, name);
+  const codeFile = path.join(taskDataDir, 'code.js');
+  const configFile = path.join(taskDataDir, 'config.json');
   const runsDir = path.join(taskDataDir, 'runs');
+  const legacyFile = path.join(tasksDir, `${name}.js`);
 
-  if (existsSync(taskFile)) {
-    throw new Error(`Task '${name}' already exists at ${taskFile}`);
+  if (existsSync(codeFile) || existsSync(legacyFile)) {
+    throw new Error(`Task '${name}' already exists`);
   }
 
   await ensureDirectory(tasksDir);
+  await ensureDirectory(taskDataDir);
   await ensureDirectory(runsDir);
 
   const timestamp = nowISO();
@@ -47,11 +50,23 @@ export async function createTask(options) {
     templateType = 'simple';
   }
 
-  await writeFileAtomicString(taskFile, code);
+  const config = {
+    name,
+    description,
+    id: taskId,
+    created: timestamp,
+    runner: runner === 'os' ? 'sequential-machine' : runner,
+    type: runner === 'os' ? 'os' : null,
+    inputs
+  };
 
-  logger.info(`✓ Task '${name}' created at ${taskFile}`);
+  await writeFileAtomicString(codeFile, code);
+  await writeFileAtomicString(configFile, JSON.stringify(config, null, 2));
+
+  logger.info(`✓ Task '${name}' created at ${taskDataDir}`);
   logger.info(`  - Runner: ${runner === 'os' ? 'sequential-machine (OS)' : runner}`);
   logger.info(`  - Template: ${templateType}`);
-  logger.info(`  - Edit ${taskFile} to write task logic`);
-  logger.info(`  - Run with: npx sequential-ecosystem run ${name} --input '{command: "apt update"}'`);
+  logger.info(`  - Files: code.js, config.json, runs/`);
+  logger.info(`  - Edit ${codeFile} to write task logic`);
+  logger.info(`  - Run with: npx sequential-ecosystem run ${name} --input '{\"command\": \"apt update\"}'`);
 }

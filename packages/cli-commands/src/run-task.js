@@ -10,10 +10,15 @@ export async function runTask(options) {
   const { taskName, input = {}, save = false, dryRun = false, verbose = false } = options;
 
   const tasksDir = path.resolve(process.cwd(), 'tasks');
-  const taskFile = path.join(tasksDir, `${taskName}.js`);
+  const taskDataDir = path.join(tasksDir, taskName);
+  const taskFile = path.join(taskDataDir, 'code.js');
+  const legacyFile = path.join(tasksDir, `${taskName}.js`);
 
-  if (!existsSync(taskFile)) {
-    throw new Error(`Task '${taskName}' not found at ${taskFile}`);
+  let codeFile = taskFile;
+  if (!existsSync(taskFile) && existsSync(legacyFile)) {
+    codeFile = legacyFile;
+  } else if (!existsSync(taskFile)) {
+    throw new Error(`Task '${taskName}' not found at ${taskFile} or ${legacyFile}`);
   }
 
   if (verbose) {
@@ -21,19 +26,19 @@ export async function runTask(options) {
     logger.info(`Input:`, input);
   }
 
-  const code = await fse.readFile(taskFile, 'utf-8');
+  const code = await fse.readFile(codeFile, 'utf-8');
 
   if (dryRun) {
     if (verbose) {
       logger.info('Dry run mode - execute without saving');
     }
     try {
-      const taskModule = await import(taskFile);
+      const taskModule = await import(`file://${codeFile}`);
       const funcName = taskName.replace(/-/g, '_');
       const taskFunction = taskModule[funcName] || taskModule[taskName] || taskModule.default;
 
       if (typeof taskFunction !== 'function') {
-        throw new Error(`No function '${funcName}' or default export found in ${taskFile}`);
+        throw new Error(`No function '${funcName}' or default export found in ${codeFile}`);
       }
 
       if (verbose) {
@@ -74,7 +79,7 @@ export async function runTask(options) {
 
   try {
     // Check task runner type from config
-    const taskModule = await import(taskFile);
+    const taskModule = await import(`file://${codeFile}`);
     const config = taskModule.config || {};
     const runner = config.runner || 'sequential-flow';
 
@@ -88,7 +93,7 @@ export async function runTask(options) {
       const taskFunction = taskModule[funcName] || taskModule[taskName] || taskModule.default;
 
       if (typeof taskFunction !== 'function') {
-        throw new Error(`No default export or '${funcName}' export found in ${taskFile}`);
+        throw new Error(`No default export or '${funcName}' export found in ${codeFile}`);
       }
 
       // Execute task function directly - it will handle its own filesystem operations
