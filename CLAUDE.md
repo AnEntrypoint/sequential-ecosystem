@@ -6,6 +6,7 @@
 
 ## What It Does
 - **Tasks** (implicit xstate): Write normal code; pause auto-triggered on `fetch()` or `__callHostTool__()`
+  - **OS Tasks**: New! Execute system/OS commands (apt, npm, docker, systemctl, bash scripts, etc.)
 - **Flows** (explicit xstate): State graphs orchestrating multiple tasks/tools into larger workflows
 - **Apps** (visual builder + code): Create and manage Sequential apps with visual builder and code editor
 - **Components** (buildless React): Dynamic JSX-string components stored in StateManager, live-updated via RealtimeBroadcaster
@@ -80,6 +81,12 @@ npm install -g sequential-ecosystem
 # Create and run a task
 npx sequential-ecosystem create-task my-task --minimal
 npx sequential-ecosystem run my-task --input '{}'
+
+# Create OS tasks for system commands
+npx sequential-ecosystem create-task system-cmd --runner os --description "Run system commands"
+npx sequential-ecosystem run system-cmd --input '{"command": "apt update"}'
+npx sequential-ecosystem run system-cmd --input '{"command": "npm list -g"}'
+npx sequential-ecosystem run system-cmd --input '{"command": "docker ps"}'
 
 # Create tools, apps, and flows
 npx sequential-ecosystem create-tool my-tool --template compute
@@ -225,6 +232,36 @@ export async function fetchData(input) {
 
 export async function processData(result) {
   return await __callHostTool__('tool', 'transform', result);
+}
+```
+
+**OS Task** (system command execution):
+```javascript
+// Create with: npx sequential-ecosystem create-task cmd --runner os
+
+export const config = {
+  name: 'cmd',
+  runner: 'sequential-machine',
+  type: 'os'
+};
+
+export async function cmd(input) {
+  const { execSync } = await import('child_process');
+  const command = input.command || input.cmd;
+
+  if (!command) {
+    throw new Error('No command provided');
+  }
+
+  try {
+    const stdout = execSync(command, {
+      encoding: 'utf-8',
+      shell: '/bin/bash'
+    });
+    return { success: true, stdout, code: 0 };
+  } catch (error) {
+    return { success: false, stderr: error.message, code: error.status || 1 };
+  }
 }
 ```
 

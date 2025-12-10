@@ -2,7 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.8.0] - Production Runtime & Module Resolution (Dec 10, 2025)
+## [1.8.0] - OS Task Type & CLI Fixes (Dec 10, 2025)
+
+### New Features
+- ✅ **OS Task Type**: New `--runner os` flag for system command execution
+  - Execute apt, npm, docker, systemctl, bash scripts, and any shell commands
+  - Supports `execSync` with `/bin/bash` shell
+  - Captures stdout, stderr, and exit codes
+  - Saves results to JSON file for inspection
+  - Example: `npx sequential-ecosystem create-task cmd --runner os`
+  - Usage: `npx sequential-ecosystem run cmd --input '{"command": "apt update"}'`
+
+### Bug Fixes & Cleanup
+- ✅ Removed dead `@sequentialos/cli-handler` imports from 15 CLI files
+- ✅ Fixed broken generator files (quickstart-generator-core.js, quickstart-generator-template.js)
+- ✅ Replaced `createCLICommand` wrapper with direct async exports in all command files
+- ✅ Converted OS task template to use ES module imports instead of CommonJS require()
+- ✅ All CLI commands now functional with correct error handling
+
+### Prior: Production Runtime & Module Resolution (Dec 10, 2025)
 
 ### Runtime & Deployment
 - ✅ Fixed all module resolution issues for production execution
