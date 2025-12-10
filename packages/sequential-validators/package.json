@@ -25,6 +25,11 @@
     "schema-validation",
     "type-checking"
   ],
+  "dependencies": {
+    "@sequential/flow-validation": "file:../@sequential/flow-validation",
+    "@sequential/error-handling": "file:../@sequential/error-handling",
+    "@sequential/validation": "file:../@sequential/validation"
+  },
   "author": "lanmower",
   "license": "MIT",
   "repository": {
