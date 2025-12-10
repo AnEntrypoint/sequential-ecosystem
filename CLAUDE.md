@@ -2,7 +2,7 @@
 
 **~100 packages** | Grade A | Task execution with auto suspend/resume (implicit/explicit xstate) + Comprehensive App Editor | Deployable: Node/Deno/Bun
 
-**Recent Consolidation (Dec 10, 2025):** 15 dead validator files deleted (9,750+ LOC), error handling consolidated (3→1 package), validation consolidated (4→1 package), path validation unified (@sequential/path-validation), wrapper packages cleaned
+**Recent Consolidation (Dec 10, 2025):** 15 dead validator files deleted (9,750+ LOC), error handling consolidated (3→1 package), validation consolidated (4→1 package), path validation unified (@sequential/path-validation), wrapper packages cleaned. **Package naming consolidated:** 8 root-level packages moved to @sequential scope (core, file-operations, response-formatting, server-utilities, zellous, @sequential/app-{debugger,editor,manager}), 100+ imports updated, all tests passing.
 
 ## What It Does
 - **Tasks** (implicit xstate): Write normal code; pause auto-triggered on `fetch()` or `__callHostTool__()`
@@ -41,7 +41,7 @@
 - cli-commands (command generators)
 
 **Built-in Apps (10):**
-- app-app-editor, app-app-debugger, app-app-manager (core)
+- @sequential/app-editor, @sequential/app-debugger, @sequential/app-manager (core)
 - app-file-browser, app-flow-debugger, app-observability-* (observability)
 - app-task-*, app-tool-*, app-chat-* (workflow)
 
