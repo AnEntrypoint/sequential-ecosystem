@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8.0] - Package Naming Consolidation & Cleanup (Dec 10, 2025)
+
+### Package Management
+- Consolidated 8 root-level packages to @sequential scope: app-{debugger,editor,manager}, core, file-operations, response-formatting, server-utilities, zellous
+- Removed redundant "app-app-" prefixes from 3 app packages
+- Updated 100+ import statements across codebase
+- Cleaned up 105+ markdown files (reports, guides, archives)
+- All tests passing (4/6, 2 skipped for environmental reasons)
+
 ## [Unreleased] - Code Consolidation & Deduplication (Dec 8, 2025 - Phase 3)
 
 ### Architecture & Maintenance
