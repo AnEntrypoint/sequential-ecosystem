@@ -1,5 +1,5 @@
-const { EventEmitter } = require('events');
-const { randomUUID } = require('crypto');
+import {  EventEmitter  } from 'events';
+import {  randomUUID  } from 'crypto';
 
 class Counter {
   constructor(name, description = '') {
@@ -148,10 +148,10 @@ class CustomMetrics extends EventEmitter {
   }
 }
 
-module.exports = {
+export {
   CustomMetrics,
   Counter,
   Gauge,
-  Histogram,
-  createCustomMetrics: () => new CustomMetrics()
+  Histogram
 };
+export const createCustomMetrics = () => new CustomMetrics();;

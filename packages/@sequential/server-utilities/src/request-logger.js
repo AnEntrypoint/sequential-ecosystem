@@ -1,5 +1,5 @@
 import { CONFIG } from './config.js';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
 
 const requestLog = [];
 

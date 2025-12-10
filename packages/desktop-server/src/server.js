@@ -46,7 +46,7 @@ import { StateManager, FileSystemAdapter, setupBroadcastMiddleware } from '@sequ
 import { RealtimeBroadcaster } from '@sequentialos/realtime-sync';
 import { backgroundTaskManager } from '@sequentialos/server-utilities';
 import { broadcastBackgroundTaskEvent } from '@sequentialos/websocket-broadcaster';
-import { optionalAuth } from '../../zellous/server/auth-middleware.js';
+import { optionalAuth } from '../../@sequential/zellous/server/auth-middleware.js';
 import { responseFormatterMiddleware } from './middleware/response-formatter-middleware.js';
 // import { correlationMiddleware, MetricsCollector, metricsMiddleware } from '@sequentialos/observability-utils';
 // import { registerObservabilityRoutes } from './routes/observability.js';

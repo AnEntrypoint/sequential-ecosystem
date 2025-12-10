@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert';
 import { TaskScheduler } from '../src/task-scheduler.js';
 import { TaskQueueManager } from '../src/task-queue-manager.js';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
 
 const mockStateManager = {
   set: async () => {},

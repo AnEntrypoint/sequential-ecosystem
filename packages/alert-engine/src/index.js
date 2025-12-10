@@ -1,5 +1,5 @@
-const { EventEmitter } = require('events');
-const { randomUUID } = require('crypto');
+import { EventEmitter } from 'events';
+import { randomUUID } from 'crypto';
 
 class AlertRule {
   constructor(id, name, condition, actions = [], metadata = {}) {
@@ -188,9 +188,9 @@ class AlertConditions {
   }
 }
 
-module.exports = {
+export {
   AlertEngine,
   AlertRule,
-  AlertConditions,
-  createAlertEngine: () => new AlertEngine()
+  AlertConditions
 };
+export const createAlertEngine = () => new AlertEngine();

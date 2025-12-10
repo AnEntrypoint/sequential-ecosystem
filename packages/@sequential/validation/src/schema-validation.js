@@ -1,17 +1,11 @@
-import {
-  compileSchema,
-  validateSchema,
-  PREDEFINED_SCHEMAS,
-  getAjvInstance
-} from '@sequential/validation';
+import { validateSchema, getPredefinedSchema, compileSchema } from './schema-compiler.js';
 
 function createValidator(schemaName) {
-  const schema = PREDEFINED_SCHEMAS[schemaName];
-  if (!schema) {
-    throw new Error(`Unknown schema: ${schemaName}`);
-  }
-
   return function validate(value) {
+    const schema = getPredefinedSchema(schemaName);
+    if (!schema) {
+      throw new Error(`Unknown schema: ${schemaName}`);
+    }
     const result = validateSchema({ value }, schema);
     if (!result.isValid) {
       throw new Error(result.errors.join(', '));
@@ -20,13 +14,42 @@ function createValidator(schemaName) {
   };
 }
 
-export const validateTaskName = createValidator('taskName');
-export const validateFlowName = createValidator('flowName');
-export const validateFileName = createValidator('fileName');
-export const validateToolId = createValidator('toolId');
-export const validateRunId = createValidator('runId');
-export const validateEmail = createValidator('email');
-export const validateUrl = createValidator('url');
+let cachedValidators = {};
+
+export function validateTaskName(value) {
+  if (!cachedValidators.taskName) cachedValidators.taskName = createValidator('taskName');
+  return cachedValidators.taskName(value);
+}
+
+export function validateFlowName(value) {
+  if (!cachedValidators.flowName) cachedValidators.flowName = createValidator('flowName');
+  return cachedValidators.flowName(value);
+}
+
+export function validateFileName(value) {
+  if (!cachedValidators.fileName) cachedValidators.fileName = createValidator('fileName');
+  return cachedValidators.fileName(value);
+}
+
+export function validateToolId(value) {
+  if (!cachedValidators.toolId) cachedValidators.toolId = createValidator('toolId');
+  return cachedValidators.toolId(value);
+}
+
+export function validateRunId(value) {
+  if (!cachedValidators.runId) cachedValidators.runId = createValidator('runId');
+  return cachedValidators.runId(value);
+}
+
+export function validateEmail(value) {
+  if (!cachedValidators.email) cachedValidators.email = createValidator('email');
+  return cachedValidators.email(value);
+}
+
+export function validateUrl(value) {
+  if (!cachedValidators.url) cachedValidators.url = createValidator('url');
+  return cachedValidators.url(value);
+}
 
 export function registerCustomSchema(name, schema) {
   compileSchema(name, schema);

@@ -1,4 +1,4 @@
-import { escapeHtml as escape } from '@sequential/text-encoding';
+import { escapeHtml as escape } from '@sequentialos/text-encoding';
 
 class UniversalRenderer {
   constructor(options = {}) {

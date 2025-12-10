@@ -2,8 +2,8 @@ import { Worker } from 'worker_threads';
 import path from 'path';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
-import logger from '@sequential/sequential-logging';
-import { delay, withRetry } from '@sequential/async-patterns';
+import logger from '@sequentialos/sequential-logging';
+import { delay, withRetry } from '@sequentialos/async-patterns';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

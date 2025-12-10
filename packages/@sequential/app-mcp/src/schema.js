@@ -1,4 +1,4 @@
-import { extractParameters, normalizeType } from '@sequential/function-introspection';
+import { extractParameters, normalizeType } from '@sequentialos/function-introspection';
 
 export function extractParameterSchema(fn) {
   const parameters = extractParameters(fn);

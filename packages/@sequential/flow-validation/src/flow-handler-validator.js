@@ -122,7 +122,7 @@ export function generateFlowHandlerValidatorTemplate() {
  * Validate flow handlers before execution to catch missing/unused handlers.
  */
 
-import { createFlowHandlerValidator } from '@sequential/flow-validation';
+import { createFlowHandlerValidator } from '@sequentialos/flow-validation';
 
 const validator = createFlowHandlerValidator();
 

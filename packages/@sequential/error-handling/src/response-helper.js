@@ -1,4 +1,4 @@
-import { nowISO } from '@sequential/timestamp-utilities';
+import { nowISO } from '@sequentialos/timestamp-utilities';
 
 export function createErrorResponse(code, message, statusCode = 400) {
   return {

@@ -1,5 +1,5 @@
-const { EventEmitter } = require('events');
-const { randomUUID } = require('crypto');
+import { EventEmitter  } from 'events';
+import { randomUUID  } from 'crypto';
 
 class ToolCallTracer extends EventEmitter {
   constructor(maxCalls = 10000) {
@@ -136,7 +136,5 @@ class ToolCallTracer extends EventEmitter {
   }
 }
 
-module.exports = {
-  ToolCallTracer,
-  createToolCallTracer: (maxCalls) => new ToolCallTracer(maxCalls)
-};
+export { ToolCallTracer };
+export const createToolCallTracer = (maxCalls) => new ToolCallTracer(maxCalls);

@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import { randomUUID } from 'crypto';
-import logger from '@sequential/sequential-logging';
+import logger from '@sequentialos/sequential-logging';
 
 export async function writeFileAtomic(filePath, content) {
   const dir = path.dirname(filePath);

@@ -1,4 +1,4 @@
-import { nowISO } from '@sequential/timestamp-utilities';
+import { nowISO } from '@sequentialos/timestamp-utilities';
 
 const DEFAULT_PAGINATION_SIZE = 50;
 

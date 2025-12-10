@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import cron from 'node-cron';
-import logger from '@sequential/sequential-logging';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import logger from '@sequentialos/sequential-logging';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
 
 export class TaskScheduler extends EventEmitter {
   constructor(options = {}) {

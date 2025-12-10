@@ -1,6 +1,6 @@
-const { EventEmitter } = require('events');
-const { randomUUID } = require('crypto');
-const { AsyncLocalStorage } = require('async_hooks');
+import {  EventEmitter  } from 'events';
+import {  randomUUID  } from 'crypto';
+import {  AsyncLocalStorage  } from 'async_hooks';
 
 const spanStorage = new AsyncLocalStorage();
 
@@ -208,9 +208,9 @@ class ExecutionTracer extends EventEmitter {
   }
 }
 
-module.exports = {
+export {
   ExecutionTracer,
   Span,
-  spanStorage,
-  createExecutionTracer: (maxTraces) => new ExecutionTracer(maxTraces)
+  spanStorage
 };
+export const createExecutionTracer = (maxTraces) => new ExecutionTracer(maxTraces);;

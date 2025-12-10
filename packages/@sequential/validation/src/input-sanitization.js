@@ -1,4 +1,4 @@
-import { escapeHtml as escape, sanitizeInput as sanitize } from '@sequential/text-encoding';
+import { escapeHtml as escape, sanitizeInput as sanitize } from '@sequentialos/text-encoding';
 
 export function escapeHtml(text) {
   if (!text || typeof text !== 'string') return text;

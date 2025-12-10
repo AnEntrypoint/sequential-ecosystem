@@ -1,4 +1,4 @@
-import { createValidationError, createBadRequestError } from '@sequential/error-handling';
+import { createValidationError, createBadRequestError } from '@sequentialos/error-handling';
 
 export class ValidationChain {
   constructor() {

@@ -1,5 +1,5 @@
 import createHttpError from 'http-errors';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
 
 export class AppError extends Error {
   constructor(httpCode, code, message, category = null, details = {}) {

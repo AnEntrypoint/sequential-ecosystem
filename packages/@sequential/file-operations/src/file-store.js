@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs-extra';
-import logger from '@sequential/sequential-logging';
+import logger from '@sequentialos/sequential-logging';
 
 export class FileStore {
   constructor(baseDir) {

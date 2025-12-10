@@ -1,8 +1,8 @@
 import { spawn } from 'child_process';
 import path from 'path';
 import { EventEmitter } from 'events';
-import logger from '@sequential/sequential-logging';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import logger from '@sequentialos/sequential-logging';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
 
 export class BackgroundTaskManager extends EventEmitter {
   constructor(maxTasks = 1000) {

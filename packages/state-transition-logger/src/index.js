@@ -1,5 +1,5 @@
-const { EventEmitter } = require('events');
-const { randomUUID } = require('crypto');
+import {  EventEmitter  } from 'events';
+import {  randomUUID  } from 'crypto';
 
 class StateTransitionLogger extends EventEmitter {
   constructor(maxTransitions = 10000) {
@@ -128,7 +128,7 @@ class StateTransitionLogger extends EventEmitter {
   }
 }
 
-module.exports = {
-  StateTransitionLogger,
-  createStateTransitionLogger: (maxTransitions) => new StateTransitionLogger(maxTransitions)
+export {
+  StateTransitionLogger
 };
+export const createStateTransitionLogger = (maxTransitions) => new StateTransitionLogger(maxTransitions);;

@@ -1,4 +1,4 @@
-import { formatError } from '@sequential/response-formatting';
+import { formatError } from '@sequentialos/response-formatting';
 
 export function validateRequest(schema) {
   return (req, res, next) => {

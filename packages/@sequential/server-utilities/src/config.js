@@ -1,4 +1,4 @@
-import { createSimpleCache, createCacheKey } from '@sequential/config-management';
+import { createSimpleCache, createCacheKey } from '@sequentialos/config-management';
 
 const cacheManager = createSimpleCache({ ttl: parseInt(process.env.CACHE_TTL_MS || '30000') });
 

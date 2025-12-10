@@ -1,4 +1,4 @@
-import { nowISO } from '@sequential/timestamp-utilities';
+import { nowISO } from '@sequentialos/timestamp-utilities';
 
 const ERROR_CATEGORIES = {
   FILE_NOT_FOUND: 'FILE_NOT_FOUND',

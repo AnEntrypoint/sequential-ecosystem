@@ -1,4 +1,4 @@
-import { createValidationError } from '@sequential/error-handling';
+import { createValidationError } from '@sequentialos/error-handling';
 
 export function validateParam(validator, paramName) {
   return (value) => {

@@ -1,5 +1,5 @@
-const { EventEmitter } = require('events');
-const { randomUUID } = require('crypto');
+import {  EventEmitter  } from 'events';
+import {  randomUUID  } from 'crypto';
 
 class StorageQueryTracer extends EventEmitter {
   constructor(maxQueries = 10000) {
@@ -132,7 +132,7 @@ class StorageQueryTracer extends EventEmitter {
   }
 }
 
-module.exports = {
-  StorageQueryTracer,
-  createStorageQueryTracer: (maxQueries) => new StorageQueryTracer(maxQueries)
+export {
+  StorageQueryTracer
 };
+export const createStorageQueryTracer = (maxQueries) => new StorageQueryTracer(maxQueries);;

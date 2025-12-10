@@ -1,6 +1,6 @@
 export { ValidationChain, validate } from './validation-chain.js';
 export { validateParam, validateRequired, validateType } from './middleware.js';
-export { validatePath, validatePathRelative } from '@sequential/path-validation';
+export { validatePath, validatePathRelative } from '@sequentialos/path-validation';
 export {
   validateTaskName,
   validateFlowName,

@@ -178,7 +178,7 @@ export class TemplateCodeGenerator {
 
   generateReactComponent(component, componentName) {
     return `import React from 'react';
-import { renderJSX, AppRenderingBridge } from '@sequential/dynamic-components';
+import { renderJSX, AppRenderingBridge } from '@sequentialos/dynamic-components';
 
 interface ${componentName}Props {
   // Add your props here
@@ -198,7 +198,7 @@ export default ${componentName};`;
   }
 
   generateAppTemplate(appName, components = []) {
-    return `import { initializeAppRendering, createAdvancedBuilder, createThemeEngine } from '@sequential/dynamic-components';
+    return `import { initializeAppRendering, createAdvancedBuilder, createThemeEngine } from '@sequentialos/dynamic-components';
 
 class ${this.pascalCase(appName)}App {
   async init() {

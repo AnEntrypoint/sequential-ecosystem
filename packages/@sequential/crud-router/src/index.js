@@ -1,6 +1,6 @@
-import { asyncHandler } from '@sequential/handler-wrappers';
-import { formatResponse, formatError } from '@sequential/response-formatting';
-import { requireResource, parsePagination } from '@sequential/route-helpers';
+import { asyncHandler } from '@sequentialos/handler-wrappers';
+import { formatResponse, formatError } from '@sequentialos/response-formatting';
+import { requireResource, parsePagination } from '@sequentialos/route-helpers';
 
 export function createCRUDRouter(config) {
   const {

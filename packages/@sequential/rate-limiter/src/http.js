@@ -1,5 +1,5 @@
 import rateLimit from 'express-rate-limit';
-import { nowISO } from '@sequential/timestamp-utilities';
+import { nowISO } from '@sequentialos/timestamp-utilities';
 
 export function createRateLimitMiddleware(maxRequests = 100, windowMs = 60000) {
   return rateLimit({

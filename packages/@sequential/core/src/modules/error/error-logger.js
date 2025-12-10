@@ -1,6 +1,6 @@
 import { getErrorCategory, getSeverity, ERROR_CATEGORIES } from './error-categories.js';
 import { getStackTrace, getUserFriendlyMessage } from './error-serializer.js';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
 
 export function logFileOperation(operation, filePath, error, context = {}) {
   const category = getErrorCategory(error);
