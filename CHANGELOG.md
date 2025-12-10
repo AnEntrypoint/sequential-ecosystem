@@ -2,7 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.8.0] - Package Naming Consolidation & Cleanup (Dec 10, 2025)
+## [1.8.0] - Production Runtime & Module Resolution (Dec 10, 2025)
+
+### Runtime & Deployment
+- ✅ Fixed all module resolution issues for production execution
+- ✅ Converted 6 CommonJS packages to ES modules: alert-engine, custom-metrics, execution-tracer, state-transition-logger, storage-query-tracer, tool-call-tracer
+- ✅ Fixed @sequential → @sequentialos package scope migrations (73+ references)
+- ✅ Resolved circular imports in validation package
+- ✅ Server successfully starts on port 8003 with 11 built-in apps
+- ✅ All API endpoints responding with correct response format (success, data, meta)
+- ✅ Git submodules properly initialized (zellous, app-file-browser, app-flow-debugger, app-run-observer, app-task-debugger, chat-component)
+
+### Prior: Package Naming Consolidation & Cleanup (Dec 10, 2025)
 
 ### Package Management
 - Consolidated 8 root-level packages to @sequentialos scope: app-{debugger,editor,manager}, core, file-operations, response-formatting, server-utilities, zellous
