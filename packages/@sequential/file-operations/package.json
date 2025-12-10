@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/file-operations",
+  "name": "@sequentialos/file-operations",
   "version": "1.0.0",
   "description": "Safe file operations with atomic writes and path validation",
   "type": "module",

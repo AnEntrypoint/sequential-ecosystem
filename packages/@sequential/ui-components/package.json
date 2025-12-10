@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/ui-components",
+  "name": "@sequentialos/ui-components",
   "version": "1.0.0",
   "description": "Shared UI components and utilities for Sequential editors and apps",
   "type": "module",
@@ -21,6 +21,6 @@
     "notifications"
   ],
   "dependencies": {
-    "@sequential/text-encoding": "*"
+    "@sequentialos/text-encoding": "*"
   }
 }

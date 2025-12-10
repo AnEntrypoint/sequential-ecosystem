@@ -1,4 +1,4 @@
-import { nowISO } from '@sequential/sequential-utils/timestamps';
+import { nowISO } from '@sequentialos/sequential-utils/timestamps';
 
 export function hostLog(prefix: string, level: 'info' | 'error' | 'warn', message: string): void {
   const timestamp = nowISO();

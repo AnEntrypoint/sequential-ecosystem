@@ -1,5 +1,5 @@
 import path from 'path';
-import { ensureDirectory } from '@sequential/file-operations';
+import { ensureDirectory } from '@sequentialos/file-operations';
 import { createSimpleFlowExample } from './examples/simple-flow.js';
 import { createComplexFlowExample } from './examples/complex-flow.js';
 import { createApiIntegrationExample } from './examples/api-integration.js';
@@ -17,7 +17,7 @@ import { createSequentialOSExample } from './examples/sequential-os-example.js';
 import { createExampleComponents } from './examples/example-components.js';
 import { createExampleConfigs } from './examples/example-configs.js';
 import { createExampleUtils } from './examples/example-utils.js';
-import logger from '@sequential/sequential-logging';
+import logger from '@sequentialos/sequential-logging';
 
 export async function createExamples() {
   const rootDir = process.cwd();

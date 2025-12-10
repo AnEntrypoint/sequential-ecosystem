@@ -1,7 +1,7 @@
 import path from 'path';
-import { createCLICommand } from '@sequential/cli-handler';
+import { createCLICommand } from '@sequentialos/cli-handler';
 import { existsSync } from 'fs';
-import logger from '@sequential/sequential-logging';
+import logger from '@sequentialos/sequential-logging';
 
 export const guiCommand = createCLICommand(async (options, __dirname) => {
   const { spawn } = await import('child_process');

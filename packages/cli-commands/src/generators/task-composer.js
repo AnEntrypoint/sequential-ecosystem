@@ -73,7 +73,7 @@ export function generateComposedTaskTemplate(taskName, subtasks = []) {
  *   }
  */
 
-import { composeTask } from '@sequential/task-composer';
+import { composeTask } from '@sequentialos/task-composer';
 
 // Define subtasks - can be functions or task names
 async function validate(input) {

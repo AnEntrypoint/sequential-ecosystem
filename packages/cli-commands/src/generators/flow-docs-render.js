@@ -105,7 +105,7 @@ export function generateFlowDocsTemplate() {
  * Self-documenting flows with state descriptions and error handling strategies.
  */
 
-import { createFlowDocumenter } from '@sequential/flow-docs';
+import { createFlowDocumenter } from '@sequentialos/flow-docs';
 
 const documenter = createFlowDocumenter();
 

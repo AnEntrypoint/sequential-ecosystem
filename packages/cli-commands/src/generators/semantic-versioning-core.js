@@ -163,7 +163,7 @@ export function generateVersionManagementTemplate() {
  * Manage versions and migrations for tasks, flows, and tools.
  */
 
-import { createVersionManager } from '@sequential/semantic-versioning';
+import { createVersionManager } from '@sequentialos/semantic-versioning';
 
 const versionManager = createVersionManager();
 

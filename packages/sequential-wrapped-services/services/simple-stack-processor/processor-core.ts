@@ -1,4 +1,4 @@
-import { nowISO } from '@sequential/sequential-utils/timestamps';
+import { nowISO } from '@sequentialos/sequential-utils/timestamps';
 import { log, createSupabaseClient, triggerStackProcessorAsync } from './utils.ts';
 import { tryLockTaskChain, unlockTaskChain, getStackRun, updateStackRunStatus, isTaskChainBusy, getNextPendingStackRun } from './db-operations.ts';
 import { processServiceCall } from './service-calls.ts';

@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/response-formatting",
+  "name": "@sequentialos/response-formatting",
   "version": "1.0.0",
   "description": "HTTP response formatting utilities with standardized envelopes",
   "type": "module",

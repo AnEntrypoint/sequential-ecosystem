@@ -130,7 +130,7 @@ export function generatePerformanceMonitorTemplate() {
  * Collects metrics: duration, success rate, percentiles.
  */
 
-import { createPerformanceMonitor } from '@sequential/performance-monitor';
+import { createPerformanceMonitor } from '@sequentialos/performance-monitor';
 
 const monitor = createPerformanceMonitor();
 

@@ -1,8 +1,8 @@
 import path from 'path';
 import { randomUUID } from 'crypto';
-import { writeFileAtomicString } from '@sequential/file-operations';
-import logger from '@sequential/sequential-logging';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import { writeFileAtomicString } from '@sequentialos/file-operations';
+import logger from '@sequentialos/sequential-logging';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
 
 export async function createPaymentFlowExample(tasksDir) {
   const taskName = 'example-payment-flow';

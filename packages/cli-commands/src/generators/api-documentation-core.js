@@ -237,7 +237,7 @@ export function generateDocumentationTemplate() {
  * Auto-generate documentation for tasks, tools, and flows.
  */
 
-import { generateTaskDocumentation, createDocumentationGenerator } from '@sequential/api-documentation';
+import { generateTaskDocumentation, createDocumentationGenerator } from '@sequentialos/api-documentation';
 
 const docGen = createDocumentationGenerator();
 

@@ -1,14 +1,14 @@
-import { delay, withRetry } from '@sequential/async-patterns';
+import { delay, withRetry } from '@sequentialos/async-patterns';
 /**
  * Middleware factory wrappers
  * Convenient helpers for middleware creation with defaults
  */
 
-import { DEFAULTS } from '@sequential/core-config';
+import { DEFAULTS } from '@sequentialos/core-config';
 import {
   createRateLimitMiddleware,
   createWebSocketRateLimiter,
-} from '@sequential/input-sanitization';
+} from '@sequentialos/input-sanitization';
 
 /**
  * Create rate limiter middleware with sensible defaults

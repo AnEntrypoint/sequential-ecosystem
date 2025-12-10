@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/dependency-middleware",
+  "name": "@sequentialos/dependency-middleware",
   "version": "1.0.0",
   "description": "Middleware for container dependency injection",
   "type": "module",

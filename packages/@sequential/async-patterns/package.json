@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/async-patterns",
+  "name": "@sequentialos/async-patterns",
   "version": "1.0.0",
   "description": "Common async/await patterns and utilities",
   "type": "module",

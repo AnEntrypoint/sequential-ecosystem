@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/app-terminal",
+  "name": "@sequentialos/app-terminal",
   "version": "1.0.0",
   "description": "Sequential Terminal application for Sequential Desktop",
   "main": "dist/index.html",

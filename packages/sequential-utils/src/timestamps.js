@@ -13,7 +13,7 @@ export {
   subtractMs,
   getStartOfDay,
   getEndOfDay
-} from '@sequential/timestamp-utilities';
+} from '@sequentialos/timestamp-utilities';
 
 export { parseISO };
 

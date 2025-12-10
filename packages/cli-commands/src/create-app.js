@@ -1,15 +1,15 @@
 import path from 'path';
 import { randomUUID } from 'crypto';
 import { existsSync } from 'fs';
-import { ensureDirectory, writeFileAtomicString } from '@sequential/file-operations';
+import { ensureDirectory, writeFileAtomicString } from '@sequentialos/file-operations';
 import { generateBlankAppTemplate } from './app-templates/blank.js';
 import { generateDashboardAppTemplate } from './app-templates/dashboard.js';
 import { generateTaskExplorerAppTemplate } from './app-templates/task-explorer.js';
 import { generateFlowVizAppTemplate } from './app-templates/flow-viz.js';
 import { generateReactAppTemplate } from './app-templates/react.js';
 import { generateAppPackageJson } from './generators/app-package-generator.js';
-import logger from '@sequential/sequential-logging';
-import { nowISO } from '@sequential/timestamp-utilities';
+import logger from '@sequentialos/sequential-logging';
+import { nowISO } from '@sequentialos/timestamp-utilities';
 
 const VALID_TEMPLATES = ['blank', 'dashboard', 'task-explorer', 'flow-viz', 'react'];
 

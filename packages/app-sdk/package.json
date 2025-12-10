@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/app-sdk",
+  "name": "@sequentialos/app-sdk",
   "version": "1.0.0",
   "description": "SDK for building Sequential apps with real-time sync and tool registry",
   "type": "module",
@@ -8,10 +8,10 @@
   },
   "main": "src/index.js",
   "dependencies": {
-    "@sequential/validation": "file:../@sequential/validation",
-    "@sequential/execution-context": "file:../@sequential/execution-context",
-    "response-formatting": "file:../../../../packages/@sequential/response-formatting",
-    "@sequential/realtime-sync": "file:../@sequential/realtime-sync"
+    "@sequentialos/validation": "file:../@sequentialos/validation",
+    "@sequentialos/execution-context": "file:../@sequentialos/execution-context",
+    "response-formatting": "file:../../../../packages/@sequentialos/response-formatting",
+    "@sequentialos/realtime-sync": "file:../@sequentialos/realtime-sync"
   },
   "owner": "SDK"
 }

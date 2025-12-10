@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/execution-context",
+  "name": "@sequentialos/execution-context",
   "version": "1.0.0",
   "description": "Unified execution context tracking: breadcrumbs, trails, state context, and async local storage",
   "type": "module",

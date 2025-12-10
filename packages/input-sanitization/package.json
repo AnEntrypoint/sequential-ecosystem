@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/input-sanitization",
+  "name": "@sequentialos/input-sanitization",
   "version": "1.0.0",
   "description": "Input sanitization and rate limiting utilities",
   "type": "module",

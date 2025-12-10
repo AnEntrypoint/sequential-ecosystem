@@ -6,7 +6,7 @@
 import {
   createAdapter,
   createRunner,
-} from '@sequential/sequential-adaptor';
+} from '@sequentialos/sequential-adaptor';
 
 /**
  * Create folder-based storage adapter (default, zero-config)

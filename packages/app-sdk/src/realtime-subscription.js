@@ -1,4 +1,4 @@
-import RealtimeClient from '@sequential/realtime-sync';
+import RealtimeClient from '@sequentialos/realtime-sync';
 
 export function createRealtimeSubscription(wsUrl, appId, options = {}) {
   const baseUrl = new URL(wsUrl).origin;

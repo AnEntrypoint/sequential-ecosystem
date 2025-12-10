@@ -1,6 +1,6 @@
-import { executeTaskWithTimeout } from '@sequential/server-utilities';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
-import { delay, withRetry } from '@sequential/async-patterns';
+import { executeTaskWithTimeout } from '@sequentialos/server-utilities';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
+import { delay, withRetry } from '@sequentialos/async-patterns';
 
 export class TaskService {
   constructor(repository, toolRepository = null, config = {}) {

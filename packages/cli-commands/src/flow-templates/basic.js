@@ -1,4 +1,4 @@
-import logger from '@sequential/sequential-logging';
+import logger from '@sequentialos/sequential-logging';
 
 export function generateFlowTemplate(name, flowId, timestamp, stateCount, description) {
   const flowName = name.replace(/-/g, '_');

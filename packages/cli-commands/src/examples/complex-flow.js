@@ -1,10 +1,10 @@
 import path from 'path';
-import { createCLICommand } from '@sequential/cli-handler';
+import { createCLICommand } from '@sequentialos/cli-handler';
 import { randomUUID } from 'crypto';
-import { writeFileAtomicString } from '@sequential/file-operations';
-import logger from '@sequential/sequential-logging';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
-import { delay, withRetry } from '@sequential/async-patterns';
+import { writeFileAtomicString } from '@sequentialos/file-operations';
+import logger from '@sequentialos/sequential-logging';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
+import { delay, withRetry } from '@sequentialos/async-patterns';
 
 export async function createComplexFlowExample(tasksDir) {
   const taskName = 'example-complex-flow';

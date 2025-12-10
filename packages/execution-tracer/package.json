@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/execution-tracer",
+  "name": "@sequentialos/execution-tracer",
   "type": "module",
   "version": "1.0.0",
   "description": "Distributed execution tracing with span hierarchy and waterfall visualization",

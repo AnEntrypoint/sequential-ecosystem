@@ -1,5 +1,5 @@
 import { asyncHandler } from '../middleware/error-handler.js';
-import { formatResponse } from '@sequential/response-formatting';
+import { formatResponse } from '@sequentialos/response-formatting';
 import os from 'os';
 
 export function registerObservabilityRoutes(app, container, metricsCollector) {

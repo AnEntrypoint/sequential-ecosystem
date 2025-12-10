@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/core-config",
+  "name": "@sequentialos/core-config",
   "version": "1.0.0",
   "description": "Centralized configuration for sequential-ecosystem packages",
   "type": "module",

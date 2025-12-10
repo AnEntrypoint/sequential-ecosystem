@@ -1,6 +1,6 @@
 import crypto from 'crypto';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
-import { delay, withRetry } from '@sequential/async-patterns';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
+import { delay, withRetry } from '@sequentialos/async-patterns';
 
 export function generateId() {
   return crypto.randomBytes(8).toString('hex');

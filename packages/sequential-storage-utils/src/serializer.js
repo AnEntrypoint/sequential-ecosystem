@@ -1,5 +1,5 @@
 import { SERIALIZABLE_FIELDS, NULL_SAFE_FIELDS } from './constants.js';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
 
 export class Serializer {
   serializeObject(obj) {

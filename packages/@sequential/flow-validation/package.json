@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/flow-validation",
+  "name": "@sequentialos/flow-validation",
   "version": "1.0.0",
   "description": "Flow graph validation and state handler verification",
   "type": "module",

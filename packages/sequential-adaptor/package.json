@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/sequential-adaptor",
+  "name": "@sequentialos/sequential-adaptor",
   "version": "1.0.6",
   "description": "Base storage and service adaptor interfaces for sequential-runner",
   "type": "module",
@@ -31,12 +31,12 @@
     "url": "https://github.com/AnEntrypoint/sequential-sequential-adaptor"
   },
   "dependencies": {
-    "@sequential/sequential-logging": "^1.0.3",
-    "@sequential/sequential-storage-utils": "^1.0.1",
-    "@sequential/sequential-utils": "^1.0.0"
+    "@sequentialos/sequential-logging": "^1.0.3",
+    "@sequentialos/sequential-storage-utils": "^1.0.1",
+    "@sequentialos/sequential-utils": "^1.0.0"
   },
   "peerDependencies": {
-    "@sequential/sequential-flow": "^1.0.0"
+    "@sequentialos/sequential-flow": "^1.0.0"
   },
   "engines": {
     "node": ">=18.0.0"

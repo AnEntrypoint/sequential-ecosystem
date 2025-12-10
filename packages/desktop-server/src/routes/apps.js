@@ -1,9 +1,9 @@
 import path from 'path';
 import { promises as fs } from 'fs';
 import { asyncHandler } from '../middleware/error-handler.js';
-import { formatResponse } from '@sequential/response-formatting';
-import { throwNotFound } from '@sequential/error-handling';
-import { resolveAppPath } from '@sequential/app-path-resolver';
+import { formatResponse } from '@sequentialos/response-formatting';
+import { throwNotFound } from '@sequentialos/error-handling';
+import { resolveAppPath } from '@sequentialos/app-path-resolver';
 
 export function registerAppRoutes(app, appRegistry, __dirname) {
   app.get('/api/apps', asyncHandler(async (req, res) => {

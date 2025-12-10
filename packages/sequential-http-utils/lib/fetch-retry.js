@@ -1,5 +1,5 @@
 import { RetryConfig } from './retry-config.js';
-import { delay, withRetry } from '@sequential/async-patterns';
+import { delay, withRetry } from '@sequentialos/async-patterns';
 
 async function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));

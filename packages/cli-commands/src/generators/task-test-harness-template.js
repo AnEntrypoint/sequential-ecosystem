@@ -5,7 +5,7 @@ export function generateTaskTestHarnessTemplate() {
  * Integration testing for task composition and tool invocation.
  */
 
-import { createTaskTestHarness } from '@sequential/task-test-harness';
+import { createTaskTestHarness } from '@sequentialos/task-test-harness';
 
 const harness = createTaskTestHarness();
 

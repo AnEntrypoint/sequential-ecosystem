@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/route-helpers",
+  "name": "@sequentialos/route-helpers",
   "version": "1.0.0",
   "description": "Express route handler utilities for API endpoints",
   "type": "module",
@@ -21,7 +21,7 @@
   "license": "MIT",
   "dependencies": {
     "response-formatting": "^1.0.0",
-    "@sequential/error-handling": "^1.0.0"
+    "@sequentialos/error-handling": "^1.0.0"
   },
   "repository": {
     "type": "git",

@@ -1,8 +1,8 @@
 import path from 'path';
-import { createCLICommand } from '@sequential/cli-handler';
+import { createCLICommand } from '@sequentialos/cli-handler';
 import { existsSync } from 'fs';
-import { listFiles } from '@sequential/file-operations';
-import logger from '@sequential/sequential-logging';
+import { listFiles } from '@sequentialos/file-operations';
+import logger from '@sequentialos/sequential-logging';
 
 export const listCommand = createCLICommand(async (options) => {
   const tasksDir = path.join(process.cwd(), 'tasks');

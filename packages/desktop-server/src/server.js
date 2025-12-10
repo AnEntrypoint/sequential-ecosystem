@@ -5,11 +5,11 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { AppRegistry } from './app-registry.js';
 import http from 'http';
-import logger from '@sequential/sequential-logging';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import logger from '@sequentialos/sequential-logging';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
 
-import { createRequestLogger } from '@sequential/server-utilities';
-import { createRateLimitMiddleware } from '@sequential/input-sanitization';
+import { createRequestLogger } from '@sequentialos/server-utilities';
+import { createRateLimitMiddleware } from '@sequentialos/input-sanitization';
 import { createErrorHandler } from './middleware/error-handler.js';
 import { securityHeaders } from './middleware/security-headers.js';
 import { registerSequentialOsRoutes } from './routes/sequential-os.js';
@@ -26,7 +26,7 @@ import { registerStorageObserverRoutes } from './routes/storage-observer.js';
 import { registerBackgroundTaskRoutes } from './routes/background-tasks.js';
 import { registerErrorLoggingRoutes } from './routes/error-logging.js';
 import { registerHealthRoutes } from './routes/health.js';
-import { CONFIG, taskQueueManager, queueWorkerPool, taskScheduler } from '@sequential/server-utilities';
+import { CONFIG, taskQueueManager, queueWorkerPool, taskScheduler } from '@sequentialos/server-utilities';
 import { registerWorkerRoutes } from './routes/workers.js';
 import { registerSchedulerRoutes } from './routes/scheduler.js';
 import { registerUserAppRoutes } from './routes/user-apps.js';
@@ -42,13 +42,13 @@ import { bootstrapComponents } from './utils/bootstrap-components.js';
 import { setupHotReload, closeFileWatchers } from './utils/hot-reload.js';
 import { setupWebSocket } from './utils/websocket-setup.js';
 import { setupGracefulShutdown } from './utils/graceful-shutdown.js';
-import { StateManager, FileSystemAdapter, setupBroadcastMiddleware } from '@sequential/persistent-state';
-import { RealtimeBroadcaster } from '@sequential/realtime-sync';
-import { backgroundTaskManager } from '@sequential/server-utilities';
-import { broadcastBackgroundTaskEvent } from '@sequential/websocket-broadcaster';
+import { StateManager, FileSystemAdapter, setupBroadcastMiddleware } from '@sequentialos/persistent-state';
+import { RealtimeBroadcaster } from '@sequentialos/realtime-sync';
+import { backgroundTaskManager } from '@sequentialos/server-utilities';
+import { broadcastBackgroundTaskEvent } from '@sequentialos/websocket-broadcaster';
 import { optionalAuth } from '../../zellous/server/auth-middleware.js';
 import { responseFormatterMiddleware } from './middleware/response-formatter-middleware.js';
-// import { correlationMiddleware, MetricsCollector, metricsMiddleware } from '@sequential/observability-utils';
+// import { correlationMiddleware, MetricsCollector, metricsMiddleware } from '@sequentialos/observability-utils';
 // import { registerObservabilityRoutes } from './routes/observability.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -86,9 +86,9 @@ async function main() {
         'app-flow-debugger',
         'app-run-observer',
         'app-file-browser',
-        '@sequential/app-editor',
-        '@sequential/app-debugger',
-        '@sequential/app-manager',
+        '@sequentialos/app-editor',
+        '@sequentialos/app-debugger',
+        '@sequentialos/app-manager',
         'app-observability-console',
         'app-observability-dashboard',
         'app-demo-chat'

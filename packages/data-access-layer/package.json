@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/data-access-layer",
+  "name": "@sequentialos/data-access-layer",
   "version": "1.0.0",
   "description": "Data access layer with repositories for task and flow operations",
   "main": "src/index.js",
@@ -29,7 +29,7 @@
   "author": "Sequential Ecosystem <contact@sequential.dev>",
   "license": "MIT",
   "dependencies": {
-    "@sequential/core": "*",
+    "@sequentialos/core": "*",
     "fs-extra": "^11.1.1"
   }
 }

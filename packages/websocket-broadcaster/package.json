@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/websocket-broadcaster",
+  "name": "@sequentialos/websocket-broadcaster",
   "version": "1.0.0",
   "description": "WebSocket message broadcasting and subscription management",
   "type": "module",

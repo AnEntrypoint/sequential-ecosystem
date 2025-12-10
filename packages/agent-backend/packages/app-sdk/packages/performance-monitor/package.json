@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/performance-monitor",
+  "name": "@sequentialos/performance-monitor",
   "version": "1.0.0",
   "description": "Performance monitoring and debugging for Sequential Ecosystem",
   "type": "module",

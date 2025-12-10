@@ -1,4 +1,4 @@
-import logger from '@sequential/sequential-logging';
+import logger from '@sequentialos/sequential-logging';
 /**
  * Comprehensive Gmail Search across all Google Workspace domains and users
  *
@@ -15,7 +15,7 @@ import logger from '@sequential/sequential-logging';
  * @returns {Object} Comprehensive search results with domain breakdown
  */
 
-import { nowISO } from '@sequential/sequential-utils/timestamps';
+import { nowISO } from '@sequentialos/sequential-utils/timestamps';
 
 module.exports = async function({ gmailSearchQuery = "", maxResultsPerUser = 10, maxUsersPerDomain = 500 }) {
   // CRITICAL FIX: Enforce Google API limits to prevent errors

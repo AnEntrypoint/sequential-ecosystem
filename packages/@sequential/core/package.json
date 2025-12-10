@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/core",
+  "name": "@sequentialos/core",
   "version": "1.0.0",
   "description": "Core utilities package consolidating error-handling, param-validation, and response-formatting",
   "main": "src/index.js",

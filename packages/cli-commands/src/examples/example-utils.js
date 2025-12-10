@@ -1,6 +1,6 @@
 import path from 'path';
-import { writeFileAtomicString } from '@sequential/file-operations';
-import logger from '@sequential/sequential-logging';
+import { writeFileAtomicString } from '@sequentialos/file-operations';
+import logger from '@sequentialos/sequential-logging';
 
 export async function createExampleUtils(toolsDir) {
   const utils = {

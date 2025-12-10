@@ -1,7 +1,7 @@
 import { RECORD_DEFAULTS } from './constants.js';
 import { Serializer } from './serializer.js';
 import { Validators } from './validators.js';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
 
 const FIELD_MAP = {
   task_run: ['taskName', 'task_identifier', 'status', 'id'],

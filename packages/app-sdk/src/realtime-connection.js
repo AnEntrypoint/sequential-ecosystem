@@ -1,4 +1,4 @@
-import RealtimeClient from '@sequential/realtime-sync';
+import RealtimeClient from '@sequentialos/realtime-sync';
 
 export class RealtimeConnection extends RealtimeClient {
   constructor(wsUrl, roomId, options = {}) {

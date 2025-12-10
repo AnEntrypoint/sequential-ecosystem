@@ -1,11 +1,11 @@
-import { delay, withRetry } from '@sequential/async-patterns';
+import { delay, withRetry } from '@sequentialos/async-patterns';
 /**
  * HTTP utility factory wrappers
  * Convenient helpers for HTTP client creation
  */
 
-import { DEFAULTS } from '@sequential/core-config';
-import { RetryConfig, createFetchWithRetry } from '@sequential/sequential-http-utils';
+import { DEFAULTS } from '@sequentialos/core-config';
+import { RetryConfig, createFetchWithRetry } from '@sequentialos/sequential-http-utils';
 
 /**
  * Create fetch client with default retry configuration

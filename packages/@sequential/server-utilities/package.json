@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/server-utilities",
+  "name": "@sequentialos/server-utilities",
   "version": "1.0.0",
   "description": "Server utilities including cache, task executor, logging, config",
   "type": "module",
@@ -18,7 +18,7 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "@sequential/config-management": "*",
+    "@sequentialos/config-management": "*",
     "node-cron": "^3.0.3"
   },
   "owner": "Utilities"

@@ -98,7 +98,7 @@ export function generateTaskHooksTemplate() {
  * Hooks: before, after, error, success
  */
 
-import { createTaskHookSystem } from '@sequential/task-hooks';
+import { createTaskHookSystem } from '@sequentialos/task-hooks';
 
 const hooks = createTaskHookSystem();
 
@@ -211,7 +211,7 @@ export function generateFlowHooksTemplate() {
  * Hooks: stateEnter, stateExit, transition, error
  */
 
-import { createFlowHookSystem } from '@sequential/flow-hooks';
+import { createFlowHookSystem } from '@sequentialos/flow-hooks';
 
 const hooks = createFlowHookSystem();
 

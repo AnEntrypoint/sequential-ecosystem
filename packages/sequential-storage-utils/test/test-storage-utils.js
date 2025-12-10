@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
 import { Serializer, CRUDPatterns, Validators, RECORD_TYPES, RECORD_DEFAULTS } from '../src/index.js';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
 
 test('Serializer - Object Serialization', async (t) => {
   const serializer = new Serializer();

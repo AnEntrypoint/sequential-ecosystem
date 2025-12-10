@@ -12,4 +12,4 @@ export {
   getAppId,
   getUserId,
   getSessionToken
-} from '@sequential/execution-context';
+} from '@sequentialos/execution-context';

@@ -1,6 +1,6 @@
-import logger from '@sequential/sequential-logging';
-import { createCLICommand } from '@sequential/cli-handler';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import logger from '@sequentialos/sequential-logging';
+import { createCLICommand } from '@sequentialos/cli-handler';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
 export function generateFlowSimpleTemplate(name, taskId, timestamp, inputs, description) {
   const funcName = name.replace(/-/g, '_');
   const inputsDoc = inputs.length > 0

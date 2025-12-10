@@ -1,6 +1,6 @@
-import { createErrorHandler as createAppErrorHandler } from '@sequential/error-handling';
-import { asyncHandler } from '@sequential/handler-wrappers';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import { createErrorHandler as createAppErrorHandler } from '@sequentialos/error-handling';
+import { asyncHandler } from '@sequentialos/handler-wrappers';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
 
 const MAX_LOG_SIZE = 1000;
 const operationLog = [];

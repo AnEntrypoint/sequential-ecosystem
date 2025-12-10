@@ -1,6 +1,6 @@
 {
   "id": "desktop-theme",
-  "name": "@sequential/desktop-theme",
+  "name": "@sequentialos/desktop-theme",
   "version": "1.0.0",
   "description": "Shared theme and design tokens for Sequential Desktop applications",
   "type": "package",

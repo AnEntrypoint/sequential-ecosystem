@@ -1,6 +1,6 @@
 import { logger, perf } from './logging-service.ts';
 import { IServiceResponse } from './base-service-types.ts';
-import { nowISO } from '@sequential/sequential-utils/timestamps';
+import { nowISO } from '@sequentialos/sequential-utils/timestamps';
 import { BaseService } from './base-service.ts';
 
 export const ServiceResponse = {

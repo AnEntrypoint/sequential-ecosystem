@@ -1,1 +1,1 @@
-export { createFlowHandlerValidator, generateFlowHandlerValidatorTemplate } from '@sequential/flow-validation';
+export { createFlowHandlerValidator, generateFlowHandlerValidatorTemplate } from '@sequentialos/flow-validation';

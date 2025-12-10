@@ -222,7 +222,7 @@ export function generateRecoveryPolicyTemplate() {
  * Implement resilient error handling with automatic retries and fallbacks.
  */
 
-import { createRetryStrategy, createCircuitBreaker, createFallbackStrategy } from '@sequential/error-recovery';
+import { createRetryStrategy, createCircuitBreaker, createFallbackStrategy } from '@sequentialos/error-recovery';
 
 const retryStrategy = createRetryStrategy({
   maxRetries: 3,

@@ -5,7 +5,7 @@ export function generateDevTestingTemplate() {
  * Test tasks/flows/tools locally with mocks and fixtures.
  */
 
-import { createMockToolRegistry, createServiceInterceptor, createFixtureLoader, createTestEnvironment } from '@sequential/dev-testing';
+import { createMockToolRegistry, createServiceInterceptor, createFixtureLoader, createTestEnvironment } from '@sequentialos/dev-testing';
 
 const testEnv = createTestEnvironment();
 

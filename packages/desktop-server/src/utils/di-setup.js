@@ -1,10 +1,10 @@
 import path from 'path';
 import os from 'os';
-import { createContainer } from '@sequential/dependency-injection';
-import { TaskRepository, FlowRepository, ToolRepository, FileRepository, AppRepository } from '@sequential/data-access-layer';
-import { TaskService } from '@sequential/task-execution-service';
-import { ToolRegistry } from '@sequential/tool-registry';
-import { CONFIG } from '@sequential/server-utilities';
+import { createContainer } from '@sequentialos/dependency-injection';
+import { TaskRepository, FlowRepository, ToolRepository, FileRepository, AppRepository } from '@sequentialos/data-access-layer';
+import { TaskService } from '@sequentialos/task-execution-service';
+import { ToolRegistry } from '@sequentialos/tool-registry';
+import { CONFIG } from '@sequentialos/server-utilities';
 
 export function setupDIContainer() {
   const container = createContainer();

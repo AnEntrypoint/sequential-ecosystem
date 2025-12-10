@@ -1,10 +1,10 @@
-import { delay, withRetry } from '@sequential/async-patterns';
+import { delay, withRetry } from '@sequentialos/async-patterns';
 /**
  * WebSocket factory wrappers
  * Convenient helpers for WebSocket handler creation
  */
 
-import { createSubscriptionHandler } from '@sequential/websocket-factory';
+import { createSubscriptionHandler } from '@sequentialos/websocket-factory';
 import { createDefaultWebSocketRateLimiter } from './middleware-wrappers.js';
 
 /**

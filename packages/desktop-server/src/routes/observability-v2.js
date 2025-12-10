@@ -1,10 +1,10 @@
-import { ExecutionTracer } from '@sequential/execution-tracer';
-import { ToolCallTracer } from '@sequential/tool-call-tracer';
-import { CustomMetrics } from '@sequential/custom-metrics';
-import { StateTransitionLogger } from '@sequential/state-transition-logger';
-import { StorageQueryTracer } from '@sequential/storage-query-tracer';
-import { AlertEngine, AlertConditions } from '@sequential/alert-engine';
-import { formatResponse } from '@sequential/response-formatting';
+import { ExecutionTracer } from '@sequentialos/execution-tracer';
+import { ToolCallTracer } from '@sequentialos/tool-call-tracer';
+import { CustomMetrics } from '@sequentialos/custom-metrics';
+import { StateTransitionLogger } from '@sequentialos/state-transition-logger';
+import { StorageQueryTracer } from '@sequentialos/storage-query-tracer';
+import { AlertEngine, AlertConditions } from '@sequentialos/alert-engine';
+import { formatResponse } from '@sequentialos/response-formatting';
 
 const tracer = new ExecutionTracer();
 const toolTracer = new ToolCallTracer();

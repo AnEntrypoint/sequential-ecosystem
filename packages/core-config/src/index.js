@@ -1,5 +1,5 @@
 /**
- * @sequential/core-config - Centralized configuration for sequential-ecosystem
+ * @sequentialos/core-config - Centralized configuration for sequential-ecosystem
  */
 
 export { DEFAULTS } from './defaults.js';

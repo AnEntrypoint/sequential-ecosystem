@@ -7,7 +7,7 @@
 
 import { hostLog as newHostLog, logger, log, perf, context } from './logging-service.ts';
 import { database, fetchTaskFromDatabase as dbFetchTaskFromDatabase, createServiceRoleClient } from './database-service.ts';
-import { nowISO } from '@sequential/sequential-utils/timestamps';
+import { nowISO } from '@sequentialos/sequential-utils/timestamps';
 
 // Shared type definitions
 export interface ILogEntry {

@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/sequential-logging",
+  "name": "@sequentialos/sequential-logging",
   "version": "1.0.3",
   "description": "Consolidated logging service utility for sequential-ecosystem packages",
   "type": "module",
@@ -29,7 +29,7 @@
     "url": "https://github.com/AnEntrypoint/sequential-sequential-logging"
   },
   "dependencies": {
-    "@sequential/sequential-utils": "^1.0.0"
+    "@sequentialos/sequential-utils": "^1.0.0"
   },
   "engines": {
     "node": ">=18.0.0"

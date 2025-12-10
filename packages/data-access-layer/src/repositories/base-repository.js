@@ -1,13 +1,13 @@
 import path from 'path';
 import fs from 'fs-extra';
-import { validatePath } from '@sequential/validation';
-import logger from '@sequential/sequential-logging';
+import { validatePath } from '@sequentialos/validation';
+import logger from '@sequentialos/sequential-logging';
 import {
   readJsonFile as readJsonFileUtil,
   readJsonFileOptional as readJsonFileOptionalUtil,
   writeFileAtomicJson,
   listFiles
-} from '@sequential/file-operations';
+} from '@sequentialos/file-operations';
 
 /**
  * BaseRepository - Abstract base class for all repositories

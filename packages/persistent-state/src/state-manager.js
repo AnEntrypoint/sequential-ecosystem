@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import { LRUCache } from 'lru-cache';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
 
 export class StateManager extends EventEmitter {
   constructor(adapter, config = {}) {

@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/operation-logger",
+  "name": "@sequentialos/operation-logger",
   "version": "1.0.0",
   "type": "module",
   "description": "Operation logger factory with semantic method names",

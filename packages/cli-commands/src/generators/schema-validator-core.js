@@ -149,7 +149,7 @@ export function generateSchemaValidator(schema) {
  * Validates inputs against a schema before task execution.
  */
 
-import { createSchemaValidator } from '@sequential/schema-validator';
+import { createSchemaValidator } from '@sequentialos/schema-validator';
 
 const validator = createSchemaValidator();
 

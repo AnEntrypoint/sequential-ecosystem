@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/service-factory",
+  "name": "@sequentialos/service-factory",
   "version": "1.0.0",
   "type": "module",
   "description": "Factory pattern for service container resolution with memoization",

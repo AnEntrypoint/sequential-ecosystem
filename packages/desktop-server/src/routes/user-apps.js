@@ -1,6 +1,6 @@
 import { asyncHandler } from '../middleware/error-handler.js';
-import { formatResponse } from '@sequential/response-formatting';
-import { throwNotFound } from '@sequential/error-handling';
+import { formatResponse } from '@sequentialos/response-formatting';
+import { throwNotFound } from '@sequentialos/error-handling';
 
 const APP_TEMPLATES = {
   blank: '<html><head><title>{{ name }}</title></head><body><h1>Welcome to {{ name }}</h1></body></html>',

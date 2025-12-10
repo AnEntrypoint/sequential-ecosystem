@@ -1,4 +1,4 @@
-import logger from '@sequential/sequential-logging';
+import logger from '@sequentialos/sequential-logging';
 
 export function generateDatabaseToolTemplate(name, toolId, timestamp, description, category) {
   const funcName = name.replace(/-/g, '_');

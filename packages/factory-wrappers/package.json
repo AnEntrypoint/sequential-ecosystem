@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/factory-wrappers",
+  "name": "@sequentialos/factory-wrappers",
   "version": "1.0.0",
   "description": "Convenient factory wrapper functions for sequential-ecosystem packages",
   "type": "module",
@@ -25,6 +25,6 @@
   "author": "AnEntrypoint",
   "license": "MIT",
   "dependencies": {
-    "@sequential/core-config": "^1.0.0"
+    "@sequentialos/core-config": "^1.0.0"
   }
 }

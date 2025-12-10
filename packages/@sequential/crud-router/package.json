@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/crud-router",
+  "name": "@sequentialos/crud-router",
   "version": "1.0.0",
   "description": "Factory for creating CRUD Express routers",
   "type": "module",
@@ -20,7 +20,7 @@
   "license": "MIT",
   "dependencies": {
     "response-formatting": "^1.0.0",
-    "@sequential/route-helpers": "^1.0.0"
+    "@sequentialos/route-helpers": "^1.0.0"
   },
   "repository": {
     "type": "git",

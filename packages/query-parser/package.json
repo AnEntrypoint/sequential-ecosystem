@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/query-parser",
+  "name": "@sequentialos/query-parser",
   "version": "1.0.0",
   "type": "module",
   "description": "Parse and validate query/body parameters with type coercion",

@@ -1,8 +1,8 @@
 import path from 'path';
-import { createCLICommand } from '@sequential/cli-handler';
+import { createCLICommand } from '@sequentialos/cli-handler';
 import { existsSync } from 'fs';
 import fse from 'fs-extra';
-import logger from '@sequential/sequential-logging';
+import logger from '@sequentialos/sequential-logging';
 
 export const deleteCommand = createCLICommand(async (taskName, options) => {
   const taskDir = path.join(process.cwd(), 'tasks', taskName);

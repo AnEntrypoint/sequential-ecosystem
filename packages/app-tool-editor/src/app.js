@@ -1,4 +1,4 @@
-import { AppSDK } from '@sequential/app-sdk';
+import { AppSDK } from '@sequentialos/app-sdk';
 
 class ToolEditor {
   constructor() {

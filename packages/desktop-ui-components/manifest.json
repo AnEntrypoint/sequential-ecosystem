@@ -1,6 +1,6 @@
 {
   "id": "desktop-ui-components",
-  "name": "@sequential/desktop-ui-components",
+  "name": "@sequentialos/desktop-ui-components",
   "version": "1.0.0",
   "description": "Shared UI components for Sequential Desktop applications",
   "type": "package",

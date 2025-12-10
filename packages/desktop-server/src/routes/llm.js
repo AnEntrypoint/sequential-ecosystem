@@ -1,6 +1,6 @@
 import { asyncHandler } from '../middleware/error-handler.js';
-import { formatResponse } from '@sequential/response-formatting';
-import { createValidationError } from '@sequential/error-handling';
+import { formatResponse } from '@sequentialos/response-formatting';
+import { createValidationError } from '@sequentialos/error-handling';
 
 export function registerLLMRoutes(app, container) {
   const apiKey = process.env.ANTHROPIC_API_KEY;

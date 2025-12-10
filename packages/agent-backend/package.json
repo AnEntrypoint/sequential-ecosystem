@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/agent-backend",
+  "name": "@sequentialos/agent-backend",
   "version": "1.0.0",
   "description": "LLM-powered agent backend using Vercel AI SDK",
   "type": "module",

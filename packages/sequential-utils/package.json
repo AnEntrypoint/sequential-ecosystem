@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/sequential-utils",
+  "name": "@sequentialos/sequential-utils",
   "version": "1.0.0",
   "description": "Common utilities for sequential ecosystem - timestamps, errors, etc.",
   "type": "module",

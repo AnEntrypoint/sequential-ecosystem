@@ -1,12 +1,12 @@
-import logger from '@sequential/sequential-logging';
-import { delay, withRetry } from '@sequential/async-patterns';
+import logger from '@sequentialos/sequential-logging';
+import { delay, withRetry } from '@sequentialos/async-patterns';
 #!/usr/bin/env node
 
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { detectCredentials } from './src/auto-detect.js';
-import { nowISO } from '@sequential/sequential-utils/timestamps';
+import { nowISO } from '@sequentialos/sequential-utils/timestamps';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 

@@ -1,4 +1,4 @@
-import { throwValidationError } from '@sequential/error-handling';
+import { throwValidationError } from '@sequentialos/error-handling';
 import { isRequired, isArray } from './field-validators.js';
 import { ValidationResult } from './result.js';
 

@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/app-debugger",
+  "name": "@sequentialos/app-debugger",
   "version": "1.0.0",
   "description": "App debugger and observability dashboard",
   "main": "dist/index.html",

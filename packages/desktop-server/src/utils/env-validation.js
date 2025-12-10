@@ -1,4 +1,4 @@
-import logger from '@sequential/sequential-logging';
+import logger from '@sequentialos/sequential-logging';
 
 const ENV_SCHEMA = {
   PORT: { default: 3000, type: 'number', description: 'Server port' },

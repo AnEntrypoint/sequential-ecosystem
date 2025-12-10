@@ -5,7 +5,7 @@ export function generateRuntimeContractsTemplate() {
  * Auto-generated schemas with type validation and coercion.
  */
 
-import { createRuntimeContracts, createInputValidator } from '@sequential/runtime-contracts';
+import { createRuntimeContracts, createInputValidator } from '@sequentialos/runtime-contracts';
 
 const contracts = createRuntimeContracts();
 

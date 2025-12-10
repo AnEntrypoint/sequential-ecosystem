@@ -1,13 +1,13 @@
 /**
- * @sequential/sequential-wrapper
+ * @sequentialos/sequential-wrapper
  *
  * Zero-code SDK wrapping. Turn any JavaScript SDK into HTTP services
  * with auto-detection, pause/resume for long operations, and declarative configuration.
  *
  * Usage:
- *   import { createServiceProxy } from '@sequential/sequential-wrapper';
- *   import { processSdkRequest } from '@sequential/sequential-wrapper/server';
- *   import { detectInitializationPattern } from '@sequential/sequential-wrapper/auto-detect';
+ *   import { createServiceProxy } from '@sequentialos/sequential-wrapper';
+ *   import { processSdkRequest } from '@sequentialos/sequential-wrapper/server';
+ *   import { detectInitializationPattern } from '@sequentialos/sequential-wrapper/auto-detect';
  */
 
 // Re-export client API (most common use case)

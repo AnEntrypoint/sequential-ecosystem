@@ -1,4 +1,4 @@
-import { nowISO } from '@sequential/sequential-utils/timestamps';
+import { nowISO } from '@sequentialos/sequential-utils/timestamps';
 import { createSupabaseClient, SUPABASE_URL, SERVICE_ROLE_KEY, log } from './utils.ts';
 
 export async function tryLockTaskChain(taskRunId: number, retries: number = 3): Promise<boolean> {

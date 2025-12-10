@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/app-task-editor",
+  "name": "@sequentialos/app-task-editor",
   "version": "1.0.0",
   "description": "Task Editor for Sequential Desktop",
   "main": "dist/index.html",
@@ -13,7 +13,7 @@
   "author": "Sequential Ecosystem",
   "license": "MIT",
   "dependencies": {
-    "@sequential/zellous-client-sdk": "^1.0.0"
+    "@sequentialos/zellous-client-sdk": "^1.0.0"
   },
   "repository": {
     "type": "git",

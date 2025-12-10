@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/file-operation-handler",
+  "name": "@sequentialos/file-operation-handler",
   "version": "1.0.0",
   "type": "module",
   "description": "File operation handler wrapper to eliminate try-catch boilerplate",

@@ -1,8 +1,8 @@
 import path from 'path';
 import { existsSync } from 'fs';
 import { fileURLToPath } from 'url';
-import { register, list, get } from '@sequential/sequential-adaptor';
-import { listFiles } from '@sequential/file-operations';
+import { register, list, get } from '@sequentialos/sequential-adaptor';
+import { listFiles } from '@sequentialos/file-operations';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

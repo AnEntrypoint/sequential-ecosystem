@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/timestamp-utilities",
+  "name": "@sequentialos/timestamp-utilities",
   "version": "1.0.0",
   "description": "Standardized timestamp utilities for consistent time handling",
   "type": "module",

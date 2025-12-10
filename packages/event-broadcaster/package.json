@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/event-broadcaster",
+  "name": "@sequentialos/event-broadcaster",
   "version": "1.0.0",
   "type": "module",
   "description": "Event broadcaster factory with semantic method names",

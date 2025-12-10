@@ -1,8 +1,8 @@
 import path from 'path';
-import { createCLICommand } from '@sequential/cli-handler';
-import { writeFileAtomicString } from '@sequential/file-operations';
-import logger from '@sequential/sequential-logging';
-import { delay, withRetry } from '@sequential/async-patterns';
+import { createCLICommand } from '@sequentialos/cli-handler';
+import { writeFileAtomicString } from '@sequentialos/file-operations';
+import logger from '@sequentialos/sequential-logging';
+import { delay, withRetry } from '@sequentialos/async-patterns';
 
 export async function createExamplesReadme(tasksDir) {
   const readmeFile = path.join(tasksDir, 'EXAMPLES.md');

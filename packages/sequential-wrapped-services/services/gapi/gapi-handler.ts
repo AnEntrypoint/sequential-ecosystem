@@ -1,6 +1,6 @@
 import { BaseHttpHandler, createHealthCheckResponse } from "../_shared/http-handler.ts"
 import { corsHeaders } from '../_shared/cors.ts'
-import { nowISO } from '@sequential/sequential-utils/timestamps'
+import { nowISO } from '@sequentialos/sequential-utils/timestamps'
 import logger from 'tasker-logging'
 import { getTokenCache } from './gapi-tokens.ts'
 import { handleEcho, handleTestGetStepData, handleCheckCredentials, handleGetTokenInfo, handleClearTokenCache } from './gapi-debug-handlers.ts'

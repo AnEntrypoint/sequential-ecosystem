@@ -1,5 +1,5 @@
 import { createSingleSubscriber, createGroupedSubscriber, createSetSubscriber } from './subscriber-manager.js';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
 
 const runSubscribers = createSingleSubscriber();
 const taskSubscribers = createGroupedSubscriber();

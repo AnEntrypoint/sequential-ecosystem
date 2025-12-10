@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/sequential-machine",
+  "name": "@sequentialos/sequential-machine",
   "version": "1.0.0",
   "description": "Persistent compute through content-addressable filesystem layers - Sequential ecosystem machine runner",
   "main": "lib/index.js",
@@ -32,8 +32,8 @@
   "license": "Apache-2.0",
   "dependencies": {
     "tar": "^6.2.0",
-    "@sequential/sequential-flow": "^1.0.0",
-    "@sequential/sequential-utils": "^1.0.0"
+    "@sequentialos/sequential-flow": "^1.0.0",
+    "@sequentialos/sequential-utils": "^1.0.0"
   },
   "engines": {
     "node": ">=18.0.0"

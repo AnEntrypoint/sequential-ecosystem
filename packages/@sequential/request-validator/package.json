@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/request-validator",
+  "name": "@sequentialos/request-validator",
   "version": "1.0.0",
   "description": "Unified request validation for Express routes",
   "type": "module",

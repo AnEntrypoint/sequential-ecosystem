@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/sequential-http-utils",
+  "name": "@sequentialos/sequential-http-utils",
   "version": "1.0.0",
   "description": "HTTP utilities for sequential-runner with retry logic, response parsing, and request building",
   "type": "module",

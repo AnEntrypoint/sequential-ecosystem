@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/error-handling",
+  "name": "@sequentialos/error-handling",
   "version": "1.0.0",
   "description": "Consolidated error handling utilities with serialization, categorization, and response formatting",
   "type": "module",

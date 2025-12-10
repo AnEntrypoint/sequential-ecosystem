@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/sequential-wrapper",
+  "name": "@sequentialos/sequential-wrapper",
   "version": "2.0.1",
   "description": "Zero-code SDK wrapping. Turn any JavaScript SDK into HTTP services with auto-detection, pause/resume for long operations, and declarative configuration.",
   "main": "index.js",

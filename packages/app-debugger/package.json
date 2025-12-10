@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/app-debugger",
+  "name": "@sequentialos/app-debugger",
   "version": "1.0.0",
   "description": "Filesystem Debugger for Sequential Desktop",
   "main": "dist/index.html",

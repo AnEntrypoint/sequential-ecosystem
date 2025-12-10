@@ -1,6 +1,6 @@
 import path from 'path';
-import { ensureDirectory, writeFileAtomicString } from '@sequential/file-operations';
-import logger from '@sequential/sequential-logging';
+import { ensureDirectory, writeFileAtomicString } from '@sequentialos/file-operations';
+import logger from '@sequentialos/sequential-logging';
 
 export async function createExampleFlows(tasksDir) {
   const flowsDir = path.join(tasksDir, 'flows');

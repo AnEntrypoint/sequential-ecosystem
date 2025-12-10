@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/task-execution-service",
+  "name": "@sequentialos/task-execution-service",
   "version": "1.0.0",
   "description": "Task execution service with validation, orchestration, and state management",
   "main": "src/index.js",
@@ -25,7 +25,7 @@
   "author": "Sequential Ecosystem <contact@sequential.dev>",
   "license": "MIT",
   "peerDependencies": {
-    "@sequential/data-access-layer": "^1.0.0"
+    "@sequentialos/data-access-layer": "^1.0.0"
   },
   "dependencies": {}
 }

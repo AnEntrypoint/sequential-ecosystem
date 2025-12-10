@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/tool-registry",
+  "name": "@sequentialos/tool-registry",
   "version": "1.0.0",
   "description": "Centralized registry for tools across all Sequential apps",
   "main": "src/index.js",

@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/app-flow-editor",
+  "name": "@sequentialos/app-flow-editor",
   "version": "1.0.0",
   "description": "Flow Editor for Sequential Desktop",
   "main": "dist/index.html",

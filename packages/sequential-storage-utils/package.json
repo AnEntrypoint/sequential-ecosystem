@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/sequential-storage-utils",
+  "name": "@sequentialos/sequential-storage-utils",
   "version": "1.0.1",
   "description": "Shared storage utilities for task adapters: serialization, validation, and CRUD patterns",
   "type": "module",

@@ -1,7 +1,7 @@
 import path from 'path';
-import { createCLICommand } from '@sequential/cli-handler';
-import { readJsonFile } from '@sequential/file-operations';
-import logger from '@sequential/sequential-logging';
+import { createCLICommand } from '@sequentialos/cli-handler';
+import { readJsonFile } from '@sequentialos/file-operations';
+import logger from '@sequentialos/sequential-logging';
 
 export const showCommand = createCLICommand(async (taskName, runId) => {
   const runPath = path.join(process.cwd(), 'tasks', taskName, 'runs', `${runId}.json`);

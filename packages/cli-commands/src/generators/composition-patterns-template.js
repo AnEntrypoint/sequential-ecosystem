@@ -5,7 +5,7 @@ export function generateCompositionPatternsTemplate() {
  * Reusable patterns for task and flow composition.
  */
 
-import { createCompositionPatterns, createFlowPatterns } from '@sequential/composition-patterns';
+import { createCompositionPatterns, createFlowPatterns } from '@sequentialos/composition-patterns';
 
 const taskPatterns = createCompositionPatterns();
 const flowPatterns = createFlowPatterns();

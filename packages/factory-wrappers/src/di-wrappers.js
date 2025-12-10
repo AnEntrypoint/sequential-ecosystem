@@ -3,7 +3,7 @@
  * Convenient helpers for container creation and configuration
  */
 
-import { createContainer } from '@sequential/dependency-injection';
+import { createContainer } from '@sequentialos/dependency-injection';
 
 /**
  * Create DI container with standard sequential configuration

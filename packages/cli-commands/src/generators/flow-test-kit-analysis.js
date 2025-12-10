@@ -67,7 +67,7 @@ export function generateFlowTestKitTemplate() {
  * Simulate, test, and debug flows with breakpoints and state inspection.
  */
 
-import { createFlowTestKit } from '@sequential/flow-test-kit';
+import { createFlowTestKit } from '@sequentialos/flow-test-kit';
 
 export const graph = {
   initial: 'fetchData',

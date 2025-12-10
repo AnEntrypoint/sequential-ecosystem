@@ -1,8 +1,8 @@
 import path from 'path';
 import fs from 'fs-extra';
-import { createErrorResponse } from '@sequential/error-handling';
+import { createErrorResponse } from '@sequentialos/error-handling';
 import { packageManager } from './package-manager.js';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
 
 function asyncHandler(fn) {
   return (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);

@@ -1,4 +1,4 @@
-import { nowISO } from '@sequential/sequential-utils/timestamps';
+import { nowISO } from '@sequentialos/sequential-utils/timestamps';
 import { SUPABASE_URL, SERVICE_ROLE_KEY, log, createSupabaseClient } from './utils.ts';
 import { updateStackRunStatus } from './db-operations.ts';
 

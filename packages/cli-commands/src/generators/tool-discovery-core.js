@@ -196,7 +196,7 @@ export function generateToolDiscoveryTemplate() {
  * Register tools and discover them at runtime with performance metrics.
  */
 
-import { createToolRegistry } from '@sequential/tool-discovery';
+import { createToolRegistry } from '@sequentialos/tool-discovery';
 
 const registry = createToolRegistry();
 

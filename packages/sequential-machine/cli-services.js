@@ -1,6 +1,6 @@
-import logger from '@sequential/sequential-logging';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
-import { delay, withRetry } from '@sequential/async-patterns';
+import logger from '@sequentialos/sequential-logging';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
+import { delay, withRetry } from '@sequentialos/async-patterns';
 #!/usr/bin/env node
 const { SequentialMachineAdapter } = require('./lib');
 const fs = require('fs');

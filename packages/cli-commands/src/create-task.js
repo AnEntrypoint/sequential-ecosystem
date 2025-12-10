@@ -1,13 +1,13 @@
 import path from 'path';
 import { randomUUID } from 'crypto';
 import { existsSync } from 'fs';
-import { ensureDirectory, writeFileAtomicString } from '@sequential/file-operations';
+import { ensureDirectory, writeFileAtomicString } from '@sequentialos/file-operations';
 import { generateMachineTemplate } from './task-templates/machine.js';
 import { generateFlowGraphTemplate } from './task-templates/flow-graph.js';
 import { generateFlowSimpleTemplate } from './task-templates/flow-simple.js';
 import { generateFlowMinimalTemplate } from './task-templates/flow-minimal.js';
-import logger from '@sequential/sequential-logging';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import logger from '@sequentialos/sequential-logging';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
 
 export async function createTask(options) {
   const { name, withGraph = false, inputs = [], description = '', runner = 'flow', minimal = false } = options;

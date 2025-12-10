@@ -2,7 +2,7 @@
 
 **~100 packages** | Grade A | Task execution with auto suspend/resume (implicit/explicit xstate) + Comprehensive App Editor | Deployable: Node/Deno/Bun
 
-**Recent Consolidation (Dec 10, 2025):** 15 dead validator files deleted (9,750+ LOC), error handling consolidated (3→1 package), validation consolidated (4→1 package), path validation unified (@sequential/path-validation), wrapper packages cleaned. **Package naming consolidated:** 8 root-level packages moved to @sequential scope (core, file-operations, response-formatting, server-utilities, zellous, @sequential/app-{debugger,editor,manager}), 100+ imports updated, all tests passing.
+**Recent Consolidation (Dec 10, 2025):** 15 dead validator files deleted (9,750+ LOC), error handling consolidated (3→1 package), validation consolidated (4→1 package), path validation unified (@sequentialosos/path-validation), wrapper packages cleaned. **Package naming consolidated:** 8 root-level packages moved to @sequentialos scope (core, file-operations, response-formatting, server-utilities, zellous, @sequentialosos/app-{debugger,editor,manager}), 100+ imports updated, all tests passing.
 
 ## What It Does
 - **Tasks** (implicit xstate): Write normal code; pause auto-triggered on `fetch()` or `__callHostTool__()`
@@ -19,7 +19,7 @@
 
 **Flow Engine (2):**
 - sequential-flow (explicit state machine orchestrator)
-- @sequential/flow-validation (graph validation, handler verification)
+- @sequentialosos/flow-validation (graph validation, handler verification)
 
 **Task Runner (1):**
 - sequential-runner (task executor with auto-suspend/resume)
@@ -41,37 +41,37 @@
 - cli-commands (command generators)
 
 **Built-in Apps (10):**
-- @sequential/app-editor, @sequential/app-debugger, @sequential/app-manager (core)
+- @sequentialosos/app-editor, @sequentialosos/app-debugger, @sequentialosos/app-manager (core)
 - app-file-browser, app-flow-debugger, app-observability-* (observability)
 - app-task-*, app-tool-*, app-chat-* (workflow)
 
 **Validation Framework (2):**
-- @sequential/validation (AJV schema + param + type validation)
+- @sequentialosos/validation (AJV schema + param + type validation)
 - sequential-validators (field validators, schema validators, body validators)
 
 **Security (1):**
-- @sequential/path-validation (path traversal prevention, unified source)
+- @sequentialosos/path-validation (path traversal prevention, unified source)
 
 **Error Management (1):**
-- @sequential/error-handling (serialization, categorization, formatting)
+- @sequentialosos/error-handling (serialization, categorization, formatting)
 
 **Real-time Layer (2):**
-- @sequential/realtime-sync (pub/sub over WebSocket)
-- @sequential/websocket-broadcaster (message broadcasting)
+- @sequentialosos/realtime-sync (pub/sub over WebSocket)
+- @sequentialosos/websocket-broadcaster (message broadcasting)
 
 **SDK (1):**
-- @sequential/app-sdk (app development kit)
+- @sequentialosos/app-sdk (app development kit)
 
 **Tool System (2):**
-- @sequential/tool-registry (tool registration, discovery, execution)
-- @sequential/app-mcp (Model Context Protocol bridge)
+- @sequentialosos/tool-registry (tool registration, discovery, execution)
+- @sequentialosos/app-mcp (Model Context Protocol bridge)
 
 **Observability (6):**
-- @sequential/{execution-tracer, tool-call-tracer, state-transition-logger, storage-query-tracer, custom-metrics, alert-engine}
+- @sequentialosos/{execution-tracer, tool-call-tracer, state-transition-logger, storage-query-tracer, custom-metrics, alert-engine}
 
 **Utilities (8):**
 - response-formatting, server-utilities, core, file-operations, sequential-logging, sequential-utils
-- @sequential/{dynamic-components, execution-context}
+- @sequentialosos/{dynamic-components, execution-context}
 
 ## Quick Start
 ```bash
@@ -297,7 +297,7 @@ All HTTP endpoints return a consistent JSON response structure. Responses are au
 }
 ```
 
-**Response Helpers**: Use these functions from `@sequential/response-formatting`:
+**Response Helpers**: Use these functions from `@sequentialosos/response-formatting`:
 - `formatResponse(data, meta)` - Default success response wrapper
 - `formatList(items, count, offset, limit)` - Paginated list response
 - `formatPaginated(items, options)` - Alternative pagination format
@@ -320,7 +320,7 @@ if (success) {
 
 ## Real-Time Communications & Tools Architecture
 
-**Unified Real-Time Layer** (`@sequential/realtime-sync`):
+**Unified Real-Time Layer** (`@sequentialosos/realtime-sync`):
 - Single WebSocket connection per app
 - Auto-reconnect with exponential backoff
 - Channel-based pub/sub
@@ -328,14 +328,14 @@ if (success) {
 - Client: `RealtimeClient` with subscribe/broadcast/close methods
 - ALL real-time communication flows through this layer
 
-**App MCP (Model Context Protocol)** (`@sequential/app-mcp`):
+**App MCP (Model Context Protocol)** (`@sequentialosos/app-mcp`):
 - Convert JavaScript functions to MCP tools automatically
 - Parameter introspection from function signatures
 - MCP resource generation per tool
 - DX: Just write functions, framework handles MCP export
 - Tools available to Claude and other LLMs
 
-**Tool Registry** (`@sequential/tool-registry`):
+**Tool Registry** (`@sequentialosos/tool-registry`):
 - Centralized discovery of all app tools
 - Routes: `/api/tools`, `/api/tools/app/:appId`, `/api/tools/search`
 - Tool execution via `/api/tools/app/:appId/:toolName`
@@ -362,9 +362,9 @@ const mcpDef = sdk.getMCPDefinition();
 const tools = sdk.getTools();
 ```
 
-**Storage Guarantee**: All operations through `@sequential/sequential-adaptor`
-**Real-Time Guarantee**: All communication through `@sequential/realtime-sync`
-**Tool Guarantee**: All tools registered in `@sequential/tool-registry`
+**Storage Guarantee**: All operations through `@sequentialosos/sequential-adaptor`
+**Real-Time Guarantee**: All communication through `@sequentialosos/realtime-sync`
+**Tool Guarantee**: All tools registered in `@sequentialosos/tool-registry`
 
 ## App Development
 
@@ -386,14 +386,14 @@ const tools = sdk.getTools();
 - **component-showcase.js**: Storybook-style component preview grid
 - **live-canvas.js**: DOM-based component rendering (fallback system)
 
-All systems follow single-responsibility principle with clear integration boundaries. No duplication with existing @sequential systems.
+All systems follow single-responsibility principle with clear integration boundaries. No duplication with existing @sequentialos systems.
 
 **Dynamic React Renderer System** (Iteration 8, Production-Ready):
 - **AppRenderer**: React DOM integration with lifecycle management, error handling, context propagation
 - **ComponentBuilder**: Programmatic component creation (layouts: flex/grid/stack/section, components: heading/paragraph/button/input/card)
 - **AppComponentLibrary**: 12+ pre-built shared components (debug-timeline, metrics-card, error-display, success-display, loading-spinner, button-group, property-list, section-header, two-column-layout, code-block, badge)
 - **AppRenderingBridge**: High-level app integration (state management, reactive observers, error/loading states, component exploration)
-- **Entry Point**: `import { initializeAppRendering } from '@sequential/dynamic-components'`
+- **Entry Point**: `import { initializeAppRendering } from '@sequentialosos/dynamic-components'`
 - **Implementation Guide**: See DYNAMIC_RENDERER_GUIDE.md for architecture, patterns, migration guide, and examples
 
 Use across all apps to replace vanilla DOM string concatenation with composable, reusable React components.
@@ -414,7 +414,7 @@ Use across all apps to replace vanilla DOM string concatenation with composable,
 - One-click app running
 - Export/import apps (coming soon)
 
-**App SDK** (`@sequential/app-sdk`):
+**App SDK** (`@sequentialosos/app-sdk`):
 All apps have access to:
 ```javascript
 const sdk = new AppSDK({ appId: 'app-my-app' });
@@ -462,7 +462,7 @@ sdk.on('storage:connected', () => { /* ... */ });
 
 ## Observability & Developer Experience
 
-**Correlation Tracking** (`@sequential/observability-utils`):
+**Correlation Tracking** (`@sequentialosos/observability-utils`):
 - Every request assigned unique correlation ID (via header or auto-generated)
 - ID propagated through all logs, metrics, and traces
 - Query logs by correlation ID to see full request lifecycle
@@ -490,7 +490,7 @@ DELETE /api/observability/metrics/reset       Clear metrics collector
 
 **Trace Logging** (`TraceLogger` utility):
 ```javascript
-import { TraceLogger } from '@sequential/observability-utils';
+import { TraceLogger } from '@sequentialosos/observability-utils';
 
 // Structured logging with correlation ID
 TraceLogger.info('Processing user', { userId: 123, action: 'login' });
@@ -533,7 +533,7 @@ HOT_RELOAD=false
 
 **Add App**: Create `packages/app-myapp/manifest.json`, `dist/index.html`, add to AppRegistry, restart
 
-**Consolidate Duplication**: Grep duplicates → Create `packages/@sequential/name` → Export from `index.js` → Update imports → Delete originals
+**Consolidate Duplication**: Grep duplicates → Create `packages/@sequentialosos/name` → Export from `index.js` → Update imports → Delete originals
 
 ## Testing & Deployment
 
@@ -547,10 +547,10 @@ npm run build
 
 **NPM Publication:**
 - **Status**: All packages built (v1.8.0) and ready for publication
-- **Requirement**: @sequential scoped packages require either:
+- **Requirement**: @sequentialos scoped packages require either:
   1. **npm Pro account** ($7/mo) - enables scoped package publication
-  2. **@sequential org setup** - free with org membership
-- **Current**: 34 @sequential scoped packages, 5 sequential- prefixed, 1 unscoped
+  2. **@sequentialos org setup** - free with org membership
+- **Current**: 34 @sequentialos scoped packages, 5 sequential- prefixed, 1 unscoped
 - **Action**: Run `npm publish --access public` from individual package directories after org/pro setup
 
 ## Git
@@ -595,7 +595,7 @@ Commits: fix, feat, refactor, docs, test, chore
 - ✅ **Phase 1**: Deleted 15 dead validator files (9,750+ LOC)
 - ✅ **Phase 2**: Split 29 generator files into 65+ focused modules (<200 lines each)
 - ✅ **Phase 3a-3j**: Created 10 unified modules for cross-cutting concerns:
-  - @sequential/{validation, path-validation, error-handling, execution-context, text-encoding, function-introspection, config-management, error-utilities, handler-wrappers, rate-limiter}
+  - @sequentialosos/{validation, path-validation, error-handling, execution-context, text-encoding, function-introspection, config-management, error-utilities, handler-wrappers, rate-limiter}
 - ✅ **Phase 3k Assessment**: Determined remaining items (validation chains, broadcast middleware, message handlers) are not duplicates - different patterns or too small (5-10 LOC)
 - **Result**:
   - ~76 → ~66 packages
@@ -611,7 +611,7 @@ Commits: fix, feat, refactor, docs, test, chore
 
 **Sequential-OS API**: `/api/sequential-os/*` endpoints return 503 when StateKit unavailable. Apps should handle gracefully without calling .map() on error responses.
 
-**Zellous Module Resolution**: @sequential/zellous-client-sd module not found in some apps (File Browser, Run Observer). Apps render and function correctly despite warning.
+**Zellous Module Resolution**: @sequentialosos/zellous-client-sd module not found in some apps (File Browser, Run Observer). Apps render and function correctly despite warning.
 
 **API Response Format**: All endpoints return wrapped responses: `{success: boolean, data: {...}}`. Client apps must unwrap data property before processing.
 

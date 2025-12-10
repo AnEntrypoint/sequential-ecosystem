@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/app-editor",
+  "name": "@sequentialos/app-editor",
   "version": "1.0.0",
   "description": "Visual app builder and code editor",
   "main": "dist/index.html",

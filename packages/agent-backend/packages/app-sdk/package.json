@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/app-sdk",
+  "name": "@sequentialos/app-sdk",
   "version": "1.0.0",
   "description": "SDK for desktop apps to expose tools to agents",
   "type": "module",
@@ -11,7 +11,7 @@
     "test": "node --test test/**/*.js"
   },
   "dependencies": {
-    "@sequential/agent-backend": "file:../agent-backend"
+    "@sequentialos/agent-backend": "file:../agent-backend"
   },
   "devDependencies": {},
   "engines": {

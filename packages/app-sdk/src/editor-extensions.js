@@ -1,4 +1,4 @@
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
 export class TaskEditorExtension {
   constructor(appSDK) {
     this.appSDK = appSDK;

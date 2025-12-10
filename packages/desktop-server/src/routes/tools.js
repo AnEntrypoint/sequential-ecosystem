@@ -1,10 +1,10 @@
-import { createError, createValidationError } from '@sequential/error-handling';
-import { validateRequired, validateType } from '@sequential/validation';
+import { createError, createValidationError } from '@sequentialos/error-handling';
+import { validateRequired, validateType } from '@sequentialos/validation';
 import { asyncHandler } from '../middleware/error-handler.js';
-import { executeTaskWithTimeout } from '@sequential/server-utilities';
-import { formatResponse } from '@sequential/response-formatting';
-import { nowISO } from '@sequential/timestamp-utilities';
-import logger from '@sequential/sequential-logging';
+import { executeTaskWithTimeout } from '@sequentialos/server-utilities';
+import { formatResponse } from '@sequentialos/response-formatting';
+import { nowISO } from '@sequentialos/timestamp-utilities';
+import logger from '@sequentialos/sequential-logging';
 
 const toolTestLimiter = new Map();
 

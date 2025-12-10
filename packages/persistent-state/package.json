@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/persistent-state",
+  "name": "@sequentialos/persistent-state",
   "version": "1.0.0",
   "description": "State manager with TTL, cleanup, and persistence for Sequential ecosystem",
   "type": "module",

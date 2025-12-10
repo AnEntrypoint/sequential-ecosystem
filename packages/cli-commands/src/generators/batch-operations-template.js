@@ -5,7 +5,7 @@ export function generateTaskBatcherTemplate() {
  * Distribute items across batches for parallel processing.
  */
 
-import { createTaskBatcher } from '@sequential/batch-operations';
+import { createTaskBatcher } from '@sequentialos/batch-operations';
 
 const batcher = createTaskBatcher();
 

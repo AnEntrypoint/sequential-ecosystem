@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/desktop-api-client",
+  "name": "@sequentialos/desktop-api-client",
   "version": "1.0.0",
   "type": "module",
   "main": "src/index.js",

@@ -1,6 +1,6 @@
 import { hostLog, SerializedVMState, SUPABASE_URL, SERVICE_ROLE_KEY } from './utilities.ts';
 import { serviceRegistry } from './service-registry.ts';
-import { nowISO } from '@sequential/sequential-utils/timestamps';
+import { nowISO } from '@sequentialos/sequential-utils/timestamps';
 
 export async function makeExternalCall(
   serviceName: string,

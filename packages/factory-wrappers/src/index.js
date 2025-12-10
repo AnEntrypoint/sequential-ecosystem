@@ -1,5 +1,5 @@
 /**
- * @sequential/factory-wrappers - Factory wrapper utilities
+ * @sequentialos/factory-wrappers - Factory wrapper utilities
  * Convenient helpers with sensible defaults for creating common objects
  */
 

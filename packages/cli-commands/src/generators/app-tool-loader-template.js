@@ -5,7 +5,7 @@ export function generateAppToolLoaderTemplate() {
  * Auto-discover and register tools from directory or imports.
  */
 
-import { createAppToolLoader } from '@sequential/app-tool-loader';
+import { createAppToolLoader } from '@sequentialos/app-tool-loader';
 
 const toolLoader = createAppToolLoader();
 

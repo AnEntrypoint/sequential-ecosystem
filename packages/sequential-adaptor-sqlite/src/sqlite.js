@@ -1,7 +1,7 @@
 import initSqlJs from 'sql.js';
-import { StorageAdapter } from '@sequential/sequential-adaptor';
-import { Serializer, CRUDPatterns, RECORD_TYPES } from '@sequential/sequential-storage-utils';
-import logger from '@sequential/sequential-logging';
+import { StorageAdapter } from '@sequentialos/sequential-adaptor';
+import { Serializer, CRUDPatterns, RECORD_TYPES } from '@sequentialos/sequential-storage-utils';
+import logger from '@sequentialos/sequential-logging';
 import { existsSync } from 'fs';
 import fse from 'fs-extra';
 import path from 'path';

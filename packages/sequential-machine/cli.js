@@ -1,4 +1,4 @@
-import logger from '@sequential/sequential-logging';
+import logger from '@sequentialos/sequential-logging';
 #!/usr/bin/env node
 const { StateKit } = require('./lib');
 const fs = require('fs');

@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
-import { StorageAdapter } from '@sequential/sequential-adaptor';
-import { nowISO } from '@sequential/sequential-utils/timestamps';
+import { StorageAdapter } from '@sequentialos/sequential-adaptor';
+import { nowISO } from '@sequentialos/sequential-utils/timestamps';
 
 /**
  * Supabase storage adapter

@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/custom-metrics",
+  "name": "@sequentialos/custom-metrics",
   "type": "module",
   "version": "1.0.0",
   "description": "Custom metrics and instrumentation API for applications",

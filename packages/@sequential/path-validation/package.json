@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/path-validation",
+  "name": "@sequentialos/path-validation",
   "version": "1.0.0",
   "description": "Consolidated path validation utilities with traversal protection and security checks",
   "type": "module",

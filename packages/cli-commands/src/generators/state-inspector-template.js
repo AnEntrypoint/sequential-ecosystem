@@ -5,7 +5,7 @@ export function generateStateInspectorTemplate() {
  * Debug and analyze task pause/resume states at each checkpoint.
  */
 
-import { createStateInspector } from '@sequential/state-inspector';
+import { createStateInspector } from '@sequentialos/state-inspector';
 
 const inspector = createStateInspector(stateManager);
 

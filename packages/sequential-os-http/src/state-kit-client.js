@@ -11,7 +11,7 @@ export class StateKitHttpClient {
 
   static async create(statekitDir) {
     try {
-      const { default: SequentialMachine } = await import('@sequential/sequential-machine');
+      const { default: SequentialMachine } = await import('@sequentialos/sequential-machine');
       const kit = new SequentialMachine();
       await kit.init(statekitDir || path.resolve(process.cwd(), '.statekit'));
       return new StateKitHttpClient(kit, statekitDir);

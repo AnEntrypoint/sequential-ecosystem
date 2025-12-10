@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/alert-engine",
+  "name": "@sequentialos/alert-engine",
   "type": "module",
   "version": "1.0.0",
   "description": "Alert threshold system with condition evaluation and actions",

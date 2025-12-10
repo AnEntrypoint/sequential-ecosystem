@@ -1,4 +1,4 @@
-import { createRateLimitMiddleware, createWebSocketRateLimiter } from '@sequential/rate-limiter';
+import { createRateLimitMiddleware, createWebSocketRateLimiter } from '@sequentialos/rate-limiter';
 
 export { createRateLimitMiddleware, createWebSocketRateLimiter };
 

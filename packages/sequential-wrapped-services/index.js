@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * @sequential/sequential-wrapped-services
+ * @sequentialos/sequential-wrapped-services
  *
  * Runtime-agnostic wrapped services for sequential-runner.
  *
@@ -9,7 +9,7 @@
  *   npx sequential-wrapped-services [--port 3100] [--services gapi,keystore]
  *
  * Programmatic usage: Import specific utilities
- *   import '@sequential/sequential-wrapped-services/shared/core/base-service.ts';
+ *   import '@sequentialos/sequential-wrapped-services/shared/core/base-service.ts';
  *
  * Note: This package uses TypeScript for Deno compatibility.
  * For Node.js usage, import from /shared/core/*.ts directly or use Deno runtime.
@@ -30,7 +30,7 @@
 
 // This package primarily exports TypeScript modules for Deno runtime
 // For programmatic access, use direct imports:
-//   import { BaseService } from '@sequential/sequential-wrapped-services/shared/core/base-service.ts';
+//   import { BaseService } from '@sequentialos/sequential-wrapped-services/shared/core/base-service.ts';
 
 export default {
   cli: './cli.js',

@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/sequential-wrapped-services",
+  "name": "@sequentialos/sequential-wrapped-services",
   "version": "1.1.1",
   "description": "Runtime-agnostic wrapped services for sequential-runner (Google APIs, keystore, database, etc.)",
   "type": "module",
@@ -36,14 +36,14 @@
     "shared"
   ],
   "dependencies": {
-    "@sequential/sequential-http-utils": "^1.0.0",
-    "@sequential/sequential-validators": "^1.0.0",
-    "@sequential/sequential-logging": "^1.0.0",
-    "@sequential/sequential-utils": "^1.0.0"
+    "@sequentialos/sequential-http-utils": "^1.0.0",
+    "@sequentialos/sequential-validators": "^1.0.0",
+    "@sequentialos/sequential-logging": "^1.0.0",
+    "@sequentialos/sequential-utils": "^1.0.0"
   },
   "peerDependencies": {
-    "@sequential/sequential-runner": "*",
-    "@sequential/sequential-adaptor": "*"
+    "@sequentialos/sequential-runner": "*",
+    "@sequentialos/sequential-adaptor": "*"
   },
   "devDependencies": {
     "dotenv": "^16.4.7"

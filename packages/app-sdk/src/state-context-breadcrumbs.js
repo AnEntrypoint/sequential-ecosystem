@@ -1,4 +1,4 @@
-import { createBreadcrumbTracker } from '@sequential/execution-context';
+import { createBreadcrumbTracker } from '@sequentialos/execution-context';
 
 export function createStateContextBreadcrumbs() {
   return createBreadcrumbTracker(50);

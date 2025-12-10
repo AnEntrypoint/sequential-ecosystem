@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { throwPathTraversal } from '@sequential/error-handling';
+import { throwPathTraversal } from '@sequentialos/error-handling';
 
 export function resolveAppPath(requestedPath, appPath) {
   let realPath;

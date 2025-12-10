@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/websocket-factory",
+  "name": "@sequentialos/websocket-factory",
   "version": "1.0.0",
   "description": "WebSocket connection factory pattern for subscription endpoints",
   "type": "module",

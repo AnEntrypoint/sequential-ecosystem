@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/cli-commands",
+  "name": "@sequentialos/cli-commands",
   "version": "1.0.0",
   "description": "CLI commands for sequential-ecosystem task management",
   "type": "module",
@@ -30,8 +30,8 @@
     "url": "https://github.com/AnEntrypoint/sequential-cli-commands"
   },
   "dependencies": {
-    "@sequential/sequential-runner": "^1.0.0",
-    "@sequential/sequential-adaptor": "^1.0.0",
+    "@sequentialos/sequential-runner": "^1.0.0",
+    "@sequentialos/sequential-adaptor": "^1.0.0",
     "commander": "^11.0.0"
   },
   "engines": {

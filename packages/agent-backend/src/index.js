@@ -1,5 +1,5 @@
 import { generateId } from './utils.js';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
 
 let Anthropic = null;
 try {

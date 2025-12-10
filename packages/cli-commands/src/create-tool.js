@@ -1,13 +1,13 @@
 import path from 'path';
 import { randomUUID } from 'crypto';
 import { existsSync } from 'fs';
-import { ensureDirectory, writeFileAtomicString } from '@sequential/file-operations';
+import { ensureDirectory, writeFileAtomicString } from '@sequentialos/file-operations';
 import { generateDatabaseToolTemplate } from './tool-templates/database.js';
 import { generateApiToolTemplate } from './tool-templates/api.js';
 import { generateComputeToolTemplate } from './tool-templates/compute.js';
 import { generateValidationToolTemplate } from './tool-templates/validation.js';
-import logger from '@sequential/sequential-logging';
-import { nowISO } from '@sequential/timestamp-utilities';
+import logger from '@sequentialos/sequential-logging';
+import { nowISO } from '@sequentialos/timestamp-utilities';
 
 const VALID_TEMPLATES = ['database', 'api', 'compute', 'validation'];
 

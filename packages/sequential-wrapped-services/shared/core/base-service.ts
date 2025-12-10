@@ -1,7 +1,7 @@
 import { ConfigService } from './config-service.ts';
 import { logger, perf } from './logging-service.ts';
 import { DatabaseService } from './database-service.ts';
-import { nowISO } from '@sequential/sequential-utils/timestamps';
+import { nowISO } from '@sequentialos/sequential-utils/timestamps';
 import {
   IHealthCheckResult,
   IServiceConfig,

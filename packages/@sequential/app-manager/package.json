@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/app-manager",
+  "name": "@sequentialos/app-manager",
   "version": "1.0.0",
   "description": "App lifecycle and marketplace manager",
   "main": "dist/index.html",

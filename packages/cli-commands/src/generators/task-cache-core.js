@@ -139,7 +139,7 @@ export function generateCachedTaskTemplate() {
  * Cache task results with TTL and automatic expiration.
  */
 
-import { createTaskCache } from '@sequential/task-cache';
+import { createTaskCache } from '@sequentialos/task-cache';
 
 const cache = createTaskCache({
   ttl: 300000,

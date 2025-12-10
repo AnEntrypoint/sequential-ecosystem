@@ -7,7 +7,7 @@
   "entry": "dist/dynamic-app.html",
   "capabilities": ["zellous"],
   "dependencies": {
-    "@sequential/zellous-client-sdk": "^1.0.0"
+    "@sequentialos/zellous-client-sdk": "^1.0.0"
   },
   "window": {
     "defaultWidth": 1000,

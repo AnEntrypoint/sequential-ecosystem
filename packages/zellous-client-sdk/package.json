@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/zellous-client-sdk",
+  "name": "@sequentialos/zellous-client-sdk",
   "version": "1.0.0",
   "description": "WebSocket client SDK for Zellous real-time collaboration",
   "main": "index.js",

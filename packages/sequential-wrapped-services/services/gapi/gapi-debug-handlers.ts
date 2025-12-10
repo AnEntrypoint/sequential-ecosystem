@@ -1,5 +1,5 @@
 import { corsHeaders } from '../_shared/cors.ts'
-import { nowISO } from '@sequential/sequential-utils/timestamps'
+import { nowISO } from '@sequentialos/sequential-utils/timestamps'
 import logger from 'tasker-logging'
 import { getAdminEmail, getCredentials } from './gapi-credentials.ts'
 import { getCacheInfo, clearTokenCache } from './gapi-tokens.ts'

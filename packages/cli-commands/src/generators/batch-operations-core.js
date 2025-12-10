@@ -139,7 +139,7 @@ export function generateBatchOperationsTemplate() {
  * Strategies: sequential, parallel, batched with retries.
  */
 
-import { createBatchExecutor } from '@sequential/batch-operations';
+import { createBatchExecutor } from '@sequentialos/batch-operations';
 
 const executor = createBatchExecutor({
   concurrency: 5,

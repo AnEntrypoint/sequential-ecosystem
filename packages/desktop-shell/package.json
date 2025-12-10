@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/desktop-shell",
+  "name": "@sequentialos/desktop-shell",
   "version": "1.0.1",
   "description": "Desktop shell for Sequential Desktop with window manager and dynamic app loading",
   "main": "dist/index.html",

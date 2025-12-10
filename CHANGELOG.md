@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [1.8.0] - Package Naming Consolidation & Cleanup (Dec 10, 2025)
 
 ### Package Management
-- Consolidated 8 root-level packages to @sequential scope: app-{debugger,editor,manager}, core, file-operations, response-formatting, server-utilities, zellous
+- Consolidated 8 root-level packages to @sequentialos scope: app-{debugger,editor,manager}, core, file-operations, response-formatting, server-utilities, zellous
 - Removed redundant "app-app-" prefixes from 3 app packages
 - Updated 100+ import statements across codebase
 - Cleaned up 105+ markdown files (reports, guides, archives)
@@ -16,7 +16,7 @@ All notable changes to this project will be documented in this file.
 ### Architecture & Maintenance
 
 #### Phase 3a: Validation Consolidation (CRITICAL) - Commit e72ee3a
-- ✅ **@sequential/unified-validation Module Created**
+- ✅ **@sequentialosos/unified-validation Module Created**
   - Consolidated 5 duplicate validation implementations into single shared module
   - New module: 552 lines across 8 focused files (<90L each)
   - Exports: ajv-instance, schema-compiler, field-validators, type-validators, validation-result, error-formatter
@@ -27,7 +27,7 @@ All notable changes to this project will be documented in this file.
   - Build verification: ✅ PASSING
 
 #### Phase 3b: Response Formatting Consolidation (CRITICAL) - Commit e8425a1
-- ✅ **@sequential/response-formatting Enhanced as Single Source of Truth**
+- ✅ **@sequentialosos/response-formatting Enhanced as Single Source of Truth**
   - Enhanced package with unified response builder functions
   - Added 7 new functions: createSuccessResponse, createErrorResponse, createListResponse, createPaginatedResponse, createMetricsResponse, createBatchResponse, formatErrorForResponse
   - Updated core/modules/response to re-export from response-formatting (backward compatible)
@@ -37,7 +37,7 @@ All notable changes to this project will be documented in this file.
   - Build verification: ✅ PASSING
 
 #### Phase 3c: Execution Context Consolidation (CRITICAL) - Commit 231a9f8
-- ✅ **@sequential/execution-context Module Created**
+- ✅ **@sequentialosos/execution-context Module Created**
   - Consolidated 4 separate implementations into single module
   - New module: 539 lines across 3 focused files
   - async-context.js (106L): AsyncLocalStorage-based context management with child context support
@@ -50,7 +50,7 @@ All notable changes to this project will be documented in this file.
   - Build verification: ✅ PASSING
 
 #### Phase 3d: Realtime Client Consolidation (CRITICAL) - Commit 8da269f
-- ✅ **@sequential/realtime-sync Enhanced as Unified Realtime Layer**
+- ✅ **@sequentialosos/realtime-sync Enhanced as Unified Realtime Layer**
   - Enhanced RealtimeClient with event-driven API
   - Added methods: on(), off(), emit() for event listener management
   - Added getChannels() to list subscribed channels, disconnect() alias to close(), isConnectedStatus() for connection state
@@ -63,7 +63,7 @@ All notable changes to this project will be documented in this file.
   - Build verification: ✅ PASSING
 
 #### Phase 3e: Text Encoding Consolidation (CRITICAL) - Commit e27e869
-- ✅ **@sequential/text-encoding Module Created**
+- ✅ **@sequentialosos/text-encoding Module Created**
   - Consolidated text encoding, HTML escaping, and input sanitization across ecosystem
   - New module: 147 lines across 4 focused files
   - html.js (45L): escapeHtml, unescapeHtml, escapeHtmlAttributes, sanitizeTagContent
@@ -76,7 +76,7 @@ All notable changes to this project will be documented in this file.
   - Build verification: ✅ PASSING
 
 #### Phase 3f: Function Introspection Consolidation (CRITICAL) - Commit 0a70cb3
-- ✅ **@sequential/function-introspection Module Created**
+- ✅ **@sequentialosos/function-introspection Module Created**
   - Consolidated parameter extraction, type inference, and JSDoc parsing
   - New module: 231 lines across 4 focused files
   - extract.js (68L): extractParameters, extractFunctionMetadata, createParameterValidator
@@ -90,7 +90,7 @@ All notable changes to this project will be documented in this file.
   - Build verification: ✅ PASSING
 
 #### Phase 3g: Config & Cache Management Consolidation (CRITICAL) - Commit 5c65b92
-- ✅ **@sequential/config-management Module Created**
+- ✅ **@sequentialosos/config-management Module Created**
   - Consolidated environment validation, cache management, and config utilities
   - New module: 283 lines across 4 focused files
   - env.js (70L): EnvType enum, coerceValue, validateEnvValue, loadEnv, listEnvVariables, generateEnvDocs
@@ -112,9 +112,9 @@ All notable changes to this project will be documented in this file.
     - Error serialization (80% duplication, ~320 LOC)
     - Handler wrappers (72% duplication, ~250 LOC)
     - And remaining categories (~500 LOC)
-  - Phase 3 Progress: ~3,110 LOC consolidated into 6 new @sequential/* modules
+  - Phase 3 Progress: ~3,110 LOC consolidated into 6 new @sequentialosos/* modules
   - Estimated total impact after all phases: 74% reduction in utility/shared code duplication
-  - Full consolidation roadmap: 10 new @sequential/* modules planned
+  - Full consolidation roadmap: 10 new @sequentialosos/* modules planned
 
 ## [Unreleased] - Comprehensive Architecture Refactoring (Dec 8, 2025 - Phase 2)
 
@@ -475,7 +475,7 @@ All notable changes to this project will be documented in this file.
 
 ### Phase 8 Part 1: Code Deduplication & Architecture Consolidation
 - ✅ **Removed react-renderer.js** - Duplicate of DynamicComponentRegistry functionality
-  - DynamicComponentRegistry in @sequential/dynamic-components already provides Babel-based JSX rendering
+  - DynamicComponentRegistry in @sequentialosos/dynamic-components already provides Babel-based JSX rendering
   - Simplified live-canvas.js to use DOM-based fallback rendering only
   - Eliminates parallel rendering systems, improves maintainability
   - Impact: -336 lines of duplicate code, cleaner separation of concerns
@@ -495,7 +495,7 @@ All notable changes to this project will be documented in this file.
 
 - ✅ **Component Styling Architecture**
   - component-styles.css provides unified CSS for all editor components
-  - Complements @sequential/dynamic-components/styling.js (JavaScript style utilities)
+  - Complements @sequentialosos/dynamic-components/styling.js (JavaScript style utilities)
   - CSS: editor UI components, dark mode, responsive utilities
   - JS utilities: style object merging, responsive values, spacing helpers
   - No conflict: CSS for distribution, JS for programmatic styling
@@ -588,7 +588,7 @@ All systems now follow single-responsibility principle with clear integration bo
 **Total Iteration 7 DX Impact**: 145-190 min/day developer productivity gain across all improvements
 
 ### Phase 7 Part 1: Keyboard Shortcuts & Developer Ergonomics
-- ✅ **Shared UI Components Library** (`@sequential/ui-components`)
+- ✅ **Shared UI Components Library** (`@sequentialosos/ui-components`)
   - Created reusable package consolidating 5+ duplicate components across editors
   - Modules: toast notifications, storage manager, utilities, keyboard shortcuts, command palette
   - Eliminates 300+ lines of duplicate code across Task/Tool/Flow/App editors
@@ -1156,9 +1156,9 @@ All systems now follow single-responsibility principle with clear integration bo
   - cacheTTL: 600000ms (10 minutes)
   - cleanupInterval: 60000ms (1 minute)
 - **All Architectural Guarantees**: Verified and operational
-  - Storage flows through @sequential/sequential-adaptor ✅
-  - Real-time through @sequential/realtime-sync with auto-broadcast ✅
-  - Tools in @sequential/tool-registry with persistence ✅
+  - Storage flows through @sequentialosos/sequential-adaptor ✅
+  - Real-time through @sequentialosos/realtime-sync with auto-broadcast ✅
+  - Tools in @sequentialosos/tool-registry with persistence ✅
   - Path validation with fs.realpathSync() throughout ✅
 
 ### Documentation Updates
@@ -1176,12 +1176,12 @@ All systems now follow single-responsibility principle with clear integration bo
 ## [Unreleased] - Comprehensive Observability Suite (Dec 4, 2025)
 
 ### Enterprise-Grade Observability System
-- **ExecutionTracer** (`@sequential/execution-tracer`): Distributed tracing with parent-child span hierarchy, automatic timing, and span attributes
-- **ToolCallTracer** (`@sequential/tool-call-tracer`): Automatic tracing of all tool invocations with parameters, results, and per-tool analytics
-- **StateTransitionLogger** (`@sequential/state-transition-logger`): Comprehensive logging of all state machine transitions with duration analysis
-- **StorageQueryTracer** (`@sequential/storage-query-tracer`): Full visibility into database/file operations with slow query detection
-- **CustomMetrics** (`@sequential/custom-metrics`): Application-level metrics for business events (counters, gauges, histograms)
-- **AlertEngine** (`@sequential/alert-engine`): Threshold-based alerting with flexible condition evaluation and action handlers
+- **ExecutionTracer** (`@sequentialosos/execution-tracer`): Distributed tracing with parent-child span hierarchy, automatic timing, and span attributes
+- **ToolCallTracer** (`@sequentialosos/tool-call-tracer`): Automatic tracing of all tool invocations with parameters, results, and per-tool analytics
+- **StateTransitionLogger** (`@sequentialosos/state-transition-logger`): Comprehensive logging of all state machine transitions with duration analysis
+- **StorageQueryTracer** (`@sequentialosos/storage-query-tracer`): Full visibility into database/file operations with slow query detection
+- **CustomMetrics** (`@sequentialosos/custom-metrics`): Application-level metrics for business events (counters, gauges, histograms)
+- **AlertEngine** (`@sequentialosos/alert-engine`): Threshold-based alerting with flexible condition evaluation and action handlers
 - **ObservabilityConsole** (`app-observability-console`): Real-time event stream viewer with filtering and live statistics
 - **ObservabilityDashboard** (`app-observability-dashboard`): Comprehensive monitoring UI with metrics, traces, and alert management
 - **ObservabilityRoutes** (`observability-v2.js`): 36 new API endpoints for querying all observability data
@@ -1221,13 +1221,13 @@ All systems now follow single-responsibility principle with clear integration bo
 - **Constraint compliance**: Enforced fs.realpathSync() for all file operations accessing StateKit layer files
 
 ### Cleanup & Refactoring
-- **Removed empty package**: @sequential/error-responses (was stub, no implementation)
+- **Removed empty package**: @sequentialosos/error-responses (was stub, no implementation)
 - **Verified package naming**: Confirmed zellous packages are correctly named and discoverable
 
 ### Outstanding Architectural Issues Identified
 - 62 files exceed 200-line constraint (requires refactoring)
 - Tool registry auto-registration not yet implemented in AppSDK
-- Multiple WebSocket implementations awaiting consolidation to @sequential/realtime-sync
+- Multiple WebSocket implementations awaiting consolidation to @sequentialosos/realtime-sync
 - Storage adaptor guarantee not enforced in wrapped-services packages
 
 ## [Unreleased] - Comprehensive Boilerplate with All Ecosystem Features (Dec 4, 2025 - Current)
@@ -1322,7 +1322,7 @@ All systems now follow single-responsibility principle with clear integration bo
 
 #### Updated CLAUDE.md Root Documentation
 - Added Components to "What It Does" section
-- Updated Packages section to include: @sequential/realtime-sync, @sequential/dynamic-components, @sequential/tool-registry, @sequential/app-mcp
+- Updated Packages section to include: @sequentialosos/realtime-sync, @sequentialosos/dynamic-components, @sequentialosos/tool-registry, @sequentialosos/app-mcp
 
 ## [Unreleased] - Unified Real-Time Storage + Buildless Components (Dec 4, 2025 - PHASE 1 COMPLETE)
 
@@ -1347,7 +1347,7 @@ All systems now follow single-responsibility principle with clear integration bo
   Now: All data changes are automatically broadcast without developer intervention
 
 #### 2. Buildless React Dynamic Components System (NEW - Phase 1 Complete)
-- **@sequential/dynamic-components Package** (NEW): Full runtime JSX parser and component system
+- **@sequentialosos/dynamic-components Package** (NEW): Full runtime JSX parser and component system
   * Uses @babel/standalone for zero-build-step JSX parsing
   * No compile step required - components parsed at runtime
   * Components stored as JSX strings in storage adapter
@@ -1380,7 +1380,7 @@ All systems now follow single-responsibility principle with clear integration bo
 - Edit component in one browser tab → see changes in all tabs instantly
 
 #### 4. Tool Registry Unification
-- **@sequential/tool-registry UNIFIED**: ToolRepository (persisted tools) integrated with ToolRegistry (runtime discovery)
+- **@sequentialosos/tool-registry UNIFIED**: ToolRepository (persisted tools) integrated with ToolRegistry (runtime discovery)
   * Enhanced ToolRegistry to load persisted tools on startup via `loadPersistedTools()`
   * Added `saveTool()` and `deleteTool()` for persistence operations
   * Unified registry key namespacing: `__persisted:toolId` for saved tools, `appId:toolName` for app tools
@@ -1388,9 +1388,9 @@ All systems now follow single-responsibility principle with clear integration bo
   * All tools (app-registered + persisted) accessible through single unified interface
   * MCP generation enabled for all tool types
   * DI container initialization: ToolRegistry created with ToolRepository dependency
-- **@sequential/realtime-sync**: Unified WebSocket layer for all apps (no fragmented connections)
-- **@sequential/app-mcp**: Automatic MCP tool export from simple JavaScript functions
-- **Storage Guarantee**: ALL storage through `@sequential/sequential-adaptor` (zero direct FS access)
+- **@sequentialosos/realtime-sync**: Unified WebSocket layer for all apps (no fragmented connections)
+- **@sequentialosos/app-mcp**: Automatic MCP tool export from simple JavaScript functions
+- **Storage Guarantee**: ALL storage through `@sequentialosos/sequential-adaptor` (zero direct FS access)
 - **Real-Time Guarantee**: ALL communication through single WebSocket layer
 - **Tool Guarantee**: ALL tools registered in centralized registry with LLM access
 
@@ -1447,11 +1447,11 @@ All systems now follow single-responsibility principle with clear integration bo
 ## [1.8.0] - 2025-12-03 - Agentic Operating System (Phase 12 Complete)
 
 ### Agent-Centric Architecture
-- **Agent Backend** (`@sequential/agent-backend`): Anthropic Claude AI integration with tool calling
-- **App SDK** (`@sequential/app-sdk`): Desktop app tool exposure and event system
-- **Performance Monitor** (`@sequential/performance-monitor`): Real-time metrics with p95/p99 percentiles
-- **Tool Loader** (`@sequential/tool-loader`): Dynamic tool loading with npm dependency resolution
-- **Performance Debugger** (`@sequential/performance-debugger`): Flame graphs, bottleneck detection, memory tracking
+- **Agent Backend** (`@sequentialosos/agent-backend`): Anthropic Claude AI integration with tool calling
+- **App SDK** (`@sequentialosos/app-sdk`): Desktop app tool exposure and event system
+- **Performance Monitor** (`@sequentialosos/performance-monitor`): Real-time metrics with p95/p99 percentiles
+- **Tool Loader** (`@sequentialosos/tool-loader`): Dynamic tool loading with npm dependency resolution
+- **Performance Debugger** (`@sequentialosos/performance-debugger`): Flame graphs, bottleneck detection, memory tracking
 
 ### Architecture Enforcement
 - Tools: Full library import support (axios, lodash, etc)
@@ -1516,7 +1516,7 @@ All systems now follow single-responsibility principle with clear integration bo
 
 **Addresses architectural requirement**: "when running cli tasks that persist, they must be spawned as background tasks"
 
-1. **BackgroundTaskManager** (`@sequential/server-utilities`):
+1. **BackgroundTaskManager** (`@sequentialosos/server-utilities`):
    - Spawn detached child processes with process group management
    - Track status (running/completed/failed), PID, exit code, signal
    - Capture stdout/stderr output in real-time
@@ -1844,7 +1844,7 @@ All 10 Sequential Desktop applications have been audited, enhanced, tested, and 
 - Scope display showing active windows count and capabilities
 - Togglable from taskbar button
 
-**Agentic Chat Component** (`@sequential/chat-component`)
+**Agentic Chat Component** (`@sequentialosos/chat-component`)
 - Reusable web component for embedding in any app
 - Custom element `<agentic-chat>` with Shadow DOM encapsulation
 - Configurable scope and tool access via `setScope()` and `setTools()`

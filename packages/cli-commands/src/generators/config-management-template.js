@@ -5,7 +5,7 @@ export function generateConfigManagementTemplate() {
  * Centralized config loading with environment switching and validation.
  */
 
-import { createConfigManager, registerDefaultSchemas } from '@sequential/config-management';
+import { createConfigManager, registerDefaultSchemas } from '@sequentialos/config-management';
 
 const configManager = createConfigManager();
 registerDefaultSchemas(configManager);

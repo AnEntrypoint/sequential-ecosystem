@@ -12,7 +12,7 @@ export function generateAppPackageJson(appId, appName, description = '') {
       build: 'echo "Apps are buildless; use hot reload for development"'
     },
     dependencies: {
-      '@sequential/app-sdk': '^1.0.0'
+      '@sequentialos/app-sdk': '^1.0.0'
     },
     devDependencies: {
       eslint: '^8.0.0'

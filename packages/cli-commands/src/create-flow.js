@@ -1,10 +1,10 @@
 import path from 'path';
 import { randomUUID } from 'crypto';
 import { existsSync } from 'fs';
-import { ensureDirectory, writeFileAtomicString } from '@sequential/file-operations';
+import { ensureDirectory, writeFileAtomicString } from '@sequentialos/file-operations';
 import { generateFlowTemplate } from './flow-templates/basic.js';
-import logger from '@sequential/sequential-logging';
-import { nowISO } from '@sequential/timestamp-utilities';
+import logger from '@sequentialos/sequential-logging';
+import { nowISO } from '@sequentialos/timestamp-utilities';
 
 export async function createFlow(options) {
   const { name, states = 3, description = '' } = options;

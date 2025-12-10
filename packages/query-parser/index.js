@@ -1,4 +1,4 @@
-import { throwValidationError } from '@sequential/error-handling';
+import { throwValidationError } from '@sequentialos/error-handling';
 
 export function parseQuery(req, schema) {
   const params = req.query || {};

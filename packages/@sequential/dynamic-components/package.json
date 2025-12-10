@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/dynamic-components",
+  "name": "@sequentialos/dynamic-components",
   "version": "1.0.0",
   "description": "V0-style dynamic component system - write and deploy React components with full provider/boundary architecture, no build required",
   "type": "module",
@@ -28,7 +28,7 @@
   ],
   "dependencies": {
     "@babel/standalone": "^7.24.0",
-    "@sequential/text-encoding": "*",
+    "@sequentialos/text-encoding": "*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

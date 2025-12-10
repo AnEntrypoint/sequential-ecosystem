@@ -2,7 +2,7 @@ import { logger, perf } from './logging-service.ts';
 import { DatabaseService } from './database-service.ts';
 import { ConfigService } from './config-service.ts';
 import { IHealthCheckResult, IServiceConfig, ServiceHealthStatus } from './base-service-types.ts';
-import { nowISO } from '@sequential/sequential-utils/timestamps';
+import { nowISO } from '@sequentialos/sequential-utils/timestamps';
 
 export async function performHealthCheck(
   serviceName: string,

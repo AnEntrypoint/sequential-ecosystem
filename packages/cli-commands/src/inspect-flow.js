@@ -1,7 +1,7 @@
 import path from 'path';
 import { existsSync } from 'fs';
 import fse from 'fs-extra';
-import logger from '@sequential/sequential-logging';
+import logger from '@sequentialos/sequential-logging';
 import { visualizeFlowState, analyzeFlowStructure, generateFlowStateTransitions } from './generators/flow-viz-helper.js';
 
 export async function inspectFlow(options) {

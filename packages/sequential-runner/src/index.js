@@ -1,4 +1,4 @@
-// Public API for @sequential/sequential-runner
+// Public API for @sequentialos/sequential-runner
 // Deployment-agnostic task execution engine with VFS support
 
 // Core VFS classes

@@ -1,11 +1,11 @@
 import path from 'path';
-import { createCLICommand } from '@sequential/cli-handler';
+import { createCLICommand } from '@sequentialos/cli-handler';
 import { randomUUID } from 'crypto';
 import { existsSync } from 'fs';
 import fse from 'fs-extra';
-import { createAdapter } from '@sequential/sequential-adaptor';
-import logger from '@sequential/sequential-logging';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import { createAdapter } from '@sequentialos/sequential-adaptor';
+import logger from '@sequentialos/sequential-logging';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
 
 export async function runTask(options) {
   const { taskName, input = {}, save = false, dryRun = false, verbose = false } = options;

@@ -1,8 +1,8 @@
 import path from 'path';
-import { createCLICommand } from '@sequential/cli-handler';
-import { readJsonFiles } from '@sequential/file-operations';
+import { createCLICommand } from '@sequentialos/cli-handler';
+import { readJsonFiles } from '@sequentialos/file-operations';
 import fs from 'fs-extra';
-import logger from '@sequential/sequential-logging';
+import logger from '@sequentialos/sequential-logging';
 
 export const historyCommand = createCLICommand(async (taskName, options) => {
   const taskFile = path.join(process.cwd(), 'tasks', `${taskName}.js`);

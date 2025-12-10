@@ -1,5 +1,5 @@
 const { TaskVFS } = require('./vfs.js');
-const { validator } = require('@sequential/core-config');
+const { validator } = require('@sequentialos/core-config');
 
 class HostTools {
   constructor(ecosystemPath, taskId, runId) {

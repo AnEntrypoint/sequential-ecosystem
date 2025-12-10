@@ -1,7 +1,7 @@
-import logger from '@sequential/sequential-logging';
-import { createCLICommand } from '@sequential/cli-handler';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
-import { delay, withRetry } from '@sequential/async-patterns';
+import logger from '@sequentialos/sequential-logging';
+import { createCLICommand } from '@sequentialos/cli-handler';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
+import { delay, withRetry } from '@sequentialos/async-patterns';
 export function generateFlowGraphTemplate(name, taskId, timestamp, inputs, description) {
   return `/**
  * Task: ${name}

@@ -146,7 +146,7 @@ export function generateSnapshotTemplate() {
  * Save flow state at checkpoints and resume from snapshots.
  */
 
-import { createSnapshotManager, createCheckpointStrategy } from '@sequential/state-snapshots';
+import { createSnapshotManager, createCheckpointStrategy } from '@sequentialos/state-snapshots';
 
 const snapshotManager = createSnapshotManager();
 const checkpointStrategy = createCheckpointStrategy();

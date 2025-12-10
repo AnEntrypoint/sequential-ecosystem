@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/sequential-adaptor-sqlite",
+  "name": "@sequentialos/sequential-adaptor-sqlite",
   "version": "1.0.0",
   "description": "SQLite storage backend for sequential-runner via tasker-adaptor",
   "type": "module",
@@ -28,12 +28,12 @@
   },
   "dependencies": {
     "sql.js": "^1.10.2",
-    "@sequential/sequential-adaptor": "^1.0.0",
-    "@sequential/sequential-logging": "^1.0.0",
-    "@sequential/sequential-storage-utils": "^1.0.0"
+    "@sequentialos/sequential-adaptor": "^1.0.0",
+    "@sequentialos/sequential-logging": "^1.0.0",
+    "@sequentialos/sequential-storage-utils": "^1.0.0"
   },
   "peerDependencies": {
-    "@sequential/sequential-flow": "^1.0.0"
+    "@sequentialos/sequential-flow": "^1.0.0"
   },
   "engines": {
     "node": ">=18.0.0"

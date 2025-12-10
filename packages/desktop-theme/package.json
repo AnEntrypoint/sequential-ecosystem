@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/desktop-theme",
+  "name": "@sequentialos/desktop-theme",
   "version": "1.0.0",
   "type": "module",
   "main": "src/index.css",

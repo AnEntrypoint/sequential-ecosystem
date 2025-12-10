@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/sequential-adaptor-supabase",
+  "name": "@sequentialos/sequential-adaptor-supabase",
   "version": "1.0.1",
   "description": "Supabase storage backend for sequential-runner via tasker-adaptor",
   "type": "module",
@@ -25,11 +25,11 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.58.0",
-    "@sequential/sequential-adaptor": "^1.0.0",
-    "@sequential/sequential-utils": "^1.0.0"
+    "@sequentialos/sequential-adaptor": "^1.0.0",
+    "@sequentialos/sequential-utils": "^1.0.0"
   },
   "peerDependencies": {
-    "@sequential/sequential-flow": "^1.0.0"
+    "@sequentialos/sequential-flow": "^1.0.0"
   },
   "engines": {
     "node": ">=18.0.0"

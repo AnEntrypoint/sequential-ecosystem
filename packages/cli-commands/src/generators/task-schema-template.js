@@ -5,7 +5,7 @@ export function generateTaskSchemaTemplate() {
  * Discover tasks by input/output types and validate composition.
  */
 
-import { createTaskSchemaRegistry } from '@sequential/task-schema';
+import { createTaskSchemaRegistry } from '@sequentialos/task-schema';
 
 const registry = createTaskSchemaRegistry();
 

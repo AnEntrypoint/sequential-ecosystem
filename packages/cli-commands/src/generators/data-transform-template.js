@@ -5,7 +5,7 @@ export function generateDataTransformTemplate() {
  * Chainable result types and data pipeline utilities.
  */
 
-import { DataResult, pipeline, compose, chain } from '@sequential/data-transform';
+import { DataResult, pipeline, compose, chain } from '@sequentialos/data-transform';
 
 // Task that returns complex result
 export async function fetchUserWithOrders(userId) {

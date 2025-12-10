@@ -1,9 +1,9 @@
-import logger from '@sequential/sequential-logging';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
+import logger from '@sequentialos/sequential-logging';
+import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
 const fs = require('fs');
 const path = require('path');
 const { EventEmitter } = require('events');
-const { validator } = require('@sequential/core-config');
+const { validator } = require('@sequentialos/core-config');
 
 class TaskVFS extends EventEmitter {
   constructor(ecosystemPath, taskId, runId) {

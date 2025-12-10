@@ -5,7 +5,7 @@ export function generateTaskDecoratorTemplate() {
  * Composable task middleware for error recovery, performance tracking, and validation.
  */
 
-import { createTaskDecorator } from '@sequential/task-decorators';
+import { createTaskDecorator } from '@sequentialos/task-decorators';
 
 const decorator = createTaskDecorator();
 

@@ -36,4 +36,4 @@ export {
   validateFlowState,
   validateFlowGraph,
   getFlowValidationReport
-} from '@sequential/flow-validation';
+} from '@sequentialos/flow-validation';

@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/tool-loader",
+  "name": "@sequentialos/tool-loader",
   "version": "1.0.0",
   "description": "Tool loading and dependency management for Sequential Ecosystem",
   "type": "module",

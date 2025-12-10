@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/app-mcp",
+  "name": "@sequentialos/app-mcp",
   "version": "1.0.0",
   "description": "MCP (Model Context Protocol) tool export for Sequential apps",
   "main": "src/index.js",
@@ -25,6 +25,6 @@
     "url": "https://github.com/AnEntrypoint/sequential-app-mcp"
   },
   "dependencies": {
-    "@sequential/function-introspection": "*"
+    "@sequentialos/function-introspection": "*"
   }
 }

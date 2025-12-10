@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/config-management",
+  "name": "@sequentialos/config-management",
   "version": "1.0.0",
   "type": "module",
   "exports": {

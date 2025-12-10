@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/app-path-resolver",
+  "name": "@sequentialos/app-path-resolver",
   "version": "1.0.0",
   "type": "module",
   "description": "Resolve and validate paths for app static file serving",

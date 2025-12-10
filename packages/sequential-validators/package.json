@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/sequential-validators",
+  "name": "@sequentialos/sequential-validators",
   "version": "1.0.0",
   "description": "Validation utilities and field validators for sequential-ecosystem tasks",
   "type": "module",
@@ -26,9 +26,9 @@
     "type-checking"
   ],
   "dependencies": {
-    "@sequential/flow-validation": "file:../@sequential/flow-validation",
-    "@sequential/error-handling": "file:../@sequential/error-handling",
-    "@sequential/validation": "file:../@sequential/validation"
+    "@sequentialos/flow-validation": "file:../@sequentialos/flow-validation",
+    "@sequentialos/error-handling": "file:../@sequentialos/error-handling",
+    "@sequentialos/validation": "file:../@sequentialos/validation"
   },
   "author": "lanmower",
   "license": "MIT",

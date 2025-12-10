@@ -117,7 +117,7 @@ export function generateTaskInputValidatorTemplate() {
  * Automatic validation of task inputs at runtime based on schema.
  */
 
-import { createTaskInputValidator } from '@sequential/task-input-validator';
+import { createTaskInputValidator } from '@sequentialos/task-input-validator';
 
 const validator = createTaskInputValidator();
 

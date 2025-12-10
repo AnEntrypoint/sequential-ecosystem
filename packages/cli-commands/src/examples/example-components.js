@@ -1,6 +1,6 @@
 import path from 'path';
-import { writeFileAtomicString, ensureDirectory } from '@sequential/file-operations';
-import logger from '@sequential/sequential-logging';
+import { writeFileAtomicString, ensureDirectory } from '@sequentialos/file-operations';
+import logger from '@sequentialos/sequential-logging';
 
 export async function createExampleComponents(tasksDir) {
   const componentsDir = path.join(tasksDir, '..', '.sequential', '.state', 'components');

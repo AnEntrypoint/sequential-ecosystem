@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/dependency-injection",
+  "name": "@sequentialos/dependency-injection",
   "version": "1.0.0",
   "description": "Lightweight DI container for Sequential Ecosystem packages",
   "type": "module",

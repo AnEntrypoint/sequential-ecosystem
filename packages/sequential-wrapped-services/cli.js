@@ -1,4 +1,4 @@
-import logger from '@sequential/sequential-logging';
+import logger from '@sequentialos/sequential-logging';
 #!/usr/bin/env node
 
 /**
@@ -17,7 +17,7 @@ import logger from '@sequential/sequential-logging';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { nowISO } from '@sequential/sequential-utils/timestamps';
+import { nowISO } from '@sequentialos/sequential-utils/timestamps';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 

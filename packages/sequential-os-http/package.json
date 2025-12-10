@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/sequential-os-http",
+  "name": "@sequentialos/sequential-os-http",
   "version": "1.0.0",
   "description": "HTTP adapter for Sequential-OS StateKit",
   "type": "module",
@@ -12,7 +12,7 @@
     "url": "https://github.com/AnEntrypoint/sequential-sequential-os-http"
   },
   "dependencies": {
-    "@sequential/sequential-machine": "^1.0.0",
-    "@sequential/error-handling": "^1.0.0"
+    "@sequentialos/sequential-machine": "^1.0.0",
+    "@sequentialos/error-handling": "^1.0.0"
   }
 }
