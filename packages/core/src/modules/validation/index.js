@@ -3,7 +3,7 @@
  * Parameter and input validation functions for file operations, task names, and schemas
  */
 
-import { validatePathRelative, validateTaskName as validateTaskNameSchema, validateFileName as validateFileNameSchema, validateRequired as validateRequiredFn, validateType as validateTypeFn, validateInputSchema as validateInputSchemaFn, validateAndSanitizeMetadata as validateAndSanitizeMetadataFn, escapeHtml as escapeHtmlFn, sanitizeInput as sanitizeInputFn } from '@sequential/param-validation';
+import { validatePathRelative, validateTaskName as validateTaskNameSchema, validateFileName as validateFileNameSchema, validateRequired as validateRequiredFn, validateType as validateTypeFn, validateInputSchema as validateInputSchemaFn, validateAndSanitizeMetadata as validateAndSanitizeMetadataFn, escapeHtml as escapeHtmlFn, sanitizeInput as sanitizeInputFn } from '@sequential/validation';
 import { createValidationError, createForbiddenError } from '@sequential/error-handling';
 
 /**

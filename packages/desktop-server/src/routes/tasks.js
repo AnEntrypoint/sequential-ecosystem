@@ -1,6 +1,6 @@
 import { validateTaskName } from '@sequential/core';
 import { createValidationError, throwNotFound } from '@sequential/error-handling';
-import { validateParam, sanitizeInput } from '@sequential/param-validation';
+import { validateParam, sanitizeInput } from '@sequential/validation';
 import { asyncHandler, logOperation } from '../middleware/error-handler.js';
 import { broadcastToRunSubscribers, broadcastToTaskSubscribers, broadcastTaskProgress } from '@sequential/websocket-broadcaster';
 import { formatResponse } from '@sequential/response-formatting';

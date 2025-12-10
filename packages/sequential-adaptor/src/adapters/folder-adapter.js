@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { randomUUID } from 'crypto';
-import { validatePath } from '@sequential/param-validation';
+import { validatePath } from '@sequential/validation';
 import { StorageAdapter } from '../interfaces/storage-adapter.js';
 import { CRUDPatterns, Serializer } from '@sequential/sequential-storage-utils';
 import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';

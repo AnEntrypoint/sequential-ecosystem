@@ -1,7 +1,7 @@
 {
-  "name": "@sequential/unified-validation",
+  "name": "@sequential/validation",
   "version": "1.0.0",
-  "description": "Unified validation engine consolidating schema validation, type checking, and error formatting",
+  "description": "Consolidated validation engine combining schema validation, param validation, type checking, and error formatting",
   "type": "module",
   "main": "src/index.js",
   "exports": {
@@ -11,14 +11,17 @@
     "./field": "./src/field-validators.js",
     "./type": "./src/type-validators.js",
     "./result": "./src/validation-result.js",
-    "./error": "./src/error-formatter.js"
+    "./error": "./src/error-formatter.js",
+    "./chain": "./src/validation-chain.js",
+    "./middleware": "./src/middleware.js"
   },
   "keywords": [
     "validation",
     "schema",
     "json-schema",
     "type-checking",
-    "error-formatting"
+    "error-formatting",
+    "param-validation"
   ],
   "dependencies": {
     "ajv": "^8.12.0",

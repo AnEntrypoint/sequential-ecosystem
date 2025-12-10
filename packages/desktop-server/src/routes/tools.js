@@ -1,5 +1,5 @@
 import { createError, createValidationError } from '@sequential/error-handling';
-import { validateRequired, validateType } from '@sequential/param-validation';
+import { validateRequired, validateType } from '@sequential/validation';
 import { asyncHandler } from '../middleware/error-handler.js';
 import { executeTaskWithTimeout } from '@sequential/server-utilities';
 import { formatResponse } from '@sequential/response-formatting';

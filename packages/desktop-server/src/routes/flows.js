@@ -1,6 +1,6 @@
 import { validateTaskName } from '@sequential/core';
 import { createValidationError, throwValidationError } from '@sequential/error-handling';
-import { validateParam, sanitizeInput } from '@sequential/param-validation';
+import { validateParam, sanitizeInput } from '@sequential/validation';
 import { asyncHandler } from '../middleware/error-handler.js';
 import { executeTaskWithTimeout, backgroundTaskManager } from '@sequential/server-utilities';
 import { formatResponse, formatError } from '@sequential/response-formatting';

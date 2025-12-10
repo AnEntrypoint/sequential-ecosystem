@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs-extra';
-import { validatePath } from '@sequential/param-validation';
+import { validatePath } from '@sequential/validation';
 import logger from '@sequential/sequential-logging';
 import {
   readJsonFile as readJsonFileUtil,

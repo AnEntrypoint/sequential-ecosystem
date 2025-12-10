@@ -1,4 +1,4 @@
-import { validateSchema } from '@sequential/unified-validation';
+import { validateSchema } from '@sequential/validation';
 
 export function createToolInvocationValidator() {
   const schemaCache = new Map();
