@@ -1,8 +1,0 @@
-{
-  "name": "@sequential/app-run-observer",
-  "version": "1.0.0",
-  "description": "Real-time execution monitoring and observability dashboard",
-  "type": "module",
-  "main": "dist/index.html",
-  "dependencies": {}
-}
