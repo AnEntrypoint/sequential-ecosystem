@@ -1,10 +1,9 @@
 import path from 'path';
-import { createCLICommand } from '@sequentialos/cli-handler';
 import { existsSync } from 'fs';
 import { listFiles } from '@sequentialos/file-operations';
 import logger from '@sequentialos/sequential-logging';
 
-export const listCommand = createCLICommand(async (options) => {
+export const listCommand = async (options) => {
   const tasksDir = path.join(process.cwd(), 'tasks');
   if (!existsSync(tasksDir)) {
     logger.info('No tasks found');
@@ -33,4 +32,4 @@ export const listCommand = createCLICommand(async (options) => {
       logger.info(`  - ${task}`);
     }
   }
-});
+};

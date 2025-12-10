@@ -18,7 +18,7 @@ import {
   historyCommand,
   showCommand,
   deleteCommand
-} from '@sequential/cli-commands';
+} from '@sequentialos/cli-commands';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -40,7 +40,7 @@ program
   .description('Create a new task')
   .option('--minimal', 'Minimal template with less boilerplate')
   .option('--with-graph', 'Create with explicit state graph (xstate FlowState)')
-  .option('--runner <type>', 'Runner type: flow or machine', 'flow')
+  .option('--runner <type>', 'Runner type: flow, machine, or os (for system commands)', 'flow')
   .option('--inputs <inputs>', 'Comma-separated input parameters')
   .option('--description <desc>', 'Task description')
   .action(async (name, options) => {

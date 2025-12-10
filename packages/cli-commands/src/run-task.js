@@ -1,5 +1,4 @@
 import path from 'path';
-import { createCLICommand } from '@sequentialos/cli-handler';
 import { randomUUID } from 'crypto';
 import { existsSync } from 'fs';
 import fse from 'fs-extra';

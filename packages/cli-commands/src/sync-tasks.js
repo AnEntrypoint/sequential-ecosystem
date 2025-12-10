@@ -1,5 +1,4 @@
 import path from 'path';
-import { createCLICommand } from '@sequentialos/cli-handler';
 import { existsSync } from 'fs';
 import fse from 'fs-extra';
 import logger from '@sequentialos/sequential-logging';

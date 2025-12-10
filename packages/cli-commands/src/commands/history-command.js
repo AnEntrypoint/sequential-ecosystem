@@ -1,10 +1,9 @@
 import path from 'path';
-import { createCLICommand } from '@sequentialos/cli-handler';
 import { readJsonFiles } from '@sequentialos/file-operations';
 import fs from 'fs-extra';
 import logger from '@sequentialos/sequential-logging';
 
-export const historyCommand = createCLICommand(async (taskName, options) => {
+export const historyCommand = async (taskName, options) => {
   const taskFile = path.join(process.cwd(), 'tasks', `${taskName}.js`);
   const runsDir = path.join(process.cwd(), 'tasks', taskName, 'runs');
   if (!await fs.pathExists(taskFile)) throw new Error(`Task '${taskName}' not found`);
@@ -22,4 +21,4 @@ export const historyCommand = createCLICommand(async (taskName, options) => {
   for (const run of runs) {
     logger.info(`  ${run.id.substring(0, 8)}... [${run.status}] ${run.completedAt}`);
   }
-});
+};

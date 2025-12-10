@@ -1,9 +1,8 @@
 import path from 'path';
-import { createCLICommand } from '@sequentialos/cli-handler';
 import { existsSync } from 'fs';
 import logger from '@sequentialos/sequential-logging';
 
-export const guiCommand = createCLICommand(async (options, __dirname) => {
+export const guiCommand = async (options, __dirname) => {
   const { spawn } = await import('child_process');
   const desktopServerPath = path.join(__dirname, 'packages/desktop-server');
   const zellousPath = path.join(__dirname, 'packages/zellous');
@@ -50,4 +49,4 @@ export const guiCommand = createCLICommand(async (options, __dirname) => {
 
   process.on('SIGINT', () => shutdown('SIGINT'));
   process.on('SIGTERM', () => shutdown('SIGTERM'));
-});
+};

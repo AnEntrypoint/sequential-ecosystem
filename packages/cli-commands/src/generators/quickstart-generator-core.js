@@ -228,3 +228,9 @@ export async function myTask(input) {
 
 ### State Machines (Flows)
 \\\`\\\`\\\`javascript
+// State graphs coming in next iterations...
+\\\`\\\`\\\`
+
+For complete documentation, visit: https://sequential.ecosystem
+`;
+}

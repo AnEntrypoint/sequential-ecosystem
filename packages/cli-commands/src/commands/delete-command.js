@@ -1,10 +1,9 @@
 import path from 'path';
-import { createCLICommand } from '@sequentialos/cli-handler';
 import { existsSync } from 'fs';
 import fse from 'fs-extra';
 import logger from '@sequentialos/sequential-logging';
 
-export const deleteCommand = createCLICommand(async (taskName, options) => {
+export const deleteCommand = async (taskName, options) => {
   const taskDir = path.join(process.cwd(), 'tasks', taskName);
   if (!existsSync(taskDir)) throw new Error(`Task '${taskName}' not found`);
   if (!options.force) {
@@ -14,4 +13,4 @@ export const deleteCommand = createCLICommand(async (taskName, options) => {
   }
   await fse.remove(taskDir);
   logger.info(`✓ Task '${taskName}' deleted`);
-});
+};

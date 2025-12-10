@@ -1,5 +1,4 @@
 import path from 'path';
-import { createCLICommand } from '@sequentialos/cli-handler';
 import { writeFileAtomicString } from '@sequentialos/file-operations';
 import logger from '@sequentialos/sequential-logging';
 import { delay, withRetry } from '@sequentialos/async-patterns';

@@ -1,5 +1,4 @@
 import path from 'path';
-import { createCLICommand } from '@sequentialos/cli-handler';
 import { existsSync } from 'fs';
 import { ensureDirectory, writeFileAtomicJson, writeFileAtomicString } from '@sequentialos/file-operations';
 import { generateGitignore, generateSequentialrc } from '../templates.js';
@@ -7,7 +6,7 @@ import { generateTechnicalDocumentation } from '../generators/documentation-gene
 import { generateQuickstart } from '../generators/quickstart-generator.js';
 import logger from '@sequentialos/sequential-logging';
 
-export const initCommand = createCLICommand(async (options) => {
+export const initCommand = async (options) => {
   const paths = [path.join(process.cwd(), 'tasks'), path.join(process.cwd(), 'tools')];
   for (const p of paths) {
     if (!existsSync(p)) {
@@ -91,4 +90,4 @@ export const initCommand = createCLICommand(async (options) => {
   logger.info('  - Click "Component Builder" to drag-drop UI');
   logger.info('  - Click "Debugger" to see execution flow in real-time');
   logger.info('  - All changes auto-save to your project');
-});
+};
