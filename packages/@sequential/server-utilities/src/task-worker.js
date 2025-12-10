@@ -7,7 +7,28 @@ function extractFunctionBody(code) {
     return code;
   }
 
-  const openBraceIndex = code.indexOf('{');
+  let openBraceIndex = -1;
+  let inComment = false;
+  let commentChar = '';
+
+  for (let i = 0; i < code.length; i++) {
+    if (!inComment && (code[i] === '/' && code[i + 1] === '*')) {
+      inComment = true;
+      commentChar = '*';
+      i++;
+      continue;
+    }
+    if (inComment && commentChar === '*' && code[i] === '*' && code[i + 1] === '/') {
+      inComment = false;
+      i++;
+      continue;
+    }
+    if (!inComment && code[i] === '{') {
+      openBraceIndex = i;
+      break;
+    }
+  }
+
   if (openBraceIndex === -1) {
     return code;
   }
@@ -66,8 +87,29 @@ parentPort.on('message', async (message) => {
 
     try {
       const body = extractFunctionBody(taskCode);
-      const fn = new Function('input', '__callHostTool__', 'execSync', `return (async (input) => { ${body} })(input)`);
-      const result = await fn(input || {}, __callHostTool__, execSync);
+      const fn = new Function(
+        'input',
+        '__callHostTool__',
+        'execSync',
+        'Date',
+        'Object',
+        'Array',
+        'JSON',
+        'console',
+        'Error',
+        `return (async (input, __callHostTool__, execSync) => { ${body} })(input, __callHostTool__, execSync)`
+      );
+      const result = await fn(
+        input || {},
+        __callHostTool__,
+        execSync,
+        Date,
+        Object,
+        Array,
+        JSON,
+        console,
+        Error
+      );
       parentPort.postMessage({ success: true, result });
     } catch (error) {
       parentPort.postMessage({
