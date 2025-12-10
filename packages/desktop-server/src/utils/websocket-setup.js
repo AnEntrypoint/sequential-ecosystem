@@ -2,7 +2,7 @@ import { WebSocketServer } from 'ws';
 import { createWebSocketRateLimiter, checkWebSocketRateLimit } from '../middleware/rate-limit.js';
 import { createSubscriptionHandler } from '@sequential/websocket-factory';
 import { addRunSubscriber, removeRunSubscriber, addTaskSubscriber, removeTaskSubscriber, addFileSubscriber, removeFileSubscriber, addBackgroundTaskSubscriber, removeBackgroundTaskSubscriber } from '@sequential/websocket-broadcaster';
-import { backgroundTaskManager } from '@sequential/server-utilities';
+import { backgroundTaskManager } from 'server-utilities';
 import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
 
 export function setupWebSocket(httpServer, getActiveTasks) {

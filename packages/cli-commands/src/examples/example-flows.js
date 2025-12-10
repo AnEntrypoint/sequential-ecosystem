@@ -1,5 +1,5 @@
 import path from 'path';
-import { ensureDirectory, writeFileAtomicString } from '@sequential/file-operations';
+import { ensureDirectory, writeFileAtomicString } from 'file-operations';
 import logger from '@sequential/sequential-logging';
 
 export async function createExampleFlows(tasksDir) {

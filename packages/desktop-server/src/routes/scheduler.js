@@ -1,5 +1,5 @@
 import { asyncHandler } from '../middleware/error-handler.js';
-import { formatResponse } from '@sequential/response-formatting';
+import { formatResponse } from 'response-formatting';
 import { parseResourceId, requireResource } from '@sequential/route-helpers';
 import { nowISO } from '@sequential/timestamp-utilities';
 import { throwValidationError, throwNotFound } from '@sequential/error-handling';

@@ -1,8 +1,8 @@
 import path from 'path';
 import fs from 'fs-extra';
 import { asyncHandler } from '../middleware/error-handler.js';
-import { CONFIG } from '@sequential/server-utilities';
-import { formatResponse } from '@sequential/response-formatting';
+import { CONFIG } from 'server-utilities';
+import { formatResponse } from 'response-formatting';
 import { throwValidationError, throwPathTraversal } from '@sequential/error-handling';
 import { validatePathInDirectory } from '@sequential/path-validation';
 

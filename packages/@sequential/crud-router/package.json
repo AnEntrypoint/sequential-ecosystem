@@ -19,7 +19,7 @@
   "author": "Sequential",
   "license": "MIT",
   "dependencies": {
-    "@sequential/response-formatting": "^1.0.0",
+    "response-formatting": "^1.0.0",
     "@sequential/route-helpers": "^1.0.0"
   },
   "repository": {

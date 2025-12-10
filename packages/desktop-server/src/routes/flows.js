@@ -1,9 +1,9 @@
-import { validateTaskName } from '@sequential/core';
+import { validateTaskName } from 'core';
 import { createValidationError, throwValidationError } from '@sequential/error-handling';
 import { validateParam, sanitizeInput } from '@sequential/validation';
 import { asyncHandler } from '../middleware/error-handler.js';
-import { executeTaskWithTimeout, backgroundTaskManager } from '@sequential/server-utilities';
-import { formatResponse, formatError } from '@sequential/response-formatting';
+import { executeTaskWithTimeout, backgroundTaskManager } from 'server-utilities';
+import { formatResponse, formatError } from 'response-formatting';
 import { registerCRUDRoutes } from '@sequential/crud-router';
 import { createServiceFactory } from '@sequential/service-factory';
 import { TimeoutPolicyEngine, handleFlowTimeout, handleStateTimeout } from './timeout-policies.js';

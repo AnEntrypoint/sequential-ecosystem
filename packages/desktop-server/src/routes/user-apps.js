@@ -1,5 +1,5 @@
 import { asyncHandler } from '../middleware/error-handler.js';
-import { formatResponse } from '@sequential/response-formatting';
+import { formatResponse } from 'response-formatting';
 import { throwNotFound } from '@sequential/error-handling';
 
 const APP_TEMPLATES = {

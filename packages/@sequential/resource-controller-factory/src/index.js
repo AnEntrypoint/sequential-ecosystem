@@ -1,5 +1,5 @@
 import { asyncHandler } from '@sequential/handler-wrappers';
-import { formatResponse, formatError } from '@sequential/response-formatting';
+import { formatResponse, formatError } from 'response-formatting';
 import { requireResource, parsePagination } from '@sequential/route-helpers';
 
 export function createResourceController(config) {

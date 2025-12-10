@@ -1,4 +1,4 @@
-import { formatResponse } from '@sequential/response-formatting';
+import { formatResponse } from 'response-formatting';
 
 export function responseFormatterMiddleware(req, res, next) {
   const originalJson = res.json.bind(res);

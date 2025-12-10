@@ -1,6 +1,6 @@
 import path from 'path';
 import { randomUUID } from 'crypto';
-import { writeFileAtomicString } from '@sequential/file-operations';
+import { writeFileAtomicString } from 'file-operations';
 import logger from '@sequential/sequential-logging';
 import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
 import { delay, withRetry } from '@sequential/async-patterns';

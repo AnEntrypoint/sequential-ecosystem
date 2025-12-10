@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs-extra';
-import { validateFilePath, validateFileName } from '@sequential/core';
+import { validateFilePath, validateFileName } from 'core';
 
 export class FileRepository {
   async listDirectory(dir = process.cwd()) {

@@ -9,7 +9,7 @@
   "dependencies": {
     "@sequential/unified-validation": "file:../@sequential/unified-validation",
     "@sequential/execution-context": "file:../@sequential/execution-context",
-    "@sequential/response-formatting": "file:../@sequential/response-formatting",
+    "response-formatting": "file:../response-formatting",
     "@sequential/realtime-sync": "file:../@sequential/realtime-sync"
   }
 }

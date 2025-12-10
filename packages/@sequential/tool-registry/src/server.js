@@ -1,4 +1,4 @@
-import { formatResponse, errorResponse } from '@sequential/response-formatting';
+import { formatResponse, errorResponse } from 'response-formatting';
 import { asyncHandler } from '../middleware/error-handler.js';
 import ToolRegistry from './index.js';
 

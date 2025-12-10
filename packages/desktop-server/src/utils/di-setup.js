@@ -4,7 +4,7 @@ import { createContainer } from '@sequential/dependency-injection';
 import { TaskRepository, FlowRepository, ToolRepository, FileRepository, AppRepository } from '@sequential/data-access-layer';
 import { TaskService } from '@sequential/task-execution-service';
 import { ToolRegistry } from '@sequential/tool-registry';
-import { CONFIG } from '@sequential/server-utilities';
+import { CONFIG } from 'server-utilities';
 
 export function setupDIContainer() {
   const container = createContainer();

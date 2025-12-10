@@ -1,5 +1,5 @@
 {
-  "name": "@sequential/server-utilities",
+  "name": "server-utilities",
   "version": "1.0.0",
   "description": "Server utilities including cache, task executor, logging, config",
   "type": "module",

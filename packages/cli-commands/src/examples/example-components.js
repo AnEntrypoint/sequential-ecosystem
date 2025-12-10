@@ -1,5 +1,5 @@
 import path from 'path';
-import { writeFileAtomicString, ensureDirectory } from '@sequential/file-operations';
+import { writeFileAtomicString, ensureDirectory } from 'file-operations';
 import logger from '@sequential/sequential-logging';
 
 export async function createExampleComponents(tasksDir) {

@@ -1,6 +1,6 @@
 import path from 'path';
 import { createCLICommand } from '@sequential/cli-handler';
-import { writeFileAtomicString } from '@sequential/file-operations';
+import { writeFileAtomicString } from 'file-operations';
 import logger from '@sequential/sequential-logging';
 import { delay, withRetry } from '@sequential/async-patterns';
 

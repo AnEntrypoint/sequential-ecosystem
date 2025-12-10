@@ -1,6 +1,6 @@
 import path from 'path';
 import { createCLICommand } from '@sequential/cli-handler';
-import { readJsonFiles } from '@sequential/file-operations';
+import { readJsonFiles } from 'file-operations';
 import fs from 'fs-extra';
 import logger from '@sequential/sequential-logging';
 
