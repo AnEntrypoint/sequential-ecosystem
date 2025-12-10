@@ -50,9 +50,6 @@
 	path = packages/sequential-validators
 	url = https://github.com/AnEntrypoint/sequential-validators.git
 	branch = main
-[submodule "packages/zellous"]
-	path = packages/zellous
-	url = https://github.com/AnEntrypoint/zellous.git
 [submodule "packages/statekit"]
 	path = packages/sequential-machine
 	url = https://github.com/AnEntrypoint/statekit.git
@@ -112,3 +109,6 @@
 	path = packages/chat-component
 	url = https://github.com/AnEntrypoint/chat-component.git
 	branch = main
+[submodule "packages/@sequential/zellous"]
+	path = packages/@sequential/zellous
+	url = https://github.com/AnEntrypoint/sequential-zellous
