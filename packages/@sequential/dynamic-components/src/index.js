@@ -322,7 +322,7 @@ export {
 export {
   PatternMarketplace,
   createPatternMarketplace
-} from './pattern-marketplace.js';
+} from './services/marketplace/index.js';
 export {
   PatternAISuggestions,
   createPatternAISuggestions
