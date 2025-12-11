@@ -1,25 +1,57 @@
-export function createMigrationGuide(resourceType, resourceName, versions) {
-  return `# Migration Guide: ${resourceName}
+export function generateVersionManagementTemplate() {
+  return `/**
+ * Semantic Versioning
+ *
+ * Manage versions and migrations for tasks, flows, and tools.
+ */
 
-## Version History
-${versions.map(v => `- ${v.version}`).join('\n')}
+import { createVersionManager } from '@sequentialos/semantic-versioning';
 
-## Migration Path
-\`\`\`
-${versions.map((v, i) => {
-  if (i < versions.length - 1) {
-    return `${v.version} -> ${versions[i + 1].version}`;
-  }
-}).filter(Boolean).join('\n')}
-\`\`\`
+const versionManager = createVersionManager();
 
-## Breaking Changes
-- Check getBreakingChanges() for incompatible updates
+// Register versions
+versionManager
+  .register('task', 'processUser', '1.0.0', 'task code here', {
+    description: 'Process user data',
+    author: 'dev-team'
+  })
+  .register('task', 'processUser', '1.1.0', 'updated task code', {
+    description: 'Process user data with validation',
+    author: 'dev-team'
+  })
+  .register('task', 'processUser', '2.0.0', 'breaking change code', {
+    description: 'Process user data with new schema',
+    author: 'dev-team',
+    breaking: true
+  });
 
-## Upgrade Instructions
-1. Get current version: getVersion()
-2. Check compatibility: isCompatible(currentVersion, targetVersion)
-3. Migrate if needed: migrateData(data, currentVersion, targetVersion)
-4. Test thoroughly before production deployment
+// Register migrations
+versionManager
+  .registerMigration('task', 'processUser', '1.0.0', '1.1.0', async (data) => {
+    return { ...data, validated: true };
+  })
+  .registerMigration('task', 'processUser', '1.1.0', '2.0.0', async (data) => {
+    return { ...data, schema: 'v2', validated: true };
+  });
+
+// Get version history
+export function getVersionHistory() {
+  return versionManager.getVersionHistory('task', 'processUser');
+}
+
+// Check compatibility
+export function isCompatible(v1, v2) {
+  return versionManager.isCompatible(v1, v2);
+}
+
+// Migrate data
+export async function migrateData(data, fromVersion, toVersion) {
+  return await versionManager.migrate('task', 'processUser', data, fromVersion, toVersion);
+}
+
+// Get breaking changes
+export function getBreakingChanges() {
+  return versionManager.getBreakingChanges('task', 'processUser');
+}
 `;
 }
