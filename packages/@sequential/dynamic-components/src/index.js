@@ -219,7 +219,7 @@ export {
 export {
   PatternProfilerUI,
   createPatternProfilerUI
-} from './pattern-profiler-ui.js';
+} from './services/profiler/index.js';
 export {
   PatternSuggestionsEngine,
   createPatternSuggestionsEngine
