@@ -1,0 +1,11 @@
+{
+  "name": "@sequentialos/editor-find-replace",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Universal find and replace module for Sequential editors",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": ["src"]
+}

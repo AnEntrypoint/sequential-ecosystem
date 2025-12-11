@@ -1,6 +1,6 @@
 # Refactoring Strategy & Consolidation Roadmap
 
-**Last Updated**: Dec 12, 2025 | **Status**: Phase 3b Complete (CommandPalette extraction)
+**Last Updated**: Dec 12, 2025 | **Status**: Phase 3c Complete (Editor Shared Modules)
 
 ## Current State
 
@@ -22,6 +22,7 @@
 | **Phase 2f** | ✅ COMPLETE | Unified EditorFeatures source + dist rebuild (1,511 LOC consolidated) |
 | **Phase 3a** | ✅ COMPLETE | CLI routes refactoring (2 large files split into 8 focused modules) |
 | **Phase 3b** | ✅ COMPLETE | CommandPalette extraction (2 dist duplicates → unified source + modular package) |
+| **Phase 3c** | ✅ COMPLETE | Editor Shared Modules (2 high-impact consolidations: debug-module 792L + find-replace 660L) |
 
 ## High-Impact Consolidations (Phase 2d) ✅ COMPLETE
 
@@ -117,10 +118,14 @@
 - Sequential-os-http.js refactoring: 313L → 4 focused handlers (58L + 66L + 17L + 167L = 308L total)
 - Create-apps.js refactoring: 286L → 4 modules (67L + 70L + 71L + 86L = 294L total)
 
-### 📋 NEXT PHASE (Phase 3c - Flow Editor Refactoring)
-1. **Flow Editor Pattern Consolidation** (estimated)
-   - Identify duplicated patterns in flow editor dist files
-   - Create unified source package if duplication found
+### 📋 NEXT PHASE (Phase 3d - Remaining Shared Modules)
+1. **Snippet Insert & Validation Hints** (estimated 1,030L total)
+   - snippet-insert.js: 390L × 2 editors = 780L duplication
+   - validation-hints.js: 256L × 2 editors = 512L duplication
+   - Create unified source packages with modular architecture
+2. **Tool Autocomplete** (estimated)
+   - tool-autocomplete.js: 259L × 2 editors = 518L duplication
+   - Consolidate search and suggestion engine
 
 ### 🗓️ FUTURE (Phase 3c+)
 2. **Remaining >200L Files Refactoring** (8-12h per file)
@@ -165,10 +170,11 @@
 ---
 
 **Generated**: 2025-12-12
-**Next Review**: After Phase 3c completion
-**Phase 2d-3b Summary**: 3,020+ LOC consolidated
+**Next Review**: After Phase 3d completion
+**Phase 2d-3c Summary**: 5,879+ LOC consolidated
 - Phase 2d: 240+ LOC eliminated (class consolidations)
 - Phase 2e: 200+ LOC eliminated (error handlers + dist artifacts)
 - Phase 2f: 1,511 LOC unified (EditorFeatures)
 - Phase 3a: 602 LOC refactored (2 large files into 8 focused modules)
-- Phase 3b: 407 LOC consolidated (CommandPalette duplication eliminated)
+- Phase 3b: 407 LOC consolidated (CommandPalette duplication)
+- Phase 3c: 1,452 LOC consolidated (debug-module 792L + find-replace 660L from 2 editors each)

@@ -1,0 +1,11 @@
+{
+  "name": "@sequentialos/editor-debug",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Universal debugging module for Sequential editors with breakpoints and execution tracing",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": ["src"]
+}
