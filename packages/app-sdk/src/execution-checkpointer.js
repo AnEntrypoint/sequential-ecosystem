@@ -1,191 +1,76 @@
+import { createCheckpointStorage } from './checkpoint-storage.js';
+import { createCheckpointAnalyzer } from './checkpoint-analyzer.js';
+import { createCheckpointSerializer } from './checkpoint-serializer.js';
+import { createCheckpointMaintenance } from './checkpoint-maintenance.js';
+
+/**
+ * execution-checkpointer.js - Facade for execution checkpointing
+ *
+ * Delegates to focused modules:
+ * - checkpoint-storage: Create and retrieve checkpoints
+ * - checkpoint-analyzer: Progress and resume analysis
+ * - checkpoint-serializer: Serialization for persistence
+ * - checkpoint-maintenance: Cleanup and summary operations
+ */
+
 export function createExecutionCheckpointer() {
-  const checkpoints = new Map();
   const checkpointTTL = 24 * 60 * 60 * 1000;
+  const storage = createCheckpointStorage();
+  const analyzer = createCheckpointAnalyzer(storage, checkpointTTL);
+  const serializer = createCheckpointSerializer(storage);
+  const maintenance = createCheckpointMaintenance(storage, analyzer, checkpointTTL);
 
   return {
     createCheckpoint(executionId, toolName, input, metadata = {}) {
-      const checkpoint = {
-        executionId: executionId,
-        toolName: toolName,
-        toolIndex: 0,
-        input: input,
-        status: 'in_progress',
-        createdAt: new Date().toISOString(),
-        metadata: metadata
-      };
-
-      if (!checkpoints.has(executionId)) {
-        checkpoints.set(executionId, []);
-      }
-
-      const execution = checkpoints.get(executionId);
-      checkpoint.toolIndex = execution.length;
-      execution.push(checkpoint);
-
-      return checkpoint;
+      return storage.createCheckpoint(executionId, toolName, input, metadata);
     },
 
     completeCheckpoint(executionId, toolIndex, result, error = null) {
-      const execution = checkpoints.get(executionId);
-      if (!execution || !execution[toolIndex]) {
-        return null;
-      }
-
-      const checkpoint = execution[toolIndex];
-      checkpoint.status = error ? 'error' : 'completed';
-      checkpoint.result = result;
-      checkpoint.error = error;
-      checkpoint.completedAt = new Date().toISOString();
-
-      if (checkpoint.createdAt && checkpoint.completedAt) {
-        checkpoint.duration = new Date(checkpoint.completedAt) - new Date(checkpoint.createdAt);
-      }
-
-      return checkpoint;
+      return storage.completeCheckpoint(executionId, toolIndex, result, error);
     },
 
     getCheckpoint(executionId, toolIndex) {
-      const execution = checkpoints.get(executionId);
-      if (!execution || !execution[toolIndex]) {
-        return null;
-      }
-
-      return execution[toolIndex];
+      return storage.getCheckpoint(executionId, toolIndex);
     },
 
     getExecutionCheckpoints(executionId) {
-      const execution = checkpoints.get(executionId);
-      return execution ? execution.slice() : [];
+      return storage.getExecutionCheckpoints(executionId);
     },
 
     findLastCompletedToolIndex(executionId) {
-      const execution = checkpoints.get(executionId);
-      if (!execution) {
-        return -1;
-      }
-
-      for (let i = execution.length - 1; i >= 0; i--) {
-        if (execution[i].status === 'completed') {
-          return i;
-        }
-      }
-
-      return -1;
+      return analyzer.findLastCompletedToolIndex(executionId);
     },
 
     getExecutionProgress(executionId) {
-      const execution = checkpoints.get(executionId);
-      if (!execution) {
-        return null;
-      }
-
-      const completed = execution.filter(function(cp) { return cp.status === 'completed'; }).length;
-      const failed = execution.filter(function(cp) { return cp.status === 'error'; }).length;
-      const inProgress = execution.filter(function(cp) { return cp.status === 'in_progress'; }).length;
-
-      return {
-        executionId: executionId,
-        totalTools: execution.length,
-        completedTools: completed,
-        failedTools: failed,
-        inProgressTools: inProgress,
-        percentComplete: Math.round((completed / execution.length) * 100) || 0
-      };
+      return analyzer.getExecutionProgress(executionId);
     },
 
     canResumeExecution(executionId) {
-      const execution = checkpoints.get(executionId);
-      if (!execution) {
-        return false;
-      }
-
-      const hasCompleted = execution.some(function(cp) { return cp.status === 'completed'; });
-      const isExpired = new Date() - new Date(execution[0].createdAt) > checkpointTTL;
-
-      return hasCompleted && !isExpired;
+      return analyzer.canResumeExecution(executionId);
     },
 
     getResumePoint(executionId) {
-      if (!this.canResumeExecution(executionId)) {
-        return null;
-      }
-
-      const lastCompleted = this.findLastCompletedToolIndex(executionId);
-      const execution = checkpoints.get(executionId);
-
-      return {
-        executionId: executionId,
-        resumeFromToolIndex: lastCompleted + 1,
-        lastCompletedTool: lastCompleted >= 0 ? execution[lastCompleted].toolName : null,
-        toolsToRun: execution.length - (lastCompleted + 1),
-        skippedTools: lastCompleted + 1
-      };
+      return analyzer.getResumePoint(executionId);
     },
 
     serializeCheckpoints(executionId) {
-      const execution = checkpoints.get(executionId);
-      if (!execution) {
-        return null;
-      }
-
-      return JSON.stringify({
-        executionId: executionId,
-        checkpoints: execution,
-        progress: this.getExecutionProgress(executionId)
-      });
+      return serializer.serializeCheckpoints(executionId, analyzer);
     },
 
     deserializeCheckpoints(serialized) {
-      try {
-        const data = JSON.parse(serialized);
-        checkpoints.set(data.executionId, data.checkpoints);
-        return data;
-      } catch (err) {
-        return null;
-      }
+      return serializer.deserializeCheckpoints(serialized, storage);
     },
 
     getCheckpointSummary(executionId) {
-      const execution = checkpoints.get(executionId);
-      if (!execution) {
-        return null;
-      }
-
-      const toolNames = execution.map(function(cp) { return cp.toolName; });
-      const totalDuration = execution.reduce(function(sum, cp) {
-        return sum + (cp.duration || 0);
-      }, 0);
-
-      return {
-        executionId: executionId,
-        tools: toolNames,
-        toolCount: execution.length,
-        totalDuration: totalDuration,
-        progress: this.getExecutionProgress(executionId),
-        canResume: this.canResumeExecution(executionId),
-        resumePoint: this.getResumePoint(executionId)
-      };
+      return maintenance.getCheckpointSummary(executionId);
     },
 
     clearCheckpoints(executionId) {
-      if (executionId) {
-        checkpoints.delete(executionId);
-      } else {
-        checkpoints.clear();
-      }
+      return storage.clearCheckpoints(executionId);
     },
 
     cleanupExpiredCheckpoints() {
-      const now = new Date();
-      for (const executionId of checkpoints.keys()) {
-        const execution = checkpoints.get(executionId);
-        if (execution && execution.length > 0) {
-          const createdAt = new Date(execution[0].createdAt);
-          if (now - createdAt > checkpointTTL) {
-            checkpoints.delete(executionId);
-          }
-        }
-      }
+      return maintenance.cleanupExpiredCheckpoints();
     }
   };
 }
