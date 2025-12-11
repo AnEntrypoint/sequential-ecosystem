@@ -1,6 +1,6 @@
-import { FormPatternLibrary } from './form-patterns.js';
+import { FormPatternLibrary } from './patterns/forms/index.js';
 import { ListPatternLibrary } from './list-patterns.js';
-import { ChartPatternLibrary } from './chart-patterns.js';
+import { ChartPatternLibrary } from './patterns/charts/index.js';
 import { TablePatternLibrary } from './table-patterns.js';
 import { ModalPatternLibrary } from './modal-patterns.js';
 import { GridPatternLibrary } from './grid-patterns.js';
