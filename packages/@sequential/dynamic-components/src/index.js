@@ -116,8 +116,13 @@ export {
 } from './template-editor.js';
 export {
   ExtendedPatternLibrary,
-  createExtendedPatternLibrary
-} from './extended-patterns.js';
+  createExtendedPatternLibrary,
+  ecommercePatterns,
+  saasPatterns,
+  adminPatterns,
+  dashboardPatterns,
+  marketingPatterns
+} from './patterns/extended/index.js';
 export {
   ThemeCustomizer,
   createThemeCustomizer

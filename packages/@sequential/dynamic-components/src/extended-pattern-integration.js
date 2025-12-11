@@ -1,4 +1,4 @@
-import { ExtendedPatternLibrary } from './extended-patterns.js';
+import { ExtendedPatternLibrary } from './patterns/extended/index.js';
 import { PatternLibraryBase } from './pattern-library-base.js';
 import { ThemeEngine } from './theme-engine.js';
 
