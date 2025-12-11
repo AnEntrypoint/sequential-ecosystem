@@ -1,11 +1,18 @@
-import logger from '@sequentialos/sequential-logging';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
-import { delay, withRetry } from '@sequentialos/async-patterns';
 #!/usr/bin/env node
-const { SequentialMachineAdapter } = require('./lib');
-const fs = require('fs');
-const path = require('path');
 
+import logger from '@sequentialos/sequential-logging';
+import { nowISO } from '@sequentialos/timestamp-utilities';
+import { SequentialMachineAdapter } from './lib/index.js';
+import fs from 'fs';
+import path from 'path';
+import { loadServices, getService, getServiceNames } from './service-registry-loader.js';
+import { callService, checkServiceHealth } from './service-http-client.js';
+import { saveServiceResult, listServiceResults, getLayerServiceResults } from './service-result-manager.js';
+import { handleCallCommand, handleBatchServicesCommand, handleHealthCommand, handleRestoreCheckpointCommand, printHelp } from './cli-command-handler.js';
+
+/**
+ * Facade maintaining 100% backward compatibility with ServiceClient
+ */
 class ServiceClient {
   constructor(machine, options = {}) {
     this.machine = machine;
@@ -16,70 +23,13 @@ class ServiceClient {
       timeout: 30000,
       ...options
     };
-    this.services = this.loadServices();
-  }
-
-  loadServices() {
     const registryPath = path.resolve(this.options.servicesRegistry);
-
-    if (!fs.existsSync(registryPath)) {
-      logger.warn(`⚠️  Service registry not found at ${registryPath}`);
-      logger.info('💡 Start wrapped services first: npx sequential-wrapped-services');
-      return {};
-    }
-
-    try {
-      const registry = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
-      return registry.services || {};
-    } catch (error) {
-      logger.error(`❌ Failed to load service registry: ${error.message}`);
-      return {};
-    }
+    this.services = loadServices(registryPath);
   }
 
   async callService(serviceName, method, params = {}) {
-    const service = this.services[serviceName];
-    if (!service) {
-      throw new Error(`Service not found: ${serviceName}. Available: ${Object.keys(this.services).join(', ')}`);
-    }
-
-    const url = `${service.url}/call`;
-    const payload = {
-      method,
-      params,
-      timestamp: nowISO()
-    };
-
-    logger.info(`🔧 Calling ${serviceName}.${method}...`);
-
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-        signal: AbortSignal.timeout(this.options.timeout)
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const result = await response.json();
-
-      if (!result.success) {
-        throw new Error(`Service error: ${result.error || 'Unknown error'}`);
-      }
-
-      logger.info(`✅ ${serviceName}.${method} completed`);
-      return result;
-    } catch (error) {
-      if (error.name === 'AbortError') {
-        throw new Error(`Service call timeout after ${this.options.timeout}ms`);
-      }
-      throw error;
-    }
+    const service = getService(this.services, serviceName);
+    return await callService(service.url, method, params, this.options.timeout);
   }
 
   async executeServiceCall(serviceName, method, params = {}) {
@@ -139,21 +89,15 @@ callService();
 
     if (serviceName && method) {
       const serviceResult = await this.callService(serviceName, method, params);
-
-      const checkpointFile = `service-result-${serviceName}-${method}-${Date.now()}.json`;
-      const checkpointPath = path.join(this.machine.options.workdir, checkpointFile);
-
-      fs.writeFileSync(checkpointPath, JSON.stringify({
-        service: serviceName,
+      const checkpointFile = saveServiceResult(
+        this.machine.options.workdir,
+        serviceName,
         method,
         params,
-        result: serviceResult,
+        serviceResult,
         instruction,
-        layer: result.layer,
-        timestamp: nowISO()
-      }, null, 2));
-
-      logger.info(`💾 Service result saved to: ${checkpointFile}`);
+        result.layer
+      );
 
       const checkpointName = `after-${serviceName}-${method}`;
       await this.machine.checkpoint(checkpointName);
@@ -199,12 +143,14 @@ callService();
     logger.info('📋 Available Services:');
     logger.info('─'.repeat(50));
 
-    if (Object.keys(this.services).length === 0) {
+    const serviceNames = getServiceNames(this.services);
+    if (serviceNames.length === 0) {
       logger.info('❌ No services loaded');
       return;
     }
 
-    for (const [name, service] of Object.entries(this.services)) {
+    for (const name of serviceNames) {
+      const service = this.services[name];
       logger.info(`${name.padEnd(20)} → ${service.url}`);
     }
 
@@ -213,34 +159,14 @@ callService();
 
   async checkServiceHealth(serviceName = null) {
     if (serviceName) {
-      const service = this.services[serviceName];
-      if (!service) {
-        throw new Error(`Service not found: ${serviceName}`);
-      }
-
-      try {
-        const response = await fetch(`${service.url}/health`, {
-          signal: AbortSignal.timeout(5000)
-        });
-
-        if (response.ok) {
-          const health = await response.json();
-          logger.info(`✅ ${serviceName}: ${health.status || 'OK'}`);
-          return health;
-        } else {
-          logger.info(`❌ ${serviceName}: HTTP ${response.status}`);
-          return null;
-        }
-      } catch (error) {
-        logger.info(`❌ ${serviceName}: ${error.message}`);
-        return null;
-      }
+      const service = getService(this.services, serviceName);
+      return await checkServiceHealth(service.url, serviceName);
     } else {
       logger.info('🏥 Checking Service Health:');
       logger.info('─'.repeat(40));
 
       const results = {};
-      for (const name of Object.keys(this.services)) {
+      for (const name of getServiceNames(this.services)) {
         results[name] = await this.checkServiceHealth(name);
       }
 
@@ -249,33 +175,7 @@ callService();
   }
 
   listServiceResults() {
-    const workdir = this.machine.options.workdir;
-    if (!fs.existsSync(workdir)) {
-      logger.info('📄 No service result files found');
-      return;
-    }
-
-    const files = fs.readdirSync(workdir).filter(f =>
-      f.includes('-') && f.endsWith('.json')
-    );
-
-    if (files.length === 0) {
-      logger.info('📄 No service result files found');
-      return;
-    }
-
-    logger.info('📄 Service Result Files:');
-    logger.info('─'.repeat(40));
-
-    for (const file of files.sort()) {
-      const filePath = path.join(workdir, file);
-      const stat = fs.statSync(filePath);
-      const parts = file.replace('.json', '').split('-');
-      const serviceName = parts[0];
-      const method = parts[1];
-
-      logger.info(`${file.padEnd(30)} ${serviceName}.${method} (${stat.size} bytes)`);
-    }
+    listServiceResults(this.machine.options.workdir);
   }
 
   async restoreFromServiceCheckpoint(checkpointName) {
@@ -288,16 +188,7 @@ callService();
 
     await this.machine.restoreCheckpoint(checkpointName);
     logger.info(`🔄 Restored to checkpoint: ${checkpointName}`);
-
-    const workdir = this.machine.options.workdir;
-    const files = fs.readdirSync(workdir).filter(f => f.startsWith('service-result-'));
-
-    if (files.length > 0) {
-      logger.info('📄 Service result files in current layer:');
-      for (const file of files) {
-        logger.info(`  - ${file}`);
-      }
-    }
+    getLayerServiceResults(this.machine.options.workdir);
   }
 }
 
@@ -310,110 +201,37 @@ async function main() {
 
   const client = new ServiceClient(machine);
 
-  switch (cmd) {
-    case 'call': {
-      const serviceName = args[1];
-      const method = args[2];
+  try {
+    switch (cmd) {
+      case 'call':
+        await handleCallCommand(args, client);
+        break;
 
-      if (!serviceName || !method) {
-        return exit('Usage: sequential-machine call <service> <method> [params-json]');
-      }
+      case 'batch-services':
+        await handleBatchServicesCommand(args, client);
+        break;
 
-      let params = {};
-      if (args[3]) {
-        try {
-          params = JSON.parse(args[3]);
-        } catch (error) {
-          return exit(`Invalid params JSON: ${error.message}`);
-        }
-      }
+      case 'services':
+        client.listServices();
+        break;
 
-      await client.executeServiceCall(serviceName, method, params);
-      break;
+      case 'health':
+        await handleHealthCommand(args, client);
+        break;
+
+      case 'results':
+        client.listServiceResults();
+        break;
+
+      case 'restore-checkpoint':
+        await handleRestoreCheckpointCommand(args, client);
+        break;
+
+      default:
+        printHelp();
     }
-
-    case 'batch-services': {
-      const file = args[1];
-      if (!file) return exit('Usage: sequential-machine batch-services <file.json>');
-
-      let instructions;
-      try {
-        instructions = JSON.parse(fs.readFileSync(file, 'utf8'));
-      } catch (error) {
-        return exit(`Failed to parse batch file: ${error.message}`);
-      }
-
-      const results = await client.batchWithServices(instructions);
-
-      for (const result of results) {
-        const status = result.cached ? 'cached' : result.empty ? 'empty' : 'new';
-        const serviceInfo = result.serviceResult ? ` [${result.serviceResult.service}.${result.serviceResult.method}]` : '';
-        logger.info(`${result.short} [${status}]${serviceInfo}`);
-      }
-      break;
-    }
-
-    case 'services': {
-      client.listServices();
-      break;
-    }
-
-    case 'health': {
-      const serviceName = args[1];
-      await client.checkServiceHealth(serviceName);
-      break;
-    }
-
-    case 'results': {
-      client.listServiceResults();
-      break;
-    }
-
-    case 'restore-checkpoint': {
-      const checkpointName = args[1];
-      if (!checkpointName) return exit('Usage: sequential-machine restore-checkpoint <name>');
-
-      await client.restoreFromServiceCheckpoint(checkpointName);
-      break;
-    }
-
-    default:
-      logger.info(`sequential-machine - persistent compute with wrapped services integration
-
-Service Commands:
-  call <service> <method> [params]      Call service (writes result file → checkpoint)
-  batch-services <file.json>             Execute batch with service calls
-  services                               List available services
-  health [service]                       Check service health
-  results                                List service result files
-  restore-checkpoint <name>              Restore from service checkpoint
-
-Standard Commands:
-  run <cmd>        Run command and capture state as layer
-  exec <cmd>       Run command without capturing state
-  batch <file>     Run instructions from JSON array file
-
-  history          Show layer history
-  status           Show uncommitted changes in workdir
-  diff [from] [to] Show changes between layers
-
-  checkout <ref>   Restore workdir to a layer
-  tag <name> [ref] Create named reference to a layer
-  tags             List all tags
-  inspect <ref>    Show layer details
-
-  rebuild          Rebuild workdir from layers
-  reset            Clear all state
-  head             Show current head
-
-Service Integration:
-  Service calls automatically create checkpoints with format 'after-{service}-{method}'
-  Results are saved to workdir as 'service-result-{service}-{method}-{timestamp}.json'
-
-Environment:
-  SEQUENTIAL_MACHINE_DIR     State directory (default: .sequential-machine)
-  SEQUENTIAL_MACHINE_WORK    Working directory (default: .sequential-machine/work)
-`);
+  } catch (error) {
+    exit(error.message);
   }
 }
 
