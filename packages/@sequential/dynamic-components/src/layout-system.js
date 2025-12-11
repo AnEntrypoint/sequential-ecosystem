@@ -1,536 +1,101 @@
+// Facade maintaining 100% backward compatibility
+import { LayoutPrimitives } from './layout-primitives.js';
+import { LayoutTemplates } from './layout-templates.js';
+import { LayoutAdvanced } from './layout-advanced.js';
+
 export class LayoutSystem {
   constructor(themeEngine) {
     this.theme = themeEngine;
+    this.primitives = new LayoutPrimitives(themeEngine);
+    this.templates = new LayoutTemplates(themeEngine);
+    this.advanced = new LayoutAdvanced(themeEngine);
   }
 
-  createGrid(options = {}) {
-    const {
-      cols = 'repeat(auto-fit, minmax(250px, 1fr))',
-      gap = 'md',
-      rows = null,
-      autoFlow = 'dense'
-    } = options;
-
-    return {
-      type: 'grid',
-      cols,
-      rows: rows || 'auto',
-      gap: this.theme.getSpacing(gap),
-      style: {
-        gridAutoFlow: autoFlow,
-        ...options.style
-      },
-      children: options.children || []
-    };
+  // Primitive methods
+  createGrid(options) {
+    return this.primitives.createGrid(options);
   }
 
-  createFlex(options = {}) {
-    const {
-      direction = 'row',
-      gap = 'md',
-      align = 'stretch',
-      justify = 'flex-start',
-      wrap = false
-    } = options;
-
-    return {
-      type: 'flex',
-      direction,
-      gap: this.theme.getSpacing(gap),
-      style: {
-        alignItems: align,
-        justifyContent: justify,
-        flexWrap: wrap ? 'wrap' : 'nowrap',
-        ...options.style
-      },
-      children: options.children || []
-    };
+  createFlex(options) {
+    return this.primitives.createFlex(options);
   }
 
-  createStack(options = {}) {
-    const { gap = 'md', divider = false } = options;
-
-    const layout = {
-      type: 'flex',
-      direction: 'column',
-      gap: this.theme.getSpacing(gap),
-      children: options.children || []
-    };
-
-    if (divider) {
-      layout.children = layout.children.flatMap((child, idx, arr) => {
-        const items = [child];
-        if (idx < arr.length - 1) {
-          items.push({
-            type: 'divider',
-            style: {
-              borderTop: `1px solid ${this.theme.getColor('border')}`,
-              margin: `${this.theme.getSpacing(gap)} 0`
-            }
-          });
-        }
-        return items;
-      });
-    }
-
-    return layout;
+  createStack(options) {
+    return this.primitives.createStack(options);
   }
 
-  createAspectRatio(options = {}) {
-    const { ratio = '16/9', children = [] } = options;
-
-    return {
-      type: 'flex',
-      style: {
-        position: 'relative',
-        paddingBottom: `calc(100% / (${ratio.split('/')[0]} / ${ratio.split('/')[1]}))`,
-        overflow: 'hidden'
-      },
-      children: [
-        {
-          type: 'flex',
-          style: {
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%'
-          },
-          children
-        }
-      ]
-    };
+  createAspectRatio(options) {
+    return this.primitives.createAspectRatio(options);
   }
 
-  createCenter(options = {}) {
-    return {
-      type: 'flex',
-      direction: 'column',
-      style: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        ...options.style
-      },
-      children: options.children || []
-    };
+  createCenter(options) {
+    return this.primitives.createCenter(options);
   }
 
-  createBox(options = {}) {
-    const { padding = 'md', border = false, rounded = 'md' } = options;
-
-    return {
-      type: 'flex',
-      style: {
-        padding: this.theme.getSpacing(padding),
-        border: border ? `1px solid ${this.theme.getColor('border')}` : 'none',
-        borderRadius: this.theme.getBorderRadius(rounded),
-        background: options.background || this.theme.getColor('background'),
-        ...options.style
-      },
-      children: options.children || []
-    };
+  createBox(options) {
+    return this.primitives.createBox(options);
   }
 
-  createContainer(options = {}) {
-    const { maxWidth = '1200px', centered = true } = options;
-
-    return {
-      type: 'flex',
-      style: {
-        maxWidth,
-        margin: centered ? '0 auto' : 0,
-        width: '100%',
-        paddingLeft: this.theme.getSpacing('lg'),
-        paddingRight: this.theme.getSpacing('lg'),
-        ...options.style
-      },
-      children: options.children || []
-    };
+  createContainer(options) {
+    return this.primitives.createContainer(options);
   }
 
-  createSidebar(options = {}) {
-    const { sidebarWidth = '300px', gap = 'lg', direction = 'row' } = options;
-
-    if (direction === 'row') {
-      return {
-        type: 'flex',
-        direction: 'row',
-        gap: this.theme.getSpacing(gap),
-        style: { height: '100%' },
-        children: [
-          {
-            type: 'flex',
-            direction: 'column',
-            style: {
-              width: sidebarWidth,
-              borderRight: `1px solid ${this.theme.getColor('border')}`,
-              overflowY: 'auto'
-            },
-            children: options.sidebar || []
-          },
-          {
-            type: 'flex',
-            direction: 'column',
-            style: { flex: 1, overflowY: 'auto' },
-            children: options.main || []
-          }
-        ]
-      };
-    }
-
-    return {
-      type: 'flex',
-      direction: 'column',
-      gap: this.theme.getSpacing(gap),
-      children: [
-        {
-          type: 'flex',
-          direction: 'row',
-          style: { minHeight: sidebarWidth },
-          children: options.sidebar || []
-        },
-        {
-          type: 'flex',
-          direction: 'column',
-          style: { flex: 1 },
-          children: options.main || []
-        }
-      ]
-    };
+  // Template methods
+  createSidebar(options) {
+    return this.templates.createSidebar(options);
   }
 
-  createTwoColumn(options = {}) {
-    const { leftWidth = '1fr', rightWidth = '1fr', gap = 'lg' } = options;
-
-    return {
-      type: 'grid',
-      cols: `${leftWidth} ${rightWidth}`,
-      gap: this.theme.getSpacing(gap),
-      style: options.style,
-      children: [
-        {
-          type: 'flex',
-          direction: 'column',
-          children: options.left || []
-        },
-        {
-          type: 'flex',
-          direction: 'column',
-          children: options.right || []
-        }
-      ]
-    };
+  createTwoColumn(options) {
+    return this.templates.createTwoColumn(options);
   }
 
-  createThreeColumn(options = {}) {
-    const { gap = 'lg', cols = '1fr 2fr 1fr' } = options;
-
-    return {
-      type: 'grid',
-      cols,
-      gap: this.theme.getSpacing(gap),
-      style: options.style,
-      children: [
-        {
-          type: 'flex',
-          direction: 'column',
-          children: options.left || []
-        },
-        {
-          type: 'flex',
-          direction: 'column',
-          children: options.center || []
-        },
-        {
-          type: 'flex',
-          direction: 'column',
-          children: options.right || []
-        }
-      ]
-    };
+  createThreeColumn(options) {
+    return this.templates.createThreeColumn(options);
   }
 
-  createHeader(options = {}) {
-    const { height = '60px', sticky = false } = options;
-
-    return {
-      type: 'flex',
-      direction: 'row',
-      style: {
-        height,
-        background: this.theme.getColor('primary'),
-        color: 'white',
-        padding: `0 ${this.theme.getSpacing('lg')}`,
-        alignItems: 'center',
-        position: sticky ? 'sticky' : 'relative',
-        top: sticky ? 0 : 'auto',
-        zIndex: sticky ? 100 : 0,
-        boxShadow: `0 2px 4px ${this.theme.getShadow('sm')}`,
-        ...options.style
-      },
-      children: options.children || []
-    };
+  createHeader(options) {
+    return this.templates.createHeader(options);
   }
 
-  createFooter(options = {}) {
-    return {
-      type: 'flex',
-      direction: 'column',
-      style: {
-        background: this.theme.getColor('backgroundLight'),
-        borderTop: `1px solid ${this.theme.getColor('border')}`,
-        padding: this.theme.getSpacing('lg'),
-        marginTop: this.theme.getSpacing('xl'),
-        ...options.style
-      },
-      children: options.children || []
-    };
+  createFooter(options) {
+    return this.templates.createFooter(options);
   }
 
-  createSection(options = {}) {
-    const { title, subtitle, padding = 'lg' } = options;
-
-    return {
-      type: 'flex',
-      direction: 'column',
-      gap: this.theme.getSpacing('md'),
-      style: {
-        padding: this.theme.getSpacing(padding),
-        ...options.style
-      },
-      children: [
-        title ? {
-          type: 'heading',
-          content: title,
-          level: options.headingLevel || 2,
-          style: { margin: 0 }
-        } : null,
-        subtitle ? {
-          type: 'paragraph',
-          content: subtitle,
-          style: { color: this.theme.getColor('textMuted'), margin: 0 }
-        } : null,
-        {
-          type: 'flex',
-          direction: 'column',
-          gap: this.theme.getSpacing('md'),
-          children: options.children || []
-        }
-      ].filter(Boolean)
-    };
+  createSection(options) {
+    return this.templates.createSection(options);
   }
 
-  createCard(options = {}) {
-    const { title, padding = 'lg', elevated = true } = options;
-
-    return {
-      type: 'card',
-      title,
-      variant: elevated ? 'elevated' : 'flat',
-      style: {
-        padding: this.theme.getSpacing(padding),
-        ...options.style
-      },
-      children: options.children || []
-    };
+  createCard(options) {
+    return this.templates.createCard(options);
   }
 
-  createPageLayout(options = {}) {
-    return {
-      type: 'flex',
-      direction: 'column',
-      style: { minHeight: '100vh', background: this.theme.getColor('background') },
-      children: [
-        this.createHeader(options.header),
-        {
-          type: 'flex',
-          direction: 'row',
-          style: { flex: 1 },
-          children: [
-            options.sidebar ? this.createBox({
-              ...options.sidebar,
-              style: {
-                width: options.sidebarWidth || '250px',
-                borderRight: `1px solid ${this.theme.getColor('border')}`,
-                overflowY: 'auto',
-                ...options.sidebar.style
-              }
-            }) : null,
-            {
-              type: 'flex',
-              direction: 'column',
-              style: { flex: 1, overflowY: 'auto' },
-              children: options.children || []
-            }
-          ].filter(Boolean)
-        },
-        options.footer ? this.createFooter(options.footer) : null
-      ].filter(Boolean)
-    };
+  createPageLayout(options) {
+    return this.templates.createPageLayout(options);
   }
 
-  createResponsiveGrid(options = {}) {
-    const { itemsPerRow = 3, gap = 'lg', mobile = 1, tablet = 2 } = options;
-
-    return {
-      type: 'grid',
-      cols: `repeat(auto-fit, minmax(${100 / itemsPerRow}%, 1fr))`,
-      gap: this.theme.getSpacing(gap),
-      style: {
-        '@media (max-width: 768px)': {
-          gridTemplateColumns: `repeat(${tablet}, 1fr)`
-        },
-        '@media (max-width: 480px)': {
-          gridTemplateColumns: `repeat(${mobile}, 1fr)`
-        },
-        ...options.style
-      },
-      children: options.children || []
-    };
+  // Advanced methods
+  createResponsiveGrid(options) {
+    return this.advanced.createResponsiveGrid(options);
   }
 
-  createGallery(options = {}) {
-    const { columns = 3, gap = 'md', imageHeight = '250px' } = options;
-
-    return {
-      type: 'grid',
-      cols: `repeat(${columns}, 1fr)`,
-      gap: this.theme.getSpacing(gap),
-      style: options.style,
-      children: (options.items || []).map(item => ({
-        type: 'flex',
-        direction: 'column',
-        style: {
-          cursor: 'pointer',
-          borderRadius: this.theme.getBorderRadius('md'),
-          overflow: 'hidden',
-          ...options.itemStyle
-        },
-        children: [
-          {
-            type: 'image',
-            src: item.src,
-            alt: item.alt || '',
-            style: {
-              width: '100%',
-              height: imageHeight,
-              objectFit: 'cover'
-            }
-          },
-          {
-            type: 'card',
-            variant: 'flat',
-            children: [
-              {
-                type: 'heading',
-                content: item.title,
-                level: 3,
-                style: { margin: 0 }
-              },
-              item.description ? {
-                type: 'paragraph',
-                content: item.description,
-                style: { color: this.theme.getColor('textMuted'), margin: 0 }
-              } : null
-            ].filter(Boolean)
-          }
-        ]
-      }))
-    };
+  createGallery(options) {
+    return this.advanced.createGallery(options);
   }
 
-  createMasonry(options = {}) {
-    const { columns = 3, gap = 'md' } = options;
-
-    return {
-      type: 'flex',
-      style: {
-        display: 'grid',
-        gridTemplateColumns: `repeat(${columns}, 1fr)`,
-        gap: this.theme.getSpacing(gap),
-        gridAutoRows: 'masonry',
-        ...options.style
-      },
-      children: options.children || []
-    };
+  createMasonry(options) {
+    return this.advanced.createMasonry(options);
   }
 
-  createAccordion(options = {}) {
-    return {
-      type: 'flex',
-      direction: 'column',
-      gap: this.theme.getSpacing('xs'),
-      children: (options.items || []).map(item => ({
-        type: 'expandable-section',
-        title: item.title,
-        children: item.children || [],
-        defaultOpen: item.defaultOpen || false
-      }))
-    };
+  createAccordion(options) {
+    return this.advanced.createAccordion(options);
   }
 
-  createTabs(options = {}) {
-    const { tabs = [], gap = 'xs' } = options;
-
-    return {
-      type: 'flex',
-      direction: 'column',
-      children: [
-        {
-          type: 'flex',
-          direction: 'row',
-          gap: this.theme.getSpacing(gap),
-          style: {
-            borderBottom: `1px solid ${this.theme.getColor('border')}`,
-            paddingBottom: this.theme.getSpacing('sm')
-          },
-          children: tabs.map((tab, idx) => ({
-            type: 'button',
-            label: tab.label,
-            variant: options.activeTab === idx ? 'primary' : 'outline',
-            onClick: () => options.onTabChange?.(idx)
-          }))
-        },
-        {
-          type: 'flex',
-          direction: 'column',
-          style: { padding: this.theme.getSpacing('md') },
-          children: tabs[options.activeTab || 0]?.children || []
-        }
-      ]
-    };
+  createTabs(options) {
+    return this.advanced.createTabs(options);
   }
 
-  createBreadcrumbs(options = {}) {
-    const { items = [] } = options;
-
-    return {
-      type: 'flex',
-      direction: 'row',
-      gap: this.theme.getSpacing('xs'),
-      children: items.flatMap((item, idx, arr) => {
-        const components = [
-          {
-            type: 'button',
-            label: item.label,
-            variant: 'outline',
-            onClick: item.onClick,
-            style: { textDecoration: 'none' }
-          }
-        ];
-
-        if (idx < arr.length - 1) {
-          components.push({
-            type: 'paragraph',
-            content: '›',
-            style: { color: this.theme.getColor('textMuted'), margin: 0 }
-          });
-        }
-
-        return components;
-      })
-    };
+  createBreadcrumbs(options) {
+    return this.advanced.createBreadcrumbs(options);
   }
 }
 
