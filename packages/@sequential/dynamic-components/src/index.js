@@ -136,7 +136,7 @@ export {
 export {
   ListPatternLibrary,
   createListPatternLibrary
-} from './list-patterns.js';
+} from './patterns/lists/index.js';
 export {
   ChartPatternLibrary,
   createChartPatternLibrary
@@ -144,7 +144,7 @@ export {
 export {
   TablePatternLibrary,
   createTablePatternLibrary
-} from './table-patterns.js';
+} from './patterns/tables/index.js';
 export {
   ModalPatternLibrary,
   createModalPatternLibrary
@@ -152,7 +152,7 @@ export {
 export {
   GridPatternLibrary,
   createGridPatternLibrary
-} from './grid-patterns.js';
+} from './patterns/grids/index.js';
 export {
   PatternDiscovery,
   createPatternDiscovery
