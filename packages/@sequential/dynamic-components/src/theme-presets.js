@@ -1,131 +1,44 @@
-// Predefined theme presets
+// Default theme presets
 export class ThemePresets {
-  constructor() {
-    this.presets = this.initializePresets();
-  }
-
-  initializePresets() {
-    return new Map([
-      ['default', this.getDefaultTheme()],
-      ['dark', this.getDarkTheme()],
-      ['light', this.getLightTheme()],
-      ['ocean', this.getOceanTheme()],
-      ['forest', this.getForestTheme()],
-      ['sunset', this.getSunsetTheme()],
-      ['minimal', this.getMinimalTheme()],
-      ['vibrant', this.getVibrantTheme()]
-    ]);
-  }
-
-  getDefaultTheme() {
-    return {
-      name: 'Default',
-      colors: {
-        primary: '#0078d4', secondary: '#50e6ff', success: '#10b981', warning: '#f59e0b',
-        danger: '#ef4444', background: '#0f172a', backgroundLight: '#1e293b',
-        border: '#334155', text: '#e2e8f0', textMuted: '#94a3b8'
+  static getDefaultThemes() {
+    const shared = {
+      typography: {
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        fontSize: { xs: '11px', sm: '12px', base: '14px', lg: '16px', xl: '18px', '2xl': '24px' },
+        fontWeight: { light: '300', normal: '400', medium: '500', semibold: '600', bold: '700' },
+        lineHeight: { tight: '1.2', normal: '1.5', relaxed: '1.75' }
       },
-      spacing: { xs: '4px', sm: '8px', md: '16px', lg: '24px', xl: '32px' },
-      borderRadius: { sm: '4px', md: '8px', lg: '12px', xl: '16px' }
+      spacing: { xs: '4px', sm: '8px', md: '12px', lg: '16px', xl: '20px', '2xl': '24px', '3xl': '32px' },
+      borderRadius: { none: '0', sm: '2px', md: '4px', lg: '8px', xl: '12px', full: '999px' },
+      shadows: { sm: '0 1px 2px rgba(0, 0, 0, 0.05)', md: '0 4px 6px rgba(0, 0, 0, 0.1)', lg: '0 10px 15px rgba(0, 0, 0, 0.1)', xl: '0 20px 25px rgba(0, 0, 0, 0.1)' },
+      transitions: { fast: '0.15s ease-in-out', base: '0.2s ease-in-out', slow: '0.3s ease-in-out' }
     };
-  }
 
-  getDarkTheme() {
     return {
-      name: 'Dark',
-      colors: {
-        primary: '#3b82f6', secondary: '#60a5fa', success: '#34d399', warning: '#fbbf24',
-        danger: '#f87171', background: '#000000', backgroundLight: '#1f2937',
-        border: '#374151', text: '#f3f4f6', textMuted: '#9ca3af'
+      default: {
+        colors: {
+          primary: '#667eea', secondary: '#764ba2', success: '#48bb78', warning: '#f6ad55', danger: '#ef4444',
+          info: '#3b82f6', text: '#1a1a1a', textLight: '#666666', textMuted: '#999999',
+          background: '#ffffff', backgroundLight: '#f5f5f5', border: '#e0e0e0', borderLight: '#f0f0f0'
+        },
+        ...shared
       },
-      spacing: { xs: '4px', sm: '8px', md: '16px', lg: '24px', xl: '32px' },
-      borderRadius: { sm: '4px', md: '8px', lg: '12px', xl: '16px' }
-    };
-  }
-
-  getLightTheme() {
-    return {
-      name: 'Light',
-      colors: {
-        primary: '#2563eb', secondary: '#60a5fa', success: '#059669', warning: '#d97706',
-        danger: '#dc2626', background: '#ffffff', backgroundLight: '#f3f4f6',
-        border: '#e5e7eb', text: '#1f2937', textMuted: '#6b7280'
+      dark: {
+        colors: {
+          primary: '#8b5cf6', secondary: '#a78bfa', success: '#34d399', warning: '#fbbf24', danger: '#f87171',
+          info: '#60a5fa', text: '#e0e0e0', textLight: '#999999', textMuted: '#666666',
+          background: '#1a1a1a', backgroundLight: '#2d2d30', border: '#3e3e42', borderLight: '#555555'
+        },
+        ...shared
       },
-      spacing: { xs: '4px', sm: '8px', md: '16px', lg: '24px', xl: '32px' },
-      borderRadius: { sm: '4px', md: '8px', lg: '12px', xl: '16px' }
+      light: {
+        colors: {
+          primary: '#0e639c', secondary: '#1177bb', success: '#16a34a', warning: '#d97706', danger: '#dc2626',
+          info: '#2563eb', text: '#0f0f0f', textLight: '#4b5563', textMuted: '#8b8b8b',
+          background: '#fafafa', backgroundLight: '#ffffff', border: '#d1d5db', borderLight: '#e5e7eb'
+        },
+        ...shared
+      }
     };
-  }
-
-  getOceanTheme() {
-    return {
-      name: 'Ocean',
-      colors: {
-        primary: '#0369a1', secondary: '#06b6d4', success: '#14b8a6', warning: '#f97316',
-        danger: '#e11d48', background: '#0c2340', backgroundLight: '#164e63',
-        border: '#0e7490', text: '#cffafe', textMuted: '#06b6d4'
-      },
-      spacing: { xs: '4px', sm: '8px', md: '16px', lg: '24px', xl: '32px' },
-      borderRadius: { sm: '4px', md: '8px', lg: '12px', xl: '16px' }
-    };
-  }
-
-  getForestTheme() {
-    return {
-      name: 'Forest',
-      colors: {
-        primary: '#047857', secondary: '#10b981', success: '#34d399', warning: '#f59e0b',
-        danger: '#dc2626', background: '#064e3b', backgroundLight: '#065f46',
-        border: '#047857', text: '#d1fae5', textMuted: '#6ee7b7'
-      },
-      spacing: { xs: '4px', sm: '8px', md: '16px', lg: '24px', xl: '32px' },
-      borderRadius: { sm: '4px', md: '8px', lg: '12px', xl: '16px' }
-    };
-  }
-
-  getSunsetTheme() {
-    return {
-      name: 'Sunset',
-      colors: {
-        primary: '#ea580c', secondary: '#f97316', success: '#84cc16', warning: '#eab308',
-        danger: '#dc2626', background: '#451a03', backgroundLight: '#7c2d12',
-        border: '#c2410c', text: '#fed7aa', textMuted: '#fdba74'
-      },
-      spacing: { xs: '4px', sm: '8px', md: '16px', lg: '24px', xl: '32px' },
-      borderRadius: { sm: '4px', md: '8px', lg: '12px', xl: '16px' }
-    };
-  }
-
-  getMinimalTheme() {
-    return {
-      name: 'Minimal',
-      colors: {
-        primary: '#000000', secondary: '#404040', success: '#2d2d2d', warning: '#5a5a5a',
-        danger: '#8b0000', background: '#ffffff', backgroundLight: '#f5f5f5',
-        border: '#e0e0e0', text: '#000000', textMuted: '#808080'
-      },
-      spacing: { xs: '4px', sm: '8px', md: '16px', lg: '24px', xl: '32px' },
-      borderRadius: { sm: '2px', md: '4px', lg: '6px', xl: '8px' }
-    };
-  }
-
-  getVibrantTheme() {
-    return {
-      name: 'Vibrant',
-      colors: {
-        primary: '#ff006e', secondary: '#8338ec', success: '#3a86ff', warning: '#ffbe0b',
-        danger: '#ff006e', background: '#1a0033', backgroundLight: '#2d0052',
-        border: '#8338ec', text: '#ffffff', textMuted: '#b797ff'
-      },
-      spacing: { xs: '4px', sm: '8px', md: '16px', lg: '24px', xl: '32px' },
-      borderRadius: { sm: '4px', md: '8px', lg: '12px', xl: '16px' }
-    };
-  }
-
-  getPreset(name) {
-    return this.presets.get(name);
-  }
-
-  listPresets() {
-    return Array.from(this.presets.keys());
   }
 }
