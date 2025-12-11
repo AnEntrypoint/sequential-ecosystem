@@ -1,7 +1,9 @@
+// Facade maintaining 100% backward compatibility with task scheduler
 import { EventEmitter } from 'events';
-import cron from 'node-cron';
-import logger from '@sequentialos/sequential-logging';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
+import { createOnceSchedule, createRecurringSchedule, createIntervalSchedule } from './schedule-creator.js';
+import { CronCalculator } from './cron-calculator.js';
+import { ScheduleExecutor } from './schedule-executor.js';
+import { ScheduleStorage } from './schedule-storage.js';
 
 export class TaskScheduler extends EventEmitter {
   constructor(options = {}) {
@@ -23,11 +25,27 @@ export class TaskScheduler extends EventEmitter {
     };
     this.executionHistory = new Map();
     this.checkLoop = null;
+
+    this.cronCalculator = new CronCalculator();
+    this.scheduleStorage = new ScheduleStorage(this.stateManager);
+    this.scheduleExecutor = new ScheduleExecutor(
+      this.taskQueueManager,
+      this.stats,
+      this.recordExecution.bind(this),
+      this.emit.bind(this)
+    );
   }
 
   setDependencies(taskQueueManager, stateManager) {
     this.taskQueueManager = taskQueueManager;
     this.stateManager = stateManager;
+    this.scheduleStorage = new ScheduleStorage(stateManager);
+    this.scheduleExecutor = new ScheduleExecutor(
+      taskQueueManager,
+      this.stats,
+      this.recordExecution.bind(this),
+      this.emit.bind(this)
+    );
   }
 
   async start() {
@@ -39,7 +57,6 @@ export class TaskScheduler extends EventEmitter {
     }
 
     this.startCheckLoop();
-
     this.emit('scheduler:started', { total: this.scheduled.size });
   }
 
@@ -61,69 +78,8 @@ export class TaskScheduler extends EventEmitter {
 
   startCheckLoop() {
     this.checkLoop = setInterval(() => {
-      this.checkDueSchedules();
+      this.scheduleExecutor.checkDueSchedules(this.scheduled);
     }, this.checkInterval);
-  }
-
-  checkDueSchedules() {
-    const now = Date.now();
-
-    for (const [id, schedule] of this.scheduled.entries()) {
-      if (!schedule.enabled) continue;
-
-      const shouldExecute = this.shouldExecuteSchedule(schedule, now);
-
-      if (shouldExecute) {
-        this.executeSchedule(id, schedule, now);
-      }
-    }
-  }
-
-  shouldExecuteSchedule(schedule, now) {
-    if (!schedule.nextRun) return false;
-    if (schedule.nextRun > now) return false;
-
-    return true;
-  }
-
-  async executeSchedule(id, schedule, now) {
-    try {
-      if (!this.taskQueueManager) return;
-
-      const queueResult = this.taskQueueManager.enqueue(
-        schedule.taskName,
-        schedule.args || [],
-        {
-          scheduledId: id,
-          scheduledAt: schedule.createdAt,
-          executedAt: now
-        }
-      );
-
-      schedule.lastRun = now;
-      schedule.lastQueueId = queueResult.id;
-
-      this.recordExecution(id, { status: 'enqueued', queueId: queueResult.id, timestamp: now });
-
-      this.calculateNextRun(schedule);
-
-      if (schedule.type === 'once') {
-        schedule.enabled = false;
-        this.stats.total++;
-      }
-
-      this.stats.executed++;
-
-      this.emit('schedule:executed', { id, taskName: schedule.taskName, timestamp: now });
-
-      if (this.stateManager) {
-        await this.stateManager.set('schedules', id, schedule);
-      }
-    } catch (error) {
-      this.stats.failed++;
-      this.recordExecution(id, { status: 'failed', error: error.message, timestamp: now });
-      this.emit('schedule:error', { id, error: error.message });
-    }
   }
 
   scheduleOnce(taskName, args, executeAt, options = {}) {
@@ -131,25 +87,12 @@ export class TaskScheduler extends EventEmitter {
       throw new Error(`Cannot schedule: limit of ${this.maxScheduled} reached`);
     }
 
-    const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    const schedule = {
-      id,
-      type: 'once',
-      taskName,
-      args: args || [],
-      nextRun: executeAt,
-      lastRun: null,
-      enabled: true,
-      createdAt: Date.now(),
-      ...options
-    };
-
-    this.scheduled.set(id, schedule);
+    const schedule = createOnceSchedule(taskName, args, executeAt, options);
+    this.scheduled.set(schedule.id, schedule);
     this.stats.total++;
 
-    this.emit('schedule:created', { id, type: 'once', executeAt });
-
-    return { id, status: 'scheduled' };
+    this.emit('schedule:created', { id: schedule.id, type: 'once', executeAt });
+    return { id: schedule.id, status: 'scheduled' };
   }
 
   scheduleRecurring(taskName, args, cronExpression, options = {}) {
@@ -157,26 +100,13 @@ export class TaskScheduler extends EventEmitter {
       throw new Error(`Cannot schedule: limit of ${this.maxScheduled} reached`);
     }
 
-    const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    const schedule = {
-      id,
-      type: 'recurring',
-      taskName,
-      args: args || [],
-      cronExpression,
-      nextRun: this.calculateNextCronRun(cronExpression),
-      lastRun: null,
-      enabled: true,
-      createdAt: Date.now(),
-      ...options
-    };
-
-    this.scheduled.set(id, schedule);
+    const nextRun = this.cronCalculator.calculateNextCronRun(cronExpression);
+    const schedule = createRecurringSchedule(taskName, args, cronExpression, nextRun, options);
+    this.scheduled.set(schedule.id, schedule);
     this.stats.total++;
 
-    this.emit('schedule:created', { id, type: 'recurring', cronExpression });
-
-    return { id, status: 'scheduled' };
+    this.emit('schedule:created', { id: schedule.id, type: 'recurring', cronExpression });
+    return { id: schedule.id, status: 'scheduled' };
   }
 
   scheduleInterval(taskName, args, intervalMs, options = {}) {
@@ -184,98 +114,12 @@ export class TaskScheduler extends EventEmitter {
       throw new Error(`Cannot schedule: limit of ${this.maxScheduled} reached`);
     }
 
-    const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    const now = Date.now();
-    const schedule = {
-      id,
-      type: 'interval',
-      taskName,
-      args: args || [],
-      intervalMs,
-      nextRun: now + intervalMs,
-      lastRun: null,
-      enabled: true,
-      createdAt: now,
-      ...options
-    };
-
-    this.scheduled.set(id, schedule);
+    const schedule = createIntervalSchedule(taskName, args, intervalMs, options);
+    this.scheduled.set(schedule.id, schedule);
     this.stats.total++;
 
-    this.emit('schedule:created', { id, type: 'interval', intervalMs });
-
-    return { id, status: 'scheduled' };
-  }
-
-  calculateNextRun(schedule) {
-    if (schedule.type === 'interval') {
-      schedule.nextRun = Date.now() + schedule.intervalMs;
-    } else if (schedule.type === 'recurring') {
-      schedule.nextRun = this.calculateNextCronRun(schedule.cronExpression);
-    }
-  }
-
-  calculateNextCronRun(cronExpression) {
-    if (!cron.validate(cronExpression)) {
-      throw new Error('Invalid cron expression format');
-    }
-
-    const parts = cronExpression.split(' ');
-    const [minute, hour, dayOfMonth, month, dayOfWeek] = parts;
-
-    const now = new Date();
-    const nextRun = new Date(now);
-    nextRun.setSeconds(0, 0);
-    nextRun.setMinutes(nextRun.getMinutes() + 1);
-
-    let found = false;
-    let iterations = 0;
-    const maxIterations = 1440 * 32;
-
-    while (!found && iterations < maxIterations) {
-      if (this.matchesCronExpression(nextRun, minute, hour, dayOfMonth, month, dayOfWeek)) {
-        found = true;
-      } else {
-        nextRun.setMinutes(nextRun.getMinutes() + 1);
-      }
-      iterations++;
-    }
-
-    return found ? nextRun.getTime() : null;
-  }
-
-  matchesCronExpression(date, minute, hour, dayOfMonth, month, dayOfWeek) {
-    const d = date.getDate();
-    const m = date.getMonth() + 1;
-    const h = date.getHours();
-    const min = date.getMinutes();
-    const dow = date.getDay();
-
-    return this.cronPartMatches(min, minute) && this.cronPartMatches(h, hour) &&
-           this.cronPartMatches(d, dayOfMonth) && this.cronPartMatches(m, month) &&
-           this.cronPartMatches(dow, dayOfWeek);
-  }
-
-  cronPartMatches(value, pattern) {
-    if (pattern === '*' || pattern === '?') return true;
-
-    if (pattern.includes('/')) {
-      const [start, step] = pattern.split('/');
-      const startVal = start === '*' ? 0 : parseInt(start);
-      const stepVal = parseInt(step);
-      return (value - startVal) % stepVal === 0;
-    }
-
-    if (pattern.includes(',')) {
-      return pattern.split(',').some(p => parseInt(p) === value);
-    }
-
-    if (pattern.includes('-')) {
-      const [min, max] = pattern.split('-').map(Number);
-      return value >= min && value <= max;
-    }
-
-    return parseInt(pattern) === value;
+    this.emit('schedule:created', { id: schedule.id, type: 'interval', intervalMs });
+    return { id: schedule.id, status: 'scheduled' };
   }
 
   cancel(id) {
@@ -288,7 +132,6 @@ export class TaskScheduler extends EventEmitter {
     this.stats.cancelled++;
 
     this.emit('schedule:cancelled', { id });
-
     return { success: true, id };
   }
 
@@ -299,9 +142,7 @@ export class TaskScheduler extends EventEmitter {
     }
 
     Object.assign(schedule, options);
-
     this.emit('schedule:updated', { id, options });
-
     return { success: true, id };
   }
 
@@ -350,32 +191,12 @@ export class TaskScheduler extends EventEmitter {
   }
 
   async persistToStorage() {
-    if (!this.stateManager) return;
-
-    try {
-      for (const [id, schedule] of this.scheduled.entries()) {
-        await this.stateManager.set('schedules', id, schedule);
-      }
-    } catch (error) {
-      logger.error('[TaskScheduler] Error persisting to storage:', error.message);
-    }
+    await this.scheduleStorage.persistToStorage(this.scheduled);
   }
 
   async loadFromStorage() {
-    if (!this.stateManager) return;
-
-    try {
-      const schedules = await this.stateManager.getAll('schedules');
-      if (schedules && typeof schedules === 'object') {
-        for (const [id, schedule] of Object.entries(schedules)) {
-          if (schedule && schedule.id) {
-            this.scheduled.set(id, schedule);
-          }
-        }
-      }
-    } catch (error) {
-      logger.error('[TaskScheduler] Error loading from storage:', error.message);
-    }
+    const loaded = await this.scheduleStorage.loadFromStorage();
+    this.scheduled = loaded;
   }
 }
 
