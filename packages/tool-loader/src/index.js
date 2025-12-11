@@ -1,67 +1,44 @@
-import { execSync } from 'child_process';
-import fs from 'fs';
-import path from 'path';
+/**
+ * index.js - Facade for tool loading
+ *
+ * Delegates to focused modules:
+ * - dependency-parser: Parse and validate dependencies
+ * - dependency-installer: Install and cache dependencies
+ * - tool-code-loader: Load tool handler and metadata from code
+ * - tool-file-loader: Load tools from filesystem
+ * - tool-definition-manager: Create and persist tool definitions
+ * - tool-cache: Cache management
+ */
+
 import logger from '@sequentialos/sequential-logging';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
+import { createDependencyParser } from './dependency-parser.js';
+import { createDependencyInstaller } from './dependency-installer.js';
+import { createToolCodeLoader } from './tool-code-loader.js';
+import { createToolFileLoader } from './tool-file-loader.js';
+import { createToolDefinitionManager } from './tool-definition-manager.js';
+import { createToolCache } from './tool-cache.js';
 
 export class ToolLoader {
   constructor(config = {}) {
     this.toolsDir = config.toolsDir || './tools';
-    this.cache = new Map();
-    this.dependencyCache = new Map();
+    this.cache = createToolCache();
+    this.dependencyParser = createDependencyParser();
+    this.dependencyInstaller = createDependencyInstaller();
+    this.codeLoader = createToolCodeLoader();
+    this.fileLoader = createToolFileLoader();
+    this.defManager = createToolDefinitionManager();
   }
 
   parseDependencies(code) {
-    const imports = new Set();
-    const importRegex = /import\s+(?:(?:{[^}]*})|(?:\*\s+as\s+\w+)|(?:\w+(?:\s*,\s*{[^}]*})?)|(?:(?:\w+\s+from\s+)?))?\s*['"]([^'"]+)['"]/g;
-
-    let match;
-    while ((match = importRegex.exec(code)) !== null) {
-      const moduleName = match[1];
-      if (!moduleName.startsWith('.')) {
-        imports.add(moduleName);
-      }
-    }
-
-    return Array.from(imports);
+    return this.dependencyParser.parseDependencies(code);
   }
 
   validateDependencies(toolDef) {
-    const required = toolDef.metadata?.imports || [];
-    const code = toolDef.code || '';
-    const found = this.parseDependencies(code);
-
-    const missing = required.filter(dep => !found.includes(dep));
-    const unused = found.filter(dep => !required.includes(dep));
-
-    return {
-      valid: missing.length === 0,
-      missing,
-      unused,
-      found,
-      required
-    };
+    return this.dependencyParser.validateDependencies(toolDef);
   }
 
   installDependencies(dependencies) {
-    if (dependencies.length === 0) return;
-
-    const cacheKey = dependencies.sort().join(',');
-    if (this.dependencyCache.has(cacheKey)) {
-      return;
-    }
-
-    try {
-      const installed = dependencies.join(' ');
-      execSync(`npm install ${installed}`, {
-        stdio: 'pipe',
-        cwd: process.cwd()
-      });
-
-      this.dependencyCache.set(cacheKey, true);
-    } catch (error) {
-      throw new Error(`Failed to install dependencies: ${error.message}`);
-    }
+    return this.dependencyInstaller.installDependencies(dependencies);
   }
 
   async loadTool(toolDef) {
@@ -78,57 +55,8 @@ export class ToolLoader {
       this.installDependencies(validation.found);
     }
 
-    const toolModule = {
-      name: toolDef.name,
-      description: toolDef.description || '',
-      handler: null,
-      parameters: toolDef.parameters || {},
-      metadata: toolDef.metadata || {},
-      validation
-    };
-
-    if (toolDef.code) {
-      try {
-        let handler = null;
-        let metadata = {};
-
-        if (toolDef.code.includes('export async function')) {
-          const fnMatch = toolDef.code.match(/export async function\s+(\w+)/);
-          const fnName = fnMatch ? fnMatch[1] : 'handler';
-          const metadataMatch = toolDef.code.match(/export const metadata = ({[\s\S]*?});/);
-
-          handler = new Function('return async function ' + fnName + '(args) { ' + toolDef.code.split('{')[1].split('}')[0] + ' }')();
-          if (metadataMatch) {
-            try {
-              metadata = JSON.parse(metadataMatch[1]);
-            } catch (e) {
-              // metadata parsing error, use default
-            }
-          }
-        } else {
-          const moduleCode = toolDef.code;
-          const tempFile = path.join('/tmp', `tool-${toolDef.name}-${Date.now()}.mjs`);
-          fs.writeFileSync(tempFile, moduleCode);
-
-          try {
-            const module = await import(`file://${tempFile}`);
-            handler = module.handler || module.default;
-            metadata = module.metadata || {};
-          } finally {
-            try {
-              fs.unlinkSync(tempFile);
-            } catch (e) {
-              // ignore cleanup errors
-            }
-          }
-        }
-
-        toolModule.handler = handler || (async (args) => ({ success: false, error: 'No handler found' }));
-        toolModule.metadata = { ...toolModule.metadata, ...metadata };
-      } catch (error) {
-        throw new Error(`Failed to load tool ${toolDef.name}: ${error.message}`);
-      }
-    }
+    const toolModule = await this.codeLoader.loadToolCode(toolDef);
+    toolModule.validation = validation;
 
     this.cache.set(toolDef.name, toolModule);
     return toolModule;
@@ -137,24 +65,15 @@ export class ToolLoader {
   async loadAllTools(toolsDir) {
     const tools = [];
 
-    if (!fs.existsSync(toolsDir)) {
-      return tools;
-    }
+    const fileLoader = this.fileLoader;
+    const iterator = fileLoader.loadAllTools(toolsDir);
 
-    const files = fs.readdirSync(toolsDir);
-
-    for (const file of files) {
-      if (!file.endsWith('.json')) continue;
-
-      const filePath = path.join(toolsDir, file);
-      const content = fs.readFileSync(filePath, 'utf-8');
-      const toolDef = JSON.parse(content);
-
+    for await (const { name, definition } of iterator) {
       try {
-        const tool = await this.loadTool(toolDef);
+        const tool = await this.loadTool(definition);
         tools.push(tool);
       } catch (error) {
-        logger.error(`Error loading tool ${file}:`, error.message);
+        logger.error(`Error loading tool ${name}:`, error.message);
       }
     }
 
@@ -162,25 +81,11 @@ export class ToolLoader {
   }
 
   createToolDefinition(name, description, handler, imports = []) {
-    return {
-      name,
-      description,
-      code: handler.toString(),
-      metadata: { imports },
-      parameters: {},
-      required: []
-    };
+    return this.defManager.createToolDefinition(name, description, handler, imports);
   }
 
   saveToolDefinition(toolDef, outputDir) {
-    if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir, { recursive: true });
-    }
-
-    const filePath = path.join(outputDir, `${toolDef.name}.json`);
-    fs.writeFileSync(filePath, JSON.stringify(toolDef, null, 2));
-
-    return filePath;
+    return this.defManager.saveToolDefinition(toolDef, outputDir);
   }
 
   clearCache() {
@@ -188,9 +93,10 @@ export class ToolLoader {
   }
 
   getCacheStats() {
+    const stats = this.cache.getStats();
     return {
-      cachedTools: this.cache.size,
-      cachedDependencies: this.dependencyCache.size
+      ...stats,
+      cachedDependencies: this.dependencyInstaller.getCacheSize()
     };
   }
 }
