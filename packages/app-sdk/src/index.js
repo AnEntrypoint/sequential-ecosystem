@@ -1,30 +1,22 @@
-import { RealtimeConnection } from './realtime-connection.js';
+/**
+ * index.js - AppSDK Facade
+ *
+ * Delegates to focused modules:
+ * - storage-operations: get, set, delete storage
+ * - realtime-operations: connect, joinRoom
+ * - llm-operations: chat completion
+ * - tool-operations: register, invoke, list tools
+ * - task-operations: run, list tasks
+ */
+
 import { ToolRegistry } from './tool-registration.js';
-import { detectEnvironment, getEnvironment, initializeGlobalEnv } from './environment-detector.js';
+import { getEnvironment } from './environment-detector.js';
 import { createResponseUnwrapper } from './response-unwrapper.js';
-import { createToolOrchestrator } from './tool-orchestrator.js';
-import { createToolStateBroadcaster } from './tool-state-broadcast.js';
-import { createFlowContractTester } from './flow-contract-tester.js';
-import { createRealtimeSubscription } from './realtime-subscription.js';
-import { createExecutionContext, setExecutionContext, getExecutionContext, withContext, createChildContext, injectContext, getCorrelationId } from './execution-context.js';
-import { createToolParameterIntrospection } from './tool-parameter-introspection.js';
-import { createErrorClarity } from './error-clarity.js';
-import { createFeatureDetection } from './feature-detection.js';
-import { createConfigManager } from './config-manager.js';
-import { createTaskValidationMiddleware } from './task-validation-middleware.js';
-import { createFlowHandlerGenerator } from './flow-handler-generator.js';
-import { createAppSDKFactory } from './app-sdk-factory.js';
-import { createExecutionBreadcrumbs } from './execution-breadcrumbs.js';
-import { createValidationErrorSuggestions } from './validation-error-suggestions.js';
-import { createStateContextBreadcrumbs } from './state-context-breadcrumbs.js';
-import { createToolInvocationValidator } from './tool-invocation-validator.js';
-import { createExecutionCheckpointer } from './execution-checkpointer.js';
-import { createEntityRelationshipMapper } from './entity-relationship-mapper.js';
-import { createExecutionTrail } from './execution-trail.js';
-import { createToolInvocationComposer } from './tool-invocation-composer.js';
-import { createSchemaInvalidationTracker } from './schema-invalidation-tracker.js';
-import { createBroadcastSequenceController } from './broadcast-sequence-controller.js';
-import { createAtomicWriteController } from './atomic-write-controller.js';
+import { createStorageOperations } from './storage-operations.js';
+import { createRealtimeOperations } from './realtime-operations.js';
+import { createLlmOperations } from './llm-operations.js';
+import { createToolOperations } from './tool-operations.js';
+import { createTaskOperations } from './task-operations.js';
 
 export class AppSDK {
   constructor(options = {}) {
@@ -40,122 +32,48 @@ export class AppSDK {
     if (this.unwrapper && options.installGlobalFetch !== false) {
       this.unwrapper.install();
     }
+
+    // Initialize operation modules
+    this.storageOps = createStorageOperations(this.baseUrl, this.appId);
+    this.realtimeOps = createRealtimeOperations(this.wsUrl, this.userId, this.appId);
+    this.llmOps = createLlmOperations(this.baseUrl, this.appId, this.userId);
+    this.toolOps = createToolOperations(this.tools, this.baseUrl, this.appId, this.userId, this.autoRegister);
+    this.taskOps = createTaskOperations(this.baseUrl, this.appId);
   }
 
+  // Storage delegation
   async storage(action, ...args) {
-    if (!this.appId) throw new Error('appId required for storage operations');
-
-    const [key, value, scope = 'app'] = args;
-    const path = `${scope}/${this.appId}/${key}`;
-
-    if (action === 'get') {
-      const res = await fetch(`${this.baseUrl}/api/storage/${path}`);
-      if (!res.ok) return null;
-      const data = await res.json();
-      return data.value;
-    }
-
-    if (action === 'set') {
-      const res = await fetch(`${this.baseUrl}/api/storage/${path}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ value })
-      });
-      return res.ok;
-    }
-
-    if (action === 'delete') {
-      const res = await fetch(`${this.baseUrl}/api/storage/${path}`, { method: 'DELETE' });
-      return res.ok;
-    }
+    const [key, value, scope] = args;
+    return this.storageOps[action](key, value, scope);
   }
 
+  // Realtime delegation
   realtime(action, ...args) {
-    const [roomId, options = {}] = args;
-
-    if (action === 'connect') {
-      return new RealtimeConnection(this.wsUrl, roomId, {
-        userId: this.userId,
-        appId: this.appId,
-        ...options
-      });
-    }
-
-    if (action === 'joinRoom') {
-      const conn = new RealtimeConnection(this.wsUrl, roomId, {
-        userId: this.userId,
-        appId: this.appId,
-        autoConnect: false,
-        ...options
-      });
-      conn.connect();
-      return conn;
-    }
+    const [roomId, options] = args;
+    return this.realtimeOps[action](roomId, options);
   }
 
+  // LLM delegation
   async llm(prompt, options = {}) {
-    const body = {
-      prompt,
-      model: options.model || 'claude-3-5-sonnet-20241022',
-      maxTokens: options.maxTokens || 1024,
-      temperature: options.temperature || 0.7,
-      system: options.system,
-      tools: options.tools || [],
-      toolChoice: options.toolChoice,
-      context: { appId: this.appId, userId: this.userId }
-    };
-
-    const res = await fetch(`${this.baseUrl}/api/llm/chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-
-    if (!res.ok) throw new Error(`LLM request failed: ${res.statusText}`);
-    return await res.json();
+    return this.llmOps.chat(prompt, options);
   }
 
+  // Tool delegation
   tool(name, fn, description = '', options = {}) {
-    this.tools.register(name, fn, description, options);
-    if (this.autoRegister) {
-      this.tools.remote(name, fn, description, options).catch(err => {
-        console.warn(`Failed to register tool "${name}":`, err.message);
-      });
-    }
+    this.toolOps.register(name, fn, description, options);
     return this;
   }
 
   async initTools() {
-    return await this.tools.initAll();
+    return this.toolOps.initAll();
   }
 
   async tools(action, ...args) {
-    const [toolName, input = {}] = args;
-
-    if (action === 'invoke') {
-      const res = await fetch(`${this.baseUrl}/api/tools/${toolName}/invoke`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ input, context: { appId: this.appId, userId: this.userId } })
-      });
-      if (!res.ok) throw new Error(`Tool invocation failed: ${res.statusText}`);
-      return await res.json();
-    }
-
-    if (action === 'list') {
-      const res = await fetch(`${this.baseUrl}/api/tools`);
-      if (!res.ok) return [];
-      const data = await res.json();
-      return data.tools || [];
-    }
-
-    if (action === 'get') {
-      const res = await fetch(`${this.baseUrl}/api/tools/${toolName}`);
-      if (!res.ok) return null;
-      return await res.json();
-    }
+    const [toolName, input] = args;
+    return this.toolOps[action](toolName, input);
   }
 
+  // User info
   async user() {
     if (!this.sessionToken) return null;
     const res = await fetch(`${this.baseUrl}/api/user`, {
@@ -166,25 +84,10 @@ export class AppSDK {
     return data.user || data;
   }
 
+  // Task delegation
   async tasks(action, ...args) {
     const [taskName, input] = args;
-
-    if (action === 'run') {
-      const res = await fetch(`${this.baseUrl}/api/tasks/${taskName}/run`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ input })
-      });
-      if (!res.ok) throw new Error(`Task execution failed: ${res.statusText}`);
-      return await res.json();
-    }
-
-    if (action === 'list') {
-      const res = await fetch(`${this.baseUrl}/api/tasks`);
-      if (!res.ok) return [];
-      const data = await res.json();
-      return data.tasks || [];
-    }
+    return this.taskOps[action](taskName, input);
   }
 
   static initialize(config = {}) {
@@ -198,14 +101,31 @@ export class AppSDK {
   }
 }
 
-export { RealtimeConnection };
-export { createToolOrchestrator, createToolStateBroadcaster, createFlowContractTester };
-export { createRealtimeSubscription, createExecutionContext, setExecutionContext, getExecutionContext, withContext, createChildContext, injectContext, getCorrelationId };
-export { createToolParameterIntrospection };
-export { createErrorClarity, createFeatureDetection, createConfigManager };
-export { createTaskValidationMiddleware, createFlowHandlerGenerator };
-export { createAppSDKFactory, createExecutionBreadcrumbs, createValidationErrorSuggestions };
-export { createStateContextBreadcrumbs, createToolInvocationValidator, createExecutionCheckpointer };
-export { createEntityRelationshipMapper, createExecutionTrail, createToolInvocationComposer };
-export { createSchemaInvalidationTracker, createBroadcastSequenceController, createAtomicWriteController };
+// Re-exports of support modules
+export { RealtimeConnection } from './realtime-connection.js';
+export { detectEnvironment, getEnvironment, initializeGlobalEnv } from './environment-detector.js';
+export { createResponseUnwrapper } from './response-unwrapper.js';
+export { createToolOrchestrator } from './tool-orchestrator.js';
+export { createToolStateBroadcaster } from './tool-state-broadcast.js';
+export { createFlowContractTester } from './flow-contract-tester.js';
+export { createRealtimeSubscription } from './realtime-subscription.js';
+export { createExecutionContext, setExecutionContext, getExecutionContext, withContext, createChildContext, injectContext, getCorrelationId } from './execution-context.js';
+export { createToolParameterIntrospection } from './tool-parameter-introspection.js';
+export { createErrorClarity } from './error-clarity.js';
+export { createFeatureDetection } from './feature-detection.js';
+export { createConfigManager } from './config-manager.js';
+export { createTaskValidationMiddleware } from './task-validation-middleware.js';
+export { createFlowHandlerGenerator } from './flow-handler-generator.js';
+export { createAppSDKFactory } from './app-sdk-factory.js';
+export { createExecutionBreadcrumbs } from './execution-breadcrumbs.js';
+export { createValidationErrorSuggestions } from './validation-error-suggestions.js';
+export { createStateContextBreadcrumbs } from './state-context-breadcrumbs.js';
+export { createToolInvocationValidator } from './tool-invocation-validator.js';
+export { createExecutionCheckpointer } from './execution-checkpointer.js';
+export { createEntityRelationshipMapper } from './entity-relationship-mapper.js';
+export { createExecutionTrail } from './execution-trail.js';
+export { createToolInvocationComposer } from './tool-invocation-composer.js';
+export { createSchemaInvalidationTracker } from './schema-invalidation-tracker.js';
+export { createBroadcastSequenceController } from './broadcast-sequence-controller.js';
+export { createAtomicWriteController } from './atomic-write-controller.js';
 export default AppSDK;
