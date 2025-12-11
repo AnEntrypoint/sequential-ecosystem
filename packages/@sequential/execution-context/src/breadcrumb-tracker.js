@@ -1,194 +1,148 @@
+/**
+ * breadcrumb-tracker.js - Facade for breadcrumb and state tracking
+ *
+ * Delegates to focused modules:
+ * - breadcrumb-manager: Breadcrumb push/pop/clear operations
+ * - breadcrumb-formatter: Breadcrumb formatting and summaries
+ * - state-stack-manager: State push/pop/navigation
+ * - state-formatter: State chain and execution trace formatting
+ * - state-snapshot-manager: State snapshot recording and history
+ * - error-context-enhancer: Error enhancement with context
+ */
+
+import { createBreadcrumbManager } from './breadcrumb-manager.js';
+import { createBreadcrumbFormatter } from './breadcrumb-formatter.js';
+import { createStateStackManager } from './state-stack-manager.js';
+import { createStateFormatter } from './state-formatter.js';
+import { createStateSnapshotManager } from './state-snapshot-manager.js';
+import { createErrorContextEnhancer } from './error-context-enhancer.js';
+
 export function createBreadcrumbTracker(maxBreadcrumbs = 50) {
-  const breadcrumbs = [];
-  const stateStack = [];
-  const stateSnapshots = new Map();
+  const breadcrumbManager = createBreadcrumbManager(maxBreadcrumbs);
+  const breadcrumbFormatter = createBreadcrumbFormatter(breadcrumbManager);
+  const stateStackManager = createStateStackManager();
+  const stateFormatter = createStateFormatter(stateStackManager);
+  const snapshotManager = createStateSnapshotManager();
+  const errorEnhancer = createErrorContextEnhancer(
+    breadcrumbManager,
+    breadcrumbFormatter,
+    stateStackManager,
+    stateFormatter
+  );
 
   return {
+    // Breadcrumb operations
     pushBreadcrumb(toolName, action = 'invoke', metadata = {}) {
-      const breadcrumb = {
-        tool: toolName,
-        action: action,
-        timestamp: new Date().toISOString(),
-        metadata: metadata
-      };
-
-      breadcrumbs.push(breadcrumb);
-      if (breadcrumbs.length > maxBreadcrumbs) {
-        breadcrumbs.shift();
-      }
-
-      return breadcrumb;
+      return breadcrumbManager.pushBreadcrumb(toolName, action, metadata);
     },
 
     popBreadcrumb() {
-      return breadcrumbs.pop();
+      return breadcrumbManager.popBreadcrumb();
     },
 
     getCurrentBreadcrumb() {
-      return breadcrumbs.length > 0 ? breadcrumbs[breadcrumbs.length - 1] : null;
+      return breadcrumbManager.getCurrentBreadcrumb();
     },
 
     getAllBreadcrumbs() {
-      return breadcrumbs.slice();
+      return breadcrumbManager.getAllBreadcrumbs();
     },
 
     getBreadcrumbTrail() {
-      return breadcrumbs.map((b) => b.tool);
+      return breadcrumbFormatter.getBreadcrumbTrail();
     },
 
     getBreadcrumbChain() {
-      return breadcrumbs.map((b) => `${b.tool} (${b.action})`).join(' → ');
+      return breadcrumbFormatter.getBreadcrumbChain();
     },
 
     getLastNBreadcrumbs(n) {
-      return breadcrumbs.slice(-n);
+      return breadcrumbFormatter.getLastNBreadcrumbs(n);
     },
 
     clearBreadcrumbs() {
-      breadcrumbs.length = 0;
+      return breadcrumbManager.clearBreadcrumbs();
     },
 
     enhanceErrorWithBreadcrumbs(error) {
-      if (!error) return null;
-
-      error.breadcrumbs = breadcrumbs.slice();
-      error.breadcrumbTrail = this.getBreadcrumbTrail();
-      error.breadcrumbChain = this.getBreadcrumbChain();
-
-      return error;
+      return errorEnhancer.enhanceErrorWithBreadcrumbs(error);
     },
 
     getSummary() {
-      return {
-        totalCalls: breadcrumbs.length,
-        uniqueTools: new Set(breadcrumbs.map((b) => b.tool)).size,
-        successCount: breadcrumbs.filter((b) => b.action === 'success').length,
-        errorCount: breadcrumbs.filter((b) => b.action === 'error').length,
-        executionChain: this.getBreadcrumbChain()
-      };
+      return breadcrumbFormatter.getSummary();
     },
 
+    // State stack operations
     pushState(stateName, input = {}, metadata = {}) {
-      const stateEntry = {
-        state: stateName,
-        index: stateStack.length,
-        input: input,
-        timestamp: new Date().toISOString(),
-        metadata: metadata
-      };
-
-      stateStack.push(stateEntry);
-      return stateEntry;
+      return stateStackManager.pushState(stateName, input, metadata);
     },
 
     popState(output = {}, error = null) {
-      if (stateStack.length === 0) {
-        return null;
+      const stateExit = stateStackManager.popState(output, error);
+      if (stateExit && stateExit.state) {
+        snapshotManager.recordSnapshot(stateExit.state, stateExit);
       }
-
-      const stateEntry = stateStack[stateStack.length - 1];
-      stateEntry.output = output;
-      stateEntry.error = error;
-      stateEntry.endTime = new Date().toISOString();
-
-      if (stateEntry.timestamp && stateEntry.endTime) {
-        stateEntry.duration = new Date(stateEntry.endTime) - new Date(stateEntry.timestamp);
-      }
-
-      stateStack.pop();
-      return stateEntry;
+      return stateExit;
     },
 
     getCurrentState() {
-      return stateStack.length > 0 ? stateStack[stateStack.length - 1] : null;
+      return stateStackManager.getCurrentState();
     },
 
     getStatePath() {
-      return stateStack.map((s) => s.state);
+      return stateFormatter.getStatePath();
     },
 
     getStateChain() {
-      return stateStack.map((s) => {
-        const status = s.error ? 'error' : (s.output ? 'done' : 'active');
-        return `${s.state} [${status}]`;
-      }).join(' → ');
+      return stateFormatter.getStateChain();
     },
 
     getAllStates() {
-      return stateStack.slice();
+      return stateStackManager.getAllStates();
     },
 
     clearStateStack() {
-      stateStack.length = 0;
-      stateSnapshots.clear();
+      stateStackManager.clearStateStack();
+      snapshotManager.clearSnapshots();
     },
 
+    // Error enhancement
     attachStateContextToError(error) {
-      if (!error) return null;
-
-      error.stateContext = {
-        path: this.getStatePath(),
-        chain: this.getStateChain(),
-        currentState: this.getCurrentState(),
-        allStates: this.getAllStates(),
-        stateCount: stateStack.length
-      };
-
-      if (this.getCurrentState()) {
-        error.failingState = this.getCurrentState().state;
-        error.stateIndex = this.getCurrentState().index;
-        error.stateInput = this.getCurrentState().input;
-      }
-
-      return error;
+      return errorEnhancer.attachStateContextToError(error);
     },
 
     wrapStateHandler(stateName, handlerFn) {
-      const self = this;
       return async function wrappedHandler(input) {
-        self.pushState(stateName, input, { role: 'handler' });
+        stateStackManager.pushState(stateName, input, { role: 'handler' });
 
         try {
           const result = await handlerFn(input);
-          const stateExit = self.popState(result, null);
-          stateSnapshots.set(stateName, stateExit);
+          const stateExit = stateStackManager.popState(result, null);
+          if (stateExit && stateExit.state) {
+            snapshotManager.recordSnapshot(stateName, stateExit);
+          }
           return result;
         } catch (err) {
-          const enhanced = self.attachStateContextToError(err);
-          self.popState(null, err);
+          const enhanced = errorEnhancer.enhanceWithFullContext(err);
+          stateStackManager.popState(null, err);
           throw enhanced;
         }
       };
     },
 
     getStateSnapshot(stateName) {
-      return stateSnapshots.get(stateName) || null;
+      return snapshotManager.getSnapshot(stateName);
     },
 
     getExecutionTrace() {
       return {
-        totalStates: stateStack.length,
-        path: this.getStatePath(),
-        chain: this.getStateChain(),
-        snapshots: Array.from(stateSnapshots.entries()).map(([state, snapshot]) => ({
-          state,
-          snapshot
-        }))
+        ...stateFormatter.getExecutionTrace(),
+        snapshots: snapshotManager.getAllSnapshots()
       };
     },
 
     getStateSummary() {
-      const completedStates = Array.from(stateSnapshots.values());
-      const totalDuration = completedStates.reduce((sum, s) => sum + (s.duration || 0), 0);
-
-      return {
-        statesVisited: stateStack.length,
-        statesCompleted: completedStates.length,
-        currentPath: this.getStatePath(),
-        executionTrace: this.getStateChain(),
-        totalDuration: totalDuration,
-        averageStateDuration: completedStates.length > 0 ? totalDuration / completedStates.length : 0
-      };
+      return snapshotManager.getSummary(stateStackManager);
     }
   };
 }
