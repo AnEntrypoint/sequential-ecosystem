@@ -1,3 +1,7 @@
+// Facade maintaining 100% backward compatibility with focused modules
+import { CodeGenFormatters } from './code-gen-formatters.js';
+import { TemplateCodeGenerator as TemplateCodeGeneratorImpl } from './template-code-generator.js';
+
 export class ComponentCodeGenerator {
   constructor() {
     this.templates = new Map();
@@ -5,237 +9,54 @@ export class ComponentCodeGenerator {
   }
 
   initializeTemplates() {
-    this.templates.set('jsx', this.generateJSX.bind(this));
-    this.templates.set('json', this.generateJSON.bind(this));
-    this.templates.set('typescript', this.generateTypeScript.bind(this));
-    this.templates.set('vue', this.generateVue.bind(this));
+    this.templates.set('jsx', this.generate.bind(this, undefined, 'jsx'));
+    this.templates.set('json', this.generate.bind(this, undefined, 'json'));
+    this.templates.set('typescript', this.generate.bind(this, undefined, 'typescript'));
+    this.templates.set('vue', this.generate.bind(this, undefined, 'vue'));
   }
 
   generate(component, format = 'jsx', options = {}) {
-    const generator = this.templates.get(format);
-    if (!generator) {
+    const generators = {
+      jsx: () => CodeGenFormatters.generateJSX(component, options),
+      json: () => CodeGenFormatters.generateJSON(component, options),
+      typescript: () => CodeGenFormatters.generateTypeScript(component, options),
+      vue: () => CodeGenFormatters.generateVue(component, options)
+    };
+
+    if (!generators[format]) {
       throw new Error(`Unknown format: ${format}`);
     }
-    return generator(component, options);
+    return generators[format]();
   }
 
   generateJSX(component, options = {}) {
-    const indent = options.indent || 0;
-    const spaces = '  '.repeat(indent);
-    const nextSpaces = '  '.repeat(indent + 1);
-
-    let jsx = `<${component.type}`;
-
-    if (component.props && Object.keys(component.props).length > 0) {
-      Object.entries(component.props).forEach(([key, value]) => {
-        if (typeof value === 'string') {
-          jsx += ` ${key}="${value}"`;
-        } else if (typeof value === 'boolean') {
-          if (value) jsx += ` ${key}`;
-        } else {
-          jsx += ` ${key}={${JSON.stringify(value)}}`;
-        }
-      });
-    }
-
-    if (component.style && Object.keys(component.style).length > 0) {
-      jsx += ` style={${JSON.stringify(component.style)}}`;
-    }
-
-    if (component.children && component.children.length > 0) {
-      jsx += '>\n';
-      component.children.forEach(child => {
-        jsx += nextSpaces + this.generateJSX(child, { ...options, indent: indent + 1 }).trim() + '\n';
-      });
-      jsx += `${spaces}</${component.type}>`;
-    } else if (component.content) {
-      jsx += `>${component.content}</${component.type}>`;
-    } else {
-      jsx += ' />';
-    }
-
-    return jsx;
+    return CodeGenFormatters.generateJSX(component, options);
   }
 
   generateJSON(component, options = {}) {
-    const pretty = options.pretty !== false;
-    return JSON.stringify(component, null, pretty ? 2 : 0);
+    return CodeGenFormatters.generateJSON(component, options);
   }
 
   generateTypeScript(component, options = {}) {
-    const indent = options.indent || 0;
-    const spaces = '  '.repeat(indent);
-    const nextSpaces = '  '.repeat(indent + 1);
-
-    let ts = `interface ${this.pascalCase(component.type)}Props {\n`;
-
-    if (component.props && Object.keys(component.props).length > 0) {
-      Object.entries(component.props).forEach(([key, value]) => {
-        const type = this.inferTypeScript(value);
-        ts += `${nextSpaces}${key}?: ${type};\n`;
-      });
-    }
-
-    if (component.children && component.children.length > 0) {
-      ts += `${nextSpaces}children?: React.ReactNode;\n`;
-    }
-
-    ts += `}\n\n`;
-    ts += `const ${this.pascalCase(component.type)}: React.FC<${this.pascalCase(component.type)}Props> = (props) => {\n`;
-    ts += `${nextSpaces}return (\n`;
-    ts += `${nextSpaces}  ${this.generateJSX(component, { ...options, indent: indent + 2 })}\n`;
-    ts += `${nextSpaces});\n`;
-    ts += `};\n\n`;
-    ts += `export default ${this.pascalCase(component.type)};`;
-
-    return ts;
+    return CodeGenFormatters.generateTypeScript(component, options);
   }
 
   generateVue(component, options = {}) {
-    const indent = options.indent || 0;
-    const spaces = '  '.repeat(indent);
-    const nextSpaces = '  '.repeat(indent + 1);
-
-    let vue = `<template>\n`;
-    vue += nextSpaces + this.generateJSX(component, { ...options, indent: indent + 1 }).trim() + '\n';
-    vue += `</template>\n\n`;
-
-    vue += `<script setup>\n`;
-    if (component.props && Object.keys(component.props).length > 0) {
-      vue += `${nextSpaces}defineProps({\n`;
-      Object.entries(component.props).forEach(([key]) => {
-        vue += `${nextSpaces}  ${key}: [String, Number, Boolean, Object],\n`;
-      });
-      vue += `${nextSpaces}});\n`;
-    }
-    vue += `</script>\n\n`;
-
-    vue += `<style scoped>\n`;
-    vue += `${nextSpaces}/* Add component styles here */\n`;
-    vue += `</style>`;
-
-    return vue;
+    return CodeGenFormatters.generateVue(component, options);
   }
 
   inferTypeScript(value) {
-    if (typeof value === 'string') return 'string';
-    if (typeof value === 'number') return 'number';
-    if (typeof value === 'boolean') return 'boolean';
-    if (Array.isArray(value)) return 'any[]';
-    if (typeof value === 'object') return 'Record<string, any>';
-    return 'any';
+    return CodeGenFormatters.inferTypeScript(value);
   }
 
   pascalCase(str) {
-    return str
-      .split('-')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join('');
+    return CodeGenFormatters.pascalCase(str);
   }
 }
 
-export class TemplateCodeGenerator {
+export class TemplateCodeGenerator extends TemplateCodeGeneratorImpl {
   constructor(advancedBuilder) {
-    this.builder = advancedBuilder;
-    this.codeGenerator = new ComponentCodeGenerator();
-  }
-
-  generateFormTemplate(fields, templateName = 'form', options = {}) {
-    const component = this.builder.buildFormFromTemplate(fields, templateName, options);
-    return {
-      jsx: this.codeGenerator.generate(component, 'jsx'),
-      json: this.codeGenerator.generate(component, 'json'),
-      typescript: this.codeGenerator.generate(component, 'typescript')
-    };
-  }
-
-  generateDashboardTemplate(metrics, options = {}) {
-    const component = this.builder.buildDashboardFromMetrics(metrics, options);
-    return {
-      jsx: this.codeGenerator.generate(component, 'jsx'),
-      json: this.codeGenerator.generate(component, 'json'),
-      typescript: this.codeGenerator.generate(component, 'typescript')
-    };
-  }
-
-  generateResponsiveGrid(items, options = {}) {
-    const component = this.builder.buildResponsiveGrid(items, options);
-    return {
-      jsx: this.codeGenerator.generate(component, 'jsx'),
-      json: this.codeGenerator.generate(component, 'json'),
-      typescript: this.codeGenerator.generate(component, 'typescript')
-    };
-  }
-
-  generateDataTable(columns, rows, options = {}) {
-    const component = this.builder.buildDataTable(columns, rows, options);
-    return {
-      jsx: this.codeGenerator.generate(component, 'jsx'),
-      json: this.codeGenerator.generate(component, 'json'),
-      typescript: this.codeGenerator.generate(component, 'typescript')
-    };
-  }
-
-  generateReactComponent(component, componentName) {
-    return `import React from 'react';
-import { renderJSX, AppRenderingBridge } from '@sequentialos/dynamic-components';
-
-interface ${componentName}Props {
-  // Add your props here
-}
-
-export const ${componentName}: React.FC<${componentName}Props> = (props) => {
-  const component = ${this.codeGenerator.generate(component, 'json')};
-
-  return (
-    <div>
-      {renderJSX(component, props)}
-    </div>
-  );
-};
-
-export default ${componentName};`;
-  }
-
-  generateAppTemplate(appName, components = []) {
-    return `import { initializeAppRendering, createAdvancedBuilder, createThemeEngine } from '@sequentialos/dynamic-components';
-
-class ${this.pascalCase(appName)}App {
-  async init() {
-    this.bridge = await initializeAppRendering('${appName}', '#app');
-    this.theme = createThemeEngine();
-    this.builder = createAdvancedBuilder(this.bridge.registry, this.theme);
-
-    await this.renderUI();
-  }
-
-  async renderUI() {
-    // Initialize state
-    this.bridge.setState('data', {});
-
-    // Build and render components
-    ${components.map((comp, idx) => `const component${idx} = this.builder.build${this.pascalCase(comp.template || 'flex')}(this.data);`).join('\n    ')}
-
-    const layout = {
-      type: 'flex',
-      direction: 'column',
-      gap: '16px',
-      children: [${components.map((_, idx) => `component${idx}`).join(', ')}]
-    };
-
-    this.bridge.render('flex', layout);
-  }
-}
-
-const app = new ${this.pascalCase(appName)}App();
-app.init().catch(err => console.error('App init failed:', err));`;
-  }
-
-  pascalCase(str) {
-    return str
-      .split('-')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join('');
+    super(advancedBuilder);
   }
 }
 
