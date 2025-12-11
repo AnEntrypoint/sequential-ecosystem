@@ -136,8 +136,13 @@ export {
 } from './patterns/forms/index.js';
 export {
   FormPatternsExtended,
-  createFormPatternsExtended
-} from './form-patterns-extended.js';
+  createFormPatternsExtended,
+  textInputPatterns,
+  selectionPatterns,
+  pickerPatterns,
+  uploadPatterns,
+  advancedPatterns
+} from './patterns/extended-forms/index.js';
 export {
   ListPatternLibrary,
   createListPatternLibrary
