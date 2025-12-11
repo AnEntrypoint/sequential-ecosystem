@@ -1,6 +1,19 @@
+/**
+ * supabase.js - Facade for Supabase storage adapter
+ *
+ * Delegates to focused modules:
+ * - task-run-operations: Task run CRUD
+ * - stack-run-operations: Stack run CRUD
+ * - task-function-operations: Task function storage
+ * - keystore-operations: Credential management
+ */
+
 import { createClient } from '@supabase/supabase-js';
 import { StorageAdapter } from '@sequentialos/sequential-adaptor';
-import { nowISO } from '@sequentialos/sequential-utils/timestamps';
+import { createTaskRunOperations } from './task-run-operations.js';
+import { createStackRunOperations } from './stack-run-operations.js';
+import { createTaskFunctionOperations } from './task-function-operations.js';
+import { createKeystoreOperations } from './keystore-operations.js';
 
 /**
  * Supabase storage adapter
@@ -19,174 +32,72 @@ export class SupabaseAdapter extends StorageAdapter {
   async init() {
     this.client = createClient(this.url, this.anonKey);
     this.admin = createClient(this.url, this.serviceKey);
+
+    // Initialize operation modules
+    this.taskRunOps = createTaskRunOperations(this.admin, this.client);
+    this.stackRunOps = createStackRunOperations(this.admin, this.client);
+    this.taskFunctionOps = createTaskFunctionOperations(this.admin, this.client);
+    this.keystoreOps = createKeystoreOperations(this.admin, this.client);
   }
 
+  // Task run operations
   async createTaskRun(taskRun) {
-    const { data, error } = await this.admin
-      .from('task_runs')
-      .insert(taskRun)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
+    return this.taskRunOps.createTaskRun(taskRun);
   }
 
   async getTaskRun(id) {
-    const { data, error } = await this.client
-      .from('task_runs')
-      .select('*')
-      .eq('id', id)
-      .single();
-
-    if (error && error.code !== 'PGRST116') throw error;
-    return data || null;
+    return this.taskRunOps.getTaskRun(id);
   }
 
   async updateTaskRun(id, updates) {
-    const { data, error } = await this.admin
-      .from('task_runs')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
+    return this.taskRunOps.updateTaskRun(id, updates);
   }
 
   async queryTaskRuns(filter) {
-    let query = this.client.from('task_runs').select('*');
-
-    Object.entries(filter).forEach(([key, value]) => {
-      query = query.eq(key, value);
-    });
-
-    const { data, error } = await query;
-    if (error) throw error;
-    return data;
+    return this.taskRunOps.queryTaskRuns(filter);
   }
 
+  // Stack run operations
   async createStackRun(stackRun) {
-    const { data, error } = await this.admin
-      .from('stack_runs')
-      .insert(stackRun)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
+    return this.stackRunOps.createStackRun(stackRun);
   }
 
   async getStackRun(id) {
-    const { data, error } = await this.client
-      .from('stack_runs')
-      .select('*')
-      .eq('id', id)
-      .single();
-
-    if (error && error.code !== 'PGRST116') throw error;
-    return data || null;
+    return this.stackRunOps.getStackRun(id);
   }
 
   async updateStackRun(id, updates) {
-    const { data, error } = await this.admin
-      .from('stack_runs')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
+    return this.stackRunOps.updateStackRun(id, updates);
   }
 
   async queryStackRuns(filter) {
-    let query = this.client.from('stack_runs').select('*');
-
-    Object.entries(filter).forEach(([key, value]) => {
-      query = query.eq(key, value);
-    });
-
-    const { data, error } = await query;
-    if (error) throw error;
-    return data;
+    return this.stackRunOps.queryStackRuns(filter);
   }
 
   async getPendingStackRuns() {
-    const { data, error } = await this.client
-      .from('stack_runs')
-      .select('*')
-      .in('status', ['pending', 'suspended_waiting_child'])
-      .order('created_at', { ascending: true });
-
-    if (error) throw error;
-    return data;
+    return this.stackRunOps.getPendingStackRuns();
   }
 
+  // Task function operations
   async storeTaskFunction(taskFunction) {
-    const { data, error } = await this.admin
-      .from('task_functions')
-      .upsert({
-        identifier: taskFunction.identifier,
-        code: taskFunction.code,
-        metadata: taskFunction.metadata,
-        updated_at: nowISO()
-      }, { onConflict: 'identifier' })
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
+    return this.taskFunctionOps.storeTaskFunction(taskFunction);
   }
 
   async getTaskFunction(identifier) {
-    const { data, error } = await this.client
-      .from('task_functions')
-      .select('*')
-      .eq('identifier', identifier)
-      .single();
-
-    if (error && error.code !== 'PGRST116') throw error;
-    return data || null;
+    return this.taskFunctionOps.getTaskFunction(identifier);
   }
 
+  // Keystore operations
   async setKeystore(key, value) {
-    const { error } = await this.admin
-      .from('keystore')
-      .upsert({
-        key,
-        value: typeof value === 'string' ? value : JSON.stringify(value),
-        updated_at: nowISO()
-      }, { onConflict: 'key' });
-
-    if (error) throw error;
+    return this.keystoreOps.setKeystore(key, value);
   }
 
   async getKeystore(key) {
-    const { data, error } = await this.client
-      .from('keystore')
-      .select('value')
-      .eq('key', key)
-      .single();
-
-    if (error && error.code !== 'PGRST116') throw error;
-    if (!data) return null;
-
-    try {
-      return JSON.parse(data.value);
-    } catch (e) {
-      return data.value;
-    }
+    return this.keystoreOps.getKeystore(key);
   }
 
   async deleteKeystore(key) {
-    const { error } = await this.admin
-      .from('keystore')
-      .delete()
-      .eq('key', key);
-
-    if (error) throw error;
+    return this.keystoreOps.deleteKeystore(key);
   }
 
   async close() {
