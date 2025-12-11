@@ -143,16 +143,38 @@
    - HTTP routes: http-routes.js (149L)
    - All modules <200L with clear separation of concerns
 
-### 📋 NEXT PHASE (Phase 3f - Dynamic Components)
-1. **Dynamic-Components Pattern Files** (20+ files, 500-700L each)
-   - Form patterns (~700L), chart patterns (~700L), table patterns
-   - Strategic grouping by UI domain (forms, charts, tables, etc.)
-   - Extract shared pattern generation logic
-   - Estimated: 20-24h multi-day project
+### 📋 PHASE 3F ANALYSIS (Dynamic Components - Massive Epic)
+**Scope Assessment**: 32,999L across 30+ files, all >500L
+- **Top 10 files**: 6,100L (18% of total, highest complexity)
+- **Core consolidation opportunity**: Extract shared pattern-registration logic (~2,000+ LOC)
+- **Estimated effort**: 20-24h multi-day epic (requires careful coordination)
+
+**Identified consolidation targets** (priority order):
+1. Form patterns (722L + 550L extended = 1,272L)
+2. Chart patterns (714L)
+3. UI toolkit cluster (720L + 727L + 590L = 2,037L)
+4. Pattern editor cluster (587L + 573L + 546L + 551L = 2,257L)
+5. Remaining 20+ files (2,500+ LOC each category)
+
+**Recommended approach** (multi-phase):
+- 3f.1: Pattern-core extraction (create shared registration base)
+- 3f.2: Form patterns consolidation (1,272L → 5 focused modules)
+- 3f.3: Chart patterns split (714L → 4 type-specific modules)
+- 3f.4: UI toolkit consolidation (2,037L → domain-specific modules)
+- 3f.5: Pattern editor optimization (2,257L reduction via shared utilities)
+
+### 📋 PHASE 4 (Remaining Consolidations)
+**Scope**: Remaining >200L files outside dynamic-components
+- pattern-customizer-ui.js (670L)
+- code-snippets (615L)
+- pattern-variant-manager (600L)
+- pattern-ui-library.js (559L)
+- flow-editor related (538-542L files, 3 files)
+- tool-registry (486L)
+- Estimated: 3-4h consolidation work
 
 ### 🗓️ FUTURE PHASES
-- Phase 3g: Remaining >200L files analysis (identify next consolidation targets)
-- Phase 3h+: Additional large-file refactoring and duplication elimination
+- Phase 5+: Performance optimization, additional consolidations based on analysis
 
 ## Architecture Principles
 
