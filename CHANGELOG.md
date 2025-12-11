@@ -2,6 +2,51 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8.0] - Service Architecture Consolidation (Dec 11, 2025 - Ongoing)
+
+### Phase 4: Service Layer Consolidation (In Progress)
+**Major**: Breaking down monolithic service files (>500L) into focused, composable modules with clear separation of concerns. Target: 30+ service consolidations across marketplace, editor, validator, composition, profiler modules.
+
+#### Phase 4.1: UI Component Builders Split (622L → 3 modules) ✅
+- Split `component-builders.js` into categorical modules
+- **basic-builders.js** (180L): Button, card, input, select, checkbox, radio, badge
+- **container-builders.js** (220L): Alert, modal, tooltip, tabs, accordion, dropdown
+- **advanced-builders.js** (200L): Pagination, breadcrumb, progress, spinner, avatar, hero, footer
+- **Result**: 100% API compatibility via re-export facade pattern
+
+#### Phase 4.2: Pattern Marketplace Service Consolidation (609L → 3 modules) ✅
+- Created `services/marketplace/` directory with service architecture
+- **pattern-store.js** (300L): Core business logic - publish, download, rate, review, favorite, search, analytics
+- **marketplace-ui.js** (130L): UI rendering - pattern cards, featured/trending sections, search UI
+- **index.js facade** (100L): PatternMarketplace class maintaining original API
+- **Result**: Clear state/rendering separation, 100% backward compatible
+
+#### Phase 4.3: Pattern Editor Service Consolidation (587L → 4 modules) ✅
+- Created `services/editor/` directory with composition architecture
+- **pattern-editor-core.js** (200L): Core editing logic - openPattern, selectElement, element manipulation, undo/redo
+- **editor-renderer.js** (24L): Preview rendering - initializePreview, renderPreview, renderPreviewError
+- **editor-ui.js** (245L): UI layer - buildEditorUI, buildComponentTree, buildCanvas, buildPropertyInspector
+- **index.js facade** (120L): Maintains PatternEditor API with renderPreview side-effects
+- **Result**: Three-layer architecture with single state source in PatternEditorCore
+
+#### Phase 4.4: Accessibility Validator Service Consolidation (604L → 3 modules) ✅
+- Created `services/validator/` directory with audit separation
+- **validator-core.js** (340L): Core audit logic - WCAG rules (11 rules across 4 categories), 13 check methods, severity calculation
+- **validator-ui.js** (130L): UI rendering - buildValidatorUI, compliance header, level selector, results summary, category results
+- **index.js facade** (130L): AccessibilityValidatorUI maintaining original API
+- **Result**: Audit logic separated from UI, 100% backward compatible
+
+#### Phase 4.5: Pattern Composition Builder Service Split (585L → 4 modules) ✅
+- Created `services/composition/` directory with functional separation
+- **composition-core.js** (220L): Pattern management - add/remove/reorder/customize patterns, save/load/delete/export/import compositions
+- **composition-layout.js** (120L): Layout rendering - buildComposition, 4 layout types (grid/flex/stack/carousel), pattern customization
+- **composition-ui.js** (195L): UI controls - buildCompositionUI, layout selector, pattern list with reorder/delete, layout-aware controls
+- **index.js facade** (155L): Full PatternCompositionBuilder API with composition delegation
+- **Result**: Clear separation (state/render/ui), full composition lifecycle management
+
+#### Phase 4.6+: Remaining Service Files (In Progress)
+**Target files** (>500L): pattern-profiler-ui.js (573L), pattern-collaboration.js (571L), pattern-code-gen.js (551L), pattern-suggestions-ui.js (546L), layout-system.js (539L), pattern-a11y-auditor.js (530L), pattern-hot-reload.js (527L), pattern-profiler.js (521L), template-editor.js (517L), pattern-ai-suggestions.js (511L)
+
 ## [1.8.0] - Dynamic Components Epic & App-Editor Consolidation (Dec 11, 2025)
 
 ### Phase 3f: Dynamic Components Epic (Consolidation)
