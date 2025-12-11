@@ -334,7 +334,7 @@ export {
 export {
   PatternEditor,
   createPatternEditor
-} from './pattern-editor.js';
+} from './services/editor/index.js';
 export {
   MarketplaceUI,
   createMarketplaceUI
