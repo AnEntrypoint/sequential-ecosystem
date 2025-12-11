@@ -1,173 +1,85 @@
-import { RECORD_DEFAULTS } from './constants.js';
-import { Serializer } from './serializer.js';
-import { Validators } from './validators.js';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
-
-const FIELD_MAP = {
-  task_run: ['taskName', 'task_identifier', 'status', 'id'],
-  stack_run: ['task_run_id', 'parent_stack_run_id', 'status', 'id', 'operation'],
-  task_function: ['id', 'name'],
-  keystore: ['key']
-};
-
-const NORMALIZERS = {
-  task_run: (n) => ({
-    id: n.id,
-    taskName: n.taskName || n.task_identifier,
-    status: n.status || 'pending',
-    input: n.input || {},
-    output: n.output || null,
-    error: n.error || null,
-    startedAt: n.startedAt || n.created_at,
-    completedAt: n.completedAt,
-    createdAt: n.created_at || n.startedAt,
-    updatedAt: n.updated_at || n.startedAt
-  }),
-  stack_run: (n) => ({
-    id: n.id,
-    task_run_id: n.task_run_id,
-    parent_stack_run_id: n.parent_stack_run_id,
-    operation: n.operation,
-    status: n.status || 'pending',
-    input: n.input || {},
-    output: n.output || null,
-    error: n.error || null,
-    createdAt: n.createdAt || n.created_at,
-    updatedAt: n.updatedAt || n.updated_at
-  }),
-  task_function: (n) => ({
-    id: n.id,
-    name: n.name,
-    code: n.code,
-    metadata: n.metadata || {},
-    createdAt: n.createdAt || n.created_at,
-    updatedAt: n.updatedAt || n.updated_at
-  }),
-  keystore: (n) => ({
-    key: n.key,
-    value: n.value,
-    metadata: n.metadata || {},
-    createdAt: n.createdAt || n.created_at,
-    updatedAt: n.updatedAt || n.updated_at
-  })
-};
+// Facade maintaining 100% backward compatibility with CRUD patterns
+import { TaskRunCRUD } from './task-run-crud.js';
+import { StackRunCRUD } from './stack-run-crud.js';
+import { TaskFunctionCRUD } from './task-function-crud.js';
+import { KeystoreCRUD } from './keystore-crud.js';
 
 export class CRUDPatterns {
   constructor() {
-    this.serializer = new Serializer();
-  }
-
-  #buildCreate(input, recordType, timestampField = 'updatedAt') {
-    const defaults = RECORD_DEFAULTS[recordType];
-    const record = { ...defaults, ...input };
-
-    if (timestampField && !record[timestampField]) {
-      record[timestampField] = nowISO();
-    }
-
-    const validation = Validators[`validate${recordType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()).replace(/ /g, '')}`]?.(record);
-    if (validation && !validation.valid) {
-      throw new Error(`Invalid ${recordType}: ${validation.errors.join(', ')}`);
-    }
-
-    return this.serializer.prepareForStorage(record, recordType);
-  }
-
-  #buildUpdate(input, recordType) {
-    if (!input || typeof input !== 'object') {
-      return {};
-    }
-
-    const updates = { ...input };
-    updates.updatedAt = nowISO();
-    return this.serializer.prepareForStorage(updates, recordType);
-  }
-
-  #buildQuery(filter, recordType) {
-    if (!filter || typeof filter !== 'object') {
-      return {};
-    }
-
-    const query = {};
-    const allowedFields = FIELD_MAP[recordType] || Object.keys(filter);
-
-    for (const [key, value] of Object.entries(filter)) {
-      if (allowedFields.includes(key) && value !== null && value !== undefined) {
-        query[key] = value;
-      }
-    }
-
-    return query;
-  }
-
-  #normalizeRecord(record, recordType) {
-    if (!record || typeof record !== 'object') {
-      return null;
-    }
-
-    const normalized = this.serializer.loadFromStorage(record, recordType);
-    const normalizer = NORMALIZERS[recordType];
-    return normalizer ? normalizer(normalized) : normalized;
+    this.taskRunCRUD = new TaskRunCRUD();
+    this.stackRunCRUD = new StackRunCRUD();
+    this.taskFunctionCRUD = new TaskFunctionCRUD();
+    this.keystoreCRUD = new KeystoreCRUD();
   }
 
   buildTaskRunCreate(input) {
-    return this.#buildCreate(input, 'task_run', 'startedAt');
+    return this.taskRunCRUD.buildCreate(input);
   }
 
   buildTaskRunUpdate(input) {
-    return this.#buildUpdate(input, 'task_run');
+    return this.taskRunCRUD.buildUpdate(input);
   }
 
   buildTaskRunQuery(filter) {
-    return this.#buildQuery(filter, 'task_run');
+    return this.taskRunCRUD.buildQuery(filter);
   }
 
   normalizeTaskRunRecord(record) {
-    return this.#normalizeRecord(record, 'task_run');
+    return this.taskRunCRUD.normalizeRecord(record);
   }
 
   buildStackRunCreate(input) {
-    return this.#buildCreate(input, 'stack_run', 'createdAt');
+    return this.stackRunCRUD.buildCreate(input);
   }
 
   buildStackRunUpdate(input) {
-    return this.#buildUpdate(input, 'stack_run');
+    return this.stackRunCRUD.buildUpdate(input);
   }
 
   buildStackRunQuery(filter) {
-    return this.#buildQuery(filter, 'stack_run');
+    return this.stackRunCRUD.buildQuery(filter);
   }
 
   normalizeStackRunRecord(record) {
-    return this.#normalizeRecord(record, 'stack_run');
+    return this.stackRunCRUD.normalizeRecord(record);
   }
 
   buildTaskFunctionCreate(input) {
-    return this.#buildCreate(input, 'task_function', null);
+    return this.taskFunctionCRUD.buildCreate(input);
   }
 
   buildTaskFunctionUpdate(input) {
-    return this.#buildUpdate(input, 'task_function');
+    return this.taskFunctionCRUD.buildUpdate(input);
   }
 
   normalizeTaskFunctionRecord(record) {
-    return this.#normalizeRecord(record, 'task_function');
+    return this.taskFunctionCRUD.normalizeRecord(record);
   }
 
   buildKeystoreCreate(input) {
-    return this.#buildCreate(input, 'keystore', null);
+    return this.keystoreCRUD.buildCreate(input);
   }
 
   buildKeystoreUpdate(input) {
-    return this.#buildUpdate(input, 'keystore');
+    return this.keystoreCRUD.buildUpdate(input);
   }
 
   normalizeKeystoreRecord(record) {
-    return this.#normalizeRecord(record, 'keystore');
+    return this.keystoreCRUD.normalizeRecord(record);
   }
 
   buildFilterQuery(filter, recordType = null) {
-    return this.#buildQuery(filter, recordType);
+    // Generic filter builder
+    if (!filter || typeof filter !== 'object') {
+      return {};
+    }
+    const query = {};
+    for (const [key, value] of Object.entries(filter)) {
+      if (value !== null && value !== undefined) {
+        query[key] = value;
+      }
+    }
+    return query;
   }
 
   filterRecords(records, filter) {
@@ -213,6 +125,11 @@ export class CRUDPatterns {
   }
 
   normalizeRecord(record, recordType = null) {
-    return this.#normalizeRecord(record, recordType);
+    // Generic normalizer - delegates to specific type if available
+    if (recordType === 'task_run') return this.normalizeTaskRunRecord(record);
+    if (recordType === 'stack_run') return this.normalizeStackRunRecord(record);
+    if (recordType === 'task_function') return this.normalizeTaskFunctionRecord(record);
+    if (recordType === 'keystore') return this.normalizeKeystoreRecord(record);
+    return record;
   }
 }
