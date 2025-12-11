@@ -1,24 +1,77 @@
-export function validateRecoveryConfig(config) {
-  const errors = [];
+/**
+ * Error Recovery Core - Template Module
+ * Code template generation for recovery policies
+ */
 
-  if (config.maxRetries < 0) {
-    errors.push('maxRetries must be >= 0');
-  }
+export function generateRecoveryPolicyTemplate() {
+  return `/**
+ * Error Recovery
+ *
+ * Implement resilient error handling with automatic retries and fallbacks.
+ */
 
-  if (config.initialDelay < 0) {
-    errors.push('initialDelay must be >= 0');
-  }
+import { createRetryStrategy, createCircuitBreaker, createFallbackStrategy } from '@sequentialos/error-recovery';
 
-  if (config.maxDelay < config.initialDelay) {
-    errors.push('maxDelay must be >= initialDelay');
-  }
+const retryStrategy = createRetryStrategy({
+  maxRetries: 3,
+  initialDelay: 1000,
+  maxDelay: 30000,
+  backoffMultiplier: 2,
+  jitter: true
+});
 
-  if (config.backoffMultiplier <= 1) {
-    errors.push('backoffMultiplier must be > 1');
-  }
+const circuitBreaker = createCircuitBreaker({
+  failureThreshold: 5,
+  resetTimeout: 60000
+});
 
+const fallback = createFallbackStrategy();
+
+// Register fallback handlers
+fallback.registerFallback('ECONNREFUSED', async (error, context) => {
+  return await __callHostTool__('task', 'cache-fallback', context);
+});
+
+fallback.registerFallback('TimeoutError', async (error, context) => {
+  return { cached: true, data: null };
+});
+
+// Task with automatic retry
+export async function resilientFetch(input) {
+  return await retryStrategy.executeWithRetry(async () => {
+    const response = await fetch(\`/api/users/\${input.id}\`);
+    if (!response.ok) throw new Error('API error');
+    return response.json();
+  });
+}
+
+// Task with circuit breaker
+export async function protectedAPI(input) {
+  const result = await circuitBreaker.execute(async () => {
+    return await fetch(\`/api/data\`, { body: JSON.stringify(input) })
+      .then(r => r.json());
+  });
+
+  return result.success ? result.result : { error: result.error };
+}
+
+// Task with fallback
+export async function fetchWithFallback(input) {
+  return await fallback.executeWithFallback(
+    async () => {
+      const user = await __callHostTool__('task', 'fetch-user', input);
+      return user;
+    },
+    async (error) => {
+      return await __callHostTool__('task', 'get-cached-user', input);
+    }
+  );
+}
+
+export function getRecoveryStats() {
   return {
-    valid: errors.length === 0,
-    errors
+    circuitBreaker: circuitBreaker.getState()
   };
+}
+`;
 }
