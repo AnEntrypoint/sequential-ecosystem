@@ -1,65 +1,89 @@
-export function createToolMonitor() {
-  return {
-    monitoredTools: new Map(),
+/**
+ * Tool Discovery Core - Template Module
+ * Code template for tool discovery
+ */
 
-    monitor(toolName, toolFn) {
-      this.monitoredTools.set(toolName, {
-        fn: toolFn,
-        executions: []
-      });
+export function generateToolDiscoveryTemplate() {
+  return `/**
+ * Tool Discovery & Metrics
+ *
+ * Register tools and discover them at runtime with performance metrics.
+ */
 
-      return async (input) => {
-        const start = Date.now();
-        try {
-          const result = await toolFn(input);
-          const duration = Date.now() - start;
+import { createToolRegistry } from '@sequentialos/tool-discovery';
 
-          this.monitoredTools.get(toolName).executions.push({
-            success: true,
-            duration,
-            timestamp: new Date().toISOString()
-          });
+const registry = createToolRegistry();
 
-          return result;
-        } catch (error) {
-          const duration = Date.now() - start;
+// Register tools
+registry
+  .register('fetchUser', async (input) => {
+    const response = await fetch(\`/api/users/\${input.id}\`);
+    return response.json();
+  }, {
+    description: 'Fetch user data from API',
+    category: 'api',
+    tags: ['user', 'data', 'readonly'],
+    params: [{ name: 'id', type: 'number', required: true }]
+  })
+  .register('createUser', async (input) => {
+    const response = await fetch('/api/users', {
+      method: 'POST',
+      body: JSON.stringify(input)
+    });
+    return response.json();
+  }, {
+    description: 'Create a new user',
+    category: 'api',
+    tags: ['user', 'write'],
+    params: [{ name: 'name', type: 'string', required: true }]
+  })
+  .register('cacheData', async (input) => {
+    return { cached: true, key: \`cache-\${Date.now()}\` };
+  }, {
+    description: 'Cache data locally',
+    category: 'storage',
+    tags: ['cache']
+  });
 
-          this.monitoredTools.get(toolName).executions.push({
-            success: false,
-            duration,
-            error: error.message,
-            timestamp: new Date().toISOString()
-          });
+// Discover tools
+export function discoverByCategory(category) {
+  return registry.findByCategory(category);
+}
 
-          throw error;
-        }
-      };
-    },
+export function discoverByTag(tag) {
+  return registry.findByTag(tag);
+}
 
-    getExecutionHistory(toolName) {
-      const tool = this.monitoredTools.get(toolName);
-      return tool ? tool.executions : [];
-    },
+export function searchTools(query) {
+  return registry.search(query);
+}
 
-    getExecutionStats(toolName) {
-      const executions = this.getExecutionHistory(toolName);
-      if (executions.length === 0) {
-        return null;
-      }
+// List all tools
+export function listAllTools() {
+  return registry.list();
+}
 
-      const durations = executions.map(e => e.duration);
-      const successful = executions.filter(e => e.success).length;
+// Get metrics
+export function getToolMetrics(toolName) {
+  return registry.getMetrics(toolName);
+}
 
-      return {
-        toolName,
-        totalExecutions: executions.length,
-        successful,
-        failed: executions.length - successful,
-        successRate: ((successful / executions.length) * 100).toFixed(1),
-        averageDuration: Math.round(durations.reduce((a, b) => a + b) / durations.length),
-        minDuration: Math.min(...durations),
-        maxDuration: Math.max(...durations)
-      };
-    }
-  };
+export function getAllMetrics() {
+  return registry.getAllMetrics();
+}
+
+export function getSlowTools(threshold = 1000) {
+  return registry.getSlowTools(threshold);
+}
+
+// Tool stats
+export function getToolStats() {
+  return registry.getToolStats();
+}
+
+// Execute tool
+export async function useTool(toolName, input) {
+  return await registry.execute(toolName, input);
+}
+`;
 }
