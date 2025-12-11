@@ -1,185 +1,46 @@
+import { createValidationMethods } from './runtime-contracts-validator.js';
+import { createSchemaMethods } from './runtime-contracts-schema.js';
+import { createInputValidator as createInputValidatorImpl, createOutputValidator as createOutputValidatorImpl } from './runtime-contracts-wrapper.js';
+
 export function createRuntimeContracts() {
   const schemas = new Map();
-  const coercions = new Map();
+  const validation = createValidationMethods(schemas);
+  const schema = createSchemaMethods();
 
   return {
-    registerSchema(resourceType, resourceName, schema) {
+    registerSchema(resourceType, resourceName, schemaObj) {
       const key = `${resourceType}:${resourceName}`;
-      schemas.set(key, schema);
+      schemas.set(key, schemaObj);
       return this;
     },
 
-    validateInput(resourceType, resourceName, input) {
-      const key = `${resourceType}:${resourceName}`;
-      const schema = schemas.get(key);
-
-      if (!schema || !schema.input) {
-        return { valid: true, errors: [] };
-      }
-
-      const errors = [];
-      const inputSchema = schema.input;
-
-      for (const [paramName, constraint] of Object.entries(inputSchema)) {
-        const value = input[paramName];
-
-        if (constraint.required && value === undefined) {
-          errors.push(`Missing required parameter: ${paramName}`);
-        }
-
-        if (value !== undefined) {
-          if (constraint.type && typeof value !== constraint.type) {
-            const coerced = this.tryCoerce(value, constraint.type);
-            if (coerced.success) {
-              input[paramName] = coerced.value;
-            } else {
-              errors.push(`${paramName} must be ${constraint.type}, got ${typeof value}`);
-            }
-          }
-
-          if (constraint.minLength && value.length < constraint.minLength) {
-            errors.push(`${paramName} must be at least ${constraint.minLength} characters`);
-          }
-
-          if (constraint.minimum !== undefined && value < constraint.minimum) {
-            errors.push(`${paramName} must be >= ${constraint.minimum}`);
-          }
-
-          if (constraint.enum && !constraint.enum.includes(value)) {
-            errors.push(`${paramName} must be one of: ${constraint.enum.join(', ')}`);
-          }
-        }
-      }
-
-      return { valid: errors.length === 0, errors, coerced: input };
-    },
-
-    validateOutput(resourceType, resourceName, output) {
-      const key = `${resourceType}:${resourceName}`;
-      const schema = schemas.get(key);
-
-      if (!schema || !schema.output) {
-        return { valid: true, errors: [] };
-      }
-
-      const errors = [];
-      const outputSchema = schema.output;
-
-      if (outputSchema.type === 'object') {
-        for (const [fieldName, constraint] of Object.entries(outputSchema.properties || {})) {
-          const value = output[fieldName];
-
-          if (constraint.required && value === undefined) {
-            errors.push(`Missing required output field: ${fieldName}`);
-          }
-
-          if (value !== undefined && constraint.type && typeof value !== constraint.type) {
-            errors.push(`${fieldName} must be ${constraint.type}, got ${typeof value}`);
-          }
-        }
-      }
-
-      return { valid: errors.length === 0, errors };
-    },
-
-    tryCoerce(value, targetType) {
-      if (typeof value === targetType) {
-        return { success: true, value };
-      }
-
-      if (targetType === 'number') {
-        const num = Number(value);
-        if (!isNaN(num)) return { success: true, value: num };
-      }
-
-      if (targetType === 'string') {
-        return { success: true, value: String(value) };
-      }
-
-      if (targetType === 'boolean') {
-        if (value === 'true' || value === true || value === 1 || value === '1') {
-          return { success: true, value: true };
-        }
-        if (value === 'false' || value === false || value === 0 || value === '0') {
-          return { success: true, value: false };
-        }
-      }
-
-      return { success: false, value };
-    },
+    validateInput: validation.validateInput.bind(validation),
+    validateOutput: validation.validateOutput.bind(validation),
+    tryCoerce: validation.tryCoerce.bind(validation),
+    generateSchemaFromJSDoc: schema.generateSchemaFromJSDoc.bind(schema),
+    generateSchemaFromSignature: schema.generateSchemaFromSignature.bind(schema),
 
     createContractValidator(resourceType, resourceName) {
-      const self = this;
-
       return {
-        validate(input) {
-          const validation = self.validateInput(resourceType, resourceName, input);
-          if (!validation.valid) {
-            throw new Error(`Invalid input: ${validation.errors.join(', ')}`);
+        validate: (input) => {
+          const val = this.validateInput(resourceType, resourceName, input);
+          if (!val.valid) {
+            throw new Error(`Invalid input: ${val.errors.join(', ')}`);
           }
-          return validation.coerced;
+          return val.coerced;
         },
-
-        validateOutput(output) {
-          const validation = self.validateOutput(resourceType, resourceName, output);
-          if (!validation.valid) {
-            throw new Error(`Invalid output: ${validation.errors.join(', ')}`);
+        validateOutput: (output) => {
+          const val = this.validateOutput(resourceType, resourceName, output);
+          if (!val.valid) {
+            throw new Error(`Invalid output: ${val.errors.join(', ')}`);
           }
           return output;
         }
       };
     },
 
-    generateSchemaFromJSDoc(fn) {
-      const fnStr = fn.toString();
-      const jsdocMatch = fnStr.match(/\/\*\*([\s\S]*?)\*\//);
-
-      if (!jsdocMatch) {
-        return { input: {}, output: {} };
-      }
-
-      const jsdoc = jsdocMatch[1];
-      const paramMatches = [...jsdoc.matchAll(/@param\s+\{(\w+)\}\s+(\w+)\s+-\s+(.*)/g)];
-      const returnMatch = jsdoc.match(/@returns?\s+\{(\w+)\}\s+-\s+(.*)/);
-
-      const input = {};
-      for (const [, type, name, desc] of paramMatches) {
-        input[name] = { type: type.toLowerCase(), description: desc };
-      }
-
-      const output = returnMatch
-        ? { type: returnMatch[1].toLowerCase(), description: returnMatch[2] }
-        : {};
-
-      return { input, output };
-    },
-
-    generateSchemaFromSignature(fn) {
-      const fnStr = fn.toString();
-      const paramMatch = fnStr.match(/\(([^)]*)\)/);
-
-      if (!paramMatch) {
-        return { input: {}, output: {} };
-      }
-
-      const params = paramMatch[1]
-        .split(',')
-        .map(p => p.trim())
-        .filter(p => p)
-        .map(p => p.split('=')[0].trim());
-
-      const input = {};
-      for (const param of params) {
-        input[param] = { type: 'unknown' };
-      }
-
-      return { input, output: { type: 'unknown' } };
-    },
-
     createWithContract(resourceType, resourceName, fn) {
-      const self = this;
       const validator = this.createContractValidator(resourceType, resourceName);
-
       return async function contractEnforced(input) {
         const validatedInput = validator.validate(input);
         const result = await fn(validatedInput);
@@ -191,39 +52,10 @@ export function createRuntimeContracts() {
 
 export function createInputValidator(inputSchema) {
   const contracts = createRuntimeContracts();
-
-  return (taskFn) => {
-    return async function wrappedWithValidation(input) {
-      const validation = contracts.validateInput('task', taskFn.name, { ...inputSchema, ...input });
-
-      if (!validation.valid) {
-        const error = new Error(`Input validation failed: ${validation.errors.join(', ')}`);
-        error.code = 'VALIDATION_ERROR';
-        error.details = validation.errors;
-        throw error;
-      }
-
-      return await taskFn(validation.coerced);
-    };
-  };
+  return createInputValidatorImpl(inputSchema, contracts);
 }
 
 export function createOutputValidator(outputSchema) {
   const contracts = createRuntimeContracts();
-
-  return (taskFn) => {
-    return async function wrappedWithValidation(...args) {
-      const result = await taskFn(...args);
-      const validation = contracts.validateOutput('task', taskFn.name, result);
-
-      if (!validation.valid) {
-        const error = new Error(`Output validation failed: ${validation.errors.join(', ')}`);
-        error.code = 'VALIDATION_ERROR';
-        error.details = validation.errors;
-        throw error;
-      }
-
-      return result;
-    };
-  };
+  return createOutputValidatorImpl(outputSchema, contracts);
 }
