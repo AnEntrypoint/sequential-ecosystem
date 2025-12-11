@@ -350,7 +350,7 @@ export {
 export {
   AccessibilityValidatorUI,
   createAccessibilityValidatorUI
-} from './a11y-validator-ui.js';
+} from './services/validator/index.js';
 export {
   PatternDataBinding,
   createPatternDataBinding
