@@ -140,7 +140,7 @@ export {
 export {
   ChartPatternLibrary,
   createChartPatternLibrary
-} from './chart-patterns.js';
+} from './patterns/charts/index.js';
 export {
   TablePatternLibrary,
   createTablePatternLibrary
