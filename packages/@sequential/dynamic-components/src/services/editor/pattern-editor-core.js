@@ -1,6 +1,13 @@
+// Facade maintaining 100% backward compatibility with pattern editor layers
+import { PatternEditorNavigation } from './pattern-editor-navigation.js';
+import { PatternEditorMutations } from './pattern-editor-mutations.js';
+import { PatternEditorHistory } from './pattern-editor-history.js';
+
 export class PatternEditorCore {
   constructor() {
-    this.currentPattern = null;
+    this.navigation = new PatternEditorNavigation();
+    this.mutations = new PatternEditorMutations(this.navigation);
+    this.history = new PatternEditorHistory();
     this.editorState = {
       selectedPath: null,
       selectedElement: null,
@@ -8,180 +15,115 @@ export class PatternEditorCore {
       zoom: 100,
       showGrid: false
     };
-    this.undoStack = [];
-    this.redoStack = [];
     this.listeners = [];
   }
 
   openPattern(patternId, definition) {
-    this.currentPattern = {
-      id: patternId,
-      definition: JSON.parse(JSON.stringify(definition)),
-      originalDefinition: JSON.parse(JSON.stringify(definition))
-    };
-    this.undoStack = [];
-    this.redoStack = [];
+    const pattern = this.navigation.openPattern(patternId, definition);
+    this.history.reset();
     this.editorState.selectedPath = null;
     this.editorState.selectedElement = null;
     this.notifyListeners('patternOpened', { patternId, definition });
-    return this.currentPattern;
+    return pattern;
   }
 
   selectElement(path) {
-    const element = this.getElementByPath(this.currentPattern.definition, path);
-    if (!element) return false;
-    this.editorState.selectedPath = path;
-    this.editorState.selectedElement = element;
-    this.notifyListeners('elementSelected', { path, element });
+    const result = this.mutations.selectElement(path);
+    if (!result) return false;
+    this.editorState.selectedPath = result.path;
+    this.editorState.selectedElement = result.element;
+    this.notifyListeners('elementSelected', result);
     return true;
   }
 
   getElementByPath(definition, path) {
-    if (!path) return definition;
-    const parts = path.split('.');
-    let current = definition;
-    for (const part of parts) {
-      if (part.startsWith('children[')) {
-        const match = part.match(/children\[(\d+)\]/);
-        if (match) {
-          const index = parseInt(match[1], 10);
-          current = current.children?.[index];
-        }
-      } else {
-        current = current[part];
-      }
-      if (!current) return null;
-    }
-    return current;
+    return this.navigation.getElementByPath(definition, path);
   }
 
   updateElementStyle(path, styleUpdates) {
-    const element = this.getElementByPath(this.currentPattern.definition, path);
-    if (!element) return false;
-    this.saveToUndoStack();
-    element.style = { ...element.style, ...styleUpdates };
-    this.notifyListeners('styleUpdated', { path, styleUpdates });
-    return true;
+    this.history.saveToUndoStack(this.navigation.currentPattern.definition);
+    const result = this.mutations.updateElementStyle(path, styleUpdates);
+    if (result) {
+      this.notifyListeners('styleUpdated', { path, styleUpdates });
+    }
+    return result;
   }
 
   updateElementContent(path, content) {
-    const element = this.getElementByPath(this.currentPattern.definition, path);
-    if (!element) return false;
-    this.saveToUndoStack();
-    element.content = content;
-    this.notifyListeners('contentUpdated', { path, content });
-    return true;
+    this.history.saveToUndoStack(this.navigation.currentPattern.definition);
+    const result = this.mutations.updateElementContent(path, content);
+    if (result) {
+      this.notifyListeners('contentUpdated', { path, content });
+    }
+    return result;
   }
 
   updateElementAttributes(path, attributes) {
-    const element = this.getElementByPath(this.currentPattern.definition, path);
-    if (!element) return false;
-    this.saveToUndoStack();
-    element.attributes = { ...element.attributes, ...attributes };
-    this.notifyListeners('attributesUpdated', { path, attributes });
-    return true;
+    this.history.saveToUndoStack(this.navigation.currentPattern.definition);
+    const result = this.mutations.updateElementAttributes(path, attributes);
+    if (result) {
+      this.notifyListeners('attributesUpdated', { path, attributes });
+    }
+    return result;
   }
 
   addChild(parentPath, childDefinition) {
-    const parent = parentPath
-      ? this.getElementByPath(this.currentPattern.definition, parentPath)
-      : this.currentPattern.definition;
-    if (!parent) return false;
-    this.saveToUndoStack();
-    if (!parent.children) {
-      parent.children = [];
+    this.history.saveToUndoStack(this.navigation.currentPattern.definition);
+    const result = this.mutations.addChild(parentPath, childDefinition);
+    if (result) {
+      this.notifyListeners('childAdded', { parentPath, childDefinition });
     }
-    parent.children.push(JSON.parse(JSON.stringify(childDefinition)));
-    this.notifyListeners('childAdded', { parentPath, childDefinition });
-    return true;
+    return result;
   }
 
   removeElement(path) {
-    if (!path) return false;
-    const parts = path.split('.');
-    const lastPart = parts.pop();
-    const parentPath = parts.join('.');
-    const parent = parentPath
-      ? this.getElementByPath(this.currentPattern.definition, parentPath)
-      : this.currentPattern.definition;
-    if (!parent) return false;
-    this.saveToUndoStack();
-    if (lastPart.startsWith('children[')) {
-      const match = lastPart.match(/children\[(\d+)\]/);
-      if (match) {
-        const index = parseInt(match[1], 10);
-        parent.children?.splice(index, 1);
-      }
-    } else {
-      delete parent[lastPart];
+    this.history.saveToUndoStack(this.navigation.currentPattern.definition);
+    const result = this.mutations.removeElement(path);
+    if (result) {
+      this.notifyListeners('elementRemoved', { path });
     }
-    this.notifyListeners('elementRemoved', { path });
-    return true;
+    return result;
   }
 
   duplicateElement(path) {
-    const element = this.getElementByPath(this.currentPattern.definition, path);
-    if (!element) return false;
-    const parts = path.split('.');
-    const lastPart = parts.pop();
-    const parentPath = parts.join('.');
-    const parent = parentPath
-      ? this.getElementByPath(this.currentPattern.definition, parentPath)
-      : this.currentPattern.definition;
-    if (!parent) return false;
-    this.saveToUndoStack();
-    const duplicate = JSON.parse(JSON.stringify(element));
-    if (lastPart.startsWith('children[')) {
-      const match = lastPart.match(/children\[(\d+)\]/);
-      if (match) {
-        const index = parseInt(match[1], 10);
-        parent.children?.splice(index + 1, 0, duplicate);
-      }
+    this.history.saveToUndoStack(this.navigation.currentPattern.definition);
+    const result = this.mutations.duplicateElement(path);
+    if (result) {
+      this.notifyListeners('elementDuplicated', { path });
     }
-    this.notifyListeners('elementDuplicated', { path });
-    return true;
-  }
-
-  saveToUndoStack() {
-    this.undoStack.push(JSON.parse(JSON.stringify(this.currentPattern.definition)));
-    this.redoStack = [];
-    if (this.undoStack.length > 50) {
-      this.undoStack.shift();
-    }
+    return result;
   }
 
   undo() {
-    if (this.undoStack.length === 0) return false;
-    this.redoStack.push(JSON.parse(JSON.stringify(this.currentPattern.definition)));
-    this.currentPattern.definition = this.undoStack.pop();
+    const newDef = this.history.undo(this.navigation.currentPattern.definition);
+    if (!newDef) return false;
+    this.navigation.currentPattern.definition = newDef;
     this.notifyListeners('undo', {});
     return true;
   }
 
   redo() {
-    if (this.redoStack.length === 0) return false;
-    this.undoStack.push(JSON.parse(JSON.stringify(this.currentPattern.definition)));
-    this.currentPattern.definition = this.redoStack.pop();
+    const newDef = this.history.redo(this.navigation.currentPattern.definition);
+    if (!newDef) return false;
+    this.navigation.currentPattern.definition = newDef;
     this.notifyListeners('redo', {});
     return true;
   }
 
   resetToOriginal() {
-    this.currentPattern.definition = JSON.parse(JSON.stringify(this.currentPattern.originalDefinition));
-    this.undoStack = [];
-    this.redoStack = [];
+    this.navigation.currentPattern.definition = JSON.parse(JSON.stringify(this.navigation.currentPattern.originalDefinition));
+    this.history.reset();
     this.notifyListeners('resetToOriginal', {});
     return true;
   }
 
   getCurrentDefinition() {
-    return this.currentPattern?.definition || null;
+    return this.navigation.getCurrentDefinition();
   }
 
   hasChanges() {
-    if (!this.currentPattern) return false;
-    return JSON.stringify(this.currentPattern.definition) !==
-           JSON.stringify(this.currentPattern.originalDefinition);
+    if (!this.navigation.currentPattern) return false;
+    return this.history.hasChanges(this.navigation.currentPattern.definition, this.navigation.currentPattern.originalDefinition);
   }
 
   on(event, callback) {
@@ -209,10 +151,13 @@ export class PatternEditorCore {
   }
 
   clear() {
-    this.currentPattern = null;
+    this.navigation.clear();
+    this.history.clear();
     this.listeners = [];
-    this.undoStack = [];
-    this.redoStack = [];
     return this;
+  }
+
+  get currentPattern() {
+    return this.navigation.currentPattern;
   }
 }
