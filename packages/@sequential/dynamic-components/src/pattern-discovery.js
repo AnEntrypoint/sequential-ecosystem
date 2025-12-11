@@ -2,7 +2,7 @@ import { FormPatternLibrary } from './patterns/forms/index.js';
 import { ListPatternLibrary } from './patterns/lists/index.js';
 import { ChartPatternLibrary } from './patterns/charts/index.js';
 import { TablePatternLibrary } from './patterns/tables/index.js';
-import { ModalPatternLibrary } from './modal-patterns.js';
+import { ModalPatternLibrary } from './patterns/modals/index.js';
 import { GridPatternLibrary } from './patterns/grids/index.js';
 
 class PatternDiscovery {
