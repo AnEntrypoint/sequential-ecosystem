@@ -1,0 +1,12 @@
+{
+  "name": "@sequentialos/pattern-editor",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Modular pattern editor components for Sequential OS app editor",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ]
+}
