@@ -1,0 +1,11 @@
+{
+  "name": "@sequentialos/command-palette",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Unified CommandPalette for Task, Tool, and Flow editors",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": ["src"]
+}
