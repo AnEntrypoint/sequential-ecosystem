@@ -1,6 +1,6 @@
 # Refactoring Strategy & Consolidation Roadmap
 
-**Last Updated**: Dec 12, 2025 | **Status**: Phase 2f Complete (unified dist artifacts)
+**Last Updated**: Dec 12, 2025 | **Status**: Phase 3a Complete (CLI routes refactoring)
 
 ## Current State
 
@@ -20,6 +20,7 @@
 | **Phase 2d** | ✅ COMPLETE | 3 class consolidations (240+ LOC eliminated) |
 | **Phase 2e** | ✅ COMPLETE | EditorFeatures deletion + error handler consolidation (200+ LOC eliminated) |
 | **Phase 2f** | ✅ COMPLETE | Unified EditorFeatures source + dist rebuild (1,511 LOC consolidated) |
+| **Phase 3a** | ✅ COMPLETE | CLI routes refactoring (2 large files split into 8 focused modules) |
 
 ## High-Impact Consolidations (Phase 2d) ✅ COMPLETE
 
@@ -104,33 +105,30 @@
 
 ## Next Steps (Recommended Priority)
 
-### ✅ COMPLETED (Phases 2d-2f)
+### ✅ COMPLETED (Phases 2d-3a)
 - SerializedError consolidation (3→1 source)
 - ValidationResult consolidation (2→1 source)
 - ToolRegistry consolidation (2→1 source)
 - EditorFeatures dist artifacts removal + rebuild (3 files deleted, 1 shared source + 3 dist rebuilt)
 - Error handler pattern consolidation (error-context-generator refactored)
 - New @sequentialos/editor-features package created with unified implementation
+- Sequential-os-http.js refactoring: 313L → 4 focused handlers (58L + 66L + 17L + 167L = 308L total)
+- Create-apps.js refactoring: 286L → 4 modules (67L + 70L + 71L + 86L = 294L total)
 
-### 📋 NEXT PHASE (Phase 3a - CLI Routes Refactoring)
-1. **CLI Routes Refactoring** (3-4h)
-   - Split sequential-os-http.js (303L) into focused handler modules
-   - Split create-app.js (289L) into feature-specific generators
-   - Split create-flow.js (278L) into workflow builders
-
-2. **CommandPalette Extraction** (2-3h)
+### 📋 NEXT PHASE (Phase 3b - CommandPalette Extraction)
+1. **CommandPalette Extraction** (2-3h)
    - Similar to EditorFeatures consolidation
    - Create @sequentialos/command-palette package
    - Rebuild dist files from unified source
 
-3. **Remaining >200L Files Refactoring** (8-12h per file)
+### 🗓️ FUTURE (Phase 3c+)
+2. **Remaining >200L Files Refactoring** (8-12h per file)
    - @sequential/zellous/server.js (565L)
    - dynamic-components pattern files (20+ files, 500-700L each)
 
-### 🗓️ FUTURE (Long-term)
-4. **Dynamic-Components Strategic Refactoring** (20-24h multi-day)
-5. **Zellous Server Refactoring** (staged approach, 8-10h)
-6. **Pattern File Consolidation** (10-12h)
+3. **Dynamic-Components Strategic Refactoring** (20-24h multi-day)
+4. **Zellous Server Refactoring** (staged approach, 8-10h)
+5. **Pattern File Consolidation** (10-12h)
 
 ## Architecture Principles
 
@@ -166,5 +164,9 @@
 ---
 
 **Generated**: 2025-12-12
-**Next Review**: After Phase 3a (CLI routes refactoring) completion
-**Phase 2d-2f Summary**: 1,951+ LOC consolidated (440 eliminated + 1,511 unified in editor-features)
+**Next Review**: After Phase 3b (CommandPalette extraction) completion
+**Phase 2d-3a Summary**: 2,613+ LOC consolidated
+- Phase 2d: 240+ LOC eliminated (class consolidations)
+- Phase 2e: 200+ LOC eliminated (error handlers + dist artifacts)
+- Phase 2f: 1,511 LOC unified (EditorFeatures)
+- Phase 3a: 602 LOC refactored (2 large files into 8 focused modules)
