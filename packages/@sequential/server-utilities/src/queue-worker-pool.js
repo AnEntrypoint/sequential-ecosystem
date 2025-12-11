@@ -1,8 +1,17 @@
+/**
+ * queue-worker-pool.js - Queue Worker Pool Facade
+ *
+ * Delegates to focused modules:
+ * - worker-lifecycle: Worker pool start/stop/loop management
+ * - queue-loop-executor: Queue task dequeue and execution
+ * - stats-tracker: Statistics tracking and reporting
+ */
+
 import { EventEmitter } from 'events';
-import { Worker } from 'worker_threads';
 import logger from '@sequentialos/sequential-logging';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
-import { delay, withRetry } from '@sequentialos/async-patterns';
+import { WorkerLifecycle } from './worker-lifecycle.js';
+import { QueueLoopExecutor } from './queue-loop-executor.js';
+import { StatsTracker } from './stats-tracker.js';
 
 export class QueueWorkerPool extends EventEmitter {
   constructor(options = {}) {
@@ -15,168 +24,59 @@ export class QueueWorkerPool extends EventEmitter {
     this.autoStart = options.autoStart !== false;
 
     this.workers = [];
-    this.isRunning = false;
-    this.stats = {
-      processed: 0,
-      succeeded: 0,
-      failed: 0,
-      retried: 0,
-      workersActive: 0,
-      workersIdle: 0
-    };
-    this.workerStatus = new Map();
+    this.lifecycle = new WorkerLifecycle(this.numWorkers, this.pollInterval);
+    this.executor = null;
+    this.statsTracker = new StatsTracker();
+
+    // Propagate events
+    this.lifecycle.on('pool:started', (data) => this.emit('pool:started', data));
+    this.lifecycle.on('pool:stopped', (data) => this.emit('pool:stopped', { totalProcessed: this.statsTracker.stats.processed }));
+    this.lifecycle.on('worker:error', (data) => this.emit('worker:error', data));
   }
 
   setDependencies(taskQueueManager, backgroundTaskManager) {
     this.taskQueueManager = taskQueueManager;
     this.backgroundTaskManager = backgroundTaskManager;
+    this.executor = new QueueLoopExecutor(taskQueueManager, backgroundTaskManager, this.taskTimeout);
   }
 
   async start() {
-    if (this.isRunning) return;
-    this.isRunning = true;
+    const onLoop = async (workerId) => {
+      const result = await this.executor.executeWorkerIteration(workerId, this.lifecycle.workerStatus, this.pollInterval);
+      this.statsTracker.updateWorkerCounts(this.lifecycle.workerStatus);
 
-    for (let i = 0; i < this.numWorkers; i++) {
-      this.workerStatus.set(i, { state: 'idle', currentTask: null, processed: 0, failed: 0 });
-      this.startWorkerLoop(i);
-    }
+      if (result?.success) {
+        this.statsTracker.recordSucceed();
+        this.emit('task:completed', { taskId: result.taskId, workerId, result: result.result });
+      } else if (result?.error) {
+        this.statsTracker.recordFailed();
+        const status = this.taskQueueManager.status(result.taskId);
+        if (status && status.retries < status.maxRetries) {
+          this.statsTracker.recordRetried();
+          this.emit('task:retrying', { taskId: result.taskId, workerId, attempt: status.retries });
+        } else {
+          this.emit('task:failed', { taskId: result.taskId, workerId, error: result.error.message });
+        }
+      }
+    };
 
-    this.emit('pool:started', { numWorkers: this.numWorkers });
+    return this.lifecycle.start(onLoop);
   }
 
   async stop() {
-    if (!this.isRunning) return;
-    this.isRunning = false;
-
-    await new Promise(resolve => {
-      if (this.workers.length === 0) return resolve();
-
-      let completed = 0;
-      this.workers.forEach(() => {
-        setImmediate(() => {
-          completed++;
-          if (completed === this.workers.length) resolve();
-        });
-      });
-    });
-
-    this.emit('pool:stopped', { totalProcessed: this.stats.processed });
-  }
-
-  startWorkerLoop(workerId) {
-    const loop = async () => {
-      if (!this.isRunning) return;
-
-      try {
-        this.workerStatus.set(workerId, {
-          ...this.workerStatus.get(workerId),
-          state: 'active',
-          lastActivity: Date.now()
-        });
-        this.updateStats();
-
-        const dequeued = this.taskQueueManager.dequeue();
-
-        if (!dequeued) {
-          this.workerStatus.set(workerId, {
-            ...this.workerStatus.get(workerId),
-            state: 'idle'
-          });
-          this.updateStats();
-          await new Promise(r => setTimeout(r, this.pollInterval));
-          return loop();
-        }
-
-        const { id, task } = dequeued;
-        this.workerStatus.set(workerId, {
-          ...this.workerStatus.get(workerId),
-          currentTask: id,
-          taskName: task.taskName
-        });
-
-        await this.executeTask(id, task, workerId);
-
-        const status = this.workerStatus.get(workerId);
-        this.workerStatus.set(workerId, {
-          ...status,
-          currentTask: null,
-          processed: (status.processed || 0) + 1
-        });
-
-        return loop();
-      } catch (error) {
-        logger.error(`[WorkerPool] Worker ${workerId} error:`, error.message);
-        this.emit('worker:error', { workerId, error: error.message });
-        await new Promise(r => setTimeout(r, this.pollInterval));
-        return loop();
-      }
-    };
-
-    loop();
-  }
-
-  async executeTask(taskId, task, workerId) {
-    try {
-      const result = await this.backgroundTaskManager.executeTask(
-        task.taskName,
-        task.args,
-        { taskId, timeout: this.taskTimeout }
-      );
-
-      this.taskQueueManager.complete(taskId, result);
-      this.stats.succeeded++;
-      this.stats.processed++;
-
-      this.emit('task:completed', { taskId, workerId, result });
-    } catch (error) {
-      this.taskQueueManager.fail(taskId, error);
-      this.stats.failed++;
-      this.stats.processed++;
-
-      const status = this.taskQueueManager.status(taskId);
-      if (status && status.retries < status.maxRetries) {
-        this.stats.retried++;
-        this.emit('task:retrying', { taskId, workerId, attempt: status.retries });
-      } else {
-        this.emit('task:failed', { taskId, workerId, error: error.message });
-      }
-    }
-  }
-
-  updateStats() {
-    let active = 0;
-    let idle = 0;
-
-    for (const status of this.workerStatus.values()) {
-      if (status.state === 'active') active++;
-      else idle++;
-    }
-
-    this.stats.workersActive = active;
-    this.stats.workersIdle = idle;
+    return this.lifecycle.stop();
   }
 
   getStats() {
-    return {
-      ...this.stats,
-      isRunning: this.isRunning,
-      numWorkers: this.numWorkers,
-      workers: Array.from(this.workerStatus.entries()).map(([id, status]) => ({
-        id,
-        ...status
-      }))
-    };
+    return this.statsTracker.getStats(this.lifecycle.isRunning, this.numWorkers, this.lifecycle.workerStatus);
   }
 
   getWorkerStatus(workerId) {
-    return this.workerStatus.get(workerId) || null;
+    return this.lifecycle.getWorkerStatus(workerId);
   }
 
   getAllWorkerStatus() {
-    return Array.from(this.workerStatus.entries()).map(([id, status]) => ({
-      id,
-      ...status
-    }));
+    return this.lifecycle.getAllWorkerStatus();
   }
 }
 
