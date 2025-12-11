@@ -302,7 +302,7 @@ export {
 export {
   PatternCompositionBuilder,
   createPatternCompositionBuilder
-} from './pattern-composition-builder.js';
+} from './services/composition/index.js';
 export {
   ResponsivePatternSystem,
   createResponsivePatternSystem
