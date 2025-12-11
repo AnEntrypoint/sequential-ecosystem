@@ -1,6 +1,6 @@
 # Refactoring Strategy & Consolidation Roadmap
 
-**Last Updated**: Dec 12, 2025 | **Status**: Phase 2e Complete (medium consolidations)
+**Last Updated**: Dec 12, 2025 | **Status**: Phase 2f Complete (unified dist artifacts)
 
 ## Current State
 
@@ -19,6 +19,7 @@
 | **Phase 2c** | ✅ COMPLETE | flows.js split (814L → 7 modules) |
 | **Phase 2d** | ✅ COMPLETE | 3 class consolidations (240+ LOC eliminated) |
 | **Phase 2e** | ✅ COMPLETE | EditorFeatures deletion + error handler consolidation (200+ LOC eliminated) |
+| **Phase 2f** | ✅ COMPLETE | Unified EditorFeatures source + dist rebuild (1,511 LOC consolidated) |
 
 ## High-Impact Consolidations (Phase 2d) ✅ COMPLETE
 
@@ -103,25 +104,28 @@
 
 ## Next Steps (Recommended Priority)
 
-### ✅ COMPLETED (Phases 2d-2e)
+### ✅ COMPLETED (Phases 2d-2f)
 - SerializedError consolidation (3→1 source)
 - ValidationResult consolidation (2→1 source)
 - ToolRegistry consolidation (2→1 source)
-- EditorFeatures dist artifacts removal (3 files deleted)
+- EditorFeatures dist artifacts removal + rebuild (3 files deleted, 1 shared source + 3 dist rebuilt)
 - Error handler pattern consolidation (error-context-generator refactored)
+- New @sequentialos/editor-features package created with unified implementation
 
-### 📋 NEXT WEEK (Medium ROI - Phase 2f/3a)
-1. **Rebuild dist/ Artifacts** (2-3h)
-   - Regenerate EditorFeatures, CommandPalette from source
-   - Ensure consistency across app editors
+### 📋 NEXT PHASE (Phase 3a - CLI Routes Refactoring)
+1. **CLI Routes Refactoring** (3-4h)
+   - Split sequential-os-http.js (303L) into focused handler modules
+   - Split create-app.js (289L) into feature-specific generators
+   - Split create-flow.js (278L) into workflow builders
 
-2. **CLI Routes Refactoring** (3-4h)
-   - Split sequential-os-http.js into focused handlers
-   - Split create-app.js and create-flow.js
+2. **CommandPalette Extraction** (2-3h)
+   - Similar to EditorFeatures consolidation
+   - Create @sequentialos/command-palette package
+   - Rebuild dist files from unified source
 
-3. **Remaining >200L Files** (8-12h)
-   - CLI routes refactoring (sequential-os-http.js: 303L)
-   - App creators (create-app.js: 289L, create-flow.js: 278L)
+3. **Remaining >200L Files Refactoring** (8-12h per file)
+   - @sequential/zellous/server.js (565L)
+   - dynamic-components pattern files (20+ files, 500-700L each)
 
 ### 🗓️ FUTURE (Long-term)
 4. **Dynamic-Components Strategic Refactoring** (20-24h multi-day)
@@ -162,5 +166,5 @@
 ---
 
 **Generated**: 2025-12-12
-**Next Review**: After Phase 2f (dist rebuild) completion
-**Phase 2d-2e Summary**: 440+ LOC eliminated through consolidations and duplicate removal
+**Next Review**: After Phase 3a (CLI routes refactoring) completion
+**Phase 2d-2f Summary**: 1,951+ LOC consolidated (440 eliminated + 1,511 unified in editor-features)
