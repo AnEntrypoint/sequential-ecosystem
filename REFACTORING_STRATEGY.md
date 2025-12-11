@@ -1,6 +1,6 @@
 # Refactoring Strategy & Consolidation Roadmap
 
-**Last Updated**: Dec 11, 2025 | **Status**: Phase 2c Complete (flows.js split)
+**Last Updated**: Dec 12, 2025 | **Status**: Phase 2e Complete (medium consolidations)
 
 ## Current State
 
@@ -18,7 +18,7 @@
 | **Phase 2b** | ✅ COMPLETE | 17 generator files split (4,615L → 34 modules) |
 | **Phase 2c** | ✅ COMPLETE | flows.js split (814L → 7 modules) |
 | **Phase 2d** | ✅ COMPLETE | 3 class consolidations (240+ LOC eliminated) |
-| **Phase 2e** | ⏳ PENDING | Dynamic-components strategic refactoring |
+| **Phase 2e** | ✅ COMPLETE | EditorFeatures deletion + error handler consolidation (200+ LOC eliminated) |
 
 ## High-Impact Consolidations (Phase 2d) ✅ COMPLETE
 
@@ -103,28 +103,30 @@
 
 ## Next Steps (Recommended Priority)
 
-### 🔥 THIS WEEK (High ROI)
-1. **Consolidate SerializedError** (HIGH, 2-3h)
-   - Single error source → better error handling across ecosystem
+### ✅ COMPLETED (Phases 2d-2e)
+- SerializedError consolidation (3→1 source)
+- ValidationResult consolidation (2→1 source)
+- ToolRegistry consolidation (2→1 source)
+- EditorFeatures dist artifacts removal (3 files deleted)
+- Error handler pattern consolidation (error-context-generator refactored)
 
-2. **Consolidate ValidationResult** (HIGH, 1-2h)
-   - Unified validation type → consistent validation
+### 📋 NEXT WEEK (Medium ROI - Phase 2f/3a)
+1. **Rebuild dist/ Artifacts** (2-3h)
+   - Regenerate EditorFeatures, CommandPalette from source
+   - Ensure consistency across app editors
 
-3. **Consolidate ToolRegistry** (HIGH, 1-2h)
-   - Single registry → proper tool discovery
-
-### 📋 NEXT WEEK (Medium ROI)
-4. **Error Handler Pattern Consolidation** (2-3h)
-   - Extract createErrorHandler to shared module
-
-5. **CLI Routes Refactoring** (3-4h)
+2. **CLI Routes Refactoring** (3-4h)
    - Split sequential-os-http.js into focused handlers
    - Split create-app.js and create-flow.js
 
+3. **Remaining >200L Files** (8-12h)
+   - CLI routes refactoring (sequential-os-http.js: 303L)
+   - App creators (create-app.js: 289L, create-flow.js: 278L)
+
 ### 🗓️ FUTURE (Long-term)
-6. **Dynamic-Components Strategic Refactoring** (20-24h multi-day)
-7. **Zellous Server Refactoring** (staged approach, 8-10h)
-8. **Pattern File Consolidation** (10-12h)
+4. **Dynamic-Components Strategic Refactoring** (20-24h multi-day)
+5. **Zellous Server Refactoring** (staged approach, 8-10h)
+6. **Pattern File Consolidation** (10-12h)
 
 ## Architecture Principles
 
@@ -159,5 +161,6 @@
 
 ---
 
-**Generated**: 2025-12-11
-**Next Review**: After Phase 2d completion
+**Generated**: 2025-12-12
+**Next Review**: After Phase 2f (dist rebuild) completion
+**Phase 2d-2e Summary**: 440+ LOC eliminated through consolidations and duplicate removal

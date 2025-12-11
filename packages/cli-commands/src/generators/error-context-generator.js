@@ -1,3 +1,5 @@
+import { getStackTrace } from '@sequentialos/error-handling';
+
 export function formatErrorWithContext(error, context = {}) {
   if (!(error instanceof Error)) {
     return {
@@ -6,9 +8,6 @@ export function formatErrorWithContext(error, context = {}) {
       context
     };
   }
-
-  const lines = error.stack?.split('\n') || [];
-  const stackLines = lines.slice(1).filter(l => l.trim());
 
   return {
     message: error.message,
@@ -27,13 +26,12 @@ export function formatErrorWithContext(error, context = {}) {
 }
 
 export function parseStackTrace(stackStr) {
-  const lines = stackStr.split('\n').slice(1);
+  const lines = getStackTrace({ stack: stackStr });
   return lines
-    .filter(l => l.trim())
     .map(line => {
       const match = line.match(/at\s+(?:async\s+)?(.+?)\s+\((.+?):(\d+):(\d+)\)/);
       if (!match) {
-        return { raw: line.trim() };
+        return { raw: line };
       }
 
       const [, fn, file, lineNum, colNum] = match;
@@ -42,7 +40,7 @@ export function parseStackTrace(stackStr) {
         file: file.replace(process.cwd(), '.'),
         line: parseInt(lineNum),
         column: parseInt(colNum),
-        raw: line.trim()
+        raw: line
       };
     });
 }
