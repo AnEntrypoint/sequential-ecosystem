@@ -280,7 +280,7 @@ export {
 export {
   UIToolkit,
   createUIToolkit
-} from './ui-toolkit.js';
+} from './patterns/ui/index.js';
 export {
   PatternHotReload,
   createPatternHotReload
@@ -332,7 +332,7 @@ export {
 export {
   ThemeCustomizerUI,
   createThemeCustomizerUI
-} from './theme-customizer-ui.js';
+} from './patterns/ui/index.js';
 export {
   AccessibilityValidatorUI,
   createAccessibilityValidatorUI
