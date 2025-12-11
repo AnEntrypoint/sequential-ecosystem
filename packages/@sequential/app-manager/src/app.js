@@ -1,9 +1,16 @@
+// Facade maintaining 100% backward compatibility with app manager
 import { AppSDK } from '@sequentialos/app-sdk';
+import { createStorageManager } from './app-storage.js';
+import { AppAPI } from './app-api.js';
+import { AppUIBuilders } from './app-ui-builders.js';
 
 class AppManager {
   constructor() {
     this.sdk = AppSDK.init('@sequential/app-manager');
-    this.storage = this.createStorageManager();
+    this.storage = createStorageManager('@sequential/app-manager');
+    this.api = new AppAPI();
+    this.uiBuilders = new AppUIBuilders();
+
     this.userApps = [];
     this.builtinApps = [];
     this.currentTab = 'user';
@@ -12,59 +19,10 @@ class AppManager {
     this.refreshApps();
   }
 
-  createStorageManager() {
-    const appId = '@sequential/app-manager';
-    const stateKey = `app-state:${appId}`;
-    const expiryKey = `app-state-expiry:${appId}`;
-    return {
-      save: (state, ttlMs = null) => {
-        try {
-          localStorage.setItem(stateKey, JSON.stringify(state));
-          if (ttlMs) {
-            const expiryTime = Date.now() + ttlMs;
-            localStorage.setItem(expiryKey, expiryTime.toString());
-          }
-        } catch (e) {
-          console.error('[Storage] Failed to save:', e);
-        }
-      },
-      load: () => {
-        try {
-          const expiryTime = localStorage.getItem(expiryKey);
-          if (expiryTime && Date.now() > parseInt(expiryTime)) {
-            this.clear();
-            return null;
-          }
-          const stateStr = localStorage.getItem(stateKey);
-          return stateStr ? JSON.parse(stateStr) : null;
-        } catch (e) {
-          console.error('[Storage] Failed to load:', e);
-          return null;
-        }
-      },
-      clear: () => {
-        try {
-          localStorage.removeItem(stateKey);
-          localStorage.removeItem(expiryKey);
-        } catch (e) {
-          console.error('[Storage] Failed to clear:', e);
-        }
-      }
-    };
-  }
-
   async refreshApps() {
-    try {
-      const resp = await fetch('/api/apps');
-      if (resp.ok) {
-        const json = await resp.json();
-        const allApps = Array.isArray(json.data) ? json.data : (json.data?.apps || json.apps || []);
-        this.userApps = allApps.filter(a => !a.builtin);
-        this.builtinApps = allApps.filter(a => a.builtin);
-      }
-    } catch (e) {
-      console.error('Failed to load apps:', e);
-    }
+    const { userApps, builtinApps } = await this.api.refreshApps();
+    this.userApps = userApps;
+    this.builtinApps = builtinApps;
   }
 
   switchTab(tab) {
@@ -91,229 +49,45 @@ class AppManager {
       return;
     }
 
-    try {
-      const resp = await fetch('/api/user-apps', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, name, description, icon, template })
-      });
-      if (resp.ok) {
-        this.closeCreateModal();
-        await this.refreshApps();
-        alert(`App "${name}" created successfully!`);
-      } else {
-        const err = await resp.json();
-        alert('Error: ' + (err.error?.message || 'Failed to create app'));
-      }
-    } catch (e) {
-      alert('Failed to create app: ' + e.message);
+    const result = await this.api.createApp(id, name, description, icon, template);
+    if (result.success) {
+      this.closeCreateModal();
+      await this.refreshApps();
+      alert(result.message);
+    } else {
+      alert('Error: ' + result.error);
     }
   }
 
   async deleteApp(appId, appName) {
     if (!confirm(`Delete app "${appName}"? This cannot be undone.`)) return;
-    try {
-      const resp = await fetch(`/api/user-apps/${appId}`, { method: 'DELETE' });
-      if (resp.ok) {
-        await this.refreshApps();
-        alert('App deleted');
-      }
-    } catch (e) {
-      alert('Delete failed: ' + e.message);
+    const result = await this.api.deleteApp(appId, appName);
+    if (result.success) {
+      await this.refreshApps();
+      alert(result.message);
+    } else {
+      alert(result.error);
     }
   }
 
   buildAppCard(app) {
-    return {
-      type: 'box',
-      style: {
-        background: '#252526',
-        border: '1px solid #3e3e42',
-        borderRadius: '6px',
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-        transition: 'all 0.2s'
-      },
-      children: [
-        {
-          type: 'flex',
-          style: {
-            padding: '16px',
-            borderBottom: '1px solid #3e3e42',
-            alignItems: 'center',
-            gap: '12px'
-          },
-          children: [
-            { type: 'paragraph', content: app.icon || '📦', style: { fontSize: '32px', margin: 0 } },
-            {
-              type: 'flex',
-              direction: 'column',
-              style: { flex: 1, gap: '4px' },
-              children: [
-                { type: 'paragraph', content: app.name, style: { margin: 0, fontSize: '14px', fontWeight: '600' } },
-                { type: 'paragraph', content: app.id, style: { margin: 0, fontSize: '11px', color: '#858585' } }
-              ]
-            },
-            app.builtin ? {
-              type: 'box',
-              style: { background: '#0e639c', color: 'white', padding: '2px 6px', borderRadius: '2px', fontSize: '10px' },
-              children: [{ type: 'paragraph', content: 'Built-in', style: { margin: 0 } }]
-            } : null
-          ].filter(Boolean)
-        },
-        {
-          type: 'box',
-          style: { padding: '12px 16px', flex: 1 },
-          children: [
-            { type: 'paragraph', content: app.description || 'No description', style: { margin: '0 0 12px 0', fontSize: '12px', color: '#858585' } },
-            {
-              type: 'flex',
-              gap: '12px',
-              style: { fontSize: '11px', color: '#858585' },
-              children: [
-                { type: 'paragraph', content: `v${app.version || '1.0.0'}`, style: { margin: 0 } },
-                !app.builtin ? { type: 'paragraph', content: '👤 User', style: { margin: 0 } } : null
-              ].filter(Boolean)
-            }
-          ]
-        },
-        {
-          type: 'flex',
-          style: { padding: '12px 16px', borderTop: '1px solid #3e3e42', gap: '6px', flexWrap: 'wrap' },
-          children: [
-            { type: 'button', label: '▶️ Run', style: { background: '#0e639c', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '2px', cursor: 'pointer', fontSize: '11px', flex: 1, minWidth: '60px' }, onClick: () => window.open(`/apps/${app.id}/dist/index.html`, '_blank') },
-            { type: 'button', label: '✏️ Edit', style: { background: '#0e639c', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '2px', cursor: 'pointer', fontSize: '11px', flex: 1, minWidth: '60px' }, onClick: () => alert('Edit app coming soon') },
-            !app.builtin ? { type: 'button', label: '🗑️ Delete', style: { background: '#3e3e42', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '2px', cursor: 'pointer', fontSize: '11px', flex: 1, minWidth: '60px' }, onClick: () => this.deleteApp(app.id, app.name) } : null
-          ].filter(Boolean)
-        }
-      ]
-    };
+    return this.uiBuilders.buildAppCard(app, this.deleteApp.bind(this));
   }
 
   buildAppsGrid() {
     const apps = this.currentTab === 'user' ? this.userApps : this.builtinApps;
-
-    if (apps.length === 0) {
-      return {
-        type: 'box',
-        style: { textAlign: 'center', padding: '40px', color: '#858585' },
-        children: [
-          { type: 'paragraph', content: '📭', style: { fontSize: '48px', marginBottom: '12px', margin: 0 } },
-          { type: 'paragraph', content: this.currentTab === 'user' ? 'No apps yet. Create one!' : 'No built-in apps', style: { fontSize: '14px', margin: 0 } }
-        ]
-      };
-    }
-
-    return {
-      type: 'flex',
-      direction: 'row',
-      style: {
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-        gap: '16px'
-      },
-      children: apps.map(app => this.buildAppCard(app))
-    };
+    const cards = apps.length > 0 ? apps.map(app => this.buildAppCard(app)) : [];
+    return this.uiBuilders.buildAppsGrid(cards);
   }
 
   buildCreateModal() {
-    return {
-      type: 'box',
-      style: {
-        position: 'fixed',
-        inset: 0,
-        background: this.showCreateModal ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0)',
-        zIndex: 1000,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        pointerEvents: this.showCreateModal ? 'auto' : 'none'
-      },
-      children: [
-        {
-          type: 'box',
-          style: {
-            background: '#252526',
-            border: '1px solid #3e3e42',
-            borderRadius: '6px',
-            padding: '20px',
-            maxWidth: '500px',
-            width: '90%',
-            opacity: this.showCreateModal ? 1 : 0
-          },
-          children: [
-            { type: 'heading', content: 'Create New App', level: 2, style: { margin: '0 0 16px 0', fontSize: '16px' } },
-            {
-              type: 'flex',
-              direction: 'column',
-              gap: '16px',
-              children: [
-                {
-                  type: 'flex',
-                  direction: 'column',
-                  gap: '6px',
-                  children: [
-                    { type: 'paragraph', content: 'App ID *', style: { margin: 0, fontSize: '12px', color: '#858585' } },
-                    { type: 'input', value: this.createForm.id, placeholder: 'app-my-app', style: { width: '100%', background: '#3e3e42', border: '1px solid #555', color: '#e0e0e0', padding: '6px 8px', borderRadius: '3px', fontSize: '12px' }, onChange: (e) => this.updateFormField('id', e.target.value) }
-                  ]
-                },
-                {
-                  type: 'flex',
-                  direction: 'column',
-                  gap: '6px',
-                  children: [
-                    { type: 'paragraph', content: 'App Name *', style: { margin: 0, fontSize: '12px', color: '#858585' } },
-                    { type: 'input', value: this.createForm.name, placeholder: 'My App', style: { width: '100%', background: '#3e3e42', border: '1px solid #555', color: '#e0e0e0', padding: '6px 8px', borderRadius: '3px', fontSize: '12px' }, onChange: (e) => this.updateFormField('name', e.target.value) }
-                  ]
-                },
-                {
-                  type: 'flex',
-                  direction: 'column',
-                  gap: '6px',
-                  children: [
-                    { type: 'paragraph', content: 'Description', style: { margin: 0, fontSize: '12px', color: '#858585' } },
-                    { type: 'input', value: this.createForm.description, placeholder: 'What does your app do?', style: { width: '100%', background: '#3e3e42', border: '1px solid #555', color: '#e0e0e0', padding: '6px 8px', borderRadius: '3px', fontSize: '12px' }, onChange: (e) => this.updateFormField('description', e.target.value) }
-                  ]
-                },
-                {
-                  type: 'flex',
-                  direction: 'column',
-                  gap: '6px',
-                  children: [
-                    { type: 'paragraph', content: 'Icon', style: { margin: 0, fontSize: '12px', color: '#858585' } },
-                    { type: 'input', value: this.createForm.icon, placeholder: '🚀', style: { width: '100%', background: '#3e3e42', border: '1px solid #555', color: '#e0e0e0', padding: '6px 8px', borderRadius: '3px', fontSize: '12px' }, onChange: (e) => this.updateFormField('icon', e.target.value) }
-                  ]
-                },
-                {
-                  type: 'flex',
-                  direction: 'column',
-                  gap: '6px',
-                  children: [
-                    { type: 'paragraph', content: 'Template', style: { margin: 0, fontSize: '12px', color: '#858585' } },
-                    { type: 'select', value: this.createForm.template, style: { width: '100%', background: '#3e3e42', border: '1px solid #555', color: '#e0e0e0', padding: '6px 8px', borderRadius: '3px', fontSize: '12px' }, onChange: (e) => this.updateFormField('template', e.target.value), children: [
-                      { label: 'Blank', value: 'blank' },
-                      { label: 'Dashboard', value: 'dashboard' },
-                      { label: 'Task Explorer', value: 'task-explorer' },
-                      { label: 'Flow Visualizer', value: 'flow-viz' }
-                    ] }
-                  ]
-                }
-              ]
-            },
-            {
-              type: 'flex',
-              gap: '8px',
-              style: { marginTop: '16px', justifyContent: 'flex-end' },
-              children: [
-                { type: 'button', label: 'Cancel', style: { background: '#3e3e42', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '3px', cursor: 'pointer', fontSize: '12px' }, onClick: () => this.closeCreateModal() },
-                { type: 'button', label: 'Create', style: { background: '#0e639c', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '3px', cursor: 'pointer', fontSize: '12px' }, onClick: () => this.submitCreate() }
-              ]
-            }
-          ]
-        }
-      ]
-    };
+    return this.uiBuilders.buildCreateModal(
+      this.showCreateModal,
+      this.createForm,
+      this.updateFormField.bind(this),
+      this.submitCreate.bind(this),
+      this.closeCreateModal.bind(this)
+    );
   }
 
   buildUI() {
