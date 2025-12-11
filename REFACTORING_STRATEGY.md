@@ -1,0 +1,182 @@
+# Refactoring Strategy & Consolidation Roadmap
+
+**Last Updated**: Dec 11, 2025 | **Status**: Phase 2c Complete (flows.js split)
+
+## Current State
+
+- **Total Packages**: ~90
+- **Total Lines**: ~820k
+- **Files >200L**: ~30
+- **Code Duplication**: ~5-8% of codebase
+
+## Phase Completion Status
+
+| Phase | Status | Work |
+|-------|--------|------|
+| **Phase 3a-3j** | ✅ COMPLETE | Consolidation (3,500+ LOC eliminated) |
+| **Phase 2a** | ✅ COMPLETE | 12 generator files split (3,843L → 25 modules) |
+| **Phase 2b** | ✅ COMPLETE | 17 generator files split (4,615L → 34 modules) |
+| **Phase 2c** | ✅ COMPLETE | flows.js split (814L → 7 modules) |
+| **Phase 2d** | 🔄 IN PROGRESS | High-impact class consolidation |
+| **Phase 2e** | ⏳ PENDING | Dynamic-components strategic refactoring |
+
+## High-Impact Consolidations (Phase 2d)
+
+### 1. SerializedError Class (3 locations)
+**Current State:**
+- `packages/@sequential/sequential-utils/src/errors.js`
+- `packages/@sequential/core/src/modules/error/error-serializer.js`
+- `packages/@sequential/error-handling/src/serialize.js`
+
+**Recommendation**: Use `@sequential/error-handling/src/serialize.js` as canonical source
+- Create wrapper re-exports in other packages
+- Consolidates error handling logic across ecosystem
+- Impact: Eliminates 100+ LOC duplication
+
+**Priority**: HIGH (foundation for error handling)
+**Estimated Effort**: 2-3 hours
+
+### 2. ValidationResult Class (2 locations)
+**Current State:**
+- `packages/@sequential/sequential-validators/src/result.js`
+- `packages/@sequential/validation/src/validation-result.js`
+
+**Recommendation**: Use `@sequential/validation` as canonical (higher-level)
+- Migrate @sequential/sequential-validators to re-export
+- Ensures single validation result type across ecosystem
+- Impact: Eliminates 80+ LOC duplication
+
+**Priority**: HIGH (validation consistency)
+**Estimated Effort**: 1-2 hours
+
+### 3. ToolRegistry Class (2 locations)
+**Current State:**
+- `packages/app-sdk/src/tool-registration.js`
+- `packages/@sequential/tool-registry/src/index.js`
+
+**Recommendation**: Use `@sequential/tool-registry` as canonical
+- Update app-sdk to import from tool-registry
+- Ensures tools registered in unified registry
+- Impact: Eliminates 60+ LOC duplication
+
+**Priority**: HIGH (tool discovery)
+**Estimated Effort**: 1-2 hours
+
+## Medium-Impact Opportunities
+
+### 4. CommandPalette & EditorFeatures Classes
+**Current State**: Duplicated in dist/ (compiled/generated)
+**Action**: Rebuild from source to eliminate dist duplicates
+**Priority**: MEDIUM
+**Impact**: ~50 LOC each, primarily build artifacts
+
+### 5. Error Handler Patterns
+**Current State**: 3 implementations of `createErrorHandler`
+**Recommendation**: Extract to `@sequential/error-handling`
+**Priority**: MEDIUM
+**Impact**: ~100 LOC consolidation
+**Estimated Effort**: 2-3 hours
+
+## Dynamic-Components Strategic Plan (Phase 2e)
+
+### Current Situation
+- 88 files totaling ~33k lines
+- 20+ files exceeding 500 lines
+- Heavy coupling between pattern files
+- Significant duplication in pattern generators
+
+### Recommended Approach
+
+**Stage 1: Analysis & Grouping (Not started)**
+- Group files by logical domain (forms, charts, tables, etc.)
+- Identify cross-cutting patterns
+- Map dependencies between pattern files
+
+**Stage 2: Core Consolidation**
+- Extract shared pattern generation logic → `pattern-generator-core.js`
+- Create pattern category utilities
+- Unified pattern validation
+
+**Stage 3: File Size Optimization**
+- Split ~20 files >500L into focused modules
+- Target: All files <200L
+
+**Estimated Total Effort**: 20-24 hours (multi-day project)
+
+## Remaining >200L Files (Prioritized)
+
+### Critical (Used by 10+ other modules)
+1. `desktop-server/src/routes/sequential-os-http.js` - 303L
+2. `cli-commands/src/create-app.js` - 289L
+3. `cli-commands/src/create-flow.js` - 278L
+
+### High-Value (Used by 5-10 modules)
+4. `@sequential/zellous/server.js` - 565L (complex, needs staged approach)
+5. `dynamic-components/src/universal-renderer.js` - 350L
+6. `dynamic-components/src/responsive-renderer.js` - 330L
+
+### Medium-Value (Used by 2-5 modules)
+7. `dynamic-components/src/*-patterns.js` (20+ files, 500-700L each)
+8. `app-editor/pattern-ui-library.js` - 559L
+9. `cli-commands/src/generators/app-examples.js` - 297L
+
+## Next Steps (Recommended Priority)
+
+### 🔥 THIS WEEK (High ROI)
+1. **Consolidate SerializedError** (HIGH, 2-3h)
+   - Single error source → better error handling across ecosystem
+
+2. **Consolidate ValidationResult** (HIGH, 1-2h)
+   - Unified validation type → consistent validation
+
+3. **Consolidate ToolRegistry** (HIGH, 1-2h)
+   - Single registry → proper tool discovery
+
+### 📋 NEXT WEEK (Medium ROI)
+4. **Error Handler Pattern Consolidation** (2-3h)
+   - Extract createErrorHandler to shared module
+
+5. **CLI Routes Refactoring** (3-4h)
+   - Split sequential-os-http.js into focused handlers
+   - Split create-app.js and create-flow.js
+
+### 🗓️ FUTURE (Long-term)
+6. **Dynamic-Components Strategic Refactoring** (20-24h multi-day)
+7. **Zellous Server Refactoring** (staged approach, 8-10h)
+8. **Pattern File Consolidation** (10-12h)
+
+## Architecture Principles
+
+✅ **Maintained Throughout**
+- Single source of truth for shared types/classes
+- Re-export wrappers for backward compatibility
+- Centralized logging via @sequential/sequential-logging
+- Consistent error handling via @sequential/error-handling
+- Unified validation via @sequential/validation
+
+✅ **Code Quality Gates**
+- All files <200 lines (hard limit)
+- No circular dependencies
+- Clear separation of concerns
+- Backward compatibility in all migrations
+
+## Success Metrics
+
+| Metric | Target | Current |
+|--------|--------|---------|
+| Files >200L | 0 | 30 |
+| Duplication % | <2% | 5-8% |
+| Test Coverage | 100% | 85% |
+| Build Time | <30s | ~45s |
+
+## Notes
+
+- Consolidations in Phase 2d should maintain 100% backward compatibility
+- All changes require test verification
+- Submodule updates may be needed for some refactors
+- Dynamic-components refactoring should be handled as separate epic
+
+---
+
+**Generated**: 2025-12-11
+**Next Review**: After Phase 2d completion
