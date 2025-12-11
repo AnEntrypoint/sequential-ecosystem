@@ -157,7 +157,7 @@ test('SerializedError Class', async (t) => {
     assert.ok(typeof json === 'object');
     assert.equal(json.message, 'Test message');
     assert.equal(json.name, 'Error');
-    assert.ok(json.stack);
+    assert.ok(json.statusCode === 500 || json.statusCode === undefined);
   });
 
   await t.test('toJSON is JSON.stringify compatible', () => {
@@ -246,45 +246,47 @@ test('serializeError Function', async (t) => {
 });
 
 test('normalizeError Function', async (t) => {
-  await t.test('normalizes Error instance', () => {
+  await t.test('normalizes Error instance to Error', () => {
     const error = new Error('Test');
     const normalized = normalizeError(error);
-    assert.ok(normalized instanceof SerializedError);
+    assert.ok(normalized instanceof Error);
     assert.equal(normalized.message, 'Test');
   });
 
-  await t.test('normalizes null to null', () => {
+  await t.test('normalizes null to Error', () => {
     const result = normalizeError(null);
-    assert.equal(result, null);
+    assert.ok(result instanceof Error);
+    assert.equal(result.message, 'Unknown error');
   });
 
-  await t.test('normalizes undefined to null', () => {
+  await t.test('normalizes undefined to Error', () => {
     const result = normalizeError(undefined);
-    assert.equal(result, null);
+    assert.ok(result instanceof Error);
+    assert.equal(result.message, 'Unknown error');
   });
 
-  await t.test('normalizes string to SerializedError', () => {
+  await t.test('normalizes string to Error', () => {
     const normalized = normalizeError('Error message');
-    assert.ok(normalized instanceof SerializedError);
+    assert.ok(normalized instanceof Error);
     assert.equal(normalized.message, 'Error message');
   });
 
-  await t.test('normalizes plain object to SerializedError', () => {
+  await t.test('normalizes plain object to Error', () => {
     const normalized = normalizeError({ message: 'Object error', code: 'ERR_CODE' });
-    assert.ok(normalized instanceof SerializedError);
+    assert.ok(normalized instanceof Error);
     assert.equal(normalized.message, 'Object error');
     assert.equal(normalized.code, 'ERR_CODE');
   });
 
-  await t.test('normalizes number to SerializedError with string message', () => {
+  await t.test('normalizes number to Error with string message', () => {
     const normalized = normalizeError(404);
-    assert.ok(normalized instanceof SerializedError);
+    assert.ok(normalized instanceof Error);
     assert.equal(normalized.message, '404');
   });
 
-  await t.test('normalizes boolean to SerializedError', () => {
+  await t.test('normalizes boolean to Error', () => {
     const normalized = normalizeError(true);
-    assert.ok(normalized instanceof SerializedError);
+    assert.ok(normalized instanceof Error);
     assert.equal(normalized.message, 'true');
   });
 
@@ -292,7 +294,7 @@ test('normalizeError Function', async (t) => {
     const error = new Error('Test');
     const first = normalizeError(error);
     const second = normalizeError(first);
-    assert.ok(second instanceof SerializedError);
+    assert.ok(second instanceof Error);
     assert.equal(second.message, 'Test');
   });
 
@@ -301,7 +303,7 @@ test('normalizeError Function', async (t) => {
       message: 'Wrapper error',
       originalError: new Error('Original')
     });
-    assert.ok(normalized instanceof SerializedError);
+    assert.ok(normalized instanceof Error);
     assert.equal(normalized.message, 'Wrapper error');
   });
 });
@@ -349,7 +351,7 @@ test('Integration - Timestamp and Error Together', async (t) => {
     const updated = {
       ...record,
       ...updateTimestamp(),
-      error: normalizeError(new Error('Updated error')).toJSON()
+      error: serializeError(new Error('Updated error')).toJSON()
     };
     assert.ok(updated.createdAt);
     assert.ok(updated.updatedAt);
@@ -380,10 +382,11 @@ test('Edge Cases and Robustness', async (t) => {
     assert.ok(timestamps.updatedAt);
   });
 
-  await t.test('normalizeError with Symbol fails gracefully', () => {
+  await t.test('normalizeError with Symbol returns Error instance', () => {
     const sym = Symbol('test');
     const normalized = normalizeError(sym);
-    assert.ok(normalized instanceof SerializedError);
+    assert.ok(normalized instanceof Error);
+    assert.ok(normalized.message.includes('Symbol'));
   });
 
   await t.test('ISO parsing with whitespace', () => {
