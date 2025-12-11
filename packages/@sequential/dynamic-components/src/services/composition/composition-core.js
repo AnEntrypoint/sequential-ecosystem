@@ -1,203 +1,125 @@
+// Facade maintaining 100% backward compatibility with composition layers
+import { PatternManager } from './composition-patterns.js';
+import { LayoutManager } from './composition-layouts.js';
+import { CompositionStorage } from './composition-storage.js';
+
 export class CompositionCore {
   constructor(patternLibraries = {}) {
-    this.compositions = new Map();
     this.patternLibraries = patternLibraries;
-    this.selectedPatterns = [];
-    this.layoutMode = 'grid';
-    this.layoutConfig = {
-      columns: 2,
-      gap: '16px',
-      direction: 'row',
-      alignItems: 'stretch',
-      justifyContent: 'flex-start'
-    };
-    this.gridConfig = {
-      columns: 'repeat(2, 1fr)',
-      gap: '16px',
-      autoFlow: 'row',
-      templateAreas: null
-    };
-    this.compositionId = null;
+    this.patternManager = new PatternManager();
+    this.layoutManager = new LayoutManager();
+    this.storage = new CompositionStorage();
     this.listeners = [];
   }
 
   addPattern(patternId, patternDef, position = null) {
-    const pattern = {
-      id: patternId,
-      definition: JSON.parse(JSON.stringify(patternDef)),
-      position: position || this.selectedPatterns.length,
-      customizations: {}
-    };
-
-    this.selectedPatterns.push(pattern);
+    const pattern = this.patternManager.addPattern(patternId, patternDef, position);
     this.notifyListeners('patternAdded', { pattern });
-
     return this;
   }
 
   removePattern(patternId) {
-    const idx = this.selectedPatterns.findIndex(p => p.id === patternId);
-    if (idx >= 0) {
-      const removed = this.selectedPatterns.splice(idx, 1)[0];
+    const removed = this.patternManager.removePattern(patternId);
+    if (removed) {
       this.notifyListeners('patternRemoved', { pattern: removed });
     }
-
     return this;
   }
 
   reorderPatterns(fromIndex, toIndex) {
-    if (fromIndex < 0 || fromIndex >= this.selectedPatterns.length ||
-        toIndex < 0 || toIndex >= this.selectedPatterns.length) {
-      return false;
+    const result = this.layoutManager.layoutMode || this.patternManager.reorderPatterns(fromIndex, toIndex);
+    if (result) {
+      this.notifyListeners('patternsReordered', { fromIndex, toIndex });
     }
-
-    const [pattern] = this.selectedPatterns.splice(fromIndex, 1);
-    this.selectedPatterns.splice(toIndex, 0, pattern);
-
-    this.notifyListeners('patternsReordered', { fromIndex, toIndex });
-
-    return true;
+    return result;
   }
 
   setLayoutMode(mode) {
-    if (!['grid', 'flex', 'stack', 'carousel'].includes(mode)) {
-      throw new Error(`Unknown layout mode: ${mode}`);
-    }
-
-    this.layoutMode = mode;
+    this.layoutManager.setLayoutMode(mode);
     this.notifyListeners('layoutModeChanged', { mode });
-
     return this;
   }
 
   updateLayoutConfig(config) {
-    this.layoutConfig = { ...this.layoutConfig, ...config };
-    this.notifyListeners('layoutConfigChanged', { config: this.layoutConfig });
-
+    this.layoutManager.updateLayoutConfig(config);
+    this.notifyListeners('layoutConfigChanged', { config: this.layoutManager.layoutConfig });
     return this;
   }
 
   updateGridConfig(config) {
-    this.gridConfig = { ...this.gridConfig, ...config };
-    this.notifyListeners('gridConfigChanged', { config: this.gridConfig });
-
+    this.layoutManager.updateGridConfig(config);
+    this.notifyListeners('gridConfigChanged', { config: this.layoutManager.gridConfig });
     return this;
   }
 
   customizePattern(patternId, customizations) {
-    const pattern = this.selectedPatterns.find(p => p.id === patternId);
-    if (!pattern) return false;
-
-    pattern.customizations = { ...pattern.customizations, ...customizations };
-    this.notifyListeners('patternCustomized', { patternId, customizations });
-
-    return true;
+    const result = this.patternManager.customizePattern(patternId, customizations);
+    if (result) {
+      this.notifyListeners('patternCustomized', { patternId, customizations });
+    }
+    return result;
   }
 
   applyPatternVariant(patternId, variantName) {
-    const pattern = this.selectedPatterns.find(p => p.id === patternId);
-    if (!pattern) return false;
-
-    pattern.variant = variantName;
-    this.notifyListeners('variantApplied', { patternId, variantName });
-
-    return true;
+    const result = this.patternManager.applyPatternVariant(patternId, variantName);
+    if (result) {
+      this.notifyListeners('variantApplied', { patternId, variantName });
+    }
+    return result;
   }
 
   saveComposition(name) {
-    const id = `composition-${Date.now()}`;
-
-    this.compositions.set(id, {
-      id,
-      name,
-      patterns: JSON.parse(JSON.stringify(this.selectedPatterns)),
-      layoutMode: this.layoutMode,
-      layoutConfig: JSON.parse(JSON.stringify(this.layoutConfig)),
-      gridConfig: JSON.parse(JSON.stringify(this.gridConfig)),
-      created: Date.now()
-    });
-
-    this.compositionId = id;
+    const id = this.storage.save(name, this.patternManager.selectedPatterns, this.layoutManager.layoutMode, this.layoutManager.layoutConfig, this.layoutManager.gridConfig);
     this.notifyListeners('compositionSaved', { id, name });
-
     return id;
   }
 
   loadComposition(id) {
-    const composition = this.compositions.get(id);
+    const composition = this.storage.load(id);
     if (!composition) return false;
 
-    this.selectedPatterns = JSON.parse(JSON.stringify(composition.patterns));
-    this.layoutMode = composition.layoutMode;
-    this.layoutConfig = JSON.parse(JSON.stringify(composition.layoutConfig));
-    this.gridConfig = JSON.parse(JSON.stringify(composition.gridConfig));
-    this.compositionId = id;
-
+    this.patternManager.setPatterns(composition.patterns);
+    this.layoutManager.setLayoutState(composition.layoutMode, composition.layoutConfig, composition.gridConfig);
     this.notifyListeners('compositionLoaded', { id, composition });
-
     return true;
   }
 
   deleteComposition(id) {
-    if (this.compositions.delete(id)) {
-      if (this.compositionId === id) {
-        this.compositionId = null;
-      }
-
+    const result = this.storage.delete(id);
+    if (result) {
       this.notifyListeners('compositionDeleted', { id });
-
-      return true;
     }
-
-    return false;
+    return result;
   }
 
   listCompositions() {
-    return Array.from(this.compositions.values()).map(c => ({
-      id: c.id,
-      name: c.name,
-      patternCount: c.patterns.length,
-      created: c.created
-    }));
+    return this.storage.list();
   }
 
   exportComposition() {
-    if (!this.selectedPatterns || this.selectedPatterns.length === 0) {
-      return null;
-    }
-
-    return {
-      layoutMode: this.layoutMode,
-      layoutConfig: this.layoutConfig,
-      gridConfig: this.gridConfig,
-      patterns: this.selectedPatterns,
-      exported: new Date().toISOString()
-    };
+    return this.storage.export(this.patternManager.selectedPatterns, this.layoutManager.layoutMode, this.layoutManager.layoutConfig, this.layoutManager.gridConfig);
   }
 
   importComposition(data) {
-    if (!data.patterns || !Array.isArray(data.patterns)) {
-      return false;
+    const imported = this.storage.import(data);
+    if (imported) {
+      this.patternManager.setPatterns(imported.patterns);
+      this.layoutManager.setLayoutState(imported.layoutMode || 'grid', imported.layoutConfig, imported.gridConfig);
+      this.notifyListeners('compositionImported', { data });
+      return true;
     }
-
-    this.selectedPatterns = JSON.parse(JSON.stringify(data.patterns));
-    this.layoutMode = data.layoutMode || 'grid';
-    this.layoutConfig = data.layoutConfig || this.layoutConfig;
-    this.gridConfig = data.gridConfig || this.gridConfig;
-
-    this.notifyListeners('compositionImported', { data });
-
-    return true;
+    return false;
   }
 
   getState() {
+    const { layoutMode, layoutConfig, gridConfig } = this.layoutManager.getLayoutState();
     return {
-      selectedPatterns: this.selectedPatterns,
-      layoutMode: this.layoutMode,
-      layoutConfig: this.layoutConfig,
-      gridConfig: this.gridConfig,
-      compositions: Array.from(this.compositions.values()),
-      currentCompositionId: this.compositionId
+      selectedPatterns: this.patternManager.selectedPatterns,
+      layoutMode,
+      layoutConfig,
+      gridConfig,
+      compositions: Array.from(this.storage.compositions.values()),
+      currentCompositionId: this.storage.compositionId
     };
   }
 
@@ -226,9 +148,8 @@ export class CompositionCore {
   }
 
   clear() {
-    this.selectedPatterns = [];
-    this.compositions.clear();
-    this.compositionId = null;
+    this.patternManager.clear();
+    this.storage.clear();
     this.listeners = [];
     return this;
   }
