@@ -128,7 +128,7 @@ export {
 export {
   FormPatternLibrary,
   createFormPatternLibrary
-} from './form-patterns.js';
+} from './patterns/forms/index.js';
 export {
   FormPatternsExtended,
   createFormPatternsExtended
