@@ -189,8 +189,12 @@ export {
 } from './pattern-customizer.js';
 export {
   AccessibilityPatternLibrary,
-  createAccessibilityPatternLibrary
-} from './accessibility-patterns.js';
+  createAccessibilityPatternLibrary,
+  semanticStructurePatterns,
+  inputInteractivePatterns,
+  dialogNavPatterns,
+  contentPatterns
+} from './patterns/accessibility/index.js';
 export {
   PatternDependencyGraph,
   createPatternDependencyGraph
