@@ -1,0 +1,9 @@
+{
+  "name": "@sequentialos/editor-validation-hints",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Unified validation hints module for Sequential editors",
+  "exports": {
+    ".": "./src/index.js"
+  }
+}

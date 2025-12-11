@@ -1,0 +1,9 @@
+{
+  "name": "@sequentialos/editor-tool-autocomplete",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Unified tool autocomplete module for Sequential editors",
+  "exports": {
+    ".": "./src/index.js"
+  }
+}

@@ -1,6 +1,6 @@
 # Refactoring Strategy & Consolidation Roadmap
 
-**Last Updated**: Dec 12, 2025 | **Status**: Phase 3c Complete (Editor Shared Modules)
+**Last Updated**: Dec 12, 2025 | **Status**: Phase 3d Complete (Remaining Editor Modules)
 
 ## Current State
 
@@ -23,6 +23,7 @@
 | **Phase 3a** | ✅ COMPLETE | CLI routes refactoring (2 large files split into 8 focused modules) |
 | **Phase 3b** | ✅ COMPLETE | CommandPalette extraction (2 dist duplicates → unified source + modular package) |
 | **Phase 3c** | ✅ COMPLETE | Editor Shared Modules (2 high-impact consolidations: debug-module 792L + find-replace 660L) |
+| **Phase 3d** | ✅ COMPLETE | Remaining Editor Modules (3 consolidations: snippet-insert 780L + validation-hints 512L + tool-autocomplete 518L) |
 
 ## High-Impact Consolidations (Phase 2d) ✅ COMPLETE
 
@@ -118,14 +119,28 @@
 - Sequential-os-http.js refactoring: 313L → 4 focused handlers (58L + 66L + 17L + 167L = 308L total)
 - Create-apps.js refactoring: 286L → 4 modules (67L + 70L + 71L + 86L = 294L total)
 
-### 📋 NEXT PHASE (Phase 3d - Remaining Shared Modules)
-1. **Snippet Insert & Validation Hints** (estimated 1,030L total)
-   - snippet-insert.js: 390L × 2 editors = 780L duplication
-   - validation-hints.js: 256L × 2 editors = 512L duplication
-   - Create unified source packages with modular architecture
-2. **Tool Autocomplete** (estimated)
-   - tool-autocomplete.js: 259L × 2 editors = 518L duplication
-   - Consolidate search and suggestion engine
+### ✅ COMPLETED (Phase 3d)
+1. **Snippet Insert** (390L → 4 modules: snippets, modal, ui, index)
+   - Created @sequentialos/editor-snippets with modular architecture
+   - Rebuilt dist/snippet-insert.js for both app-task-editor and app-tool-editor
+   - 780L duplication eliminated (2 editors × 390L)
+2. **Validation Hints** (256L → 3 modules: checks, ui, index)
+   - Created @sequentialos/editor-validation-hints package
+   - Rebuilt dist/validation-hints.js for both app-task-editor and app-tool-editor
+   - 512L duplication eliminated (2 editors × 256L)
+3. **Tool Autocomplete** (259L → 3 modules: scoring, dropdown, index)
+   - Created @sequentialos/editor-tool-autocomplete package
+   - Rebuilt dist/tool-autocomplete.js for both app-task-editor and app-tool-editor
+   - 518L duplication eliminated (2 editors × 259L)
+
+### 📋 NEXT PHASE (Phase 3e - Remaining >200L Files)
+1. **@sequential/zellous/server.js** (565L)
+   - Complex state management and routing logic
+   - Estimated: 8-12h staged refactoring
+2. **dynamic-components pattern files** (20+ files, 500-700L each)
+   - Form patterns, chart patterns, table patterns, etc.
+   - Strategic grouping and consolidation needed
+   - Estimated: 20-24h multi-day project
 
 ### 🗓️ FUTURE (Phase 3c+)
 2. **Remaining >200L Files Refactoring** (8-12h per file)
@@ -170,11 +185,12 @@
 ---
 
 **Generated**: 2025-12-12
-**Next Review**: After Phase 3d completion
-**Phase 2d-3c Summary**: 5,879+ LOC consolidated
+**Next Review**: After Phase 3e completion
+**Phase 2d-3d Summary**: 8,949+ LOC consolidated
 - Phase 2d: 240+ LOC eliminated (class consolidations)
 - Phase 2e: 200+ LOC eliminated (error handlers + dist artifacts)
 - Phase 2f: 1,511 LOC unified (EditorFeatures)
 - Phase 3a: 602 LOC refactored (2 large files into 8 focused modules)
 - Phase 3b: 407 LOC consolidated (CommandPalette duplication)
 - Phase 3c: 1,452 LOC consolidated (debug-module 792L + find-replace 660L from 2 editors each)
+- Phase 3d: 1,810 LOC consolidated (snippet-insert 780L + validation-hints 512L + tool-autocomplete 518L from 2 editors each)
