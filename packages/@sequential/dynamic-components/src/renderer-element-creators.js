@@ -1,206 +1,90 @@
-// Element creation methods
+// Facade maintaining 100% backward compatibility with element creation
+import * as semanticElements from './renderer-semantic-elements.js';
+import * as formElements from './renderer-form-elements.js';
+import * as layoutElements from './renderer-layout-elements.js';
+
 export class RendererElementCreators {
   createBox(def, children, applyCommonProps) {
-    const el = document.createElement(def.type === 'div' || def.type === 'box' ? 'div' : def.type);
-    applyCommonProps(el, def);
-    if (children) children.forEach(child => el.appendChild(child));
-    return el;
+    return semanticElements.createBox(def, children, applyCommonProps);
   }
 
   createButton(def, children, applyCommonProps, applyEventListeners) {
-    const el = document.createElement('button');
-    el.textContent = def.content || def.label || 'Button';
-    applyCommonProps(el, def);
-    applyEventListeners(el, def);
-    if (children) children.forEach(child => el.appendChild(child));
-    return el;
+    return formElements.createButton(def, children, applyCommonProps, applyEventListeners);
   }
 
   createInput(def, children, applyCommonProps, applyEventListeners) {
-    const el = document.createElement('input');
-    el.type = def.type || 'text';
-    el.placeholder = def.placeholder || '';
-    el.value = def.value || '';
-    if (def.disabled) el.disabled = true;
-    if (def.required) el.required = true;
-    applyCommonProps(el, def);
-    applyEventListeners(el, def);
-    return el;
+    return formElements.createInput(def, children, applyCommonProps, applyEventListeners);
   }
 
   createTextarea(def, children, applyCommonProps, applyEventListeners) {
-    const el = document.createElement('textarea');
-    el.placeholder = def.placeholder || '';
-    el.value = def.value || '';
-    el.rows = def.rows || 4;
-    el.cols = def.cols || 50;
-    applyCommonProps(el, def);
-    applyEventListeners(el, def);
-    return el;
+    return formElements.createTextarea(def, children, applyCommonProps, applyEventListeners);
   }
 
   createSelect(def, children, applyCommonProps, applyEventListeners) {
-    const el = document.createElement('select');
-    if (def.options) {
-      def.options.forEach(opt => {
-        const option = document.createElement('option');
-        option.value = opt.value || opt;
-        option.textContent = opt.label || opt;
-        el.appendChild(option);
-      });
-    }
-    applyCommonProps(el, def);
-    applyEventListeners(el, def);
-    return el;
+    return formElements.createSelect(def, children, applyCommonProps, applyEventListeners);
   }
 
-  createHeading(def, children, applyCommonProps, level = null) {
-    const h = level || def.level || 2;
-    const el = document.createElement(`h${Math.min(Math.max(h, 1), 6)}`);
-    el.textContent = def.content || def.label || 'Heading';
-    applyCommonProps(el, def);
-    if (children) children.forEach(child => el.appendChild(child));
-    return el;
+  createHeading(def, children, applyCommonProps, level) {
+    return semanticElements.createHeading(def, children, applyCommonProps, level);
   }
 
   createParagraph(def, children, applyCommonProps) {
-    const el = document.createElement('p');
-    el.textContent = def.content || def.text || '';
-    applyCommonProps(el, def);
-    if (children) children.forEach(child => el.appendChild(child));
-    return el;
+    return semanticElements.createParagraph(def, children, applyCommonProps);
   }
 
   createText(def) {
-    return document.createTextNode(def.content || def.text || '');
+    return semanticElements.createText(def);
   }
 
   createImage(def, children, applyCommonProps) {
-    const el = document.createElement('img');
-    el.src = def.src || '';
-    el.alt = def.alt || '';
-    el.title = def.title || '';
-    applyCommonProps(el, def);
-    return el;
+    return semanticElements.createImage(def, children, applyCommonProps);
   }
 
   createLink(def, children, applyCommonProps) {
-    const el = document.createElement('a');
-    el.href = def.href || '#';
-    el.textContent = def.content || def.label || 'Link';
-    el.target = def.target || '';
-    applyCommonProps(el, def);
-    if (children) children.forEach(child => el.appendChild(child));
-    return el;
+    return semanticElements.createLink(def, children, applyCommonProps);
   }
 
   createGrid(def, children, applyStyles) {
-    const el = document.createElement('div');
-    applyStyles(el, {
-      display: 'grid',
-      gridTemplateColumns: def.columns || 'repeat(2, 1fr)',
-      gap: def.gap || '16px',
-      ...def.style
-    });
-    el.className = 'pattern-grid ' + (def.className || '');
-    if (children) children.forEach(child => el.appendChild(child));
-    return el;
+    return layoutElements.createGrid(def, children, applyStyles);
   }
 
   createFlex(def, children, applyStyles) {
-    const el = document.createElement('div');
-    applyStyles(el, {
-      display: 'flex',
-      flexDirection: def.direction || 'row',
-      gap: def.gap || '12px',
-      alignItems: def.alignItems || 'flex-start',
-      justifyContent: def.justifyContent || 'flex-start',
-      ...def.style
-    });
-    el.className = 'pattern-flex ' + (def.className || '');
-    if (children) children.forEach(child => el.appendChild(child));
-    return el;
+    return layoutElements.createFlex(def, children, applyStyles);
   }
 
   createCard(def, children, applyStyles) {
-    const el = document.createElement('div');
-    applyStyles(el, {
-      padding: '16px',
-      backgroundColor: '#ffffff',
-      borderRadius: '8px',
-      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-      border: '1px solid #e5e7eb',
-      ...def.style
-    });
-    el.className = 'pattern-card ' + (def.className || '');
-    if (children) children.forEach(child => el.appendChild(child));
-    return el;
+    return layoutElements.createCard(def, children, applyStyles);
   }
 
   createSection(def, children, applyCommonProps) {
-    const el = document.createElement('section');
-    applyCommonProps(el, def);
-    if (children) children.forEach(child => el.appendChild(child));
-    return el;
+    return semanticElements.createSection(def, children, applyCommonProps);
   }
 
   createHeader(def, children, applyCommonProps) {
-    const el = document.createElement('header');
-    applyCommonProps(el, def);
-    if (children) children.forEach(child => el.appendChild(child));
-    return el;
+    return semanticElements.createHeader(def, children, applyCommonProps);
   }
 
   createFooter(def, children, applyCommonProps) {
-    const el = document.createElement('footer');
-    applyCommonProps(el, def);
-    if (children) children.forEach(child => el.appendChild(child));
-    return el;
+    return semanticElements.createFooter(def, children, applyCommonProps);
   }
 
   createNav(def, children, applyCommonProps) {
-    const el = document.createElement('nav');
-    applyCommonProps(el, def);
-    if (children) children.forEach(child => el.appendChild(child));
-    return el;
+    return semanticElements.createNav(def, children, applyCommonProps);
   }
 
-  createList(def, children, applyCommonProps, ordered = false) {
-    const el = document.createElement(ordered ? 'ol' : 'ul');
-    if (def.items) {
-      def.items.forEach(item => {
-        const li = document.createElement('li');
-        li.textContent = item.text || item;
-        el.appendChild(li);
-      });
-    }
-    applyCommonProps(el, def);
-    if (children) children.forEach(child => el.appendChild(child));
-    return el;
+  createList(def, children, applyCommonProps, ordered) {
+    return semanticElements.createList(def, children, applyCommonProps, ordered);
   }
 
   createListItem(def, children, applyCommonProps) {
-    const el = document.createElement('li');
-    el.textContent = def.content || def.text || '';
-    applyCommonProps(el, def);
-    if (children) children.forEach(child => el.appendChild(child));
-    return el;
+    return semanticElements.createListItem(def, children, applyCommonProps);
   }
 
   createTable(def, children, applyCommonProps) {
-    const el = document.createElement('table');
-    applyCommonProps(el, def);
-    if (children) children.forEach(child => el.appendChild(child));
-    return el;
+    return semanticElements.createTable(def, children, applyCommonProps);
   }
 
   createForm(def, children, applyCommonProps, applyEventListeners) {
-    const el = document.createElement('form');
-    el.method = def.method || 'POST';
-    el.action = def.action || '';
-    applyCommonProps(el, def);
-    applyEventListeners(el, def);
-    if (children) children.forEach(child => el.appendChild(child));
-    return el;
+    return formElements.createForm(def, children, applyCommonProps, applyEventListeners);
   }
 }
