@@ -1,99 +1,101 @@
+/**
+ * flow-handler-validator.js - Flow Handler Validator Factory
+ *
+ * Creates validators for flow definitions, handlers, and transitions
+ */
+
+function getRequiredHandlers(graph) {
+  const requiredHandlers = new Set();
+  const states = graph.states || {};
+  for (const [stateName, state] of Object.entries(states)) {
+    if (state.type !== 'final' && stateName !== 'error') {
+      requiredHandlers.add(stateName);
+    }
+  }
+  return requiredHandlers;
+}
+
+function validateFlowHandlers(graph, exports) {
+  const errors = [];
+  const exportedFns = Object.keys(exports).filter(k => typeof exports[k] === 'function');
+  const requiredHandlers = getRequiredHandlers(graph);
+
+  for (const handler of requiredHandlers) {
+    if (!exportedFns.includes(handler)) {
+      errors.push({
+        type: 'missing_handler',
+        state: handler,
+        message: `Handler function not found for state "${handler}". Add: export async function ${handler}(input) { }`
+      });
+    }
+  }
+
+  for (const fn of exportedFns) {
+    if (fn === 'graph' || fn.startsWith('_')) continue;
+    if (!requiredHandlers.has(fn)) {
+      errors.push({
+        type: 'unused_handler',
+        handler: fn,
+        message: `Handler "${fn}" defined but not used in graph states`,
+        severity: 'warning'
+      });
+    }
+  }
+
+  return {
+    valid: errors.filter(e => e.type === 'error' || !e.severity).length === 0,
+    errors,
+    missing: errors.filter(e => e.type === 'missing_handler'),
+    unused: errors.filter(e => e.type === 'unused_handler')
+  };
+}
+
+function validateTransitions(graph) {
+  const errors = [];
+  const states = Object.keys(graph.states || {});
+  const stateSet = new Set(states);
+
+  for (const [stateName, state] of Object.entries(graph.states || {})) {
+    const transitions = [state.onDone, state.onError, state.onTrue, state.onFalse].filter(Boolean);
+    for (const target of transitions) {
+      if (!stateSet.has(target)) {
+        errors.push({
+          type: 'invalid_transition',
+          from: stateName,
+          to: target,
+          message: `State "${stateName}" transitions to nonexistent state "${target}"`
+        });
+      }
+    }
+  }
+
+  return { valid: errors.length === 0, errors };
+}
+
+function validateInitialState(graph) {
+  const initial = graph.initial;
+  const states = Object.keys(graph.states || {});
+
+  if (!initial) {
+    return { valid: false, error: 'Graph missing "initial" state' };
+  }
+
+  if (!states.includes(initial)) {
+    return { valid: false, error: `Initial state "${initial}" not defined in graph.states` };
+  }
+
+  return { valid: true };
+}
+
 export function createFlowHandlerValidator() {
   return {
-    validateFlowHandlers(graph, exports) {
-      const errors = [];
-      const states = graph.states || {};
-      const exportedFns = Object.keys(exports).filter(k => typeof exports[k] === 'function');
-
-      const requiredHandlers = new Set();
-      for (const [stateName, state] of Object.entries(states)) {
-        if (state.type !== 'final' && stateName !== 'error') {
-          requiredHandlers.add(stateName);
-        }
-      }
-
-      for (const handler of requiredHandlers) {
-        if (!exportedFns.includes(handler)) {
-          errors.push({
-            type: 'missing_handler',
-            state: handler,
-            message: `Handler function not found for state "${handler}". Add: export async function ${handler}(input) { }`
-          });
-        }
-      }
-
-      for (const fn of exportedFns) {
-        if (fn === 'graph' || fn.startsWith('_')) continue;
-        if (!requiredHandlers.has(fn)) {
-          errors.push({
-            type: 'unused_handler',
-            handler: fn,
-            message: `Handler "${fn}" defined but not used in graph states`,
-            severity: 'warning'
-          });
-        }
-      }
-
-      return {
-        valid: errors.filter(e => e.type === 'error' || !e.severity).length === 0,
-        errors,
-        missing: errors.filter(e => e.type === 'missing_handler'),
-        unused: errors.filter(e => e.type === 'unused_handler')
-      };
-    },
-
-    validateTransitions(graph) {
-      const errors = [];
-      const states = Object.keys(graph.states || {});
-      const stateSet = new Set(states);
-
-      for (const [stateName, state] of Object.entries(graph.states || {})) {
-        const transitions = [state.onDone, state.onError, state.onTrue, state.onFalse]
-          .filter(Boolean);
-
-        for (const target of transitions) {
-          if (!stateSet.has(target)) {
-            errors.push({
-              type: 'invalid_transition',
-              from: stateName,
-              to: target,
-              message: `State "${stateName}" transitions to nonexistent state "${target}"`
-            });
-          }
-        }
-      }
-
-      return {
-        valid: errors.length === 0,
-        errors
-      };
-    },
-
-    validateInitialState(graph) {
-      const initial = graph.initial;
-      const states = Object.keys(graph.states || {});
-
-      if (!initial) {
-        return {
-          valid: false,
-          error: 'Graph missing "initial" state'
-        };
-      }
-
-      if (!states.includes(initial)) {
-        return {
-          valid: false,
-          error: `Initial state "${initial}" not defined in graph.states`
-        };
-      }
-
-      return { valid: true };
-    },
-
+    validateFlowHandlers,
+    validateTransitions,
+    validateInitialState,
     fullValidation(graph, exports) {
-      const handlers = this.validateFlowHandlers(graph, exports);
-      const transitions = this.validateTransitions(graph);
-      const initial = this.validateInitialState(graph);
+      const handlers = validateFlowHandlers(graph, exports);
+      const transitions = validateTransitions(graph);
+      const initial = validateInitialState(graph);
 
       const allErrors = [
         ...handlers.errors,
