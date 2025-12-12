@@ -1,16 +1,24 @@
-// Core hot reload functionality (rendering, watchers, change processing)
+/**
+ * hot-reload-core.js - Hot Reload Core Facade
+ *
+ * Delegates to watchers, nested values, and change processor modules
+ */
+
+import { HotReloadWatchers } from './hot-reload-watchers.js';
+import { HotReloadNestedValues } from './hot-reload-nested-values.js';
+import { HotReloadChangeProcessor } from './hot-reload-change-processor.js';
+
 export class HotReloadCore {
   constructor(renderer, options = {}) {
     this.renderer = renderer;
     this.previewContainer = null;
     this.currentComponent = null;
-    this.watchers = new Map();
-    this.changeQueue = [];
-    this.isProcessing = false;
-    this.debounceDelay = options.debounceDelay || 300;
     this.autoRefresh = options.autoRefresh !== false;
     this.debugMode = options.debug || false;
-    this.debounceTimer = null;
+
+    this.watchers = new HotReloadWatchers();
+    this.nestedValues = new HotReloadNestedValues();
+    this.changeProcessor = new HotReloadChangeProcessor(options.debounceDelay || 300);
   }
 
   init(previewContainer) {
@@ -28,18 +36,7 @@ export class HotReloadCore {
   }
 
   watchPath(path, callback) {
-    const watcher = {
-      path,
-      callback,
-      lastValue: null,
-      debounceTimer: null
-    };
-
-    this.watchers.set(path, watcher);
-
-    return () => {
-      this.watchers.delete(path);
-    };
+    return this.watchers.watchPath(path, callback);
   }
 
   setComponent(componentDef) {
@@ -51,75 +48,26 @@ export class HotReloadCore {
   updateComponent(updates) {
     if (!this.currentComponent) return this;
 
-    this.changeQueue.push({
-      timestamp: Date.now(),
-      updates,
-      before: JSON.parse(JSON.stringify(this.currentComponent))
-    });
-
-    this.debounceRender();
+    this.changeProcessor.queueChange(updates);
+    this.changeProcessor.debounceRender(() => this.processChanges());
     return this;
   }
 
-  debounceRender() {
-    if (this.debounceTimer) {
-      clearTimeout(this.debounceTimer);
+  processChanges() {
+    const changeQueue = this.changeProcessor.changeQueue;
+    if (changeQueue.length === 0) return;
+
+    for (const change of changeQueue) {
+      this.nestedValues.applyChanges(this.currentComponent, change.updates);
     }
 
-    this.debounceTimer = setTimeout(() => {
-      this.processChanges();
-    }, this.debounceDelay);
+    this.watchers.checkWatchers(this.currentComponent, (obj, path) => this.nestedValues.getNestedValue(obj, path));
+    this.render();
   }
 
   applyChanges(component, updates) {
-    Object.entries(updates).forEach(([path, value]) => {
-      this.setNestedValue(component, path, value);
-    });
-
-    this.checkWatchers(component);
-  }
-
-  setNestedValue(obj, path, value) {
-    const keys = path.split('.');
-    let current = obj;
-
-    for (let i = 0; i < keys.length - 1; i++) {
-      const key = keys[i];
-      if (!(key in current) || typeof current[key] !== 'object') {
-        current[key] = {};
-      }
-      current = current[key];
-    }
-
-    current[keys[keys.length - 1]] = value;
-  }
-
-  getNestedValue(obj, path) {
-    const keys = path.split('.');
-    let current = obj;
-
-    for (const key of keys) {
-      if (current == null) return undefined;
-      current = current[key];
-    }
-
-    return current;
-  }
-
-  checkWatchers(component) {
-    this.watchers.forEach((watcher) => {
-      const newValue = this.getNestedValue(component, watcher.path);
-
-      if (JSON.stringify(newValue) !== JSON.stringify(watcher.lastValue)) {
-        watcher.lastValue = newValue;
-
-        try {
-          watcher.callback(newValue);
-        } catch (e) {
-          console.error(`Watcher error for path ${watcher.path}:`, e);
-        }
-      }
-    });
+    this.nestedValues.applyChanges(component, updates);
+    this.watchers.checkWatchers(component, (obj, path) => this.nestedValues.getNestedValue(obj, path));
   }
 
   render() {
@@ -147,9 +95,6 @@ export class HotReloadCore {
 
   dispose() {
     this.watchers.clear();
-    this.changeQueue = [];
-    if (this.debounceTimer) {
-      clearTimeout(this.debounceTimer);
-    }
+    this.changeProcessor.clear();
   }
 }
