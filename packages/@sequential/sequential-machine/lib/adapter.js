@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-
-const nowISO = () => new Date().toISOString();
+const { AdapterExecution } = require('./adapter-execution.js');
+const { AdapterCheckpoints } = require('./adapter-checkpoints.js');
 
 class SequentialMachineAdapter {
   constructor(options = {}) {
@@ -10,14 +10,16 @@ class SequentialMachineAdapter {
       workdir: '.sequential-machine/work',
       ...options
     };
-    
+
     this.kit = new StateKit({
       stateDir: this.options.stateDir,
       workdir: this.options.workdir
     });
-    
+
     this.vfs = new StateKitVFS(this.kit);
     this.currentLayer = null;
+    this.execution = new AdapterExecution(this.kit);
+    this.checkpoints = new AdapterCheckpoints(this.kit);
   }
 
   async initialize() {
@@ -28,29 +30,11 @@ class SequentialMachineAdapter {
   }
 
   async execute(instruction, options = {}) {
-    const result = await this.kit.run(instruction);
-    
-    if (!options.noCommit) {
-      this.currentLayer = result.hash;
-    }
-    
-    return {
-      success: true,
-      layer: result.hash,
-      short: result.short,
-      cached: result.cached,
-      empty: result.empty,
-      instruction
-    };
+    return await this.execution.execute(instruction, this.currentLayer, options);
   }
 
   async executeRaw(instruction) {
-    await this.kit.exec(instruction);
-    return {
-      success: true,
-      instruction,
-      captured: false
-    };
+    return await this.execution.executeRaw(instruction);
   }
 
   getCurrentState() {
@@ -87,12 +71,11 @@ class SequentialMachineAdapter {
   }
 
   tag(name, layerRef) {
-    this.kit.tag(name, layerRef);
-    return this.kit.tags();
+    return this.checkpoints.tag(name, layerRef);
   }
 
   getTags() {
-    return this.kit.tags();
+    return this.checkpoints.getTags();
   }
 
   inspect(layerRef) {
@@ -100,12 +83,7 @@ class SequentialMachineAdapter {
   }
 
   async batch(instructions, options = {}) {
-    const results = [];
-    for (const instruction of instructions) {
-      const result = await this.execute(instruction, options);
-      results.push(result);
-    }
-    return results;
+    return await this.execution.batch(instructions, this.currentLayer, options);
   }
 
   async rebuild() {
@@ -141,27 +119,15 @@ class SequentialMachineAdapter {
   }
 
   async checkpoint(name = null) {
-    const timestamp = nowISO().replace(/[:.]/g, '-');
-    const checkpointName = name || `checkpoint-${timestamp}`;
-    return this.tag(checkpointName);
+    return await this.checkpoints.checkpoint(name);
   }
 
   listCheckpoints() {
-    const tags = this.getTags();
-    return Object.entries(tags)
-      .filter(([name]) => name.startsWith('checkpoint-'))
-      .reduce((acc, [name, hash]) => {
-        acc[name] = hash;
-        return acc;
-      }, {});
+    return this.checkpoints.listCheckpoints();
   }
 
   async restoreCheckpoint(name) {
-    const checkpoints = this.listCheckpoints();
-    if (!checkpoints[name]) {
-      throw new Error(`Checkpoint not found: ${name}`);
-    }
-    return await this.restore(checkpoints[name]);
+    return await this.checkpoints.restoreCheckpoint(name, this.restore.bind(this));
   }
 }
 
