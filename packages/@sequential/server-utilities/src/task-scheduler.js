@@ -4,6 +4,9 @@ import { createOnceSchedule, createRecurringSchedule, createIntervalSchedule } f
 import { CronCalculator } from './cron-calculator.js';
 import { ScheduleExecutor } from './schedule-executor.js';
 import { ScheduleStorage } from './schedule-storage.js';
+import { ScheduleOperations } from './schedule-operations.js';
+import { ExecutionTracker } from './execution-tracker.js';
+import { CheckLoopManager } from './check-loop-manager.js';
 
 export class TaskScheduler extends EventEmitter {
   constructor(options = {}) {
@@ -11,7 +14,6 @@ export class TaskScheduler extends EventEmitter {
     this.taskQueueManager = null;
     this.stateManager = null;
     this.maxScheduled = options.maxScheduled || 1000;
-    this.checkInterval = options.checkInterval || 1000;
     this.timezone = options.timezone || 'UTC';
 
     this.scheduled = new Map();
@@ -23,8 +25,6 @@ export class TaskScheduler extends EventEmitter {
       active: 0,
       cancelled: 0
     };
-    this.executionHistory = new Map();
-    this.checkLoop = null;
 
     this.cronCalculator = new CronCalculator();
     this.scheduleStorage = new ScheduleStorage(this.stateManager);
@@ -34,6 +34,11 @@ export class TaskScheduler extends EventEmitter {
       this.recordExecution.bind(this),
       this.emit.bind(this)
     );
+
+    // Delegate operations to focused modules
+    this.operations = new ScheduleOperations(this.scheduled, this.stats, this.emit.bind(this));
+    this.tracker = new ExecutionTracker();
+    this.checkLoopManager = new CheckLoopManager(options.checkInterval || 1000);
   }
 
   setDependencies(taskQueueManager, stateManager) {
@@ -56,7 +61,7 @@ export class TaskScheduler extends EventEmitter {
       await this.loadFromStorage();
     }
 
-    this.startCheckLoop();
+    this.checkLoopManager.startCheckLoop(this.scheduleExecutor, this.scheduled);
     this.emit('scheduler:started', { total: this.scheduled.size });
   }
 
@@ -64,10 +69,7 @@ export class TaskScheduler extends EventEmitter {
     if (!this.isRunning) return;
     this.isRunning = false;
 
-    if (this.checkLoop) {
-      clearInterval(this.checkLoop);
-      this.checkLoop = null;
-    }
+    this.checkLoopManager.stopCheckLoop();
 
     if (this.stateManager) {
       await this.persistToStorage();
@@ -76,118 +78,66 @@ export class TaskScheduler extends EventEmitter {
     this.emit('scheduler:stopped', { totalExecuted: this.stats.executed });
   }
 
-  startCheckLoop() {
-    this.checkLoop = setInterval(() => {
-      this.scheduleExecutor.checkDueSchedules(this.scheduled);
-    }, this.checkInterval);
-  }
-
   scheduleOnce(taskName, args, executeAt, options = {}) {
-    if (this.scheduled.size >= this.maxScheduled) {
+    if (this.operations.isAtCapacity(this.maxScheduled)) {
       throw new Error(`Cannot schedule: limit of ${this.maxScheduled} reached`);
     }
 
     const schedule = createOnceSchedule(taskName, args, executeAt, options);
-    this.scheduled.set(schedule.id, schedule);
-    this.stats.total++;
-
-    this.emit('schedule:created', { id: schedule.id, type: 'once', executeAt });
-    return { id: schedule.id, status: 'scheduled' };
+    return this.operations.addSchedule(schedule, 'once', { executeAt });
   }
 
   scheduleRecurring(taskName, args, cronExpression, options = {}) {
-    if (this.scheduled.size >= this.maxScheduled) {
+    if (this.operations.isAtCapacity(this.maxScheduled)) {
       throw new Error(`Cannot schedule: limit of ${this.maxScheduled} reached`);
     }
 
     const nextRun = this.cronCalculator.calculateNextCronRun(cronExpression);
     const schedule = createRecurringSchedule(taskName, args, cronExpression, nextRun, options);
-    this.scheduled.set(schedule.id, schedule);
-    this.stats.total++;
-
-    this.emit('schedule:created', { id: schedule.id, type: 'recurring', cronExpression });
-    return { id: schedule.id, status: 'scheduled' };
+    return this.operations.addSchedule(schedule, 'recurring', { cronExpression });
   }
 
   scheduleInterval(taskName, args, intervalMs, options = {}) {
-    if (this.scheduled.size >= this.maxScheduled) {
+    if (this.operations.isAtCapacity(this.maxScheduled)) {
       throw new Error(`Cannot schedule: limit of ${this.maxScheduled} reached`);
     }
 
     const schedule = createIntervalSchedule(taskName, args, intervalMs, options);
-    this.scheduled.set(schedule.id, schedule);
-    this.stats.total++;
-
-    this.emit('schedule:created', { id: schedule.id, type: 'interval', intervalMs });
-    return { id: schedule.id, status: 'scheduled' };
+    return this.operations.addSchedule(schedule, 'interval', { intervalMs });
   }
 
   cancel(id) {
-    const schedule = this.scheduled.get(id);
-    if (!schedule) {
-      return { success: false, error: 'Schedule not found' };
-    }
-
-    schedule.enabled = false;
-    this.stats.cancelled++;
-
-    this.emit('schedule:cancelled', { id });
-    return { success: true, id };
+    return this.operations.cancel(id);
   }
 
   update(id, options) {
-    const schedule = this.scheduled.get(id);
-    if (!schedule) {
-      return { success: false, error: 'Schedule not found' };
-    }
-
-    Object.assign(schedule, options);
-    this.emit('schedule:updated', { id, options });
-    return { success: true, id };
+    return this.operations.update(id, options);
   }
 
   getSchedule(id) {
-    return this.scheduled.get(id) || null;
+    return this.operations.getSchedule(id);
   }
 
   getAllSchedules() {
-    return Array.from(this.scheduled.values()).map(s => ({
-      id: s.id,
-      type: s.type,
-      taskName: s.taskName,
-      nextRun: s.nextRun,
-      lastRun: s.lastRun,
-      enabled: s.enabled,
-      createdAt: s.createdAt
-    }));
+    return this.operations.getAllSchedules();
   }
 
   getStats() {
     return {
       ...this.stats,
       isRunning: this.isRunning,
-      checkInterval: this.checkInterval,
+      checkInterval: this.checkLoopManager.getCheckInterval(),
       maxScheduled: this.maxScheduled,
-      scheduled: this.scheduled.size
+      scheduled: this.operations.getScheduleCount()
     };
   }
 
   recordExecution(id, details) {
-    if (!this.executionHistory.has(id)) {
-      this.executionHistory.set(id, []);
-    }
-
-    const history = this.executionHistory.get(id);
-    history.push(details);
-
-    if (history.length > 1000) {
-      history.shift();
-    }
+    return this.tracker.recordExecution(id, details);
   }
 
   getExecutionHistory(id, limit = 50) {
-    const history = this.executionHistory.get(id) || [];
-    return history.slice(-limit);
+    return this.tracker.getExecutionHistory(id, limit);
   }
 
   async persistToStorage() {
