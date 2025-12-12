@@ -1,6 +1,11 @@
+import { CustomizationVariants } from './customization-variants.js';
+import { CustomizationMerger } from './customization-merger.js';
+
 class PatternCustomizer {
   constructor() {
     this.customizations = new Map();
+    this.variants = new CustomizationVariants(this);
+    this.merger = new CustomizationMerger();
   }
 
   createCustomization(basePatternId, customId, overrides = {}) {
@@ -26,76 +31,26 @@ class PatternCustomizer {
 
   applyCustomization(pattern, customizationId) {
     const customization = this.customizations.get(customizationId);
-    if (!customization || customization.basePatternId !== pattern.id) {
+    if (!customization) {
       return pattern;
     }
-
-    return {
-      ...pattern,
-      definition: this.mergeDefinition(pattern.definition, customization.overrides),
-      customizations: [...(pattern.customizations || []), customizationId],
-      modified: new Date().toISOString()
-    };
+    return this.merger.applyCustomization(pattern, customization);
   }
 
   mergeDefinition(definition, overrides) {
-    if (overrides.style) {
-      definition = {
-        ...definition,
-        style: { ...definition.style, ...overrides.style }
-      };
-    }
-
-    if (overrides.props) {
-      definition = {
-        ...definition,
-        ...overrides.props
-      };
-    }
-
-    if (overrides.children) {
-      definition = {
-        ...definition,
-        children: overrides.children
-      };
-    }
-
-    return definition;
+    return this.merger.mergeDefinition(definition, overrides);
   }
 
   createThemeVariant(patternId, variantName, colors) {
-    const customId = `${patternId}-${variantName}`;
-    return this.createCustomization(patternId, customId, {
-      style: {
-        color: colors.text,
-        background: colors.background,
-        borderColor: colors.border
-      },
-      tags: ['themed', variantName]
-    });
+    return this.variants.createThemeVariant(patternId, variantName, colors);
   }
 
   createSizeVariant(patternId, size) {
-    const sizeMap = {
-      sm: { fontSize: '12px', padding: '4px 8px' },
-      md: { fontSize: '14px', padding: '8px 12px' },
-      lg: { fontSize: '16px', padding: '12px 16px' },
-      xl: { fontSize: '18px', padding: '16px 20px' }
-    };
-
-    const customId = `${patternId}-${size}`;
-    return this.createCustomization(patternId, customId, {
-      style: sizeMap[size] || {},
-      tags: ['sized', size]
-    });
+    return this.variants.createSizeVariant(patternId, size);
   }
 
   createResponsiveVariant(patternId, breakpoint, overrides) {
-    const customId = `${patternId}-${breakpoint}`;
-    return this.createCustomization(patternId, customId, {
-      ...overrides,
-      tags: ['responsive', breakpoint]
-    });
+    return this.variants.createResponsiveVariant(patternId, breakpoint, overrides);
   }
 
   getCustomization(id) {
