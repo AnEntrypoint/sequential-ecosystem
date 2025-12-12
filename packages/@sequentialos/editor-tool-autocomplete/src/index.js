@@ -1,12 +1,14 @@
 import { fuzzyMatch } from './scoring.js';
 import { showDropdown, updateDropdownSelection, closeDropdown } from './dropdown.js';
+import { ToolFinder } from './tool-finder.js';
+import { EditorInteraction } from './editor-interaction.js';
 
 export class ToolAutocomplete {
   constructor(editorId = 'codeEditor') {
     this.editor = document.getElementById(editorId);
     this.tools = [];
-    this.dropdownVisible = false;
-    this.selectedIndex = 0;
+    this.toolFinder = new ToolFinder([]);
+    this.editorInteraction = new EditorInteraction(this.editor);
     this.currentMatch = null;
     this.currentMatches = [];
     this.fetchTools();
@@ -18,6 +20,7 @@ export class ToolAutocomplete {
       const { success, data } = await response.json();
       if (success && data.tools) {
         this.tools = data.tools;
+        this.toolFinder.setTools(data.tools);
       }
     } catch (err) {
       console.error('Failed to fetch tools:', err);
@@ -26,21 +29,16 @@ export class ToolAutocomplete {
 
   init() {
     if (!this.editor) return;
-
-    this.editor.addEventListener('input', (e) => this.handleInput(e));
-    this.editor.addEventListener('keydown', (e) => this.handleKeyDown(e));
-    document.addEventListener('click', (e) => {
-      if (e.target !== this.editor && !e.target.closest('#tool-autocomplete-dropdown')) {
-        this.closeDropdown();
-      }
-    });
+    this.editorInteraction.setupEventListeners(
+      (e) => this.handleInput(e),
+      (e) => this.handleKeyDown(e)
+    );
   }
 
   handleInput(e) {
-    const code = this.editor.value;
-    const cursorPos = this.editor.selectionStart;
+    const { value, cursorPos } = this.editorInteraction.getEditorState();
 
-    const match = this.findToolCall(code, cursorPos);
+    const match = this.toolFinder.findToolCall(value, cursorPos);
 
     if (match) {
       this.currentMatch = match;
@@ -56,54 +54,26 @@ export class ToolAutocomplete {
   }
 
   handleKeyDown(e) {
-    if (!this.dropdownVisible) return;
+    if (!this.editorInteraction.isDropdownVisible()) return;
 
-    if (e.key === 'Escape') {
-      e.preventDefault();
-      this.closeDropdown();
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      this.selectedIndex = Math.min(this.selectedIndex + 1, this.currentMatches.length - 1);
-      this.updateSelection();
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      this.selectedIndex = Math.max(this.selectedIndex - 1, 0);
-      this.updateSelection();
-    } else if (e.key === 'Enter' || e.key === 'Tab') {
-      e.preventDefault();
-      if (this.currentMatches[this.selectedIndex]) {
-        this.insertTool(this.currentMatches[this.selectedIndex]);
-      }
-    }
-  }
-
-  findToolCall(code, cursorPos) {
-    const beforeCursor = code.substring(0, cursorPos);
-    const callPattern = /__callHostTool__\s*\(\s*['"]([^'"]+)['"]\s*,\s*['"]([^'"]*)/;
-    const match = beforeCursor.match(callPattern);
-
-    if (match) {
-      return {
-        appId: match[1],
-        partial: match[2],
-        start: beforeCursor.lastIndexOf(match[0]) + match[0].length - match[2].length,
-        end: cursorPos
-      };
-    }
-
-    return null;
+    this.editorInteraction.handleKeyDown(e, {
+      matchCount: this.currentMatches.length,
+      currentMatch: this.currentMatches,
+      onUpdateSelection: () => this.updateSelection(),
+      onSelectTool: (tool) => this.insertTool(tool)
+    });
   }
 
   showDropdown(tools) {
     this.currentMatches = tools;
-    this.selectedIndex = 0;
+    this.editorInteraction.setSelectedIndex(0);
 
     const dropdown = showDropdown(this.editor, tools, this.currentMatch, (tool) => this.insertTool(tool));
-    this.dropdownVisible = true;
+    this.editorInteraction.setDropdownVisible(true);
 
     dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
       item.addEventListener('mouseover', (e) => {
-        this.selectedIndex = parseInt(e.currentTarget.dataset.index);
+        this.editorInteraction.setSelectedIndex(parseInt(e.currentTarget.dataset.index));
         this.updateSelection();
       });
     });
@@ -111,7 +81,7 @@ export class ToolAutocomplete {
 
   updateSelection() {
     const dropdown = document.getElementById('tool-autocomplete-dropdown');
-    updateDropdownSelection(dropdown, this.selectedIndex);
+    updateDropdownSelection(dropdown, this.editorInteraction.getSelectedIndex());
   }
 
   insertTool(tool) {
@@ -121,13 +91,12 @@ export class ToolAutocomplete {
     const code = this.editor.value;
 
     const newCode = code.substring(0, start) + tool.name + code.substring(end);
-    this.editor.value = newCode;
+    this.editorInteraction.setEditorValue(newCode);
 
     const newPos = start + tool.name.length;
-    this.editor.setSelectionRange(newPos, newPos);
+    this.editorInteraction.setCursorPosition(newPos);
 
-    const event = new Event('input', { bubbles: true });
-    this.editor.dispatchEvent(event);
+    this.editorInteraction.dispatchInputEvent();
 
     this.closeDropdown();
 
@@ -138,7 +107,7 @@ export class ToolAutocomplete {
 
   closeDropdown() {
     closeDropdown();
-    this.dropdownVisible = false;
+    this.editorInteraction.closeDropdown();
     this.currentMatches = [];
   }
 }
