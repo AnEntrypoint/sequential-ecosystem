@@ -1,18 +1,25 @@
 // Preview component management and updates
+import { PathExtractor, PathAccessor } from './preview-path-utils.js';
+import { PreviewUpdateQueue } from './preview-update-queue.js';
+
 export class PreviewManager {
   constructor() {
     this.previewComponent = null;
     this.watchers = new Map();
-    this.updateQueue = [];
-    this.isUpdating = false;
     this.listeners = [];
+    this.pathExtractor = new PathExtractor();
+    this.pathAccessor = new PathAccessor();
+    this.updateQueue = new PreviewUpdateQueue(
+      (updates) => this.applyUpdates(updates),
+      (event) => this.notifyListeners(event)
+    );
   }
 
   registerPreview(componentDef, watchPaths = []) {
     this.previewComponent = JSON.parse(JSON.stringify(componentDef));
 
     if (watchPaths.length === 0) {
-      watchPaths = this.extractAllPaths(componentDef);
+      watchPaths = this.pathExtractor.extractAllPaths(componentDef);
     }
 
     watchPaths.forEach(path => {
@@ -23,84 +30,26 @@ export class PreviewManager {
   }
 
   extractAllPaths(obj, prefix = '') {
-    const paths = [];
-
-    if (!obj || typeof obj !== 'object') return paths;
-
-    Object.keys(obj).forEach(key => {
-      const fullPath = prefix ? `${prefix}.${key}` : key;
-      paths.push(fullPath);
-
-      if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
-        paths.push(...this.extractAllPaths(obj[key], fullPath));
-      }
-    });
-
-    return paths;
+    return this.pathExtractor.extractAllPaths(obj, prefix);
   }
 
   updatePreview(updates) {
-    this.updateQueue.push({
-      updates,
-      timestamp: Date.now()
-    });
-
-    if (!this.isUpdating) {
-      this.processUpdateQueue();
-    }
-  }
-
-  processUpdateQueue() {
-    if (this.updateQueue.length === 0) {
-      this.isUpdating = false;
-      return;
-    }
-
-    this.isUpdating = true;
-    const { updates, timestamp } = this.updateQueue.shift();
-
-    this.applyUpdates(updates);
-    this.notifyListeners({
-      type: 'update',
-      timestamp,
-      updates
-    });
-
-    setTimeout(() => this.processUpdateQueue(), 16);
+    this.updateQueue.enqueue(updates);
   }
 
   applyUpdates(updates) {
     Object.entries(updates).forEach(([path, value]) => {
-      this.setNestedValue(this.previewComponent, path, value);
+      this.pathAccessor.setNestedValue(this.previewComponent, path, value);
       this.watchers.set(path, value);
     });
   }
 
   setNestedValue(obj, path, value) {
-    const keys = path.split('.');
-    let current = obj;
-
-    for (let i = 0; i < keys.length - 1; i++) {
-      const key = keys[i];
-      if (!(key in current)) {
-        current[key] = {};
-      }
-      current = current[key];
-    }
-
-    current[keys[keys.length - 1]] = value;
+    return this.pathAccessor.setNestedValue(obj, path, value);
   }
 
   getNestedValue(obj, path) {
-    const keys = path.split('.');
-    let current = obj;
-
-    for (const key of keys) {
-      if (current == null) return undefined;
-      current = current[key];
-    }
-
-    return current;
+    return this.pathAccessor.getNestedValue(obj, path);
   }
 
   watchPath(path, callback) {
