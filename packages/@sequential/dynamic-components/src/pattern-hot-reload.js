@@ -1,17 +1,35 @@
-// Facade maintaining 100% backward compatibility
+/**
+ * Pattern Hot Reload Facade
+ * Coordinates hot reload functionality with 100% backward compatibility
+ *
+ * Delegates to:
+ * - HotReloadCore: Component rendering and change application
+ * - HotReloadHistory: State history and undo/redo
+ * - HotReloadUI: Preview UI and panel builders
+ * - HotReloadProcessor: Change queue processing and metrics
+ * - HotReloadEvents: Event listener management
+ * - HotReloadStateCoordinator: State operations coordination
+ */
+
 import { HotReloadCore } from './hot-reload-core.js';
 import { HotReloadHistory } from './hot-reload-history.js';
 import { HotReloadUI } from './hot-reload-ui.js';
+import { HotReloadProcessor } from './hot-reload-processor.js';
+import { HotReloadEvents } from './hot-reload-events.js';
+import { HotReloadStateCoordinator } from './hot-reload-state-coordinator.js';
 
 class PatternHotReload {
   constructor(renderer, options = {}) {
     this.core = new HotReloadCore(renderer, options);
     this.history = new HotReloadHistory(options);
     this.ui = new HotReloadUI();
-    this.listeners = [];
-    this.debugMode = options.debug || false;
+    this.processor = new HotReloadProcessor(this.core, this.history);
+    this.events = new HotReloadEvents();
+    this.state = new HotReloadStateCoordinator(this.core, this.history);
+    this.processor.debugMode = options.debug || false;
   }
 
+  // Core initialization
   init(previewContainer) {
     this.core.init(previewContainer);
     return this;
@@ -31,55 +49,28 @@ class PatternHotReload {
     return this;
   }
 
+  // Change processing - delegate to processor
   processChanges() {
-    if (this.core.isProcessing || this.core.changeQueue.length === 0) return;
-
-    this.core.isProcessing = true;
-    const startTime = performance.now();
-
-    try {
-      const changes = this.core.changeQueue.splice(0);
-
-      changes.forEach(change => {
-        this.core.applyChanges(this.core.currentComponent, change.updates);
-      });
-
-      this.history.recordChange(changes, this.core.currentComponent);
-      this.core.render();
-      this.executeListeners('change', { changes, component: this.core.currentComponent });
-
-      const endTime = performance.now();
-      this.history.recordMetrics(startTime, endTime);
-
-      if (this.debugMode) {
-        console.log(`[Hot Reload] Processed ${changes.length} change(s) in ${(endTime - startTime).toFixed(2)}ms`);
-      }
-    } finally {
-      this.core.isProcessing = false;
-
-      if (this.core.changeQueue.length > 0) {
-        this.core.debounceRender();
-      }
+    const result = this.processor.process();
+    if (result) {
+      this.events.execute('change', { changes: result.changes, component: this.core.currentComponent });
     }
   }
 
+  // History operations - delegate to state coordinator
   undo(steps = 1) {
-    const result = this.history.undo(steps);
+    const result = this.state.undo(steps);
     if (result.success) {
-      this.core.currentComponent = result.snapshot;
-      this.core.render();
-      this.executeListeners('undo', { steps, component: this.core.currentComponent });
+      this.events.execute('undo', { steps, component: this.core.currentComponent });
       return true;
     }
     return false;
   }
 
   redo(steps = 1) {
-    const result = this.history.redo(steps);
+    const result = this.state.redo(steps);
     if (result.success) {
-      this.core.currentComponent = result.snapshot;
-      this.core.render();
-      this.executeListeners('redo', { steps, component: this.core.currentComponent });
+      this.events.execute('redo', { steps, component: this.core.currentComponent });
       return true;
     }
     return false;
@@ -98,16 +89,15 @@ class PatternHotReload {
   }
 
   jumpToHistory(index) {
-    const result = this.history.jumpToHistory(index);
+    const result = this.state.jumpToHistory(index);
     if (result.success) {
-      this.core.currentComponent = result.snapshot;
-      this.core.render();
-      this.executeListeners('jump', { index, component: this.core.currentComponent });
+      this.events.execute('jump', { index, component: this.core.currentComponent });
       return true;
     }
     return false;
   }
 
+  // UI building - delegate to ui
   buildPreviewUI() {
     return this.ui.buildPreviewUI(this.core.currentComponent, this.history.getMetrics());
   }
@@ -130,30 +120,16 @@ class PatternHotReload {
     return this.ui.buildHistoryPanel(this.getHistory());
   }
 
+  // Event management - delegate to events
   on(event, callback) {
-    this.listeners.push({ event, callback });
-    return this;
+    return this.events.on(event, callback);
   }
 
   off(event, callback) {
-    this.listeners = this.listeners.filter(
-      l => !(l.event === event && l.callback === callback)
-    );
-    return this;
+    return this.events.off(event, callback);
   }
 
-  executeListeners(event, data) {
-    this.listeners
-      .filter(l => l.event === event)
-      .forEach(l => {
-        try {
-          l.callback(data);
-        } catch (e) {
-          console.error(`Listener error for event ${event}:`, e);
-        }
-      });
-  }
-
+  // Metrics and state
   getMetrics() {
     return this.history.getMetrics();
   }
@@ -164,22 +140,18 @@ class PatternHotReload {
   }
 
   exportState() {
-    return this.history.exportState(this.core.currentComponent);
+    return this.state.exportState();
   }
 
   importState(state) {
-    const component = this.history.importState(state);
-    if (component) {
-      this.core.currentComponent = component;
-      this.core.render();
-    }
+    this.state.importState(state);
     return this;
   }
 
   dispose() {
     this.core.dispose();
     this.history.clearHistory();
-    this.listeners = [];
+    this.events.clear();
   }
 }
 
