@@ -1,15 +1,23 @@
-import fs from 'fs';
+/**
+ * folder-adapter.js - Folder-Based Storage Adapter Facade
+ *
+ * Delegates to focused operation modules:
+ * - cache-loader: Cache initialization and loading
+ * - task-run-operations: Task run CRUD operations
+ * - stack-run-operations: Stack run CRUD operations
+ * - function-storage: Task function persistence
+ * - keystore-operations: Key-value storage operations
+ */
+
 import path from 'path';
-import { randomUUID } from 'crypto';
 import { validatePath } from '@sequentialos/validation';
 import { StorageAdapter } from '../interfaces/storage-adapter.js';
 import { CRUDPatterns, Serializer } from '@sequentialos/sequential-storage-utils';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
-import {
-  readJsonFile,
-  writeFileAtomicJson,
-  ensureDirectory
-} from '@sequentialos/file-operations';
+import { CacheLoader } from './cache-loader.js';
+import { TaskRunOperations } from './task-run-operations.js';
+import { StackRunOperations } from './stack-run-operations.js';
+import { FunctionStorage } from './function-storage.js';
+import { KeystoreOperations } from './keystore-operations.js';
 
 export class FolderAdapter extends StorageAdapter {
   constructor(basePath = './tasks') {
@@ -20,6 +28,12 @@ export class FolderAdapter extends StorageAdapter {
     this.keystoreCache = new Map();
     this.crud = new CRUDPatterns();
     this.serializer = new Serializer();
+
+    this.cacheLoader = new CacheLoader(this.basePath, this.taskRunsCache, this.stackRunsCache, this.keystoreCache);
+    this.taskRuns = new TaskRunOperations(this.basePath, this.taskRunsCache, this.crud);
+    this.stackRuns = new StackRunOperations(this.basePath, this.stackRunsCache, this.crud);
+    this.functions = new FunctionStorage(this.basePath);
+    this.keystore = new KeystoreOperations(this.basePath, this.keystoreCache);
   }
 
   validatePath(subPath) {
@@ -34,140 +48,63 @@ export class FolderAdapter extends StorageAdapter {
   }
 
   async init() {
-    await ensureDirectory(this.basePath);
-    await this.loadCaches();
-  }
-
-  async loadCaches() {
-    if (fs.existsSync(this.basePath)) {
-      const files = fs.readdirSync(this.basePath);
-      for (const file of files) {
-        if (file.endsWith('.json') && file.startsWith('task-run-')) {
-          const id = file.replace('task-run-', '').replace('.json', '');
-          const data = await readJsonFile(path.join(this.basePath, file));
-          this.taskRunsCache.set(id, data);
-        }
-        if (file.endsWith('.json') && file.startsWith('stack-run-')) {
-          const id = file.replace('stack-run-', '').replace('.json', '');
-          const data = await readJsonFile(path.join(this.basePath, file));
-          this.stackRunsCache.set(id, data);
-        }
-        if (file === 'keystore.json') {
-          const data = await readJsonFile(path.join(this.basePath, file));
-          Object.entries(data).forEach(([k, v]) => this.keystoreCache.set(k, v));
-        }
-      }
-    }
-  }
-
-  async persistKeystore() {
-    const data = Object.fromEntries(this.keystoreCache);
-    await writeFileAtomicJson(path.join(this.basePath, 'keystore.json'), data);
+    return await this.cacheLoader.init();
   }
 
   async createTaskRun(taskRun) {
-    const id = taskRun.id || randomUUID();
-    const record = this.crud.buildTaskRunCreate({ id, ...taskRun });
-    const normalized = this.crud.normalizeTaskRunRecord(record);
-    this.taskRunsCache.set(id, normalized);
-    await writeFileAtomicJson(path.join(this.basePath, `task-run-${id}.json`), normalized);
-    return normalized;
+    return await this.taskRuns.create(taskRun);
   }
 
   async getTaskRun(id) {
-    const cached = this.taskRunsCache.get(id);
-    return cached ? this.crud.normalizeTaskRunRecord(cached) : null;
+    return await this.taskRuns.get(id);
   }
 
   async updateTaskRun(id, updates) {
-    const record = this.taskRunsCache.get(id);
-    if (!record) return null;
-    const prepared = this.crud.buildTaskRunUpdate(updates);
-    const merged = this.crud.mergeUpdates(record, prepared);
-    const normalized = this.crud.normalizeTaskRunRecord(merged);
-    this.taskRunsCache.set(id, normalized);
-    await writeFileAtomicJson(path.join(this.basePath, `task-run-${id}.json`), normalized);
-    return normalized;
+    return await this.taskRuns.update(id, updates);
   }
 
   async queryTaskRuns(filter) {
-    const records = Array.from(this.taskRunsCache.values());
-    const query = this.crud.buildTaskRunQuery(filter);
-    const filtered = this.crud.filterRecords(records, query);
-    return filtered.map(r => this.crud.normalizeTaskRunRecord(r));
+    return await this.taskRuns.query(filter);
   }
 
   async createStackRun(stackRun) {
-    const id = stackRun.id || randomUUID();
-    const record = this.crud.buildStackRunCreate({ id, ...stackRun });
-    const normalized = this.crud.normalizeStackRunRecord(record);
-    this.stackRunsCache.set(id, normalized);
-    await writeFileAtomicJson(path.join(this.basePath, `stack-run-${id}.json`), normalized);
-    return normalized;
+    return await this.stackRuns.create(stackRun);
   }
 
   async getStackRun(id) {
-    const cached = this.stackRunsCache.get(id);
-    return cached ? this.crud.normalizeStackRunRecord(cached) : null;
+    return await this.stackRuns.get(id);
   }
 
   async updateStackRun(id, updates) {
-    const record = this.stackRunsCache.get(id);
-    if (!record) return null;
-    const prepared = this.crud.buildStackRunUpdate(updates);
-    const merged = this.crud.mergeUpdates(record, prepared);
-    const normalized = this.crud.normalizeStackRunRecord(merged);
-    this.stackRunsCache.set(id, normalized);
-    await writeFileAtomicJson(path.join(this.basePath, `stack-run-${id}.json`), normalized);
-    return normalized;
+    return await this.stackRuns.update(id, updates);
   }
 
   async queryStackRuns(filter) {
-    const records = Array.from(this.stackRunsCache.values());
-    const query = this.crud.buildStackRunQuery(filter);
-    const filtered = this.crud.filterRecords(records, query);
-    return filtered.map(r => this.crud.normalizeStackRunRecord(r));
+    return await this.stackRuns.query(filter);
   }
 
   async getPendingStackRuns() {
-    const records = Array.from(this.stackRunsCache.values());
-    return records.filter(run => run.status === 'pending').map(r => this.crud.normalizeStackRunRecord(r));
+    return await this.stackRuns.getPending();
   }
 
   async storeTaskFunction(taskFunction) {
-    const id = taskFunction.id || randomUUID();
-    const funcDir = path.join(this.basePath, 'functions', id);
-    await ensureDirectory(funcDir);
-    await writeFileAtomicJson(
-      path.join(funcDir, 'metadata.json'),
-      { id, name: taskFunction.name, createdAt: nowISO() }
-    );
-    if (taskFunction.code) {
-      fs.writeFileSync(path.join(funcDir, 'code.js'), taskFunction.code);
-    }
-    return { id, name: taskFunction.name };
+    return await this.functions.store(taskFunction);
   }
 
   async getTaskFunction(identifier) {
-    const funcDir = path.join(this.basePath, 'functions', identifier);
-    if (!fs.existsSync(funcDir)) return null;
-    const code = fs.readFileSync(path.join(funcDir, 'code.js'), 'utf-8');
-    const metadata = await readJsonFile(path.join(funcDir, 'metadata.json'));
-    return { ...metadata, code };
+    return await this.functions.get(identifier);
   }
 
   async setKeystore(key, value) {
-    this.keystoreCache.set(key, value);
-    await this.persistKeystore();
+    return await this.keystore.set(key, value);
   }
 
   async getKeystore(key) {
-    return this.keystoreCache.get(key) || null;
+    return await this.keystore.get(key);
   }
 
   async deleteKeystore(key) {
-    this.keystoreCache.delete(key);
-    await this.persistKeystore();
+    return await this.keystore.delete(key);
   }
 
   async close() {
