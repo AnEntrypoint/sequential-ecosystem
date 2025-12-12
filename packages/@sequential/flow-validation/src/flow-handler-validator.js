@@ -1,115 +1,40 @@
 /**
- * flow-handler-validator.js - Flow Handler Validator Factory
+ * flow-handler-validator.js - Flow Handler Validator Factory (Facade)
  *
  * Creates validators for flow definitions, handlers, and transitions
  */
 
-function getRequiredHandlers(graph) {
-  const requiredHandlers = new Set();
-  const states = graph.states || {};
-  for (const [stateName, state] of Object.entries(states)) {
-    if (state.type !== 'final' && stateName !== 'error') {
-      requiredHandlers.add(stateName);
-    }
-  }
-  return requiredHandlers;
-}
-
-function validateFlowHandlers(graph, exports) {
-  const errors = [];
-  const exportedFns = Object.keys(exports).filter(k => typeof exports[k] === 'function');
-  const requiredHandlers = getRequiredHandlers(graph);
-
-  for (const handler of requiredHandlers) {
-    if (!exportedFns.includes(handler)) {
-      errors.push({
-        type: 'missing_handler',
-        state: handler,
-        message: `Handler function not found for state "${handler}". Add: export async function ${handler}(input) { }`
-      });
-    }
-  }
-
-  for (const fn of exportedFns) {
-    if (fn === 'graph' || fn.startsWith('_')) continue;
-    if (!requiredHandlers.has(fn)) {
-      errors.push({
-        type: 'unused_handler',
-        handler: fn,
-        message: `Handler "${fn}" defined but not used in graph states`,
-        severity: 'warning'
-      });
-    }
-  }
-
-  return {
-    valid: errors.filter(e => e.type === 'error' || !e.severity).length === 0,
-    errors,
-    missing: errors.filter(e => e.type === 'missing_handler'),
-    unused: errors.filter(e => e.type === 'unused_handler')
-  };
-}
-
-function validateTransitions(graph) {
-  const errors = [];
-  const states = Object.keys(graph.states || {});
-  const stateSet = new Set(states);
-
-  for (const [stateName, state] of Object.entries(graph.states || {})) {
-    const transitions = [state.onDone, state.onError, state.onTrue, state.onFalse].filter(Boolean);
-    for (const target of transitions) {
-      if (!stateSet.has(target)) {
-        errors.push({
-          type: 'invalid_transition',
-          from: stateName,
-          to: target,
-          message: `State "${stateName}" transitions to nonexistent state "${target}"`
-        });
-      }
-    }
-  }
-
-  return { valid: errors.length === 0, errors };
-}
-
-function validateInitialState(graph) {
-  const initial = graph.initial;
-  const states = Object.keys(graph.states || {});
-
-  if (!initial) {
-    return { valid: false, error: 'Graph missing "initial" state' };
-  }
-
-  if (!states.includes(initial)) {
-    return { valid: false, error: `Initial state "${initial}" not defined in graph.states` };
-  }
-
-  return { valid: true };
-}
+import { HandlerValidator } from './handler-validator.js';
+import { TransitionValidator } from './transition-validator.js';
 
 export function createFlowHandlerValidator() {
   return {
-    validateFlowHandlers,
-    validateTransitions,
-    validateInitialState,
+    validateFlowHandlers(graph, exports) {
+      return HandlerValidator.validateFlowHandlers(graph, exports);
+    },
+    validateTransitions(graph) {
+      return TransitionValidator.validateTransitions(graph);
+    },
+    validateInitialState(graph) {
+      return TransitionValidator.validateInitialState(graph);
+    },
     fullValidation(graph, exports) {
-      const handlers = validateFlowHandlers(graph, exports);
-      const transitions = validateTransitions(graph);
-      const initial = validateInitialState(graph);
+      const handlers = HandlerValidator.validateFlowHandlers(graph, exports);
+      const transitionData = TransitionValidator.validateAll(graph);
 
       const allErrors = [
         ...handlers.errors,
-        ...transitions.errors,
-        ...(initial.error ? [{ type: 'invalid_initial', message: initial.error }] : [])
+        ...transitionData.transitionErrors,
+        ...(transitionData.initialError ? [{ type: 'invalid_initial', message: transitionData.initialError }] : [])
       ];
 
       return {
-        valid: handlers.valid && transitions.valid && initial.valid,
+        valid: handlers.valid && transitionData.valid,
         errors: allErrors,
         summary: {
           handlers: handlers.errors.length,
-          transitions: transitions.errors.length,
-          initial: initial.valid ? 0 : 1,
+          transitions: transitionData.transitionErrors.length,
+          initial: transitionData.initialError ? 1 : 0,
           total: allErrors.length
         }
       };
