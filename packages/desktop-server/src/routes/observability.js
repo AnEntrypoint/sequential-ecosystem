@@ -1,26 +1,14 @@
 import { asyncHandler } from '../middleware/error-handler.js';
 import { formatResponse } from '@sequentialos/response-formatting';
-import os from 'os';
+import { HealthCollector, ProfilingCollector, EndpointMetricsCollector } from './observability-collectors.js';
+
+const healthCollector = new HealthCollector();
+const profilingCollector = new ProfilingCollector();
+const endpointMetricsCollector = new EndpointMetricsCollector();
 
 export function registerObservabilityRoutes(app, container, metricsCollector) {
   app.get('/api/observability/health', asyncHandler(async (req, res) => {
-    const uptime = process.uptime();
-    const memUsage = process.memoryUsage();
-
-    res.json(formatResponse({
-      status: 'healthy',
-      uptime,
-      memory: {
-        heapUsed: Math.round(memUsage.heapUsed / 1024 / 1024),
-        heapTotal: Math.round(memUsage.heapTotal / 1024 / 1024),
-        external: Math.round(memUsage.external / 1024 / 1024),
-        rss: Math.round(memUsage.rss / 1024 / 1024)
-      },
-      cpu: {
-        cores: os.cpus().length,
-        loadAvg: os.loadavg()
-      }
-    }));
+    res.json(formatResponse(healthCollector.collectBasicHealth()));
   }));
 
   app.get('/api/observability/metrics', asyncHandler(async (req, res) => {
@@ -34,17 +22,8 @@ export function registerObservabilityRoutes(app, container, metricsCollector) {
 
   app.get('/api/observability/metrics/endpoint/:endpoint', asyncHandler(async (req, res) => {
     const metrics = metricsCollector.getMetrics({ path: `/${req.params.endpoint}` });
-    const avgDuration = metrics.reduce((sum, m) => sum + m.duration, 0) / (metrics.length || 1);
-    const errorCount = metrics.filter(m => m.error).length;
-
-    res.json(formatResponse({
-      endpoint: req.params.endpoint,
-      totalRequests: metrics.length,
-      avgDuration: Math.round(avgDuration),
-      errorCount,
-      errorRate: ((errorCount / (metrics.length || 1)) * 100).toFixed(2) + '%',
-      recentRequests: metrics.slice(-10)
-    }));
+    const endpointMetrics = endpointMetricsCollector.collectEndpointMetrics(metrics, req.params.endpoint);
+    res.json(formatResponse(endpointMetrics));
   }));
 
   app.get('/api/observability/state', asyncHandler(async (req, res) => {
@@ -107,53 +86,11 @@ export function registerObservabilityRoutes(app, container, metricsCollector) {
   }));
 
   app.get('/api/observability/profiling', asyncHandler(async (req, res) => {
-    const memUsage = process.memoryUsage();
-    const uptime = process.uptime();
-
-    res.json(formatResponse({
-      memory: {
-        heapUsed: Math.round(memUsage.heapUsed / 1024 / 1024) + 'MB',
-        heapTotal: Math.round(memUsage.heapTotal / 1024 / 1024) + 'MB',
-        heapUtilization: ((memUsage.heapUsed / memUsage.heapTotal) * 100).toFixed(2) + '%',
-        external: Math.round(memUsage.external / 1024 / 1024) + 'MB',
-        rss: Math.round(memUsage.rss / 1024 / 1024) + 'MB'
-      },
-      uptime: {
-        seconds: Math.round(uptime),
-        formatted: formatUptime(uptime)
-      },
-      nodejs: {
-        version: process.version,
-        pid: process.pid,
-        platform: process.platform,
-        arch: process.arch
-      },
-      system: {
-        cpus: os.cpus().length,
-        totalMemory: Math.round(os.totalmem() / 1024 / 1024) + 'MB',
-        freeMemory: Math.round(os.freemem() / 1024 / 1024) + 'MB',
-        loadAvg: os.loadavg()
-      }
-    }));
+    res.json(formatResponse(profilingCollector.collectProfiling()));
   }));
 
   app.delete('/api/observability/metrics/reset', asyncHandler(async (req, res) => {
     metricsCollector.clear();
     res.json(formatResponse({ status: 'metrics cleared' }));
   }));
-}
-
-function formatUptime(seconds) {
-  const days = Math.floor(seconds / 86400);
-  const hours = Math.floor((seconds % 86400) / 3600);
-  const mins = Math.floor((seconds % 3600) / 60);
-  const secs = Math.floor(seconds % 60);
-
-  const parts = [];
-  if (days > 0) parts.push(`${days}d`);
-  if (hours > 0) parts.push(`${hours}h`);
-  if (mins > 0) parts.push(`${mins}m`);
-  if (secs > 0) parts.push(`${secs}s`);
-
-  return parts.join(' ') || '0s';
 }
