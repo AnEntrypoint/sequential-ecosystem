@@ -2,6 +2,8 @@
 import { VisualSelectors } from './visual-selectors.js';
 import { VisualPalette } from './visual-palette.js';
 import { VisualInspector } from './visual-inspector.js';
+import { VisualBuilderEventManager } from './visual-builder-event-manager.js';
+import { VisualBuilderLayout } from './visual-builder-layout.js';
 
 export class VisualBuilderUI {
   constructor(registry, themeEngine, advancedBuilder) {
@@ -11,20 +13,16 @@ export class VisualBuilderUI {
     this.registry = registry;
     this.themeEngine = themeEngine;
     this.builder = advancedBuilder;
-    this.listeners = new Map();
+    this.eventManager = new VisualBuilderEventManager();
+    this.layout = new VisualBuilderLayout(themeEngine);
   }
 
   on(event, callback) {
-    if (!this.listeners.has(event)) {
-      this.listeners.set(event, []);
-    }
-    this.listeners.get(event).push(callback);
-    return this;
+    return this.eventManager.on(event, callback);
   }
 
   emit(event, data) {
-    const callbacks = this.listeners.get(event) || [];
-    callbacks.forEach(cb => cb(data));
+    return this.eventManager.emit(event, data);
   }
 
   buildTemplateSelector() {
@@ -64,90 +62,7 @@ export class VisualBuilderUI {
   }
 
   buildCompleteBuilder() {
-    return {
-      type: 'flex',
-      direction: 'row',
-      style: { height: '100vh', width: '100%' },
-      children: [
-        {
-          type: 'flex',
-          direction: 'column',
-          style: {
-            width: '250px',
-            borderRight: `1px solid ${this.themeEngine.getColor('border')}`,
-            overflow: 'auto'
-          },
-          children: [
-            {
-              type: 'paragraph',
-              content: 'Component Palette',
-              style: {
-                padding: this.themeEngine.getSpacing('md'),
-                fontWeight: '600',
-                borderBottom: `1px solid ${this.themeEngine.getColor('border')}`
-              }
-            },
-            this.buildComponentPalette()
-          ]
-        },
-        {
-          type: 'flex',
-          direction: 'column',
-          style: { flex: 1 },
-          children: [
-            {
-              type: 'paragraph',
-              content: 'Visual Builder',
-              style: {
-                padding: this.themeEngine.getSpacing('md'),
-                fontWeight: '600',
-                borderBottom: `1px solid ${this.themeEngine.getColor('border')}`
-              }
-            },
-            {
-              type: 'flex',
-              direction: 'row',
-              style: { flex: 1 },
-              children: [
-                {
-                  type: 'flex',
-                  direction: 'column',
-                  style: {
-                    flex: 1,
-                    padding: this.themeEngine.getSpacing('lg'),
-                    overflow: 'auto'
-                  },
-                  children: [
-                    this.buildTemplateSelector(),
-                    this.buildPresetSelector()
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          type: 'flex',
-          direction: 'column',
-          style: {
-            width: '300px',
-            borderLeft: `1px solid ${this.themeEngine.getColor('border')}`,
-            overflow: 'auto'
-          },
-          children: [
-            {
-              type: 'paragraph',
-              content: 'Properties',
-              style: {
-                padding: this.themeEngine.getSpacing('md'),
-                fontWeight: '600',
-                borderBottom: `1px solid ${this.themeEngine.getColor('border')}`
-              }
-            }
-          ]
-        }
-      ]
-    };
+    return this.layout.buildCompleteLayout(this.selectors, this.palette);
   }
 }
 
