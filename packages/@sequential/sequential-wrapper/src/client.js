@@ -1,29 +1,14 @@
-import { detectEnvironment, getFetch } from './env.js';
+/**
+ * client.js - SDK Proxy Client
+ *
+ * Creates HTTP-based SDK proxies that capture and execute method chains
+ */
+
+import { getFetch } from './env.js';
+import { parseConfig, getEndpoint } from './config-parser.js';
 
 function createSdkProxy(config, extraConfig = {}) {
-  // Handle shorthand string format: "module:factory" or "module"
-  if (typeof config === 'string') {
-    if (config.includes('/')) {
-      // Handle service endpoint format: 'service/supabase'
-      const parts = config.split('/');
-      if (parts.length === 2 && parts[0] === 'service') {
-        config = { service: parts[1] };
-      } else {
-        throw new Error(`Invalid service format. Expected 'service/NAME', got '${config}'`);
-      }
-    } else {
-      // Handle module:factory format
-      const parts = config.split(':');
-      const module = parts[0];
-      const factory = parts.length > 1 ? parts[1] : undefined;
-      config = { module, factory };
-    }
-  }
-
-  // Merge with extra config
-  config = { ...config, ...extraConfig };
-
-  // Create SDK proxy with empty chain
+  config = parseConfig(config, extraConfig);
   return buildProxy([], config);
 }
 
@@ -84,24 +69,6 @@ function buildProxy(chain, config) {
 }
 
 /**
- * Choose endpoint based on configuration
- *
- * @param {Object} config - SDK configuration
- * @returns {string} - Endpoint URL
- */
-function getEndpoint(config) {
-  if (config.endpoint) return config.endpoint;
-
-  const baseUrl = config.baseUrl || 'http://localhost:3000';
-
-  if (config.service) {
-    return `${baseUrl}/api/proxy/${config.service}`;
-  }
-
-  return `${baseUrl}/api/sdk-proxy`;
-}
-
-/**
  * Executes the recorded property/method chain on the server.
  *
  * @param {Array} chain - Chain of property accesses and method calls
@@ -121,8 +88,7 @@ async function executeChain(chain, config) {
     }
   });
 
-  let fetchImpl;
-  fetchImpl = await getFetch();
+  const fetchImpl = await getFetch();
 
   const response = await fetchImpl(endpoint, {
     method: 'POST',
