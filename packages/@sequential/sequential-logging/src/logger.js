@@ -1,5 +1,12 @@
+/**
+ * logger.js - Logger Facade
+ *
+ * Delegates to message formatter and log methods modules
+ */
+
 import { LOG_LEVELS, LEVEL_NAMES } from './levels.js';
-import { nowISO } from '@sequentialos/sequential-utils/timestamps';
+import { MessageFormatter } from './message-formatter.js';
+import { LogMethods } from './log-methods.js';
 
 export class Logger {
   constructor() {
@@ -7,6 +14,12 @@ export class Logger {
     this.context = {};
     this.outputFormat = 'cli';
     this.timestamp = true;
+    this.#initMethods();
+  }
+
+  #initMethods() {
+    const formatter = new MessageFormatter(this.outputFormat, this.context, this.timestamp);
+    this.logMethods = new LogMethods(this, formatter);
   }
 
   setLevel(level) {
@@ -28,10 +41,12 @@ export class Logger {
 
   setContext(context) {
     this.context = context || {};
+    this.#initMethods();
   }
 
   addContext(key, value) {
     this.context[key] = value;
+    this.#initMethods();
   }
 
   setOutputFormat(format) {
@@ -39,112 +54,28 @@ export class Logger {
       throw new Error(`Invalid output format: ${format}. Must be one of: cli, server, json`);
     }
     this.outputFormat = format;
+    this.#initMethods();
   }
 
   setTimestamp(enabled) {
     this.timestamp = enabled;
-  }
-
-  #shouldLog(level) {
-    return level >= this.level;
-  }
-
-  #formatMessage(levelName, msg, data, timestamp) {
-    const ts = timestamp ? `[${nowISO()}] ` : '';
-
-    if (this.outputFormat === 'json') {
-      const entry = {
-        level: levelName,
-        message: msg,
-        ...this.context
-      };
-      if (data) {
-        entry.data = data;
-      }
-      if (timestamp) {
-        entry.timestamp = nowISO();
-      }
-      return JSON.stringify(entry);
-    }
-
-    if (this.outputFormat === 'server') {
-      const contextStr = Object.keys(this.context).length > 0
-        ? ` ${JSON.stringify(this.context)}`
-        : '';
-      const dataStr = data ? ` ${JSON.stringify(data)}` : '';
-      return `${ts}[${levelName}]${contextStr} ${msg}${dataStr}`;
-    }
-
-    const contextStr = Object.keys(this.context).length > 0
-      ? `[${Object.entries(this.context).map(([k, v]) => `${k}=${v}`).join(' ')}] `
-      : '';
-    const dataStr = data ? ` ${JSON.stringify(data)}` : '';
-    return `${ts}${contextStr}${msg}${dataStr}`;
-  }
-
-  #write(stream, formatted) {
-    stream.write(formatted + '\n');
+    this.#initMethods();
   }
 
   debug(msg, dataOrFn) {
-    if (!this.#shouldLog(LOG_LEVELS.DEBUG)) {
-      return;
-    }
-
-    const data = typeof dataOrFn === 'function' ? dataOrFn() : dataOrFn;
-    const formatted = this.#formatMessage('DEBUG', msg, data, this.timestamp);
-    this.#write(process.stdout, formatted);
+    this.logMethods.debug(msg, dataOrFn);
   }
 
   info(msg, dataOrFn) {
-    if (!this.#shouldLog(LOG_LEVELS.INFO)) {
-      return;
-    }
-
-    const data = typeof dataOrFn === 'function' ? dataOrFn() : dataOrFn;
-    const formatted = this.#formatMessage('INFO', msg, data, this.timestamp);
-    this.#write(process.stdout, formatted);
+    this.logMethods.info(msg, dataOrFn);
   }
 
   warn(msg, dataOrFn) {
-    if (!this.#shouldLog(LOG_LEVELS.WARN)) {
-      return;
-    }
-
-    const data = typeof dataOrFn === 'function' ? dataOrFn() : dataOrFn;
-    const formatted = this.#formatMessage('WARN', msg, data, this.timestamp);
-    this.#write(process.stderr, formatted);
+    this.logMethods.warn(msg, dataOrFn);
   }
 
   error(msg, err, dataOrFn) {
-    if (!this.#shouldLog(LOG_LEVELS.ERROR)) {
-      return;
-    }
-
-    let data = err;
-    let errorObj = null;
-
-    if (err instanceof Error) {
-      errorObj = {
-        name: err.name,
-        message: err.message,
-        stack: err.stack
-      };
-      data = typeof dataOrFn === 'function' ? dataOrFn() : dataOrFn;
-    } else if (typeof err === 'function') {
-      data = err();
-      errorObj = null;
-    } else {
-      data = err;
-      errorObj = null;
-    }
-
-    const mergedData = errorObj
-      ? { ...data, error: errorObj }
-      : data;
-
-    const formatted = this.#formatMessage('ERROR', msg, mergedData, this.timestamp);
-    this.#write(process.stderr, formatted);
+    this.logMethods.error(msg, err, dataOrFn);
   }
 
   child(context) {
