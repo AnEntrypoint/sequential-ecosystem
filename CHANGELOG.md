@@ -22,7 +22,7 @@ All notable changes to this project will be documented in this file.
 10. ✅ **Observability Dashboard** - `/apps/app-observability-dashboard/dist/index.html`
 11. ✅ **Demo Chat** - `/apps/app-demo-chat/dist/index.html`
 
-#### Bugs Found & Fixed (Total: 6)
+#### Bugs Found & Fixed (Total: 7)
 1. **Flow Editor Manifest** - FIXED: Changed entry from `dist/dynamic-app.html` → `dist/index.html` (bare ES modules couldn't load in browser)
 2. **Task Editor ES Exports** - FIXED: Added missing exports for SnippetInsert, ToolAutocomplete, ValidationHints classes
 3. **Tool Editor ES Exports** - FIXED: Added missing exports for SnippetInsert, ToolAutocomplete, ValidationHints classes
@@ -32,6 +32,10 @@ All notable changes to this project will be documented in this file.
    - Added `https://cdnjs.cloudflare.com` to script-src and style-src (for highlight.js syntax highlighting)
    - Added `https://unpkg.com` to script-src (for React/ReactDOM in debuggers)
    - Enables Task/Tool Editor highlighting and React-based apps without relying on unsafe policies
+7. **Tool Search Route Ordering (API BUG)** - FIXED: Reordered Express routes so specific paths (/search, /stats) are registered before dynamic :toolId route
+   - Issue: `/api/tools/search?q=` was returning HTTP 404 because `:toolId` was matching "search"
+   - Fix: Moved specific routes before dynamic routes per Express best practices
+   - Result: Tool search now returns HTTP 200 with correct results
 
 #### API Functionality Verified ✅
 - `/api/apps` - List all apps: Working
@@ -46,11 +50,14 @@ All notable changes to this project will be documented in this file.
 - **Apps Passing**: 11/11 (100%)
 - **HTTP 200 Status**: 11/11
 - **HTML Structure Validation**: 11/11 pass
-- **Bugs Found**: 6
-- **Bugs Fixed**: 6 (100%)
+- **API Endpoints Tested**: 6/6 working correctly
+- **Bugs Found**: 7
+- **Bugs Fixed**: 7 (100%)
 - **Regressions**: 0
 
 ### Commits This Session
+- 6015931: fix: Fix tool search route ordering to prevent :toolId wildcard shadowing
+- a831082: docs: Final comprehensive testing results - all 11 apps verified with CSP fix
 - e522aad: fix: Update CSP policy to allow trusted CDN resources
 - 8084149: docs: Comprehensive app testing results - all 11 apps verified
 
