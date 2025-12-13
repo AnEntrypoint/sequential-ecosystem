@@ -202,6 +202,7 @@ npx sequential-ecosystem gui  # http://localhost:3001
 | Memory | StateManager with maxSize/TTL |
 | Injection | No eval(); Workers/new Function() only |
 | Traversal | Validate with fs.realpathSync() |
+| Process Management | **NEVER use background processes (`&` or `run_in_background`)** - Always start servers in foreground to allow tool access (Playwright MCP, Glootie) |
 
 ## Code Patterns
 

@@ -10,23 +10,42 @@ class SnapshotState {
     const state = new Map();
     const files = this.fileOps.walk(workdir);
 
-    for (const file of files) {
-      const rel = path.relative(workdir, file);
-      const stat = fs.lstatSync(file);
-      let hash;
+    return new Promise((resolve, reject) => {
+      let i = 0;
+      const processNextBatch = () => {
+        try {
+          const batchSize = 10;
+          const end = Math.min(i + batchSize, files.length);
 
-      if (stat.isFile()) {
-        hash = this.fileOps.hash(fs.readFileSync(file));
-      } else if (stat.isDirectory()) {
-        hash = 'dir';
-      } else if (stat.isSymbolicLink()) {
-        hash = 'link:' + fs.readlinkSync(file);
-      }
+          for (; i < end; i++) {
+            const file = files[i];
+            const rel = path.relative(workdir, file);
+            const stat = fs.lstatSync(file);
+            let hash;
 
-      state.set(rel, { hash, mode: stat.mode });
-    }
+            if (stat.isFile()) {
+              hash = this.fileOps.hash(fs.readFileSync(file));
+            } else if (stat.isDirectory()) {
+              hash = 'dir';
+            } else if (stat.isSymbolicLink()) {
+              hash = 'link:' + fs.readlinkSync(file);
+            }
 
-    return state;
+            state.set(rel, { hash, mode: stat.mode });
+          }
+
+          if (i < files.length) {
+            setImmediate(processNextBatch);
+          } else {
+            resolve(state);
+          }
+        } catch (err) {
+          reject(err);
+        }
+      };
+
+      processNextBatch();
+    });
   }
 
   async computeStateFromLayers(baseHash, store, fileOps) {
