@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Interactive showcase of all dynamic components with live previews and property configuration",
   "icon": "palette",
-  "entry": "dist/dynamic-app.html",
+  "entry": "dist/index.html",
   "category": "development",
   "capabilities": ["ui-building", "component-preview", "live-configuration"],
   "pages": [

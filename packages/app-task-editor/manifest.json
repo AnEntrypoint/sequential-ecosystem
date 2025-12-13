@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Multi-runner task editor with test execution",
   "icon": "📝",
-  "entry": "dist/dynamic-app.html",
+  "entry": "dist/index.html",
   "capabilities": ["sequential-os", "zellous"],
   "dependencies": {
     "@sequentialos/zellous-client-sdk": "^1.0.0"
