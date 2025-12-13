@@ -19,5 +19,13 @@
     "read:observability",
     "read:realtime",
     "read:traces"
-  ]
+  ],
+  "window": {
+    "defaultWidth": 1200,
+    "defaultHeight": 800,
+    "minWidth": 600,
+    "minHeight": 400,
+    "resizable": true,
+    "maximizable": true
+  }
 }

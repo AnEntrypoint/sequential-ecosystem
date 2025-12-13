@@ -20,5 +20,13 @@
     "read:metrics",
     "read:traces",
     "write:alerts"
-  ]
+  ],
+  "window": {
+    "defaultWidth": 1400,
+    "defaultHeight": 900,
+    "minWidth": 800,
+    "minHeight": 600,
+    "resizable": true,
+    "maximizable": true
+  }
 }
