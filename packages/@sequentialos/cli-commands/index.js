@@ -25,13 +25,8 @@ const saveConfig = (config) => {
   fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2));
 };
 
-export const createTask = async (name, options = {}) => {
-  if (typeof name !== 'string') {
-    options = name;
-    name = 'new-task';
-  }
-  if (typeof options === 'string') name = options;
-  if (!name || typeof name !== 'string') name = options?.name || 'new-task';
+export const createTask = async (opts) => {
+  const name = opts.name || 'new-task';
   const taskDir = path.join(process.cwd(), 'tasks', String(name).trim());
 
   if (!fs.existsSync(taskDir)) {
@@ -44,8 +39,8 @@ export const createTask = async (name, options = {}) => {
 
   const config = {
     name,
-    runner: options.runner || 'sequential-runner',
-    description: options.description || 'New task'
+    runner: opts.runner || 'sequential-runner',
+    description: opts.description || 'New task'
   };
 
   fs.writeFileSync(path.join(taskDir, 'code.js'), code);
@@ -55,8 +50,8 @@ export const createTask = async (name, options = {}) => {
   return { success: true, name, path: taskDir };
 };
 
-export const createTool = async (program, options) => {
-  const name = options.name || 'new-tool';
+export const createTool = async (opts) => {
+  const name = opts.name || 'new-tool';
   const toolDir = path.join(process.cwd(), 'tools', name);
 
   if (!fs.existsSync(toolDir)) {
@@ -69,7 +64,7 @@ export const createTool = async (program, options) => {
 
   const config = {
     name,
-    description: options.description || 'New tool'
+    description: opts.description || 'New tool'
   };
 
   fs.writeFileSync(path.join(toolDir, 'code.js'), code);
@@ -79,8 +74,8 @@ export const createTool = async (program, options) => {
   return { success: true, name, path: toolDir };
 };
 
-export const createApp = async (program, options) => {
-  const name = options.name || 'new-app';
+export const createApp = async (opts) => {
+  const name = opts.name || 'new-app';
   const appDir = path.join(process.cwd(), 'apps', name);
 
   if (!fs.existsSync(appDir)) {
@@ -90,7 +85,7 @@ export const createApp = async (program, options) => {
   const manifest = {
     name,
     version: '1.0.0',
-    description: options.description || 'New app',
+    description: opts.description || 'New app',
     main: 'dist/index.html'
   };
 
@@ -123,8 +118,8 @@ export const createApp = async (program, options) => {
   return { success: true, name, path: appDir };
 };
 
-export const createFlow = async (program, options) => {
-  const name = options.name || 'new-flow';
+export const createFlow = async (opts) => {
+  const name = opts.name || 'new-flow';
   const flowDir = path.join(process.cwd(), 'flows', name);
 
   if (!fs.existsSync(flowDir)) {
@@ -146,7 +141,7 @@ export async function start(input) {
 
   const config = {
     name,
-    description: options.description || 'New flow'
+    description: opts.description || 'New flow'
   };
 
   fs.writeFileSync(path.join(flowDir, 'code.js'), code);

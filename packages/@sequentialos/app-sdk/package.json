@@ -1,0 +1,14 @@
+{
+  "name": "@sequentialos/app-sdk",
+  "version": "1.8.0",
+  "description": "Unified SDK for Sequential Ecosystem apps",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "files": [
+    "index.js",
+    "types.d.ts"
+  ]
+}

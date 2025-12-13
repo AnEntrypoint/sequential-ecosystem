@@ -426,15 +426,13 @@ const tools = sdk.getTools();
 
 All systems follow single-responsibility principle with clear integration boundaries. No duplication with existing @sequentialos systems.
 
-**Dynamic React Renderer System** (Iteration 8, Production-Ready):
-- **AppRenderer**: React DOM integration with lifecycle management, error handling, context propagation
-- **ComponentBuilder**: Programmatic component creation (layouts: flex/grid/stack/section, components: heading/paragraph/button/input/card)
-- **AppComponentLibrary**: 12+ pre-built shared components (debug-timeline, metrics-card, error-display, success-display, loading-spinner, button-group, property-list, section-header, two-column-layout, code-block, badge)
-- **AppRenderingBridge**: High-level app integration (state management, reactive observers, error/loading states, component exploration)
-- **Entry Point**: `import { initializeAppRendering } from '@sequentialosos/dynamic-components'`
-- **Implementation Guide**: See DYNAMIC_RENDERER_GUIDE.md for architecture, patterns, migration guide, and examples
+**Code Snippets System** (Production-Ready):
+- **Snippet Templates**: Pre-built code patterns for tasks, flows, tools (validation, HTTP, tool calls, state management, error handling, flow patterns)
+- **DOM Rendering**: Client-side snippet insertion with keyboard shortcuts and parameter templates
+- **Live Updates**: Real-time snippet discovery and categorization
+- **Modular Architecture**: Each module <200L, organized by concern (rendering, interaction, styles, builder)
 
-Use across all apps to replace vanilla DOM string concatenation with composable, reusable React components.
+Apps use data-driven UI (object trees) for state management, rendered to DOM via custom builders.
 
 **App Debugger** (`app-app-debugger`):
 - Execution timeline visualization (task start/end)
@@ -455,14 +453,15 @@ Use across all apps to replace vanilla DOM string concatenation with composable,
 **App SDK** (`@sequentialosos/app-sdk`):
 All apps have access to:
 ```javascript
-const sdk = new AppSDK({ appId: 'app-my-app' });
-await sdk.initStorage();
-await sdk.setData('key', value);
-const value = await sdk.getData('key');
+const sdk = AppSDK.init('app-my-app');
+sdk.setData('key', value);
+const value = sdk.getData('key');
+sdk.tool('myTool', async (input) => ({ result: input }), 'Tool description');
 await sdk.callTask('task-name', input);
 await sdk.callFlow('flow-id', input);
-await sdk.runCommand('ls -la');
-sdk.on('storage:connected', () => { /* ... */ });
+await sdk.initRealtime();
+sdk.subscribe('channel', (msg) => console.log(msg));
+sdk.on('data:changed', (data) => { /* ... */ });
 ```
 
 **User App Storage**:
