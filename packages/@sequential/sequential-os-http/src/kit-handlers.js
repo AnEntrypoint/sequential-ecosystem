@@ -1,10 +1,43 @@
 import { createErrorResponse } from '@sequentialos/error-handling';
+import { writeFileSync, ensureDirSync } from 'fs-extra';
+import { join } from 'path';
 
 function asyncHandler(fn) {
   return (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 }
 
-export function registerKitHandlers(app, kit) {
+function createTaskRunRecord(instruction, result, machineDir) {
+  try {
+    const runDir = join(machineDir, 'work', '.state', 'runs');
+    ensureDirSync(runDir);
+
+    const timestamp = Date.now();
+    const randomId = Math.random().toString(36).substr(2, 9);
+    const pid = process.pid;
+    const runId = `${timestamp}-${randomId}-${pid}`;
+
+    const record = {
+      runId,
+      taskName: 'sequential-os-task',
+      status: result.stderr ? 'error' : 'completed',
+      input: { instruction },
+      output: result,
+      error: result.stderr || null,
+      duration: 0,
+      timestamp: new Date().toISOString()
+    };
+
+    const filePath = join(runDir, `${runId}.json`);
+    writeFileSync(filePath, JSON.stringify(record, null, 2), 'utf-8');
+
+    return record;
+  } catch (err) {
+    console.error('[TaskRunRecord] Error creating run record:', err.message);
+    return null;
+  }
+}
+
+export function registerKitHandlers(app, kit, machineDir) {
   app.get('/api/sequential-os/status', asyncHandler(async (req, res) => {
     const status = await kit.status();
     res.json(status);
@@ -16,6 +49,15 @@ export function registerKitHandlers(app, kit) {
       return res.status(400).json(createErrorResponse('INVALID_INPUT', 'instruction is required'));
     }
     const result = await kit.run(instruction);
+
+    // Create task run record for OS task step tracking
+    if (machineDir) {
+      console.log('[OS Run] Creating task run record for:', instruction.substring(0, 50));
+      createTaskRunRecord(instruction, result, machineDir);
+    } else {
+      console.log('[OS Run] No machineDir provided for run record');
+    }
+
     res.json(result);
   }));
 
