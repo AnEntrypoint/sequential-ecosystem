@@ -1,79 +1,44 @@
 /**
  * Task Input Validator Factory
- * Creates validators for task input validation with schema registration
+ * Orchestrates input validation with schema registration and validation rules
+ *
+ * Delegates to:
+ * - input-validator-registry: Schema registration and retrieval
+ * - input-validation-rules: Field-level validation rules
  */
 
+import { createValidatorRegistry } from './input-validator-registry.js';
+import { createValidationRules } from './input-validation-rules.js';
+
 export function createTaskInputValidator() {
-  const schemas = new Map();
+  const registry = createValidatorRegistry();
+  const rules = createValidationRules();
 
   return {
     registerSchema(taskName, schema) {
-      schemas.set(taskName, schema);
+      registry.register(taskName, schema);
       return this;
     },
 
     getSchema(taskName) {
-      return schemas.get(taskName);
+      return registry.get(taskName);
     },
 
     validateInput(taskName, input) {
-      const schema = schemas.get(taskName);
-      if (!schema || !schema.inputs) {
+      const fields = registry.getFields(taskName);
+      if (fields.length === 0) {
         return { valid: true, errors: [] };
       }
 
       const errors = [];
-      const fields = schema.inputs || [];
-
       for (const field of fields) {
         const value = input[field.name];
 
-        if (field.required && (value === undefined || value === null)) {
-          errors.push({
-            field: field.name,
-            message: `Required field missing: ${field.name}`,
-            type: 'required'
-          });
-          continue;
-        }
-
-        if (value !== undefined && value !== null && field.type) {
-          const actualType = Array.isArray(value) ? 'array' : typeof value;
-          if (actualType !== field.type && !(field.type === 'object' && actualType === 'object')) {
-            errors.push({
-              field: field.name,
-              message: `Type mismatch: ${field.name} is ${actualType}, expected ${field.type}`,
-              type: 'type_mismatch',
-              expected: field.type,
-              actual: actualType
-            });
-          }
-        }
-
-        if (field.enum && value !== undefined && !field.enum.includes(value)) {
-          errors.push({
-            field: field.name,
-            message: `Invalid value: ${field.name} must be one of ${field.enum.join(', ')}`,
-            type: 'enum_violation',
-            validValues: field.enum
-          });
-        }
-
-        if (field.minLength && typeof value === 'string' && value.length < field.minLength) {
-          errors.push({
-            field: field.name,
-            message: `String too short: ${field.name} must be at least ${field.minLength} characters`,
-            type: 'length_violation'
-          });
-        }
-
-        if (field.minimum && typeof value === 'number' && value < field.minimum) {
-          errors.push({
-            field: field.name,
-            message: `Number too small: ${field.name} must be >= ${field.minimum}`,
-            type: 'range_violation'
-          });
-        }
+        if (!rules.validateRequired(field, value, errors)) continue;
+        rules.validateType(field, value, errors);
+        rules.validateEnum(field, value, errors);
+        rules.validateLength(field, value, errors);
+        rules.validateRange(field, value, errors);
       }
 
       return {
