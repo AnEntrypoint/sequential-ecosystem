@@ -75,8 +75,16 @@ export async function initializeStateKit(StateKit, statekitDir, workDir) {
     workdir: workDir
   });
 
-  const status = await kit.status();
-  logger.info(`✓ StateKit initialized (${status.added.length + status.modified.length + status.deleted.length} uncommitted changes)`);
+  try {
+    const statusPromise = kit.status();
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('StateKit status() timeout after 3s')), 3000)
+    );
+    const status = await Promise.race([statusPromise, timeoutPromise]);
+    logger.info(`✓ StateKit initialized (${status.added.length + status.modified.length + status.deleted.length} uncommitted changes)`);
+  } catch (err) {
+    logger.warn(`StateKit status check failed (${err.message}), continuing with unverified state`);
+  }
 
   return kit;
 }
