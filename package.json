@@ -11,9 +11,8 @@
     "run": "node cli.js run",
     "list": "node cli.js list",
     "sync": "node cli.js sync-tasks",
-
-    "zellous": "node packages/zellous/server.js",
-    "dev": "node packages/desktop-server/src/server.js",
+    "zellous": "node packages/@sequentialos/zellous/server.js",
+    "dev": "nodemon --watch packages/@sequentialos --ext js,json packages/@sequentialos/desktop-server/src/server.js",
     "test": "node scripts/test-all.js",
     "test:watch": "find packages -name package.json -exec dirname {} \\; | xargs -I {} sh -c 'cd {} && npm run test:watch 2>/dev/null || true'",
     "test:coverage": "c8 node scripts/test-all.js",
@@ -52,7 +51,7 @@
     "seq": "./cli.js"
   },
   "workspaces": [
-    "packages/*"
+    "packages/@sequentialos/*"
   ],
   "files": [
     "cli.js",
@@ -98,7 +97,8 @@
   },
   "devDependencies": {
     "c8": "^8.0.1",
-    "eslint": "^8.54.0"
+    "eslint": "^8.54.0",
+    "nodemon": "^3.0.2"
   },
   "engines": {
     "node": ">=18.0.0"
