@@ -1,0 +1,13 @@
+{
+  "name": "@sequentialos/cli-commands",
+  "version": "1.8.0",
+  "description": "CLI command implementations for Sequential Ecosystem",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "files": [
+    "index.js"
+  ]
+}
