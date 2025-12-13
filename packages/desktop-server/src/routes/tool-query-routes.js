@@ -18,15 +18,6 @@ export function registerToolQueryRoutes(app, registry) {
     res.json(formatResponse(tools));
   }));
 
-  app.get('/api/tools/:toolId', asyncHandler(async (req, res) => {
-    const { toolId } = req.params;
-    const tool = registry.findToolByName(toolId);
-    if (!tool) {
-      return res.status(404).json(formatResponse({ error: 'Tool not found' }));
-    }
-    res.json(formatResponse({ tool }));
-  }));
-
   app.get('/api/tools/search', asyncHandler(async (req, res) => {
     const { q } = req.query;
     if (!q) return res.json(formatResponse([]));
@@ -42,5 +33,14 @@ export function registerToolQueryRoutes(app, registry) {
     const { appId } = req.params;
     const tools = registry.getAppTools(appId);
     res.json(formatResponse({ tools }));
+  }));
+
+  app.get('/api/tools/:toolId', asyncHandler(async (req, res) => {
+    const { toolId } = req.params;
+    const tool = registry.findToolByName(toolId);
+    if (!tool) {
+      return res.status(404).json(formatResponse({ error: 'Tool not found' }));
+    }
+    res.json(formatResponse({ tool }));
   }));
 }
