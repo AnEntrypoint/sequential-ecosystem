@@ -85,6 +85,13 @@ export function registerTaskRoutes(app, container) {
     res.json(formatResponse({ success: true, runId, cancelled: true, message: `Task ${runId} cancelled` }));
   }));
 
+  app.get('/api/tasks/:taskName/code', asyncHandler(async (req, res) => {
+    const { taskName } = req.params;
+    validateParam(validateTaskName, 'taskName')(taskName);
+    const code = await repository.getCode(taskName);
+    res.json(formatResponse({ code }));
+  }));
+
   app.get('/api/tasks/:taskName/history', asyncHandler(async (req, res) => {
     const { taskName } = req.params;
     validateParam(validateTaskName, 'taskName')(taskName);

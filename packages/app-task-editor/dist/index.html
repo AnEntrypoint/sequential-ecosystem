@@ -1089,9 +1089,9 @@ function createStorageManager(appId) {
 
       if (!currentTask.code) {
         fetch(`/api/tasks/${name}/code`)
-          .then(r => r.text())
-          .then(code => {
-            currentTask.code = code;
+          .then(r => r.json())
+          .then(res => {
+            currentTask.code = res.data.code;
             document.getElementById('codeEditor').value = currentTask.code;
             updateHighlight();
           })
