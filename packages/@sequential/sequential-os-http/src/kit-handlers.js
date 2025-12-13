@@ -8,6 +8,11 @@ function asyncHandler(fn) {
 
 function createTaskRunRecord(instruction, result, machineDir) {
   try {
+    if (!machineDir) {
+      console.warn('[TaskRunRecord] machineDir is null/undefined - cannot create run record');
+      return null;
+    }
+
     const runDir = join(machineDir, 'work', '.state', 'runs');
     ensureDirSync(runDir);
 
@@ -29,15 +34,18 @@ function createTaskRunRecord(instruction, result, machineDir) {
 
     const filePath = join(runDir, `${runId}.json`);
     writeFileSync(filePath, JSON.stringify(record, null, 2), 'utf-8');
+    console.log('[TaskRunRecord] Created:', runId);
 
     return record;
   } catch (err) {
-    console.error('[TaskRunRecord] Error creating run record:', err.message);
+    console.error('[TaskRunRecord] Error:', err.message, 'machineDir:', machineDir);
     return null;
   }
 }
 
 export function registerKitHandlers(app, kit, machineDir) {
+  const recordDir = machineDir || process.env.SEQUENTIAL_MACHINE_DIR;
+
   app.get('/api/sequential-os/status', asyncHandler(async (req, res) => {
     const status = await kit.status();
     res.json(status);
@@ -50,12 +58,12 @@ export function registerKitHandlers(app, kit, machineDir) {
     }
     const result = await kit.run(instruction);
 
-    // Create task run record for OS task step tracking
-    if (machineDir) {
-      console.log('[OS Run] Creating task run record for:', instruction.substring(0, 50));
-      createTaskRunRecord(instruction, result, machineDir);
-    } else {
-      console.log('[OS Run] No machineDir provided for run record');
+    if (recordDir) {
+      try {
+        createTaskRunRecord(instruction, result, recordDir);
+      } catch (err) {
+        console.error('[OS Run] Failed to create run record:', err.message);
+      }
     }
 
     res.json(result);
