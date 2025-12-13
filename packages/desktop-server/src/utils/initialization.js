@@ -34,7 +34,7 @@ export async function ensureDirectories(config) {
 }
 
 export async function loadStateKit() {
-  const sequentialMachinePath = path.resolve(__dirname, '../../../sequential-machine');
+  const sequentialMachinePath = path.resolve(__dirname, '../../../@sequential/sequential-machine');
 
   let resolvedMachinePath;
   try {
@@ -50,8 +50,8 @@ export async function loadStateKit() {
 
   let StateKit;
   try {
-    const libPath = `file://${resolvedMachinePath}/lib/index.js`;
-    const imported = await import(libPath);
+    const libPath = path.join(resolvedMachinePath, 'lib', 'index.js');
+    const imported = require(libPath);
     StateKit = imported.StateKit || imported.default;
   } catch (err) {
     logger.error('Failed to load StateKit from:', resolvedMachinePath);

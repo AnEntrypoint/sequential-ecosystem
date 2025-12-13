@@ -60,6 +60,14 @@ class Snapshot {
       await this.restore(workdir, layer.hash);
     }
   }
+
+  async _state(workdir) {
+    return this.stateOps.computeState(workdir);
+  }
+
+  async _stateFromLayer(hash) {
+    return this.stateOps.computeStateFromLayers(hash, this.store, this.fileOps);
+  }
 }
 
 module.exports = { Snapshot };

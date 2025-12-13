@@ -1,8 +1,9 @@
 {
   "id": "new-flow",
-  "initial": "state2",
+  "initial": "state1",
   "states": {
-    "state1": {},
-    "state2": {}
+    "state1": {
+      "type": "normal"
+    }
   }
 }
