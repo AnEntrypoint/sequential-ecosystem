@@ -51,8 +51,16 @@ export async function loadStateKit() {
   let StateKit;
   try {
     const libPath = path.join(resolvedMachinePath, 'lib', 'index.js');
-    const imported = require(libPath);
-    StateKit = imported.StateKit || imported.default;
+    const loadPromise = Promise.resolve().then(() => {
+      const imported = require(libPath);
+      return imported.StateKit || imported.default;
+    });
+    StateKit = await Promise.race([
+      loadPromise,
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('StateKit loading timeout after 5s')), 5000)
+      )
+    ]);
   } catch (err) {
     logger.error('Failed to load StateKit from:', resolvedMachinePath);
     throw createServerError(`Cannot load StateKit: ${err.message}`, err);

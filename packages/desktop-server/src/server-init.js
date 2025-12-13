@@ -14,11 +14,17 @@ export async function initializeEnvironment() {
   const { STATEKIT_DIR, WORK_DIR } = await ensureDirectories(dirConfig);
 
   let kit = null;
-  try {
-    const StateKit = await loadStateKit();
-    kit = await initializeStateKit(StateKit, STATEKIT_DIR, WORK_DIR);
-  } catch (err) {
-    logger.warn('StateKit initialization failed, continuing without it:', err.message);
+  const skipStateKit = process.env.SKIP_STATEKIT === 'true';
+
+  if (!skipStateKit) {
+    try {
+      const StateKit = await loadStateKit();
+      kit = await initializeStateKit(StateKit, STATEKIT_DIR, WORK_DIR);
+    } catch (err) {
+      logger.warn('StateKit initialization failed, continuing without it:', err.message);
+    }
+  } else {
+    logger.info('StateKit initialization skipped (SKIP_STATEKIT=true)');
   }
 
   return { kit, STATEKIT_DIR, WORK_DIR };
