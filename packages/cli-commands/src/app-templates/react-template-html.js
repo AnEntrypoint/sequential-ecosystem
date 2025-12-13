@@ -219,5 +219,5 @@ export function getReactHtmlContent(appId, name) {
     root.render(e(App));
   </script>
 </body>
-</html>\`;
+</html>`;
 }
