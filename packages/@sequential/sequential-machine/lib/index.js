@@ -23,7 +23,12 @@ class StateKit {
     this.snapshot = new Snapshot(this.store);
     fs.mkdirSync(this.workdir, { recursive: true });
 
-    this._exec = createExecFunction(this.workdir);
+    const execOpts = {
+      useOCI: opts.useOCI,
+      ociImage: opts.ociImage,
+      ociRuntime: opts.ociRuntime
+    };
+    this._exec = createExecFunction(this.workdir, execOpts);
     this.query = new StateKitQuery(this.store, this.snapshot, this.workdir);
     this.mutations = new StateKitMutations(this.store, this.snapshot, this.workdir, this._exec);
   }
