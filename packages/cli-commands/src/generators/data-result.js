@@ -1,8 +1,12 @@
 /**
- * data-result.js
+ * DataResult Monad
+ * Error handling and transformation monad
  *
- * DataResult monad for error handling and transformations
+ * Delegates to:
+ * - data-result-helpers: Utility functions for result wrapping
  */
+
+import * as helpers from './data-result-helpers.js';
 
 export class DataResult {
   constructor(value, error = null) {
@@ -67,11 +71,5 @@ export class DataResult {
   }
 }
 
-export function wrapResult(value) {
-  if (value instanceof DataResult) return value;
-  return DataResult.ok(value);
-}
-
-export function wrapError(error) {
-  return DataResult.err(error);
-}
+export const wrapResult = (value) => helpers.wrapResult(value, DataResult);
+export const wrapError = (error) => helpers.wrapError(error, DataResult);
