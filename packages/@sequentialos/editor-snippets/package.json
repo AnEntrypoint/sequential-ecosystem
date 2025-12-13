@@ -1,9 +1,0 @@
-{
-  "name": "@sequentialos/editor-snippets",
-  "version": "1.0.0",
-  "type": "module",
-  "description": "Unified snippet insertion module for Sequential editors",
-  "exports": {
-    ".": "./src/index.js"
-  }
-}
