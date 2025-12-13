@@ -1,8 +1,14 @@
 /**
- * retry-strategy.js
- *
+ * Retry Strategy
  * Retry strategy with exponential backoff and jitter
+ *
+ * Delegates to:
+ * - retry-executor: Retry execution with backoff
+ * - retry-error-classifier: Error classification for retryability
  */
+
+import { createRetryExecutor } from './retry-executor.js';
+import { createRetryErrorClassifier } from './retry-error-classifier.js';
 
 export function createRetryStrategy(options = {}) {
   const {
@@ -11,7 +17,19 @@ export function createRetryStrategy(options = {}) {
     maxDelay = 30000,
     backoffMultiplier = 2,
     jitter = true,
-    retryableErrors = [
+    retryableErrors
+  } = options;
+
+  const executor = createRetryExecutor({
+    maxRetries,
+    initialDelay,
+    maxDelay,
+    backoffMultiplier,
+    jitter
+  });
+
+  const classifier = createRetryErrorClassifier({
+    retryableErrors: retryableErrors || [
       'ECONNREFUSED',
       'ECONNRESET',
       'ETIMEDOUT',
@@ -19,55 +37,15 @@ export function createRetryStrategy(options = {}) {
       'NetworkError',
       'TimeoutError'
     ]
-  } = options;
+  });
 
   return {
     async executeWithRetry(fn, context = {}) {
-      let lastError;
-      let delay = initialDelay;
-
-      for (let attempt = 0; attempt <= maxRetries; attempt++) {
-        try {
-          const result = await fn();
-          return {
-            success: true,
-            result,
-            attempts: attempt + 1,
-            finalDelay: 0
-          };
-        } catch (error) {
-          lastError = error;
-
-          if (!this.isRetryable(error)) {
-            throw error;
-          }
-
-          if (attempt < maxRetries) {
-            const actualDelay = Math.min(delay, maxDelay);
-            const jitterValue = jitter ? Math.random() * actualDelay * 0.1 : 0;
-            const totalDelay = actualDelay + jitterValue;
-
-            await new Promise(resolve => setTimeout(resolve, totalDelay));
-
-            delay = actualDelay * backoffMultiplier;
-          }
-        }
-      }
-
-      throw {
-        originalError: lastError,
-        message: `Failed after ${maxRetries + 1} attempts`,
-        attempts: maxRetries + 1,
-        retryable: true
-      };
+      return executor.executeWithRetry(fn, (error) => classifier.isRetryable(error));
     },
 
-    isRetryable(error) {
-      const errorString = `${error.code || error.name || error.message}`;
-      return this.retryableErrors.some(pattern => errorString.includes(pattern));
-    },
-
-    retryableErrors,
+    isRetryable: classifier.isRetryable.bind(classifier),
+    retryableErrors: classifier.getRetryableErrors(),
 
     getRetryConfig() {
       return {
