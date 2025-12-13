@@ -4,6 +4,7 @@ import { asyncHandler } from '../middleware/error-handler.js';
 import { broadcastBackgroundTaskEvent } from '@sequentialos/websocket-broadcaster';
 import logger from '@sequentialos/sequential-logging';
 import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
+import { formatResponse } from '@sequentialos/response-formatting';
 
 const ERROR_LOG_DIR = path.join(process.cwd(), '.sequential-errors');
 
@@ -35,7 +36,7 @@ export function registerErrorLoggingRoutes(app) {
       logger.error('Failed to write error log:', writeErr);
     }
 
-    res.json({ success: true, errorId: error.id });
+    res.json(formatResponse({ errorId: error.id }));
   }));
 
   app.get('/api/errors/logs', asyncHandler(async (req, res) => {
@@ -60,9 +61,9 @@ export function registerErrorLoggingRoutes(app) {
           .sort((a, b) => new Date(b.receivedAt) - new Date(a.receivedAt));
       }
 
-      res.json({ success: true, data: logs });
+      res.json(formatResponse(logs));
     } catch (err) {
-      res.status(500).json({ success: false, error: err.message });
+      res.status(500).json(formatResponse({ error: err.message }, { error: true }));
     }
   }));
 
@@ -96,7 +97,7 @@ export function registerErrorLoggingRoutes(app) {
         });
       }
 
-      res.json({ success: true, data: stats });
+      res.json(formatResponse(stats));
     } catch (err) {
       res.status(500).json({ success: false, error: err.message });
     }
@@ -106,9 +107,9 @@ export function registerErrorLoggingRoutes(app) {
     try {
       await fs.remove(ERROR_LOG_DIR);
       fs.ensureDirSync(ERROR_LOG_DIR);
-      res.json({ success: true, message: 'Error logs cleared' });
+      res.json(formatResponse({ message: 'Error logs cleared' }));
     } catch (err) {
-      res.status(500).json({ success: false, error: err.message });
+      res.status(500).json(formatResponse({ error: err.message }, { error: true }));
     }
   }));
 }
