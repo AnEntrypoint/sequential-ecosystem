@@ -1,3 +1,17 @@
+/**
+ * Task Cache Manager
+ * Manages task result caching with TTL, LRU eviction, and statistics
+ *
+ * Delegates to:
+ * - cache-expiration-handler: TTL expiration management
+ * - cache-eviction-strategy: LRU eviction strategy
+ * - cache-stats-calculator: Cache statistics computation
+ */
+
+import { createExpirationHandler } from './cache-expiration-handler.js';
+import { createEvictionStrategy } from './cache-eviction-strategy.js';
+import { createStatsCalculator } from './cache-stats-calculator.js';
+
 export function createTaskCacheManager(options = {}, keyGenerator) {
   const {
     ttl = 300000,
@@ -7,19 +21,13 @@ export function createTaskCacheManager(options = {}, keyGenerator) {
   const cache = new Map();
   const expirations = new Map();
 
-  function cleanupExpired() {
-    const now = Date.now();
-    for (const [key, expiresAt] of expirations.entries()) {
-      if (now >= expiresAt) {
-        cache.delete(key);
-        expirations.delete(key);
-      }
-    }
-  }
+  const expiration = createExpirationHandler(cache, expirations, ttl);
+  const eviction = createEvictionStrategy(cache, expirations);
+  const stats = createStatsCalculator(cache, maxSize, ttl);
 
   return {
     get(key) {
-      cleanupExpired();
+      expiration.cleanup();
       if (!cache.has(key)) return null;
 
       const entry = cache.get(key);
@@ -30,7 +38,7 @@ export function createTaskCacheManager(options = {}, keyGenerator) {
 
     set(key, value) {
       if (cache.size >= maxSize) {
-        this.evict();
+        eviction.evict();
       }
 
       const now = Date.now();
@@ -41,17 +49,16 @@ export function createTaskCacheManager(options = {}, keyGenerator) {
         createdAt: now
       });
 
-      expirations.set(key, now + ttl);
+      expiration.setExpiration(key);
     },
 
     has(key) {
-      cleanupExpired();
+      expiration.cleanup();
       return cache.has(key);
     },
 
     delete(key) {
-      cache.delete(key);
-      expirations.delete(key);
+      eviction.delete(key);
     },
 
     clear() {
@@ -60,38 +67,12 @@ export function createTaskCacheManager(options = {}, keyGenerator) {
     },
 
     evict() {
-      let lruKey = null;
-      let lruTime = Date.now();
-
-      for (const [key, entry] of cache.entries()) {
-        if (entry.lastAccessed < lruTime) {
-          lruTime = entry.lastAccessed;
-          lruKey = key;
-        }
-      }
-
-      if (lruKey) {
-        this.delete(lruKey);
-      }
+      eviction.evict();
     },
 
     getStats() {
-      cleanupExpired();
-      const entries = Array.from(cache.values());
-      const totalHits = entries.reduce((sum, e) => sum + e.hits, 0);
-
-      return {
-        size: cache.size,
-        maxSize,
-        utilization: ((cache.size / maxSize) * 100).toFixed(1),
-        totalHits,
-        averageHits: entries.length > 0 ? (totalHits / entries.length).toFixed(2) : 0,
-        ttl,
-        entries: entries.map(e => ({
-          hits: e.hits,
-          age: Date.now() - e.createdAt
-        }))
-      };
+      expiration.cleanup();
+      return stats.getStats();
     },
 
     createCachedTask(taskFn, keyConfig = {}) {
