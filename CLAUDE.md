@@ -563,7 +563,16 @@ await TraceLogger.spanAsync('apiCall', async () => {
 PORT=3000                              TASK_TIMEOUT=300000
 DATABASE_URL="sqlite://./workflow.db"  DEBUG=1
 HOT_RELOAD=false
+
+USE_OCI=true                           OCI_IMAGE=ubuntu:24.04
+OCI_RUNTIME=docker                     SKIP_STATEKIT=false
 ```
+
+**OCI Container Support:**
+- `USE_OCI=true`: Enable Docker/Podman container execution for Terminal commands (default: false)
+- `OCI_IMAGE=ubuntu:24.04`: Base image for container (default: ubuntu:24.04)
+- `OCI_RUNTIME=docker`: Container runtime: docker or podman (default: docker)
+- When enabled, Terminal commands execute in isolated Ubuntu containers with full `apt` package manager support
 
 ## Setup Tasks
 
