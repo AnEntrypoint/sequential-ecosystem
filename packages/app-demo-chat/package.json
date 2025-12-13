@@ -1,5 +1,5 @@
 {
-  "name": "app-demo-chat",
+  "name": "@sequentialos/app-demo-chat",
   "type": "module",
   "version": "1.0.0",
   "description": "Demonstrates AppSDK capabilities: storage, realtime, and LLM"
