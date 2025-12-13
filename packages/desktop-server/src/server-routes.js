@@ -25,11 +25,13 @@ import { registerObservabilityV2Routes } from './routes/observability-v2.js';
 export { getActiveTasks };
 
 export async function registerAllRoutes(app, container, appRegistry, kit, STATEKIT_DIR, __dirname) {
+  console.log('[registerAllRoutes] Received STATEKIT_DIR:', STATEKIT_DIR, 'kit:', kit ? 'present' : 'null');
   registerDebugRoutes(app, container);
   registerAppRoutes(app, appRegistry, __dirname);
   registerUserAppRoutes(app, container);
 
   if (kit) {
+    console.log('[registerAllRoutes] Calling registerSequentialOsRoutes with STATEKIT_DIR:', STATEKIT_DIR);
     registerSequentialOsRoutes(app, kit, STATEKIT_DIR);
   } else {
     app.use('/api/sequential-os/', (req, res) => {

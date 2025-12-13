@@ -45,6 +45,9 @@ function createTaskRunRecord(instruction, result, machineDir) {
 
 export function registerKitHandlers(app, kit, machineDir) {
   const recordDir = machineDir || process.env.SEQUENTIAL_MACHINE_DIR;
+  if (!recordDir) {
+    console.warn('[registerKitHandlers] No recordDir available - task records will not be created');
+  }
 
   app.get('/api/sequential-os/status', asyncHandler(async (req, res) => {
     const status = await kit.status();

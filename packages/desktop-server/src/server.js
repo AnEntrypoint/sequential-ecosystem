@@ -27,6 +27,7 @@ async function main() {
 
     // Initialize environment and infrastructure
     const { kit, STATEKIT_DIR, WORK_DIR } = await serverInit.initializeEnvironment();
+
     const appRegistry = await serverInit.setupAppRegistry();
     const { container, stateManager } = serverInit.setupDIAndState(WORK_DIR);
 
