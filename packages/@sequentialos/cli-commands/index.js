@@ -6,6 +6,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CONFIG_DIR = path.join(process.cwd(), '.sequential');
 const CONFIG_FILE = path.join(CONFIG_DIR, 'config.json');
 
+const kebabToCamel = (str) => str.replace(/-([a-z])/g, (_, char) => char.toUpperCase());
+
 const ensureConfigDir = () => {
   if (!fs.existsSync(CONFIG_DIR)) {
     fs.mkdirSync(CONFIG_DIR, { recursive: true });
@@ -28,12 +30,13 @@ const saveConfig = (config) => {
 export const createTask = async (opts) => {
   const name = opts.name || 'new-task';
   const taskDir = path.join(process.cwd(), 'tasks', String(name).trim());
+  const fnName = kebabToCamel(name);
 
   if (!fs.existsSync(taskDir)) {
     fs.mkdirSync(taskDir, { recursive: true });
   }
 
-  const code = `export async function ${name}(input) {
+  const code = `export async function ${fnName}(input) {
   return { success: true, message: 'Task executed', input };
 }`;
 
