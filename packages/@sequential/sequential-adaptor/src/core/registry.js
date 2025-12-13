@@ -8,7 +8,7 @@ export const registries = {
 
 export function register(type, name, factory) {
   if (!registries[type]) throw new Error(`Unknown registry type: ${type}`);
-  if (typeof factory !== 'function') throw new Error(`Factory must be a function`);
+  if (typeof factory !== 'function') throw new Error('Factory must be a function');
   registries[type].set(name, factory);
 }
 

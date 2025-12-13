@@ -44,11 +44,11 @@ const SCHEMA_STATEMENTS = [
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP
   )`,
 
-  `CREATE INDEX IF NOT EXISTS idx_task_runs_identifier ON task_runs(task_identifier)`,
-  `CREATE INDEX IF NOT EXISTS idx_task_runs_status ON task_runs(status)`,
-  `CREATE INDEX IF NOT EXISTS idx_stack_runs_task ON stack_runs(task_run_id)`,
-  `CREATE INDEX IF NOT EXISTS idx_stack_runs_status ON stack_runs(status)`,
-  `CREATE INDEX IF NOT EXISTS idx_stack_runs_parent ON stack_runs(parent_stack_run_id)`
+  'CREATE INDEX IF NOT EXISTS idx_task_runs_identifier ON task_runs(task_identifier)',
+  'CREATE INDEX IF NOT EXISTS idx_task_runs_status ON task_runs(status)',
+  'CREATE INDEX IF NOT EXISTS idx_stack_runs_task ON stack_runs(task_run_id)',
+  'CREATE INDEX IF NOT EXISTS idx_stack_runs_status ON stack_runs(status)',
+  'CREATE INDEX IF NOT EXISTS idx_stack_runs_parent ON stack_runs(parent_stack_run_id)'
 ];
 
 export async function createTables(db) {

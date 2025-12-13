@@ -17,7 +17,7 @@ export function createDefaultFetchClient() {
     initialDelayMs: DEFAULTS.RETRY.INITIAL_DELAY,
     maxDelayMs: DEFAULTS.RETRY.MAX_DELAY,
     backoffMultiplier: DEFAULTS.RETRY.BACKOFF_MULTIPLIER,
-    jitterFraction: DEFAULTS.RETRY.JITTER_FRACTION,
+    jitterFraction: DEFAULTS.RETRY.JITTER_FRACTION
   });
 
   return createFetchWithRetry(retryConfig);
@@ -31,7 +31,7 @@ export function createAggressiveRetryFetch() {
   const retryConfig = new RetryConfig({
     maxRetries: 5,
     initialDelayMs: 500,
-    maxDelayMs: 10000,
+    maxDelayMs: 10000
   });
 
   return createFetchWithRetry(retryConfig);
@@ -45,7 +45,7 @@ export function createConservativeRetryFetch() {
   const retryConfig = new RetryConfig({
     maxRetries: 1,
     initialDelayMs: 2000,
-    maxDelayMs: 5000,
+    maxDelayMs: 5000
   });
 
   return createFetchWithRetry(retryConfig);
@@ -62,7 +62,7 @@ export function createCustomRetryFetch(options = {}) {
     initialDelayMs: options.initialDelayMs ?? DEFAULTS.RETRY.INITIAL_DELAY,
     maxDelayMs: options.maxDelayMs ?? DEFAULTS.RETRY.MAX_DELAY,
     backoffMultiplier: options.backoffMultiplier ?? DEFAULTS.RETRY.BACKOFF_MULTIPLIER,
-    jitterFraction: options.jitterFraction ?? DEFAULTS.RETRY.JITTER_FRACTION,
+    jitterFraction: options.jitterFraction ?? DEFAULTS.RETRY.JITTER_FRACTION
   });
 
   return createFetchWithRetry(retryConfig);
@@ -72,5 +72,5 @@ export default {
   createDefaultFetchClient,
   createAggressiveRetryFetch,
   createConservativeRetryFetch,
-  createCustomRetryFetch,
+  createCustomRetryFetch
 };

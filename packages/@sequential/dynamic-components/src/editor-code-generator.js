@@ -4,7 +4,7 @@ export class EditorCodeGenerator {
     const spaces = '  '.repeat(indent);
     const nextSpaces = '  '.repeat(indent + 1);
 
-    let code = `{\n`;
+    let code = '{\n';
     code += `${nextSpaces}type: '${component.type}',\n`;
 
     if (Object.keys(component.props || {}).length > 0) {

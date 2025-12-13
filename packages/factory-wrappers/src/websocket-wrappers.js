@@ -19,7 +19,7 @@ export function createDefaultSubscriptionHandler(options = {}) {
     reconnectDelay: options.reconnectDelay ?? 3000,
     enableCompression: options.enableCompression ?? true,
     rateLimit: options.rateLimit ?? createDefaultWebSocketRateLimiter(),
-    ...options,
+    ...options
   };
 
   return createSubscriptionHandler(config);
@@ -33,7 +33,7 @@ export function createRealtimeHandler() {
   return createDefaultSubscriptionHandler({
     maxConnections: 1000,
     messageTimeout: 5000,
-    reconnectDelay: 1000,
+    reconnectDelay: 1000
   });
 }
 
@@ -45,12 +45,12 @@ export function createBroadcastHandler() {
   return createDefaultSubscriptionHandler({
     maxConnections: 10000,
     messageTimeout: 10000,
-    reconnectDelay: 5000,
+    reconnectDelay: 5000
   });
 }
 
 export default {
   createDefaultSubscriptionHandler,
   createRealtimeHandler,
-  createBroadcastHandler,
+  createBroadcastHandler
 };

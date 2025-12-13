@@ -23,7 +23,7 @@ export class VueExporter {
 
     const code = `<template>\n${StringConverters.indent(template, 2)}\n</template>\n\n` +
       `<script ${useCompositionAPI ? 'setup' : ''}>\n${StringConverters.indent(script, 2)}\n</script>\n\n` +
-      `<style scoped>\n/* Component styles */\n</style>\n`;
+      '<style scoped>\n/* Component styles */\n</style>\n';
 
     return {
       code,

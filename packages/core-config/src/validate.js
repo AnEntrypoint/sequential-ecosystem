@@ -26,7 +26,7 @@ class ConfigValidator {
       this.validated = true;
       return {
         success: true,
-        config: this.config,
+        config: this.config
       };
     } catch (err) {
       if (err instanceof ValidationError) {
@@ -39,7 +39,7 @@ class ConfigValidator {
         }
         return {
           success: false,
-          errors: err.messages,
+          errors: err.messages
         };
       }
       throw err;
@@ -81,9 +81,9 @@ class ConfigValidator {
         'SUPABASE_PORT', 'SUPABASE_URL', 'SUPABASE_SERVICE_KEY', 'SUPABASE_ANON_KEY', 'SUPABASE_TIMEOUT',
         'OPENAI_PORT', 'OPENAI_URL', 'OPENAI_TIMEOUT', 'OPENAI_API_KEY',
         'WEBSEARCH_PORT', 'WEBSEARCH_URL', 'WEBSEARCH_TIMEOUT', 'WEBSEARCH_API_KEY',
-        'ADMIN_DEBUG_PORT', 'ADMIN_DEBUG_URL', 'ADMIN_DEBUG_TIMEOUT',
+        'ADMIN_DEBUG_PORT', 'ADMIN_DEBUG_URL', 'ADMIN_DEBUG_TIMEOUT'
       ],
-      'Other': ['SEQUENTIAL_MACHINE_WORK', 'SEQUENTIAL_MACHINE_DIR', 'DATABASE_URL', 'ZELLOUS_DATA', 'WS_MAX_CONNECTIONS_PER_IP', 'WS_CLEANUP_INTERVAL_MS', 'USER_AGENT_MAX_LENGTH', 'PROTOCOL', 'HOSTNAME', 'OP_LOG_MAX_SIZE', 'REQUEST_LOG_MAX_SIZE', 'DEFAULT_LOG_LIMIT', 'CACHE_TTL_MS', 'SERVICE_BASE_URL', 'SERVICE_AUTH_TOKEN'],
+      'Other': ['SEQUENTIAL_MACHINE_WORK', 'SEQUENTIAL_MACHINE_DIR', 'DATABASE_URL', 'ZELLOUS_DATA', 'WS_MAX_CONNECTIONS_PER_IP', 'WS_CLEANUP_INTERVAL_MS', 'USER_AGENT_MAX_LENGTH', 'PROTOCOL', 'HOSTNAME', 'OP_LOG_MAX_SIZE', 'REQUEST_LOG_MAX_SIZE', 'DEFAULT_LOG_LIMIT', 'CACHE_TTL_MS', 'SERVICE_BASE_URL', 'SERVICE_AUTH_TOKEN']
     };
 
     for (const [category, keys] of Object.entries(categories)) {

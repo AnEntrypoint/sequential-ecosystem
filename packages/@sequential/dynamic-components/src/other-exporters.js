@@ -20,7 +20,7 @@ export class SvelteExporter {
 
     const code = `<script>\n${StringConverters.indent(script, 2)}\n</script>\n\n` +
       template + '\n\n' +
-      `<style>\n/* Component styles */\n</style>\n`;
+      '<style>\n/* Component styles */\n</style>\n';
 
     return {
       code,
@@ -44,17 +44,17 @@ export class AngularExporter {
     const template = this.templates.generateAngularTemplate(componentDef);
     const styles = this.templates.generateAngularStyles(componentDef.style || {});
 
-    const code = `import { Component, OnInit } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\n` +
-      `@Component({\n` +
+    const code = 'import { Component, OnInit } from \'@angular/core\';\nimport { CommonModule } from \'@angular/common\';\n\n' +
+      '@Component({\n' +
       `  selector: 'app-${selector}',\n` +
-      `  standalone: true,\n` +
-      `  imports: [CommonModule],\n` +
+      '  standalone: true,\n' +
+      '  imports: [CommonModule],\n' +
       `  template: \`\n${StringConverters.indent(template, 4)}\n  \`,\n` +
       `  styles: [\`\n${StringConverters.indent(styles, 4)}\n  \`]\n` +
-      `})\n` +
+      '})\n' +
       `export class ${className}Component implements OnInit {\n` +
-      `  ngOnInit() {}\n` +
-      `}\n`;
+      '  ngOnInit() {}\n' +
+      '}\n';
 
     return {
       code,
@@ -79,20 +79,20 @@ export class WebComponentExporter {
     const styles = this.templates.generateWebComponentStyles(componentDef.style || {});
 
     const code = `export class ${className} extends HTMLElement {\n` +
-      `  constructor() {\n` +
-      `    super();\n` +
-      `    this.attachShadow({ mode: 'open' });\n` +
-      `  }\n\n` +
-      `  connectedCallback() {\n` +
-      `    this.render();\n` +
-      `  }\n\n` +
-      `  render() {\n` +
-      `    this.shadowRoot.innerHTML = \`\n` +
+      '  constructor() {\n' +
+      '    super();\n' +
+      '    this.attachShadow({ mode: \'open\' });\n' +
+      '  }\n\n' +
+      '  connectedCallback() {\n' +
+      '    this.render();\n' +
+      '  }\n\n' +
+      '  render() {\n' +
+      '    this.shadowRoot.innerHTML = `\n' +
       `      <style>\n${StringConverters.indent(styles, 8)}</style>\n` +
       `      ${template}\n` +
-      `    \`;\n` +
-      `  }\n` +
-      `}\n\n` +
+      '    `;\n' +
+      '  }\n' +
+      '}\n\n' +
       `customElements.define('${tagName}', ${className});\n`;
 
     return {

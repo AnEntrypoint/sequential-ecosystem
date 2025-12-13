@@ -22,7 +22,7 @@ export class TaskRepository extends BaseRepository {
     const taskDir = this.validatePath(taskName);
     const codePath = path.join(taskDir, 'code.js');
     if (!await fs.pathExists(codePath)) {
-      throw this.createError(`Task code not found`, 404, 'NOT_FOUND');
+      throw this.createError('Task code not found', 404, 'NOT_FOUND');
     }
     return await fs.readFile(codePath, 'utf8');
   }

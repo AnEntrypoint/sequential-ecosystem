@@ -10,6 +10,6 @@ export function createServiceFactory(container) {
     getTaskScheduler: () => cache.scheduler ||= container.resolve('TaskScheduler'),
     getQueueWorkerPool: () => cache.workerPool ||= container.resolve('QueueWorkerPool'),
     getAppRegistry: () => cache.appRegistry ||= container.resolve('AppRegistry'),
-    getFlowService: () => cache.flowService ||= container.resolve('FlowService'),
+    getFlowService: () => cache.flowService ||= container.resolve('FlowService')
   };
 }

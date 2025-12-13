@@ -1,4 +1,4 @@
-import {h} from 'hyperapp';
+import { h } from 'hyperapp';
 
-export const Toolbar = ({children}) =>
-  h('div', {class: 'toolbar'}, children);
+export const Toolbar = ({ children }) =>
+  h('div', { class: 'toolbar' }, children);

@@ -29,14 +29,14 @@ export const guiCommand = async (options, __dirname) => {
 
   const shutdown = (signal) => {
     logger.info(`\n\nShutting down (${signal})...`);
-    procs.forEach(({name, proc}) => {
+    procs.forEach(({ name, proc }) => {
       logger.info(`  Stopping ${name}...`);
       proc.kill('SIGINT');
     });
     setTimeout(() => process.exit(0), 1000);
   };
 
-  procs.forEach(({name, proc}) => {
+  procs.forEach(({ name, proc }) => {
     proc.on('exit', (code) => {
       logger.error(`\n${name} exited with code ${code}`);
       shutdown('process exit');

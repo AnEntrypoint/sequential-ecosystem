@@ -4,10 +4,10 @@ export function updateList(snippets, query, onSelect) {
 
   const filtered = query
     ? snippets.filter(s =>
-        s.label.toLowerCase().includes(query.toLowerCase()) ||
+      s.label.toLowerCase().includes(query.toLowerCase()) ||
         s.trigger.toLowerCase().includes(query.toLowerCase()) ||
         s.category.toLowerCase().includes(query.toLowerCase())
-      )
+    )
     : snippets;
 
   list.innerHTML = filtered.map(snippet => `

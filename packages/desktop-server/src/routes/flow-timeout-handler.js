@@ -43,7 +43,7 @@ export function createTimeoutHandler(flow) {
         }
 
         if (currentState.fallbackData !== undefined) {
-          executionLog.push(`Using fallback data due to timeout`);
+          executionLog.push('Using fallback data due to timeout');
           return { timedOut: true, useFallback: true, fallbackData: currentState.fallbackData };
         }
 

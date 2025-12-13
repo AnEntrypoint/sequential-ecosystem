@@ -131,4 +131,4 @@ class StateTransitionLogger extends EventEmitter {
 export {
   StateTransitionLogger
 };
-export const createStateTransitionLogger = (maxTransitions) => new StateTransitionLogger(maxTransitions);;
+export const createStateTransitionLogger = (maxTransitions) => new StateTransitionLogger(maxTransitions);

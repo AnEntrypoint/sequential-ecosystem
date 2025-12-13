@@ -1,7 +1,7 @@
-import {h} from 'hyperapp';
+import { h } from 'hyperapp';
 
-export const Sidebar = ({children, width = '300px'}) =>
+export const Sidebar = ({ children, width = '300px' }) =>
   h('div', {
     class: 'sidebar',
-    style: {width}
+    style: { width }
   }, children);

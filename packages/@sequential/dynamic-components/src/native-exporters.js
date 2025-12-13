@@ -18,14 +18,14 @@ export class FlutterExporter {
 
     const widgets = this.templates.generateFlutterWidgets(componentDef);
 
-    const code = `import 'package:flutter/material.dart';\n\n` +
+    const code = 'import \'package:flutter/material.dart\';\n\n' +
       `class ${className} extends StatelessWidget {\n` +
       `  const ${className}({Key? key}) : super(key: key);\n\n` +
-      `  @override\n` +
-      `  Widget build(BuildContext context) {\n` +
+      '  @override\n' +
+      '  Widget build(BuildContext context) {\n' +
       `    return ${StringConverters.indent(widgets, 6)};\n` +
-      `  }\n` +
-      `}\n`;
+      '  }\n' +
+      '}\n';
 
     return {
       code,
@@ -47,15 +47,15 @@ export class SwiftUIExporter {
 
     const views = this.templates.generateSwiftUIViews(componentDef);
 
-    const code = `import SwiftUI\n\n` +
+    const code = 'import SwiftUI\n\n' +
       `struct ${structName}: View {\n` +
-      `  var body: some View {\n` +
+      '  var body: some View {\n' +
       `    ${StringConverters.indent(views, 4)}\n` +
-      `  }\n` +
-      `}\n\n` +
-      `#Preview {\n` +
+      '  }\n' +
+      '}\n\n' +
+      '#Preview {\n' +
       `  ${structName}()\n` +
-      `}\n`;
+      '}\n';
 
     return {
       code,

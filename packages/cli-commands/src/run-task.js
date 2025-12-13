@@ -20,7 +20,7 @@ export async function runTask(options) {
   try {
     if (verbose) {
       logger.info(`Running task: ${taskName}`);
-      logger.info(`Input:`, input);
+      logger.info('Input:', input);
     }
 
     // Load task file

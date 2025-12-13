@@ -25,7 +25,7 @@ export function createComposePattern() {
       return async function composedTask(input) {
         return taskFns.reduce((result, taskFn) =>
           Promise.resolve(result).then(taskFn),
-          Promise.resolve(input)
+        Promise.resolve(input)
         );
       };
     }

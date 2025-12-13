@@ -105,5 +105,5 @@ export const envSchema = {
   DEFAULT_LOG_LIMIT: { type: EnvType.NUMBER, required: false, default: 100, description: 'Default log limit' },
   CACHE_TTL_MS: { type: EnvType.NUMBER, required: false, default: 300000, description: 'Cache TTL (ms)' },
   SERVICE_BASE_URL: { type: EnvType.STRING, required: false, description: 'Service base URL' },
-  SERVICE_AUTH_TOKEN: { type: EnvType.STRING, required: false, description: 'Service auth token' },
+  SERVICE_AUTH_TOKEN: { type: EnvType.STRING, required: false, description: 'Service auth token' }
 };

@@ -14,7 +14,7 @@ function createValidator(schemaName) {
   };
 }
 
-let cachedValidators = {};
+const cachedValidators = {};
 
 export function validateTaskName(value) {
   if (!cachedValidators.taskName) cachedValidators.taskName = createValidator('taskName');

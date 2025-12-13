@@ -14,7 +14,7 @@ export function generateFlowTemplate(name, flowId, timestamp, stateCount, descri
       if (i === count - 1) {
         states[baseName] = {
           handlerType: 'code',
-          code: `return { success: true, completedAt: new Date().toISOString() };`,
+          code: 'return { success: true, completedAt: new Date().toISOString() };',
           type: 'final'
         };
       } else {
@@ -30,7 +30,7 @@ export function generateFlowTemplate(name, flowId, timestamp, stateCount, descri
 
     states.handleError = {
       handlerType: 'code',
-      code: `return { success: false, error: context.error || 'Unknown error' };`,
+      code: 'return { success: false, error: context.error || \'Unknown error\' };',
       type: 'final'
     };
 
@@ -78,18 +78,18 @@ export const graph = {
  */
 
 ${stateNames.map((state, i) => {
-  const description = {
-    'initialize': 'Setup and initialization',
-    'fetch': 'Fetch data from external source',
-    'process': 'Process and transform data',
-    'transform': 'Apply transformations',
-    'validate': 'Validate data',
-    'save': 'Persist results',
-    'notify': 'Send notifications',
-    'cleanup': 'Cleanup resources'
-  }[state] || 'Process step';
+    const description = {
+      'initialize': 'Setup and initialization',
+      'fetch': 'Fetch data from external source',
+      'process': 'Process and transform data',
+      'transform': 'Apply transformations',
+      'validate': 'Validate data',
+      'save': 'Persist results',
+      'notify': 'Send notifications',
+      'cleanup': 'Cleanup resources'
+    }[state] || 'Process step';
 
-  return `/**
+    return `/**
  * State: ${state}
  * ${description}
  */
@@ -113,7 +113,7 @@ export async function ${state}(context) {
     throw error;
   }
 }`;
-}).join('\n\n')}
+  }).join('\n\n')}
 
 /**
  * Error handler state

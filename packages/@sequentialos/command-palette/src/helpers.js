@@ -1,5 +1,5 @@
 export function formatJavaScript(code) {
-  let formatted = code
+  const formatted = code
     .replace(/;(?=\S)/g, ';\n')
     .replace(/\{(?=\S)/g, ' {\n')
     .replace(/\}(?=\S)/g, '}\n')

@@ -11,7 +11,7 @@ export function generateFlowDiagram(doc) {
   diagram += `**Purpose:** ${doc.purpose}\n\n`;
   diagram += `**Description:** ${doc.description}\n\n`;
 
-  diagram += `## States\n\n`;
+  diagram += '## States\n\n';
   for (const [stateName, state] of Object.entries(doc.states)) {
     diagram += `### ${stateName}\n`;
     diagram += `- **Type:** ${state.type}\n`;
@@ -26,18 +26,18 @@ export function generateFlowDiagram(doc) {
     diagram += '\n';
   }
 
-  diagram += `## Transitions\n\n`;
+  diagram += '## Transitions\n\n';
   for (const [stateName, state] of Object.entries(doc.states)) {
     for (const transition of state.transitions) {
       diagram += `- ${stateName} --[${transition.event}]--> ${transition.target}\n`;
     }
   }
 
-  diagram += `\n## Happy Path\n\n`;
+  diagram += '\n## Happy Path\n\n';
   diagram += doc.happyPath.join(' → ') + '\n\n';
 
   if (doc.errorPaths.length > 0) {
-    diagram += `## Error Paths\n\n`;
+    diagram += '## Error Paths\n\n';
     for (const errorPath of doc.errorPaths) {
       diagram += `- **${errorPath.trigger}:** ${errorPath.handler}\n`;
     }

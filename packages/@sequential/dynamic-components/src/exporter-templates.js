@@ -3,8 +3,8 @@ import { StringConverters } from './string-converters.js';
 
 export class ExporterTemplates {
   generateReactComponent(componentDef, componentName, useHooks) {
-    return `const [state, setState] = useState({});\n\n` +
-      `return (\n` +
+    return 'const [state, setState] = useState({});\n\n' +
+      'return (\n' +
       StringConverters.indent(`<${componentDef.type || 'div'}>\n` +
         `{/* ${componentName} content */}\n` +
         `</${componentDef.type || 'div'}>`, 4) +
@@ -17,11 +17,11 @@ export class ExporterTemplates {
   }
 
   generateVueCompositionAPI() {
-    return `import { ref } from 'vue';\n\nconst count = ref(0);\n\nconst increment = () => {\n  count.value++;\n};\n`;
+    return 'import { ref } from \'vue\';\n\nconst count = ref(0);\n\nconst increment = () => {\n  count.value++;\n};\n';
   }
 
   generateVueOptionsAPI() {
-    return `export default {\n  data() {\n    return { count: 0 };\n  },\n  methods: {\n    increment() {\n      this.count++;\n    }\n  }\n};\n`;
+    return 'export default {\n  data() {\n    return { count: 0 };\n  },\n  methods: {\n    increment() {\n      this.count++;\n    }\n  }\n};\n';
   }
 
   generateSvelteTemplate(componentDef) {
@@ -30,7 +30,7 @@ export class ExporterTemplates {
   }
 
   generateSvelteScript() {
-    return `let count = 0;\n\nconst increment = () => {\n  count++;\n};\n`;
+    return 'let count = 0;\n\nconst increment = () => {\n  count++;\n};\n';
   }
 
   generateAngularTemplate(componentDef) {

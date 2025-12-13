@@ -37,7 +37,7 @@ export function createHelpModal(keyboardShortcuts) {
         <h2 style="margin-bottom: 20px; color: #4ade80;">Keyboard Shortcuts</h2>
         <div style="display: grid; gap: 12px;">
           ${Array.from(keyboardShortcuts.getShortcuts().entries())
-            .map(([key, { description }]) => `
+    .map(([key, { description }]) => `
               <div style="display: flex; gap: 20px; padding-bottom: 12px; border-bottom: 1px solid #3a3a3a;">
                 <code style="background: #1a1a1a; padding: 4px 8px; border-radius: 3px; font-size: 12px;">${key}</code>
                 <span style="flex: 1;">${description}</span>

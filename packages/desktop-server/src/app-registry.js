@@ -110,7 +110,7 @@ class AppRegistry {
           }
         }
       } catch (error) {
-        logger.error(`  ✗ Failed to discover local apps:`, error.message);
+        logger.error('  ✗ Failed to discover local apps:', error.message);
       }
     }
 

@@ -7,7 +7,7 @@ import { delay, withRetry } from '@sequentialos/async-patterns';
 import { DEFAULTS } from '@sequentialos/core-config';
 import {
   createRateLimitMiddleware,
-  createWebSocketRateLimiter,
+  createWebSocketRateLimiter
 } from '@sequentialos/input-sanitization';
 
 /**
@@ -50,5 +50,5 @@ export default {
   createDefaultRateLimiter,
   createStrictRateLimiter,
   createPermissiveRateLimiter,
-  createDefaultWebSocketRateLimiter,
+  createDefaultWebSocketRateLimiter
 };

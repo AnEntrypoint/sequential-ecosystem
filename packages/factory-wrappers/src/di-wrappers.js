@@ -44,5 +44,5 @@ export function registerService(container, serviceName, factory) {
 export default {
   createSequentialContainer,
   createContainerWithServices,
-  registerService,
+  registerService
 };

@@ -16,6 +16,6 @@ export function createOperationLogger(logFns) {
       logFns.logFileOperation(operation, filePath, error, metadata),
 
     fileSuccess: (operation, filePath, duration, metadata) =>
-      logFns.logFileSuccess(operation, filePath, duration, metadata),
+      logFns.logFileSuccess(operation, filePath, duration, metadata)
   };
 }

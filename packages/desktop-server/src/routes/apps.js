@@ -10,7 +10,7 @@ export function registerAppRoutes(app, appRegistry, __dirname) {
     const builtinApps = appRegistry.getManifests().map(m => ({ ...m, builtin: true }));
 
     const userAppsDir = path.join(process.env.ECOSYSTEM_PATH || process.env.HOME, '.sequential', 'apps');
-    let userApps = [];
+    const userApps = [];
     try {
       await fs.mkdir(userAppsDir, { recursive: true });
       const dirs = await fs.readdir(userAppsDir);

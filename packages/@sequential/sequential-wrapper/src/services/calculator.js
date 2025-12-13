@@ -23,4 +23,4 @@ class Calculator {
 }
 
 // Export a singleton instance
-export default new Calculator(); 
+export default new Calculator();

@@ -47,8 +47,8 @@ if (import.meta.main) {
 export function generateDenoJson(libraryName) {
   return {
     tasks: {
-      start: `deno run --allow-all --allow-env --allow-read --allow-write index.ts`,
-      dev: `deno run --allow-all --allow-env --allow-read --allow-write --watch index.ts`
+      start: 'deno run --allow-all --allow-env --allow-read --allow-write index.ts',
+      dev: 'deno run --allow-all --allow-env --allow-read --allow-write --watch index.ts'
     },
     imports: {
       'sdk-http-wrapper/server': 'https://esm.sh/sdk-http-wrapper/server'

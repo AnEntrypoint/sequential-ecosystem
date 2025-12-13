@@ -13,6 +13,6 @@ export function createEventBroadcaster(broadcastFns) {
       broadcastFns.broadcastTaskProgress(taskName, runId, { stage, percentage, details }),
 
     taskSubscriber: (taskName, event) =>
-      broadcastFns.broadcastToTaskSubscribers(taskName, event),
+      broadcastFns.broadcastToTaskSubscribers(taskName, event)
   };
 }

@@ -20,6 +20,6 @@ export const OBJECT_SNIPPETS = [
     label: 'Object Destructuring',
     trigger: 'destruct',
     category: 'Objects',
-    code: `const { key1, key2, ...rest } = object;`
+    code: 'const { key1, key2, ...rest } = object;'
   }
 ];

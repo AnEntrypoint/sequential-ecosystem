@@ -11,12 +11,12 @@ export function createCheckpointStatisticsAnalyzer(storage) {
 
       const slowestCheckpoint = timeline.reduce((max, cp) =>
         cp.duration > max.duration ? cp : max,
-        { duration: 0 }
+      { duration: 0 }
       );
 
       const largestData = taskCheckpoints.reduce((max, cp) =>
         cp.dataSize > max.dataSize ? cp : max,
-        { dataSize: 0 }
+      { dataSize: 0 }
       );
 
       return {

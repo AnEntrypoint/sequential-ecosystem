@@ -7,7 +7,7 @@
 export {
   createSequentialContainer,
   createContainerWithServices,
-  registerService,
+  registerService
 } from './di-wrappers.js';
 
 // Middleware wrappers
@@ -15,7 +15,7 @@ export {
   createDefaultRateLimiter,
   createStrictRateLimiter,
   createPermissiveRateLimiter,
-  createDefaultWebSocketRateLimiter,
+  createDefaultWebSocketRateLimiter
 } from './middleware-wrappers.js';
 
 // HTTP wrappers
@@ -23,14 +23,14 @@ export {
   createDefaultFetchClient,
   createAggressiveRetryFetch,
   createConservativeRetryFetch,
-  createCustomRetryFetch,
+  createCustomRetryFetch
 } from './http-wrappers.js';
 
 // WebSocket wrappers
 export {
   createDefaultSubscriptionHandler,
   createRealtimeHandler,
-  createBroadcastHandler,
+  createBroadcastHandler
 } from './websocket-wrappers.js';
 
 // Storage wrappers
@@ -40,7 +40,7 @@ export {
   createSupabaseAdapter,
   createDefaultRunner,
   createFlowRunner,
-  createSequentialOSRunner,
+  createSequentialOSRunner
 } from './storage-wrappers.js';
 
 // Re-export for convenience

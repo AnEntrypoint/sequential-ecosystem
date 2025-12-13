@@ -304,7 +304,7 @@ class AccessibilityAuditor {
           severity: 'warning',
           message: `Use semantic <button> or <a> instead of <${component.type}> for interactive elements`,
           element: component,
-          suggestion: `Replace with <button> or <a> and add aria-label`
+          suggestion: 'Replace with <button> or <a> and add aria-label'
         });
       }
     }

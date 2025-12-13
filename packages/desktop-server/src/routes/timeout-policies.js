@@ -81,7 +81,7 @@ export function handleStateTimeout(stateTimeoutCheck, currentState, statesArray,
   }
 
   if (currentState.fallbackData !== undefined) {
-    executionLog.push(`Using fallback data due to timeout`);
+    executionLog.push('Using fallback data due to timeout');
     return { handled: true, fallbackData: currentState.fallbackData };
   }
 

@@ -51,13 +51,13 @@ export async function createService(config) {
     );
     logger.info('  ✅ .gitignore');
 
-    logger.info(`\n✅ Service created successfully!\n`);
-    logger.info(`📝 Next steps:`);
-    logger.info(`\n1. Edit credentials in config.json`);
-    logger.info(`\n2. Start the service:`);
+    logger.info('\n✅ Service created successfully!\n');
+    logger.info('📝 Next steps:');
+    logger.info('\n1. Edit credentials in config.json');
+    logger.info('\n2. Start the service:');
     logger.info(`   cd ${servicePath}`);
-    logger.info(`   deno run --allow-all --allow-env index.ts\n`);
-    logger.info(`3. Or use with tasker CLI:`);
+    logger.info('   deno run --allow-all --allow-env index.ts\n');
+    logger.info('3. Or use with tasker CLI:');
     logger.info(`   npx tasker --services ${config.library}\n`);
   } catch (error) {
     logger.error('❌ Failed to create service:', error.message);

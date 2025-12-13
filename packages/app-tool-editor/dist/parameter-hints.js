@@ -157,3 +157,4 @@ window.initParameterHints = function(editorId = 'codeEditor') {
   window.parameterHints = hints;
   hints.init();
 };
+

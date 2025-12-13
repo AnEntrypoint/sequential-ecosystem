@@ -283,3 +283,5 @@ if (typeof window !== 'undefined') {
 if (typeof window !== 'undefined') {
   window.ToolAutocomplete = ToolAutocomplete;
 }
+
+export { ToolAutocomplete };

@@ -14,10 +14,10 @@ export class AnimationCSSGenerator {
         }
       });
 
-      css += `  }\n`;
+      css += '  }\n';
     });
 
-    css += `}\n`;
+    css += '}\n';
     return css;
   }
 

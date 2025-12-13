@@ -76,17 +76,17 @@ export function getSeverity(category) {
 
 export function getUserFriendlyMessage(category, operation = 'operation') {
   const messages = {
-    [ErrorCategory.FILE_NOT_FOUND]: `The file or directory could not be found.`,
+    [ErrorCategory.FILE_NOT_FOUND]: 'The file or directory could not be found.',
     [ErrorCategory.PERMISSION_DENIED]: `You do not have permission to perform this ${operation}.`,
-    [ErrorCategory.PATH_TRAVERSAL]: `Invalid path detected. Directory traversal is not allowed.`,
-    [ErrorCategory.INVALID_INPUT]: `The input provided is invalid. Please check your parameters.`,
-    [ErrorCategory.FILE_TOO_LARGE]: `The file is too large to process.`,
-    [ErrorCategory.ENCODING_ERROR]: `There was an encoding error processing the file.`,
+    [ErrorCategory.PATH_TRAVERSAL]: 'Invalid path detected. Directory traversal is not allowed.',
+    [ErrorCategory.INVALID_INPUT]: 'The input provided is invalid. Please check your parameters.',
+    [ErrorCategory.FILE_TOO_LARGE]: 'The file is too large to process.',
+    [ErrorCategory.ENCODING_ERROR]: 'There was an encoding error processing the file.',
     [ErrorCategory.DISK_SPACE]: `Not enough disk space available to complete this ${operation}.`,
     [ErrorCategory.TIMEOUT]: `The ${operation} took too long and was cancelled.`,
-    [ErrorCategory.NETWORK_ERROR]: `A network error occurred. Please check your connection.`,
+    [ErrorCategory.NETWORK_ERROR]: 'A network error occurred. Please check your connection.',
     [ErrorCategory.OPERATION_FAILED]: `The ${operation} failed unexpectedly.`,
-    [ErrorCategory.UNKNOWN]: `An unknown error occurred.`
+    [ErrorCategory.UNKNOWN]: 'An unknown error occurred.'
   };
 
   return messages[category] || messages[ErrorCategory.UNKNOWN];

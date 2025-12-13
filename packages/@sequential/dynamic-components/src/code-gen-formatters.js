@@ -62,12 +62,12 @@ export class CodeGenFormatters {
       ts += `${nextSpaces}children?: React.ReactNode;\n`;
     }
 
-    ts += `}\n\n`;
+    ts += '}\n\n';
     ts += `const ${typeName}: React.FC<${typeName}Props> = (props) => {\n`;
     ts += `${nextSpaces}return (\n`;
     ts += `${nextSpaces}  ${CodeGenFormatters.generateJSX(component, { ...options, indent: indent + 2 })}\n`;
     ts += `${nextSpaces});\n`;
-    ts += `};\n\n`;
+    ts += '};\n\n';
     ts += `export default ${typeName};`;
 
     return ts;
@@ -77,11 +77,11 @@ export class CodeGenFormatters {
     const indent = options.indent || 0;
     const nextSpaces = '  '.repeat(indent + 1);
 
-    let vue = `<template>\n`;
+    let vue = '<template>\n';
     vue += nextSpaces + CodeGenFormatters.generateJSX(component, { ...options, indent: indent + 1 }).trim() + '\n';
-    vue += `</template>\n\n`;
+    vue += '</template>\n\n';
 
-    vue += `<script setup>\n`;
+    vue += '<script setup>\n';
     if (component.props && Object.keys(component.props).length > 0) {
       vue += `${nextSpaces}defineProps({\n`;
       Object.entries(component.props).forEach(([key]) => {
@@ -89,11 +89,11 @@ export class CodeGenFormatters {
       });
       vue += `${nextSpaces}});\n`;
     }
-    vue += `</script>\n\n`;
+    vue += '</script>\n\n';
 
-    vue += `<style scoped>\n`;
+    vue += '<style scoped>\n';
     vue += `${nextSpaces}/* Add component styles here */\n`;
-    vue += `</style>`;
+    vue += '</style>';
 
     return vue;
   }

@@ -41,32 +41,32 @@ export async function createApp(options) {
   switch (template) {
     case 'blank':
       { const result = generateBlankAppTemplate(appId, name, appUUID, timestamp, description);
-      manifest = result.manifest;
-      html = result.html;
+        manifest = result.manifest;
+        html = result.html;
       }
       break;
     case 'dashboard':
       { const result = generateDashboardAppTemplate(appId, name, appUUID, timestamp, description);
-      manifest = result.manifest;
-      html = result.html;
+        manifest = result.manifest;
+        html = result.html;
       }
       break;
     case 'task-explorer':
       { const result = generateTaskExplorerAppTemplate(appId, name, appUUID, timestamp, description);
-      manifest = result.manifest;
-      html = result.html;
+        manifest = result.manifest;
+        html = result.html;
       }
       break;
     case 'flow-viz':
       { const result = generateFlowVizAppTemplate(appId, name, appUUID, timestamp, description);
-      manifest = result.manifest;
-      html = result.html;
+        manifest = result.manifest;
+        html = result.html;
       }
       break;
     case 'react':
       { const result = generateReactAppTemplate(appId, name, appUUID, timestamp, description);
-      manifest = result.manifest;
-      html = result.html;
+        manifest = result.manifest;
+        html = result.html;
       }
       break;
   }
@@ -81,7 +81,7 @@ export async function createApp(options) {
   logger.info(`  - App ID: ${appId}`);
   logger.info(`  - Template: ${template}`);
   logger.info(`  - View at: http://localhost:3001/?app=${appId}`);
-  logger.info(`  - Dev: npm run dev (enables hot reload)`);
-  logger.info(`  - Edit dist/index.html to customize UI`);
-  logger.info(`  - See package.json for npm scripts`);
+  logger.info('  - Dev: npm run dev (enables hot reload)');
+  logger.info('  - Edit dist/index.html to customize UI');
+  logger.info('  - See package.json for npm scripts');
 }

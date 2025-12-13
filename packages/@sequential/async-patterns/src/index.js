@@ -12,11 +12,11 @@ export async function withRetry(fn, options = {}) {
     try {
       const result = timeout
         ? await Promise.race([
-            fn(),
-            new Promise((_, reject) =>
-              setTimeout(() => reject(new Error('Timeout')), timeout)
-            )
-          ])
+          fn(),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Timeout')), timeout)
+          )
+        ])
         : await fn();
       return result;
     } catch (error) {

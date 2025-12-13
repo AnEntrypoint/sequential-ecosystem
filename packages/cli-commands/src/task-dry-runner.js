@@ -11,7 +11,7 @@ export async function runDryRun(taskFunction, taskName, input, verbose) {
     }
 
     if (typeof taskFunction !== 'function') {
-      throw new Error(`Task function is not a function`);
+      throw new Error('Task function is not a function');
     }
 
     if (verbose) {

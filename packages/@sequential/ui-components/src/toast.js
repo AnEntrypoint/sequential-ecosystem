@@ -1,8 +1,8 @@
 export function initToastContainer() {
-  let container = document.getElementById("toastContainer");
+  let container = document.getElementById('toastContainer');
   if (!container) {
-    container = document.createElement("div");
-    container.id = "toastContainer";
+    container = document.createElement('div');
+    container.id = 'toastContainer';
     container.style.cssText = `
       position: fixed;
       top: 20px;
@@ -18,9 +18,9 @@ export function initToastContainer() {
   return container;
 }
 
-export function showToast(message, type = "info", duration = 3000) {
+export function showToast(message, type = 'info', duration = 3000) {
   const container = initToastContainer();
-  const toast = document.createElement("div");
+  const toast = document.createElement('div');
   toast.className = `toast ${type}`;
   toast.textContent = message;
   toast.style.cssText = `
@@ -35,14 +35,14 @@ export function showToast(message, type = "info", duration = 3000) {
     cursor: pointer;
   `;
 
-  toast.addEventListener("click", () => {
-    toast.style.animation = "slideOut 0.3s ease-out forwards";
+  toast.addEventListener('click', () => {
+    toast.style.animation = 'slideOut 0.3s ease-out forwards';
     setTimeout(() => toast.remove(), 300);
   });
 
   container.appendChild(toast);
   setTimeout(() => {
-    toast.style.animation = "slideOut 0.3s ease-out forwards";
+    toast.style.animation = 'slideOut 0.3s ease-out forwards';
     setTimeout(() => toast.remove(), 300);
   }, duration);
 
@@ -51,15 +51,15 @@ export function showToast(message, type = "info", duration = 3000) {
 
 function getToastColor(type) {
   const colors = {
-    success: "#22c55e",
-    error: "#ef4444",
-    warning: "#f59e0b",
-    info: "#3b82f6"
+    success: '#22c55e',
+    error: '#ef4444',
+    warning: '#f59e0b',
+    info: '#3b82f6'
   };
   return colors[type] || colors.info;
 }
 
-export function showError(message) { return showToast(message, "error", 4000); }
-export function showSuccess(message) { return showToast(message, "success", 2000); }
-export function showWarning(message) { return showToast(message, "warning", 3000); }
-export function showInfo(message) { return showToast(message, "info", 3000); }
+export function showError(message) { return showToast(message, 'error', 4000); }
+export function showSuccess(message) { return showToast(message, 'success', 2000); }
+export function showWarning(message) { return showToast(message, 'warning', 3000); }
+export function showInfo(message) { return showToast(message, 'info', 3000); }

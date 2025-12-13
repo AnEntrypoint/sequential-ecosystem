@@ -40,6 +40,6 @@ export function escapeHtmlAttributes(attrs) {
 export function sanitizeTagContent(html) {
   if (typeof html !== 'string') return html;
   return html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-             .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
-             .replace(/on\w+\s*=\s*[^\s>]*/gi, '');
+    .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
+    .replace(/on\w+\s*=\s*[^\s>]*/gi, '');
 }

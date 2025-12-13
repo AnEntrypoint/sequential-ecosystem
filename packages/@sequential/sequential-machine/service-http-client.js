@@ -17,7 +17,7 @@ export async function callService(serviceUrl, method, params = {}, timeout = 300
     const response = await fetch(`${serviceUrl}/call`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(payload),
       signal: AbortSignal.timeout(timeout)
@@ -33,7 +33,7 @@ export async function callService(serviceUrl, method, params = {}, timeout = 300
       throw new Error(`Service error: ${result.error || 'Unknown error'}`);
     }
 
-    logger.info(`✅ Service call completed`);
+    logger.info('✅ Service call completed');
     return result;
   } catch (error) {
     if (error.name === 'AbortError') {

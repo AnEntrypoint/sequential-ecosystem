@@ -117,8 +117,8 @@ export class ComponentTreeEditor {
 
     const children = component.children.length > 0
       ? component.children
-          .map(childId => this.componentToJSX(this.tree.getComponent(childId), depth + 1))
-          .join('\n')
+        .map(childId => this.componentToJSX(this.tree.getComponent(childId), depth + 1))
+        .join('\n')
       : '';
 
     if (children) {

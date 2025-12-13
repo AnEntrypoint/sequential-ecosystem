@@ -32,11 +32,11 @@ export class RealtimeRoomManager {
     if (!room) return false;
 
     room.users.delete(clientId);
-    
+
     if (room.users.size === 0) {
       this.rooms.delete(roomId);
     }
-    
+
     return true;
   }
 

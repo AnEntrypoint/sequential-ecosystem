@@ -65,4 +65,4 @@ export {
   Gauge,
   Histogram
 };
-export const createCustomMetrics = () => new CustomMetrics();;
+export const createCustomMetrics = () => new CustomMetrics();

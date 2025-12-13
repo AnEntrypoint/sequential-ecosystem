@@ -16,34 +16,34 @@ export function createMarkdownFormatter() {
       }
 
       if (doc.inputs && doc.inputs.length > 0) {
-        markdown += `## Parameters\n\n`;
-        markdown += `| Name | Type | Required | Description |\n`;
-        markdown += `|------|------|----------|-------------|\n`;
+        markdown += '## Parameters\n\n';
+        markdown += '| Name | Type | Required | Description |\n';
+        markdown += '|------|------|----------|-------------|\n';
         for (const input of doc.inputs) {
           markdown += `| ${input.name} | ${input.type} | ${input.required ? 'Yes' : 'No'} | ${input.description} |\n`;
         }
-        markdown += `\n`;
+        markdown += '\n';
       }
 
       if (doc.output) {
-        markdown += `## Returns\n\n`;
+        markdown += '## Returns\n\n';
         markdown += `**Type:** ${doc.output.type}\n\n`;
         markdown += `${doc.output.description}\n\n`;
       }
 
       if (doc.examples && doc.examples.length > 0) {
-        markdown += `## Examples\n\n`;
+        markdown += '## Examples\n\n';
         for (const example of doc.examples) {
           markdown += `\`\`\`javascript\n${example.code}\n\`\`\`\n\n`;
         }
       }
 
       if (doc.errors && doc.errors.length > 0) {
-        markdown += `## Errors\n\n`;
+        markdown += '## Errors\n\n';
         for (const error of doc.errors) {
           markdown += `- **${error.code}**: ${error.description}\n`;
         }
-        markdown += `\n`;
+        markdown += '\n';
       }
 
       return markdown;

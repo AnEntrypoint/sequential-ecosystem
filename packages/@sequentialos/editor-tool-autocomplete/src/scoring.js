@@ -5,8 +5,8 @@ export function fuzzyMatch(tools, query) {
     tool,
     score: calculateScore(query, tool.name)
   })).filter(item => item.score > 0)
-   .sort((a, b) => b.score - a.score)
-   .slice(0, 10);
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 10);
 
   return scored.map(item => item.tool);
 }

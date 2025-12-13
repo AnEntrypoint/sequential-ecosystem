@@ -37,7 +37,7 @@ export class ServiceClient {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${this.config.authToken}`,
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         chain: [{ property: methodString, args: params }]

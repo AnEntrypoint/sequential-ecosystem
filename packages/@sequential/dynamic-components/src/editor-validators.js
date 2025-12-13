@@ -52,7 +52,7 @@ export class EditorValidators {
     }
 
     if (propConfig.pattern && !new RegExp(propConfig.pattern).test(value)) {
-      return { valid: false, error: `Invalid format` };
+      return { valid: false, error: 'Invalid format' };
     }
 
     return { valid: true };

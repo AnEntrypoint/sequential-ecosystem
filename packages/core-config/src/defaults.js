@@ -11,7 +11,7 @@ export const DEFAULTS = {
     DEFAULT_CORS_ORIGIN: '*',
     REQUEST_TIMEOUT: 30000,
     RESPONSE_TIMEOUT: 30000,
-    JSON_LIMIT: '50mb',
+    JSON_LIMIT: '50mb'
   },
 
   // Service Ports
@@ -24,7 +24,7 @@ export const DEFAULTS = {
     SUPABASE: 3105,
     OPENAI: 3106,
     WEBSEARCH: 3107,
-    ADMIN_DEBUG: 3108,
+    ADMIN_DEBUG: 3108
   },
 
   // Timeouts (milliseconds)
@@ -34,14 +34,14 @@ export const DEFAULTS = {
     EXECUTION: 30000,
     RECONNECT: 3000,
     HEALTH_CHECK: 5000,
-    WEBSOCKET_PING: 5000,
+    WEBSOCKET_PING: 5000
   },
 
   // Pagination & Limits
   PAGINATION: {
     DEFAULT_LIMIT: 50,
     DEFAULT_OFFSET: 0,
-    MAX_LIMIT: 100,
+    MAX_LIMIT: 100
   },
 
   // Retry Configuration
@@ -50,14 +50,14 @@ export const DEFAULTS = {
     INITIAL_DELAY: 1000,
     MAX_DELAY: 30000,
     BACKOFF_MULTIPLIER: 2,
-    JITTER_FRACTION: 0.1,
+    JITTER_FRACTION: 0.1
   },
 
   // Cache Configuration
   CACHE: {
     DEFAULT_TTL: 300000, // 5 minutes
     KEYSTORE_TTL: 3600000, // 1 hour for credentials
-    TOKEN_REFRESH_BUFFER: 300000, // 5 minutes before expiry
+    TOKEN_REFRESH_BUFFER: 300000 // 5 minutes before expiry
   },
 
   // Logging
@@ -65,8 +65,8 @@ export const DEFAULTS = {
     DEBUG: 0,
     INFO: 1,
     WARN: 2,
-    ERROR: 3,
-  },
+    ERROR: 3
+  }
 };
 
 export default DEFAULTS;

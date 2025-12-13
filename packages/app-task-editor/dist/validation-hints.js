@@ -254,3 +254,5 @@ if (typeof window !== 'undefined') {
 if (typeof window !== 'undefined') {
   window.ValidationHints = ValidationHints;
 }
+
+export { ValidationHints };

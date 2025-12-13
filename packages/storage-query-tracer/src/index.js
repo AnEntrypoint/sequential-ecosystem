@@ -135,4 +135,4 @@ class StorageQueryTracer extends EventEmitter {
 export {
   StorageQueryTracer
 };
-export const createStorageQueryTracer = (maxQueries) => new StorageQueryTracer(maxQueries);;
+export const createStorageQueryTracer = (maxQueries) => new StorageQueryTracer(maxQueries);

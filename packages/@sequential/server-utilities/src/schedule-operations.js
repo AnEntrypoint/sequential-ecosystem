@@ -9,13 +9,13 @@ export class ScheduleOperations {
   addSchedule(schedule, scheduleType, metadata = {}) {
     this.scheduled.set(schedule.id, schedule);
     this.stats.total++;
-    
+
     const eventData = {
       id: schedule.id,
       type: scheduleType,
       ...metadata
     };
-    
+
     this.emit('schedule:created', eventData);
     return { id: schedule.id, status: 'scheduled' };
   }

@@ -41,21 +41,21 @@ export class SequentialOSClient {
   async runCommand(instruction) {
     return await this.request('/run', {
       method: 'POST',
-      body: JSON.stringify({instruction})
+      body: JSON.stringify({ instruction })
     });
   }
 
   async checkout(ref) {
     return await this.request('/checkout', {
       method: 'POST',
-      body: JSON.stringify({ref})
+      body: JSON.stringify({ ref })
     });
   }
 
   async createTag(name, ref) {
     return await this.request('/tags', {
       method: 'POST',
-      body: JSON.stringify({name, ref})
+      body: JSON.stringify({ name, ref })
     });
   }
 

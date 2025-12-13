@@ -17,7 +17,7 @@ export async function injectPersistence(appsDir, storageManagerCode, initHooks) 
       continue;
     }
 
-    let content = fs.readFileSync(htmlPath, 'utf8');
+    const content = fs.readFileSync(htmlPath, 'utf8');
 
     if (content.includes('[Storage-Manager-Injected]')) {
       logger.info(`✅ ${appName} - Already has persistence`);

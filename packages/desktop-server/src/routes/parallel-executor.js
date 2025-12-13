@@ -64,7 +64,7 @@ export async function executeParallelStates(currentState, statesArray, result, t
     if (!joinMet) throw new Error(`Parallel join condition 'all' failed: ${branchErrors.map(e => `${e.branch}: ${e.error}`).join('; ')}`);
   } else if (joinCondition === 'any') {
     joinMet = branchResults.length > 0;
-    if (!joinMet) throw new Error(`Parallel join condition 'any' failed: all branches failed`);
+    if (!joinMet) throw new Error('Parallel join condition \'any\' failed: all branches failed');
   } else if (joinCondition === 'all-or-error') {
     joinMet = true;
   }

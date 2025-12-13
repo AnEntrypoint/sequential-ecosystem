@@ -22,7 +22,7 @@ export class MigrationBuilder {
         return this;
       },
       generateMigrate: function(pattern) {
-        let migrated = JSON.parse(JSON.stringify(pattern));
+        const migrated = JSON.parse(JSON.stringify(pattern));
 
         this.changes.forEach(change => {
           if (change.type === 'property') {

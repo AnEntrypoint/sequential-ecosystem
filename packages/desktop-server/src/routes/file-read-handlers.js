@@ -45,7 +45,7 @@ export function createReadHandlers(logger) {
           return res.status(400).json(formatError(400, { code: 'INVALID_OPERATION', message: 'Cannot read directory' }));
         }
         if (stat.size > 52428800) { // 50MB default
-          const error = new Error(`File too large (max 50MB)`);
+          const error = new Error('File too large (max 50MB)');
           error.code = 'FILE_TOO_LARGE';
           return res.status(400).json(formatError(400, { code: error.code, message: error.message }));
         }

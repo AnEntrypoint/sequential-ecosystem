@@ -29,7 +29,7 @@ export class ReactExporter {
     code += '\n}\n';
 
     if (useTypeScript) {
-      code = `import React, { FC } from 'react';\n\n` +
+      code = 'import React, { FC } from \'react\';\n\n' +
         `const ${componentName}: FC = () => {\n` +
         StringConverters.indent(componentCode, 2) +
         '\n};\n\nexport default ' + componentName + ';\n';

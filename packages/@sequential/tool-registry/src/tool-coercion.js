@@ -7,7 +7,7 @@ export function coerceInputTypes(input, schema) {
   for (const [fieldName, property] of Object.entries(schema.properties || {})) {
     if (!input.hasOwnProperty(fieldName)) continue;
 
-    let value = input[fieldName];
+    const value = input[fieldName];
     const inputType = Array.isArray(value) ? 'array' : typeof value;
 
     if (property.type === 'number' && inputType === 'string' && !isNaN(value)) {

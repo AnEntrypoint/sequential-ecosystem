@@ -15,8 +15,8 @@ export class DistributedFlowOrchestrator {
     const startTime = Date.now();
     let currentState = flow.states.find(s => s.type === 'initial');
     let result = input || {};
-    let errors = [];
-    let completedStates = [];
+    const errors = [];
+    const completedStates = [];
 
     while (currentState && currentState.type !== 'final') {
       completedStates.push(currentState.id);

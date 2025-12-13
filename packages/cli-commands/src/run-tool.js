@@ -15,7 +15,7 @@ export async function runTool(options) {
 
   if (verbose) {
     logger.info(`Running tool: ${toolName}`);
-    logger.info(`Input:`, input);
+    logger.info('Input:', input);
   }
 
   try {

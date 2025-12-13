@@ -5,7 +5,7 @@
 
 import {
   createAdapter,
-  createRunner,
+  createRunner
 } from '@sequentialos/sequential-adaptor';
 
 /**
@@ -68,5 +68,5 @@ export default {
   createSupabaseAdapter,
   createDefaultRunner,
   createFlowRunner,
-  createSequentialOSRunner,
+  createSequentialOSRunner
 };

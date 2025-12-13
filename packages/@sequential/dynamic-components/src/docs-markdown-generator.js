@@ -9,7 +9,7 @@ export class DocsMarkdownGenerator {
       doc += `${pattern.description}\n\n`;
     }
 
-    doc += `## Overview\n\n`;
+    doc += '## Overview\n\n';
     doc += `- **Category**: ${pattern.category}\n`;
     doc += `- **Code Reduction**: ${pattern.codeReduction} lines\n`;
     if (pattern.tags?.length > 0) {
@@ -26,9 +26,9 @@ export class DocsMarkdownGenerator {
     }
 
     if (Object.keys(pattern.properties || {}).length > 0) {
-      doc += `## Properties\n\n`;
-      doc += `| Property | Type | Description |\n`;
-      doc += `|----------|------|-------------|\n`;
+      doc += '## Properties\n\n';
+      doc += '| Property | Type | Description |\n';
+      doc += '|----------|------|-------------|\n';
 
       Object.entries(pattern.properties).forEach(([prop, config]) => {
         doc += `| \`${prop}\` | \`${config.type || 'any'}\` | ${config.description || ''} |\n`;
@@ -37,7 +37,7 @@ export class DocsMarkdownGenerator {
     }
 
     if (pattern.dependencies?.length > 0) {
-      doc += `## Dependencies\n\n`;
+      doc += '## Dependencies\n\n';
       pattern.dependencies.forEach(dep => {
         doc += `- ${dep}\n`;
       });
@@ -45,7 +45,7 @@ export class DocsMarkdownGenerator {
     }
 
     if (pattern.accessibility?.length > 0) {
-      doc += `## Accessibility\n\n`;
+      doc += '## Accessibility\n\n';
       pattern.accessibility.forEach(a11y => {
         doc += `- ${a11y}\n`;
       });
@@ -53,7 +53,7 @@ export class DocsMarkdownGenerator {
     }
 
     if (Object.keys(pattern.performance || {}).length > 0) {
-      doc += `## Performance\n\n`;
+      doc += '## Performance\n\n';
       Object.entries(pattern.performance).forEach(([metric, value]) => {
         doc += `- **${metric}**: ${value}\n`;
       });

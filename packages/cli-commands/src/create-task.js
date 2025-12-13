@@ -66,7 +66,7 @@ export async function createTask(options) {
   logger.info(`✓ Task '${name}' created at ${taskDataDir}`);
   logger.info(`  - Runner: ${runner === 'os' ? 'sequential-machine (OS)' : runner}`);
   logger.info(`  - Template: ${templateType}`);
-  logger.info(`  - Files: code.js, config.json, runs/`);
+  logger.info('  - Files: code.js, config.json, runs/');
   logger.info(`  - Edit ${codeFile} to write task logic`);
   logger.info(`  - Run with: npx sequential-ecosystem run ${name} --input '{\"command\": \"apt update\"}'`);
 }

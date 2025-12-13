@@ -11,7 +11,7 @@ export const EnvType = {
   URL: 'url',
   PORT: 'port',
   ENUM: 'enum',
-  OPTIONAL: 'optional',
+  OPTIONAL: 'optional'
 };
 
 export class ValidationError extends Error {

@@ -61,7 +61,7 @@ export default ${PascalCaseName};
     const hasInteractive = this.countEventHandlers(definition) > 0;
 
     if (hasInteractive) {
-      return `const [state, setState] = useState({});`;
+      return 'const [state, setState] = useState({});';
     }
 
     return '';
@@ -86,11 +86,11 @@ export default ${PascalCaseName};
     }
 
     if (definition.onClick) {
-      jsx += ` onClick={() => {}}`;
+      jsx += ' onClick={() => {}}';
     }
 
     if (definition.onChange) {
-      jsx += ` onChange={() => {}}`;
+      jsx += ' onChange={() => {}}';
     }
 
     if (selfClosing) {
@@ -152,7 +152,7 @@ ${this.generateVueStyles(definition)}
     }
 
     if (definition.onClick) {
-      template += ` @click="() => {}"`;
+      template += ' @click="() => {}"';
     }
 
     if (selfClosing) {
@@ -233,7 +233,7 @@ ${this.generateSvelteStyles(definition)}
     }
 
     if (definition.onClick) {
-      template += ` on:click={handleChange}`;
+      template += ' on:click={handleChange}';
     }
 
     if (selfClosing) {

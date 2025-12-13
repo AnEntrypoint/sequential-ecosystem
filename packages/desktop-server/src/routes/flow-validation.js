@@ -29,7 +29,7 @@ export function createFlowValidator(states) {
       const suggestions = [];
 
       if (loops.length > 0) {
-        suggestions.push(`Add loop termination conditions or break states`);
+        suggestions.push('Add loop termination conditions or break states');
       }
 
       if (unreachable.length > 0) {

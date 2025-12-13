@@ -33,7 +33,7 @@ export class ToolRepository extends BaseRepository {
     const toolPath = path.join(this.baseDir, `${id}.json`);
 
     if (!await fs.pathExists(toolPath)) {
-      throw this.createError(`Tool not found`, 404, 'NOT_FOUND');
+      throw this.createError('Tool not found', 404, 'NOT_FOUND');
     }
 
     try {

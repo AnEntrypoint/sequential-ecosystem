@@ -15,9 +15,9 @@ export async function debugTask(options) {
 
   if (verbose) {
     logger.info(`Debugging task: ${taskName}`);
-    logger.info(`Input:`, input);
+    logger.info('Input:', input);
     if (breakpoints.length > 0) {
-      logger.info(`Breakpoints:`, breakpoints.join(', '));
+      logger.info('Breakpoints:', breakpoints.join(', '));
     }
   }
 

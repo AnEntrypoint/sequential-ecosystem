@@ -82,8 +82,8 @@ class SnippetUIManager {
     this.menuElement.classList.remove('open');
     this.isMenuOpen = false;
 
-    const modalTitle = this.modalElement.querySelector(`[id$="-modal-title"]`);
-    const modalVars = this.modalElement.querySelector(`[id$="-modal-vars"]`);
+    const modalTitle = this.modalElement.querySelector('[id$="-modal-title"]');
+    const modalVars = this.modalElement.querySelector('[id$="-modal-vars"]');
 
     modalTitle.textContent = snippet.name;
 

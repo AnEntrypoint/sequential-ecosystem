@@ -86,7 +86,7 @@ export function generateBlankAppTemplate(appId, name, appUUID, timestamp, descri
   <div class="app-container">
     <div class="header">
       <h1>${name}</h1>
-      <p>${description || `App created from blank template`}</p>
+      <p>${description || 'App created from blank template'}</p>
     </div>
 
     <div class="content">
