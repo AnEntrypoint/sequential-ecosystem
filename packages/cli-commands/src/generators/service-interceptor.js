@@ -1,48 +1,29 @@
+/**
+ * Service Interceptor
+ * Mocks and intercepts global service calls (fetch and tools)
+ *
+ * Delegates to:
+ * - fetch-interceptor: HTTP request mocking
+ * - tool-interceptor: Tool call mocking
+ */
+
+import { createFetchInterceptor } from './fetch-interceptor.js';
+import { createToolInterceptor } from './tool-interceptor.js';
+
 export function createServiceInterceptor() {
-  const fetchStubs = [];
-  const toolMocks = new Map();
+  const fetchInterceptor = createFetchInterceptor();
+  const toolInterceptor = createToolInterceptor();
 
   return {
-    mockFetch(urlPattern, response) {
-      const pattern = typeof urlPattern === 'string' ? new RegExp(urlPattern) : urlPattern;
-      fetchStubs.push({ pattern, response });
-      return this;
-    },
-
-    mockTool(category, name, responseOrFn) {
-      const key = `${category}:${name}`;
-      const mockFn = typeof responseOrFn === 'function' ? responseOrFn : () => responseOrFn;
-      toolMocks.set(key, mockFn);
-      return this;
-    },
+    mockFetch: fetchInterceptor.mockFetch.bind(fetchInterceptor),
+    mockTool: toolInterceptor.mockTool.bind(toolInterceptor),
 
     async interceptFetch(url, options) {
-      for (const { pattern, response } of fetchStubs) {
-        if (pattern.test(url)) {
-          if (typeof response === 'function') {
-            return await Promise.resolve(response(url, options));
-          }
-          return {
-            ok: true,
-            status: response.status || 200,
-            json: async () => response.body,
-            text: async () => typeof response.body === 'string' ? response.body : JSON.stringify(response.body)
-          };
-        }
-      }
-
-      throw new Error(`No mock for URL: ${url}`);
+      return fetchInterceptor.interceptFetch(url, options);
     },
 
     async interceptTool(category, name, payload) {
-      const key = `${category}:${name}`;
-
-      if (!toolMocks.has(key)) {
-        throw new Error(`No mock for ${key}`);
-      }
-
-      const mockFn = toolMocks.get(key);
-      return await Promise.resolve(mockFn(payload));
+      return toolInterceptor.interceptTool(category, name, payload);
     },
 
     install(taskFn) {
