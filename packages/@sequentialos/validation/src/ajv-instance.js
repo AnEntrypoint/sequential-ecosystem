@@ -1,4 +1,4 @@
-import Ajv from 'ajv/lib/ajv.js';
+import Ajv from 'ajv';
 
 let ajvInstance = null;
 

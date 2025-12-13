@@ -2,7 +2,7 @@ import express from 'express';
 import { createRequestLogger } from '@sequentialos/server-utilities';
 import { createRateLimitMiddleware } from '@sequentialos/input-sanitization';
 import { securityHeaders } from './middleware/security-headers.js';
-import { optionalAuth } from '../../@sequential/zellous/server/auth-middleware.js';
+import { optionalAuth } from '../../zellous/server/auth-middleware.js';
 import { responseFormatterMiddleware } from './middleware/response-formatter-middleware.js';
 
 export function setupExpressMiddleware(app) {

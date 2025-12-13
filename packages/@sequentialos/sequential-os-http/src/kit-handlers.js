@@ -1,6 +1,8 @@
 import { createErrorResponse } from '@sequentialos/error-handling';
-import { writeFileSync, ensureDirSync } from 'fs-extra';
+import fsx from 'fs-extra';
 import { join } from 'path';
+
+const { writeFileSync, ensureDirSync } = fsx;
 
 function asyncHandler(fn) {
   return (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);

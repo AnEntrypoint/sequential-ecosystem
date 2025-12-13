@@ -1,5 +1,5 @@
 {
-  "id": "@sequential/app-manager",
+  "id": "@sequentialos/app-manager",
   "name": "App Manager",
   "version": "1.0.0",
   "description": "Manage, create, and configure Sequential apps",

@@ -6,8 +6,8 @@ import { AppUIBuilders } from './app-ui-builders.js';
 
 class AppManager {
   constructor() {
-    this.sdk = AppSDK.init('@sequential/app-manager');
-    this.storage = createStorageManager('@sequential/app-manager');
+    this.sdk = AppSDK.init('@sequentialos/app-manager');
+    this.storage = createStorageManager('@sequentialos/app-manager');
     this.api = new AppAPI();
     this.uiBuilders = new AppUIBuilders();
 

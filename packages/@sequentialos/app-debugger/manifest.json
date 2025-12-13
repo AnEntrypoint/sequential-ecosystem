@@ -1,5 +1,5 @@
 {
-  "id": "@sequential/app-debugger",
+  "id": "@sequentialos/app-debugger",
   "name": "App Debugger",
   "version": "1.0.0",
   "description": "Advanced observability and debugging dashboard for Sequential apps",
