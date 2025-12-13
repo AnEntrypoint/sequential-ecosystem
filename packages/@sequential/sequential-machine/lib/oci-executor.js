@@ -1,61 +1,74 @@
-const { spawn } = require('child_process');
+/**
+ * oci-executor.js - StateKit-based OCI image builder
+ *
+ * Builds OCI images using StateKit's content-addressable layer system
+ */
 
 class OCIExecutor {
-  constructor(opts = {}) {
-    this.runtime = opts.runtime || 'docker';
-    this.image = opts.image || 'ubuntu:24.04';
-    this.pullImage = opts.pullImage !== false;
+  constructor(opts = {}, stateKit) {
+    this.stateKit = stateKit;
+    this.baseImageName = opts.baseImage || 'ubuntu:24.04';
+    this.tag = opts.tag;
   }
 
-  async ensureImage() {
-    if (!this.pullImage) return;
-    return new Promise((resolve, reject) => {
-      const proc = spawn(this.runtime, ['pull', this.image]);
-      proc.on('close', code => {
-        if (code === 0) resolve();
-        else reject(new Error(`Failed to pull image: ${this.image}`));
-      });
-    });
+  async exec(cmd) {
+    if (!this.stateKit) {
+      throw new Error('OCIExecutor requires StateKit instance');
+    }
+
+    return this.stateKit.run(cmd);
   }
 
-  async exec(cmd, opts = {}) {
-    const workdir = opts.workdir || '/tmp';
-    const env = opts.env || process.env;
+  async layer(cmd) {
+    const result = await this.exec(cmd);
+    return {
+      hash: result.hash,
+      short: result.short,
+      instruction: cmd,
+      cached: result.cached,
+      stdout: result.stdout,
+      stderr: result.stderr
+    };
+  }
 
-    await this.ensureImage();
+  async build(commands) {
+    const results = [];
+    for (const cmd of commands) {
+      const result = await this.layer(cmd);
+      results.push(result);
+    }
+    return results;
+  }
 
-    return new Promise((resolve, reject) => {
-      const args = [
-        'run',
-        '--rm',
-        '-w', workdir,
-        ...Object.entries(env).flatMap(([k, v]) => ['-e', `${k}=${v}`]),
-        this.image,
-        'sh', '-c', cmd
-      ];
+  getCurrentImage() {
+    if (!this.stateKit) return null;
+    return {
+      head: this.stateKit.head(),
+      tag: this.tag,
+      baseImage: this.baseImageName
+    };
+  }
 
-      let stdout = '';
-      let stderr = '';
+  tagImage(name) {
+    if (!this.stateKit) {
+      throw new Error('Cannot tag without StateKit instance');
+    }
+    this.stateKit.tag(name);
+    this.tag = name;
+  }
 
-      const proc = spawn(this.runtime, args);
-
-      proc.stdout.on('data', (data) => {
-        stdout += data.toString();
-        process.stdout.write(data);
-      });
-
-      proc.stderr.on('data', (data) => {
-        stderr += data.toString();
-        process.stderr.write(data);
-      });
-
-      proc.on('close', code => {
-        if (code === 0) resolve({ stdout, stderr });
-        else reject(new Error(`Command exited with ${code}: ${cmd}`));
-      });
-
-      proc.on('error', reject);
-    });
+  async export() {
+    if (!this.stateKit) {
+      throw new Error('Cannot export without StateKit instance');
+    }
+    const head = this.stateKit.head();
+    const history = this.stateKit.history();
+    return {
+      head,
+      tag: this.tag,
+      layers: history,
+      baseImage: this.baseImageName
+    };
   }
 }
 
