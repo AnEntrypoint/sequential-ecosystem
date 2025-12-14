@@ -1,0 +1,13 @@
+{
+  "name": "@sequentialos/app-path-resolver",
+  "version": "1.0.0",
+  "description": "Sequential OS app-path-resolver module",
+  "main": "index.js",
+  "type": "module",
+  "keywords": [
+    "sequential",
+    "sequentialos"
+  ],
+  "author": "Sequential Ecosystem",
+  "license": "MIT"
+}

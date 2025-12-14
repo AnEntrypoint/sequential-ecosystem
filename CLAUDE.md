@@ -203,6 +203,9 @@ npx sequential-ecosystem gui  # http://localhost:3001
 | Injection | No eval(); Workers/new Function() only |
 | Traversal | Validate with fs.realpathSync() |
 | Process Management | **NEVER use background processes (`&` or `run_in_background`)** - Always start servers in foreground to allow tool access (Playwright MCP, Glootie) |
+| Package Naming | All packages must use `@sequentialos` npm scope: directory structure `/packages/@sequentialos/{package-name}`, package.json: `"name": "@sequentialos/{package-name}"`. Even core packages like desktop-server follow this convention (NOT `/packages/desktop-server`) |
+| Hot Reloading | Complete hot/auto-reloading required - server must never need to restart on file changes. Use nodemon watching all @sequentialos packages |
+| StateKit Requirement | Everything must work with StateKit fully initialized. Do NOT use SKIP_STATEKIT flag. All features must be production-ready with full StateKit integration |
 
 ## Code Patterns
 

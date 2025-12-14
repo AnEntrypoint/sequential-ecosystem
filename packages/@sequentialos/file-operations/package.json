@@ -1,0 +1,13 @@
+{
+  "name": "@sequentialos/file-operations",
+  "version": "1.0.0",
+  "description": "Sequential OS file-operations module",
+  "main": "index.js",
+  "type": "module",
+  "keywords": [
+    "sequential",
+    "sequentialos"
+  ],
+  "author": "Sequential Ecosystem",
+  "license": "MIT"
+}

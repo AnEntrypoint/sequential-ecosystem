@@ -1,0 +1,13 @@
+{
+  "name": "@sequentialos/error-handling",
+  "version": "1.0.0",
+  "description": "Sequential OS error-handling module",
+  "main": "index.js",
+  "type": "module",
+  "keywords": [
+    "sequential",
+    "sequentialos"
+  ],
+  "author": "Sequential Ecosystem",
+  "license": "MIT"
+}

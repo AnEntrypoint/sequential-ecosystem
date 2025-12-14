@@ -1,0 +1,13 @@
+{
+  "name": "@sequentialos/dependency-middleware",
+  "version": "1.0.0",
+  "description": "Sequential OS dependency-middleware module",
+  "main": "index.js",
+  "type": "module",
+  "keywords": [
+    "sequential",
+    "sequentialos"
+  ],
+  "author": "Sequential Ecosystem",
+  "license": "MIT"
+}

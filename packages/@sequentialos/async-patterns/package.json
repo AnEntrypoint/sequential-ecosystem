@@ -1,0 +1,13 @@
+{
+  "name": "@sequentialos/async-patterns",
+  "version": "1.0.0",
+  "description": "Sequential OS async-patterns module",
+  "main": "index.js",
+  "type": "module",
+  "keywords": [
+    "sequential",
+    "sequentialos"
+  ],
+  "author": "Sequential Ecosystem",
+  "license": "MIT"
+}

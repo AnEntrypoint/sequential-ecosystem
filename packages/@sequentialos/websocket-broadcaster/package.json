@@ -1,0 +1,13 @@
+{
+  "name": "@sequentialos/websocket-broadcaster",
+  "version": "1.0.0",
+  "description": "Sequential OS websocket-broadcaster module",
+  "main": "index.js",
+  "type": "module",
+  "keywords": [
+    "sequential",
+    "sequentialos"
+  ],
+  "author": "Sequential Ecosystem",
+  "license": "MIT"
+}

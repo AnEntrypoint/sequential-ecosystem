@@ -1,0 +1,13 @@
+{
+  "name": "@sequentialos/dependency-injection",
+  "version": "1.0.0",
+  "description": "Sequential OS dependency-injection module",
+  "main": "index.js",
+  "type": "module",
+  "keywords": [
+    "sequential",
+    "sequentialos"
+  ],
+  "author": "Sequential Ecosystem",
+  "license": "MIT"
+}

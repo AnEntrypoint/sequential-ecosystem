@@ -1,0 +1,15 @@
+{
+  "name": "@sequentialos/unified-validation",
+  "version": "1.0.0",
+  "description": "Schema-based validation utilities for Sequential OS",
+  "main": "index.js",
+  "type": "module",
+  "keywords": [
+    "sequential",
+    "sequentialos",
+    "validation",
+    "schema"
+  ],
+  "author": "Sequential Ecosystem",
+  "license": "MIT"
+}

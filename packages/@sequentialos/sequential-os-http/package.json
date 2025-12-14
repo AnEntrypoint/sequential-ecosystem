@@ -1,0 +1,13 @@
+{
+  "name": "@sequentialos/sequential-os-http",
+  "version": "1.0.0",
+  "description": "Sequential OS sequential-os-http module",
+  "main": "index.js",
+  "type": "module",
+  "keywords": [
+    "sequential",
+    "sequentialos"
+  ],
+  "author": "Sequential Ecosystem",
+  "license": "MIT"
+}

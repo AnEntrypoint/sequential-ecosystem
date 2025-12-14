@@ -1,0 +1,13 @@
+{
+  "name": "@sequentialos/websocket-factory",
+  "version": "1.0.0",
+  "description": "Sequential OS websocket-factory module",
+  "main": "index.js",
+  "type": "module",
+  "keywords": [
+    "sequential",
+    "sequentialos"
+  ],
+  "author": "Sequential Ecosystem",
+  "license": "MIT"
+}

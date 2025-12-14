@@ -51,7 +51,9 @@
     "seq": "./cli.js"
   },
   "workspaces": [
-    "packages/@sequentialos/*"
+    "packages/@sequentialos/*",
+    "packages/desktop-server",
+    "packages/app-*"
   ],
   "files": [
     "cli.js",
