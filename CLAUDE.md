@@ -594,12 +594,13 @@ npm run build
 ```
 
 **NPM Publication:**
-- **Status**: All packages built (v1.8.0) and ready for publication
-- **Requirement**: @sequentialos scoped packages require either:
-  1. **npm Pro account** ($7/mo) - enables scoped package publication
-  2. **@sequentialos org setup** - free with org membership
-- **Current**: 34 @sequentialos scoped packages, 5 sequential- prefixed, 1 unscoped
-- **Action**: Run `npm publish --access public` from individual package directories after org/pro setup
+- **Git Push**: ✅ Complete (committed 80 files, pushed to origin/main at commit 1d8b392)
+- **npm Publishing**: ⏳ Blocked on authentication
+  - **Current Issue**: npm auth token expired/revoked (tested with @sequentialos/timestamp-utilities)
+  - **Next Steps**: Renew npm token via `npm login`, ensure @sequentialos org membership for scoped packages
+- **Packages Ready**: 32 @sequentialos scoped packages + 12 sequential- prefixed, all with package.json
+- **Publish Script**: Created at `/tmp/publish-packages.sh` for batch publishing once auth is fixed
+- **Command**: `npm publish --access public` from individual package directories
 
 ## Git
 ```bash
