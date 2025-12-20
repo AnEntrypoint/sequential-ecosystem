@@ -1,0 +1,21 @@
+{
+  "name": "@sequentialos/app-path-resolver",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Resolve and validate paths for app static file serving",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    "path",
+    "app",
+    "resolver",
+    "validation",
+    "symlink"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-app-path-resolver"
+  }
+}

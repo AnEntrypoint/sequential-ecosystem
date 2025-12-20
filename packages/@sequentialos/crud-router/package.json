@@ -1,0 +1,29 @@
+{
+  "name": "@sequentialos/crud-router",
+  "version": "1.0.0",
+  "description": "Factory for creating CRUD Express routers",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ],
+  "keywords": [
+    "crud",
+    "rest",
+    "router",
+    "express"
+  ],
+  "author": "Sequential",
+  "license": "MIT",
+  "dependencies": {
+    "@sequentialos/response-formatting": "file:../response-formatting",
+    "@sequentialos/route-helpers": "^1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-crud-router"
+  }
+}

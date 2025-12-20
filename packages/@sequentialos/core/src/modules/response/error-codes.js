@@ -1,0 +1,74 @@
+/**
+ * error-codes.js
+ *
+ * Standard error codes and HTTP status code mapping
+ */
+
+/**
+ * Standard error response codes
+ * @enum {string}
+ */
+export const ErrorCode = {
+  // Validation errors (400)
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
+  INVALID_INPUT: 'INVALID_INPUT',
+  INVALID_OPERATION: 'INVALID_OPERATION',
+  PATH_TRAVERSAL: 'PATH_TRAVERSAL',
+
+  // Authentication/Authorization (401, 403)
+  UNAUTHORIZED: 'UNAUTHORIZED',
+  FORBIDDEN: 'FORBIDDEN',
+  ACCESS_DENIED: 'ACCESS_DENIED',
+
+  // Not found (404)
+  NOT_FOUND: 'NOT_FOUND',
+  FILE_NOT_FOUND: 'FILE_NOT_FOUND',
+  TASK_NOT_FOUND: 'TASK_NOT_FOUND',
+  FLOW_NOT_FOUND: 'FLOW_NOT_FOUND',
+  LAYER_NOT_FOUND: 'LAYER_NOT_FOUND',
+
+  // Conflict (409)
+  CONFLICT: 'CONFLICT',
+  ALREADY_EXISTS: 'ALREADY_EXISTS',
+
+  // Unprocessable entity (422)
+  UNPROCESSABLE_ENTITY: 'UNPROCESSABLE_ENTITY',
+  FILE_TOO_LARGE: 'FILE_TOO_LARGE',
+  INVALID_ENCODING: 'INVALID_ENCODING',
+
+  // Server errors (500)
+  INTERNAL_ERROR: 'INTERNAL_ERROR',
+  OPERATION_FAILED: 'OPERATION_FAILED',
+  DISK_SPACE_ERROR: 'DISK_SPACE_ERROR'
+};
+
+/**
+ * Map error codes to HTTP status codes
+ * @type {Object.<string, number>}
+ */
+export const STATUS_CODES = {
+  VALIDATION_ERROR: 400,
+  INVALID_INPUT: 400,
+  INVALID_OPERATION: 400,
+  PATH_TRAVERSAL: 403,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
+  ACCESS_DENIED: 403,
+  NOT_FOUND: 404,
+  FILE_NOT_FOUND: 404,
+  TASK_NOT_FOUND: 404,
+  FLOW_NOT_FOUND: 404,
+  LAYER_NOT_FOUND: 404,
+  CONFLICT: 409,
+  ALREADY_EXISTS: 409,
+  UNPROCESSABLE_ENTITY: 422,
+  FILE_TOO_LARGE: 422,
+  INVALID_ENCODING: 422,
+  INTERNAL_ERROR: 500,
+  OPERATION_FAILED: 500,
+  DISK_SPACE_ERROR: 500
+};
+
+export function getStatusCode(code) {
+  return STATUS_CODES[code] || 500;
+}

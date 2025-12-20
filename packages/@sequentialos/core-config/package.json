@@ -1,0 +1,27 @@
+{
+  "name": "@sequentialos/core-config",
+  "version": "1.0.0",
+  "description": "Centralized configuration for sequential-ecosystem packages",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./defaults": "./src/defaults.js",
+    "./server": "./src/server.js",
+    "./services": "./src/services.js",
+    "./validate": "./src/validate.js",
+    "./schema": "./src/schema.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-core-config"
+  },
+  "keywords": [
+    "sequential",
+    "ecosystem",
+    "configuration",
+    "defaults"
+  ],
+  "author": "AnEntrypoint",
+  "license": "MIT"
+}
