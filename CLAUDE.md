@@ -695,6 +695,23 @@ Commits: fix, feat, refactor, docs, test, chore
 
 **Service Locator Anti-Pattern**: All 6 route files now use direct DI via `container.resolve('ServiceName')` instead of `createServiceFactory()`. This improves testability and reduces runtime service lookup overhead.
 
+**Monorepo Structure (Dec 20, 2025)**: All packages are now inlined into the monorepo (`packages/@sequentialos/*`). No git submodules. All packages available locally without npm publishing. Single git repository with unified version control.
+
+**GXE Dispatcher System (Dec 20, 2025)**:
+- Repository distributed via GXE (https://github.com/AnEntrypoint/gxe)
+- No npm publishing of individual packages
+- Centralized entry points: `scripts/gxe-dispatch.js` router
+- All dispatcher scripts use ES modules (import/export syntax)
+- Webhook-style execution: `gxe . webhook:task --taskName=foo --input='{...}'`
+- Compatible with Node 18+ for URL API (`fileURLToPath`)
+- GXE caches repository in `~/.gxe/` for fast repeated execution
+
+**Package Resolution (Dec 20, 2025)**:
+- All `@sequentialos/package` imports refer to local `packages/@sequentialos/package`
+- No external npm dependencies on @sequentialos packages
+- Requires Node 18+ for ES module support with `type: "module"` in root package.json
+- Cannot use CommonJS `require()` at top level in any .js files (strict ESM mode)
+
 **CRITICAL: HTTP Request Hang (Dec 17, 2025)**: Desktop-server HTTP endpoints hang indefinitely (100% CPU, no response). Root cause: Event loop blocked during request handling, likely in route handler or middleware with synchronous I/O. Investigation findings:
 - Server initializes successfully and prints startup logs
 - HTTP server binds to port 8003 without error
