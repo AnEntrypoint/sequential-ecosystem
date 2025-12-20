@@ -1,0 +1,68 @@
+{
+  "env": {
+    "node": true,
+    "es2022": true
+  },
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module"
+  },
+  "rules": {
+    "no-unused-vars": ["warn", {
+      "argsIgnorePattern": "^_",
+      "varsIgnorePattern": "^_"
+    }],
+    "no-console": "off",
+    "no-debugger": "warn",
+    "no-undef": "error",
+    "no-unreachable": "error",
+    "no-var": "error",
+    "prefer-const": "warn",
+    "semi": ["error", "always"],
+    "quotes": ["warn", "single", { "avoidEscape": true }],
+    "indent": ["warn", 2, { "SwitchCase": 1 }],
+    "no-trailing-spaces": "warn",
+    "eol-last": ["warn", "always"],
+    "no-multiple-empty-lines": ["warn", { "max": 2 }],
+    "comma-dangle": ["warn", "never"],
+    "object-curly-spacing": ["warn", "always"],
+    "array-bracket-spacing": ["warn", "never"],
+    "no-eval": "error",
+    "no-implied-eval": "error",
+    "no-new-func": "warn",
+    "no-throw-literal": "error",
+    "prefer-promise-reject-errors": "error",
+    "no-return-await": "warn",
+    "require-await": "warn",
+    "no-async-promise-executor": "error",
+    "no-await-in-loop": "warn",
+    "max-len": ["warn", {
+      "code": 120,
+      "ignoreComments": true,
+      "ignoreStrings": true,
+      "ignoreTemplateLiterals": true
+    }],
+    "complexity": ["warn", 15],
+    "max-depth": ["warn", 4],
+    "max-nested-callbacks": ["warn", 3],
+    "max-params": ["warn", 5],
+    "max-statements": ["warn", 50],
+    "camelcase": ["warn", {
+      "properties": "never",
+      "ignoreDestructuring": true
+    }]
+  },
+  "overrides": [
+    {
+      "files": ["*.test.js", "*.spec.js"],
+      "env": {
+        "mocha": true
+      },
+      "rules": {
+        "max-statements": "off",
+        "max-nested-callbacks": "off"
+      }
+    }
+  ]
+}

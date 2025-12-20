@@ -1,0 +1,26 @@
+{
+  "id": "test-flow-multi-bg",
+  "initial": "task1",
+  "states": {
+    "task1": {
+      "handlerType": "background-task",
+      "taskName": "background-task-demo",
+      "taskInput": "{\"delay\":300}",
+      "onDone": "task2",
+      "onError": "handleError"
+    },
+    "task2": {
+      "handlerType": "background-task",
+      "taskName": "background-task-demo",
+      "taskInput": "{\"delay\":300}",
+      "onDone": "complete",
+      "onError": "handleError"
+    },
+    "complete": {
+      "type": "final"
+    },
+    "handleError": {
+      "type": "final"
+    }
+  }
+}

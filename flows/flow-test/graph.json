@@ -1,0 +1,7 @@
+{
+  "id": "flow-test",
+  "initial": "s1",
+  "states": {
+    "s1": {}
+  }
+}

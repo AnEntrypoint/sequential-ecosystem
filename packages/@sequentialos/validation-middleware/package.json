@@ -1,0 +1,7 @@
+{
+  "name": "@sequentialos/validation-middleware",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/index.js",
+  "description": "Reusable validation middleware for express routes"
+}

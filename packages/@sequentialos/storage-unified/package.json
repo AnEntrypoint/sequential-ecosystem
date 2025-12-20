@@ -1,0 +1,25 @@
+{
+  "name": "@sequentialos/storage-unified",
+  "version": "1.0.0",
+  "description": "Unified file storage operations with atomic writes and path validation",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "main": "./src/index.js",
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "fs-extra": "^11.2.0"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "storage",
+    "filesystem",
+    "atomic-writes",
+    "path-validation"
+  ],
+  "author": "Sequential Team",
+  "license": "MIT"
+}
