@@ -1,0 +1,32 @@
+{
+  "name": "@sequentialos/core",
+  "version": "1.0.0",
+  "description": "Core utilities package consolidating error-handling, param-validation, and response-formatting",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test.js"
+  },
+  "exports": {
+    ".": "./src/index.js",
+    "./error": "./src/modules/error/index.js",
+    "./validation": "./src/modules/validation/index.js",
+    "./response": "./src/modules/response/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-core"
+  },
+  "keywords": [
+    "sequential",
+    "core",
+    "error-handling",
+    "validation",
+    "response-formatting",
+    "utilities"
+  ],
+  "author": "Sequential Ecosystem <contact@sequential.dev>",
+  "license": "MIT",
+  "dependencies": {},
+  "owner": "Utilities"
+}

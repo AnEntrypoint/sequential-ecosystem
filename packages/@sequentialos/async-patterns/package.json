@@ -1,0 +1,26 @@
+{
+  "name": "@sequentialos/async-patterns",
+  "version": "1.0.0",
+  "description": "Common async/await patterns and utilities",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ],
+  "keywords": [
+    "async",
+    "await",
+    "retry",
+    "timeout",
+    "patterns"
+  ],
+  "author": "Sequential",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-async-patterns"
+  }
+}
