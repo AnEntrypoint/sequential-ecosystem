@@ -2,17 +2,21 @@
 /**
  * GXE Dispatcher: Main Entry Point
  * Routes GXE commands to appropriate handlers
- * 
+ *
  * Available commands:
  * - desktop-server: Start desktop server
- * - webhook:task: Trigger task execution  
+ * - webhook:task: Trigger task execution
  * - webhook:flow: Trigger flow execution
  * - webhook:tool: Trigger tool execution
  * - cli: Start interactive CLI
  */
 
-const path = require('path');
-const { spawn } = require('child_process');
+import { spawn } from 'child_process';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const args = process.argv.slice(2);
 const command = args[0] || 'desktop-server';
