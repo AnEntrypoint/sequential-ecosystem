@@ -4,7 +4,8 @@
   "description": "Infinite-length task execution with automatic suspend/resume and flow/machine runners",
   "type": "module",
   "scripts": {
-    "start": "node cli.js",
+    "start": "node scripts/gxe-dispatch.js desktop-server",
+    "server": "node scripts/gxe-dispatch.js desktop-server",
     "cli": "node cli.js",
     "init": "node cli.js init",
     "create": "node cli.js create-task",
@@ -13,6 +14,9 @@
     "sync": "node cli.js sync-tasks",
     "zellous": "node packages/@sequentialos/zellous/server.js",
     "dev": "nodemon --delay 1000 --ignore '**/runs/**' packages/@sequentialos/desktop-server/src/server.js",
+    "gxe:task": "node scripts/gxe-dispatch.js webhook:task",
+    "gxe:flow": "node scripts/gxe-dispatch.js webhook:flow",
+    "gxe:tool": "node scripts/gxe-dispatch.js webhook:tool",
     "test": "node scripts/test-all.js",
     "test:watch": "find packages -name package.json -exec dirname {} \\; | xargs -I {} sh -c 'cd {} && npm run test:watch 2>/dev/null || true'",
     "test:coverage": "c8 node scripts/test-all.js",
@@ -47,7 +51,7 @@
   },
   "homepage": "https://github.com/AnEntrypoint/sequential-ecosystem#readme",
   "bin": {
-    "sequential-ecosystem": "./cli.js",
+    "sequential-ecosystem": "./scripts/gxe-dispatch.js",
     "seq": "./cli.js"
   },
   "workspaces": [
@@ -56,9 +60,15 @@
   ],
   "files": [
     "cli.js",
+    "scripts/gxe-dispatch.js",
+    "scripts/gxe-dispatch/",
+    "packages/",
+    "flows/",
+    "tools/",
     "CLAUDE.md",
     "CHANGELOG.md",
-    "README.md"
+    "README.md",
+    "GXE_DISPATCH.md"
   ],
   "dependencies": {
     "commander": "^11.0.0",
