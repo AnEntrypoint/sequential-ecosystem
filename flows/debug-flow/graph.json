@@ -1,0 +1,13 @@
+{
+  "id": "debug-flow",
+  "initial": "start",
+  "states": {
+    "start": {
+      "code": "return { test: true };",
+      "onDone": "end"
+    },
+    "end": {
+      "type": "final"
+    }
+  }
+}

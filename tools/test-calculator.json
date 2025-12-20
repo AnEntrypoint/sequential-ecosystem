@@ -1,0 +1,15 @@
+{
+  "id": "test-calculator",
+  "name": "test-calculator",
+  "description": "A simple calculator tool for testing",
+  "category": "custom",
+  "implementation": "async function executeTool(params) {\n  // Implementation\n  return { success: true };\n}",
+  "imports": {
+    "npm": [],
+    "cdn": [],
+    "esModules": "",
+    "importMap": null
+  },
+  "createdAt": "2025-12-13T06:12:31.394Z",
+  "updatedAt": "2025-12-13T06:12:31.394Z"
+}

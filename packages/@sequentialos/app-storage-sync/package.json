@@ -1,0 +1,24 @@
+{
+  "name": "@sequentialos/app-storage-sync",
+  "version": "1.0.0",
+  "description": "Frontend-backend storage synchronization with offline queue support",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "main": "./src/index.js",
+  "files": [
+    "src"
+  ],
+  "dependencies": {},
+  "devDependencies": {},
+  "keywords": [
+    "storage",
+    "sync",
+    "frontend",
+    "backend",
+    "offline"
+  ],
+  "author": "Sequential Team",
+  "license": "MIT"
+}

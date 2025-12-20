@@ -1,0 +1,19 @@
+{
+  "id": "test-flow-bg",
+  "initial": "start",
+  "states": {
+    "start": {
+      "handlerType": "background-task",
+      "taskName": "background-task-demo",
+      "taskInput": "{\"delay\":500}",
+      "onDone": "complete",
+      "onError": "handleError"
+    },
+    "complete": {
+      "type": "final"
+    },
+    "handleError": {
+      "type": "final"
+    }
+  }
+}

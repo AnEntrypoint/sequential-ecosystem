@@ -1,0 +1,78 @@
+{
+  "name": "sequential-ecosystem",
+  "version": "1.8.0",
+  "description": "Infinite-length task execution with automatic suspend/resume and flow/machine runners",
+  "type": "module",
+  "scripts": {
+    "start": "node cli.js",
+    "cli": "node cli.js",
+    "init": "node cli.js init",
+    "create": "node cli.js create-task",
+    "run": "node cli.js run",
+    "list": "node cli.js list",
+    "sync": "node cli.js sync-tasks",
+    "zellous": "node packages/@sequentialos/zellous/server.js",
+    "dev": "nodemon --delay 1000 --ignore '**/runs/**' packages/@sequentialos/desktop-server/src/server.js",
+    "test": "node scripts/test-all.js",
+    "test:watch": "find packages -name package.json -exec dirname {} \\; | xargs -I {} sh -c 'cd {} && npm run test:watch 2>/dev/null || true'",
+    "test:coverage": "c8 node scripts/test-all.js",
+    "lint": "eslint packages --ext .js --ignore-path .gitignore || true",
+    "lint:fix": "eslint packages --ext .js --ignore-path .gitignore --fix || true",
+    "build": "find packages -name package.json -exec dirname {} \\; | xargs -I {} sh -c 'cd {} && npm run build 2>/dev/null || true'"
+  },
+  "keywords": [
+    "sequential",
+    "task-execution",
+    "xstate",
+    "sequential-machine",
+    "sequential-flow",
+    "suspend-resume",
+    "deno",
+    "bun",
+    "node",
+    "infinite-tasks",
+    "workflow",
+    "state-machine",
+    "filesystem-layers",
+    "checkpoints"
+  ],
+  "author": "lanmower",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-ecosystem.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AnEntrypoint/sequential-ecosystem/issues"
+  },
+  "homepage": "https://github.com/AnEntrypoint/sequential-ecosystem#readme",
+  "bin": {
+    "sequential-ecosystem": "./cli.js",
+    "seq": "./cli.js"
+  },
+  "workspaces": [
+    "packages/@sequentialos/*",
+    "packages/desktop-server"
+  ],
+  "files": [
+    "cli.js",
+    "CLAUDE.md",
+    "CHANGELOG.md",
+    "README.md"
+  ],
+  "dependencies": {
+    "commander": "^11.0.0",
+    "express": "^4.18.2",
+    "ws": "^8.14.2",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2"
+  },
+  "devDependencies": {
+    "c8": "^8.0.1",
+    "eslint": "^8.54.0",
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

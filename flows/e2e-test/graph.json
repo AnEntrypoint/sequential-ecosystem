@@ -1,0 +1,15 @@
+{
+  "id": "e2e-test",
+  "initial": "invoke-task",
+  "states": {
+    "invoke-task": {
+      "handlerType": "task",
+      "taskName": "test-tool-invocation",
+      "taskInput": "{\"testParam\": \"e2e-flow-test\"}",
+      "onDone": "end"
+    },
+    "end": {
+      "type": "final"
+    }
+  }
+}

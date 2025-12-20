@@ -1,0 +1,19 @@
+{
+  "name": "@sequentialos/dynamic-route-factory",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "description": "Dynamic route registration factory for Express apps - eliminates boilerplate in route handlers",
+  "keywords": ["express", "routes", "factory", "crud", "middleware"],
+  "author": "Sequential Ecosystem",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.0"
+  },
+  "peerDependencies": {
+    "@sequentialos/error-handling": "*"
+  }
+}

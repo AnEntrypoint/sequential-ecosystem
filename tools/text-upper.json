@@ -1,0 +1,10 @@
+{
+  "id": "text-upper",
+  "name": "Uppercase",
+  "description": "",
+  "category": "Custom",
+  "implementation": "async function(){}",
+  "imports": [],
+  "createdAt": "2025-12-04T07:34:10.641Z",
+  "updatedAt": "2025-12-04T07:34:10.641Z"
+}
