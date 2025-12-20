@@ -6,8 +6,9 @@
  * Usage: gxe . webhook:tool --appId=app-myapp --toolName=myTool --params='{"data":"value"}'
  */
 
-const path = require('path');
-const fs = require('fs');
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 async function executeTool() {
   let appId = process.env.APP_ID;
