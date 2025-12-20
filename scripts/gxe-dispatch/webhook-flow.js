@@ -6,8 +6,9 @@
  * Usage: gxe . webhook:flow --flowName=myFlow --input='{"data":"value"}'
  */
 
-const path = require('path');
-const fs = require('fs');
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 async function executeFlow() {
   let flowName = process.env.FLOW_NAME;

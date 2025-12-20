@@ -2,22 +2,26 @@
 /**
  * GXE Dispatcher: Desktop Server
  * Starts the Sequential Ecosystem desktop server
- * 
+ *
  * Usage: gxe . desktop-server [--port=3001] [--host=localhost]
  */
 
-const path = require('path');
-const { spawn } = require('child_process');
+import { spawn } from 'child_process';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 async function startServer() {
   const port = process.env.PORT || process.argv.find(arg => arg.startsWith('--port='))?.split('=')[1] || '8003';
   const host = process.env.HOST || 'localhost';
-  
+
   console.log(`Starting Sequential Ecosystem desktop server on ${host}:${port}`);
-  
+
   // Start the server using the package's server.js
   const serverPath = path.join(__dirname, '../../packages/@sequentialos/desktop-server/src/server.js');
-  
+
   const proc = spawn('node', [serverPath], {
     env: {
       ...process.env,
@@ -27,11 +31,11 @@ async function startServer() {
     },
     stdio: 'inherit'
   });
-  
+
   proc.on('exit', (code) => {
     process.exit(code || 0);
   });
-  
+
   proc.on('error', (err) => {
     console.error('Server error:', err.message);
     process.exit(1);

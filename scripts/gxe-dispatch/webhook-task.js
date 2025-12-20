@@ -12,8 +12,9 @@
  * - AWAIT_RESULT: Wait for completion (true/false)
  */
 
-const path = require('path');
-const fs = require('fs');
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 async function executeTask() {
   // Parse arguments
