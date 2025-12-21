@@ -2,9 +2,6 @@ export {
   SerializedError,
   serializeError,
   normalizeError,
-  logFileOperation,
-  logFileSuccess,
-  logBatchFileOperation,
   createDetailedErrorResponse,
   ErrorCategories
 } from './modules/error/index.js';

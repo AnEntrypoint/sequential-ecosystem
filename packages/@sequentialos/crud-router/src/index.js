@@ -1,4 +1,4 @@
-import { asyncHandler } from '@sequentialos/handler-wrappers';
+import { asyncHandler } from '@sequentialos/error-handling';
 import { formatResponse, formatError } from '@sequentialos/response-formatting';
 import { requireResource, parsePagination } from '@sequentialos/route-helpers';
 

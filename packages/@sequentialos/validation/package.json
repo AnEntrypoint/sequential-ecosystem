@@ -1,0 +1,28 @@
+{
+  "name": "@sequentialos/validation",
+  "version": "1.0.0",
+  "description": "Comprehensive validation utilities for Sequential OS",
+  "type": "module",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@sequentialos/error-handling": "*"
+  },
+  "keywords": [
+    "validation",
+    "sanitization",
+    "security",
+    "input-validation"
+  ],
+  "author": "lanmower",
+  "license": "MIT"
+}

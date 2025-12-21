@@ -44,6 +44,25 @@
 - Compatible with Node 18+ for URL API (`fileURLToPath`)
 - GXE caches repository in `~/.gxe/` for fast repeated execution
 
+**GXE Command Quick Reference**:
+```bash
+# Desktop Server
+gxe . desktop-server
+gxe github.com/AnEntrypoint/sequential-ecosystem desktop-server
+
+# Task Execution (webhook-style)
+gxe . webhook:task --taskName=my-task --input='{"key":"value"}'
+
+# Flow Execution
+gxe . webhook:flow --flowName=my-flow --input='{"key":"value"}'
+
+# Tool Execution
+gxe . webhook:tool --toolName=my-tool --input='{"key":"value"}'
+
+# CLI (legacy)
+gxe . cli
+```
+
 **Package Resolution (Dec 20, 2025)**:
 - All `@sequentialos/package` imports refer to local `packages/@sequentialos/package`
 - No external npm dependencies on @sequentialos packages

@@ -1,11 +1,5 @@
 export {
   buildErrorResponse,
-  validationError,
-  notFoundError,
-  forbiddenError,
-  conflictError,
-  unprocessableError,
-  internalError,
   sendError,
   ErrorCode,
   STATUS_CODES

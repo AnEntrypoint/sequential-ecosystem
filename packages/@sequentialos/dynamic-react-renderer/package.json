@@ -1,0 +1,32 @@
+{
+  "name": "@sequentialos/dynamic-react-renderer",
+  "version": "1.0.0",
+  "description": "Dynamic React component rendering system with registry pattern",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./ComponentRegistry": "./src/ComponentRegistry.js",
+    "./DynamicRenderer": "./src/DynamicRenderer.js",
+    "./ErrorBoundary": "./src/ErrorBoundary.js"
+  },
+  "files": [
+    "src"
+  ],
+  "keywords": [
+    "react",
+    "dynamic",
+    "renderer",
+    "component",
+    "registry"
+  ],
+  "author": "Sequential Ecosystem <contact@sequential.dev>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-ecosystem"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0"
+  }
+}

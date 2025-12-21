@@ -1,41 +1,8 @@
-export function validateBody(schema) {
-  return (req, res, next) => {
-    for (const [field, validators] of Object.entries(schema)) {
-      const value = req.body?.[field];
-      for (const validator of Array.isArray(validators) ? validators : [validators]) {
-        const error = typeof validator === 'function' ? validator(value, field) : null;
-        if (error) return next(error);
-      }
-    }
-    next();
-  };
-}
+import { createFieldValidator } from './validators.js';
 
-export function validateParams(schema) {
-  return (req, res, next) => {
-    for (const [field, validators] of Object.entries(schema)) {
-      const value = req.params?.[field];
-      for (const validator of Array.isArray(validators) ? validators : [validators]) {
-        const error = typeof validator === 'function' ? validator(value, field) : null;
-        if (error) return next(error);
-      }
-    }
-    next();
-  };
-}
-
-export function validateQuery(schema) {
-  return (req, res, next) => {
-    for (const [field, validators] of Object.entries(schema)) {
-      const value = req.query?.[field];
-      for (const validator of Array.isArray(validators) ? validators : [validators]) {
-        const error = typeof validator === 'function' ? validator(value, field) : null;
-        if (error) return next(error);
-      }
-    }
-    next();
-  };
-}
+export const validateBody = createFieldValidator(req => req.body);
+export const validateParams = createFieldValidator(req => req.params);
+export const validateQuery = createFieldValidator(req => req.query);
 
 export function compose(...validators) {
   return (req, res, next) => {

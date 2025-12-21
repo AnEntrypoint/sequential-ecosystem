@@ -12,12 +12,14 @@ Infinite-length task execution with automatic suspend/resume on HTTP calls.
 ## Quick Start
 
 ```bash
-# Full OS GUI (Sequential Desktop)
-npx sequential-ecosystem gui
+# Full OS GUI (Sequential Desktop) - via GXE
+gxe github.com/AnEntrypoint/sequential-ecosystem desktop-server
+# Or from local clone:
+gxe . desktop-server
 # Access at http://localhost:8003
 # Includes: Terminal, Filesystem Debugger, VFS, Zellous
 
-# CLI Task Management
+# CLI Task Management (legacy CLI, still works)
 npx sequential-ecosystem init                                   # Initialize with comprehensive examples
 npx sequential-ecosystem create-task my-task                    # Create flow task
 npx sequential-ecosystem create-task my-task --with-graph      # Create flow task with state graph
@@ -25,6 +27,10 @@ npx sequential-ecosystem create-task my-task --runner machine  # Create machine 
 npx sequential-ecosystem run my-task --input '{}'
 
 npx sequential-ecosystem run example-simple-flow --input '{"message":"hello"}'
+
+# GXE-based task execution (webhook-style)
+gxe . webhook:task --taskName=example-simple-flow --input='{"message":"hello"}'
+gxe github.com/AnEntrypoint/sequential-ecosystem webhook:task --taskName=my-task --input='{}'
 ```
 
 ## Sequential Desktop (GUI)
@@ -141,6 +147,8 @@ gui
 ```bash
 # Folder (default, zero setup)
 npx sequential-ecosystem run my-task
+# Or via GXE:
+gxe . webhook:task --taskName=my-task --input='{}'
 
 # SQLite
 export DATABASE_URL="sqlite:./workflow.db"

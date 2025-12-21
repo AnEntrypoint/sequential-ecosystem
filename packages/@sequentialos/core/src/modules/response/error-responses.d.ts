@@ -57,68 +57,6 @@ export declare function buildErrorResponse(
 ): ErrorResponse;
 
 /**
- * Validation error response
- * @param fields Field name(s) that failed validation
- * @param message Custom error message
- * @returns Error response object
- */
-export declare function validationError(
-  fields: string | string[],
-  message?: string
-): ErrorResponse;
-
-/**
- * Not found error response
- * @param resource Resource type (file, task, flow, etc.)
- * @param identifier Resource identifier
- * @returns Error response object
- */
-export declare function notFoundError(
-  resource: string,
-  identifier?: string
-): ErrorResponse;
-
-/**
- * Forbidden/access denied error response
- * @param reason Reason for access denial
- * @returns Error response object
- */
-export declare function forbiddenError(reason?: string): ErrorResponse;
-
-/**
- * Conflict error response
- * @param resource Resource type
- * @param reason Reason for conflict
- * @returns Error response object
- */
-export declare function conflictError(
-  resource: string,
-  reason?: string
-): ErrorResponse;
-
-/**
- * Unprocessable entity error (invalid data)
- * @param message Error message
- * @param details Error details
- * @returns Error response object
- */
-export declare function unprocessableError(
-  message: string,
-  details?: Record<string, any>
-): ErrorResponse;
-
-/**
- * Internal server error response
- * @param message Error message
- * @param error Original error object
- * @returns Error response object
- */
-export declare function internalError(
-  message?: string,
-  error?: Error
-): ErrorResponse;
-
-/**
  * Send error response via Express response object
  * @param res Express response object
  * @param code Error code

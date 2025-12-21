@@ -5,8 +5,5 @@ export {
   normalizeError
 } from './error-serializer.js';
 export {
-  logFileOperation,
-  logFileSuccess,
-  logBatchFileOperation,
   createDetailedErrorResponse
 } from './error-logger.js';

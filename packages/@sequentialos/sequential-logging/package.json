@@ -1,0 +1,17 @@
+{
+  "name": "@sequentialos/sequential-logging",
+  "version": "1.0.0",
+  "description": "Simple logging utilities for Sequential OS",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "keywords": [
+    "logging",
+    "logger",
+    "console"
+  ],
+  "author": "lanmower",
+  "license": "MIT"
+}

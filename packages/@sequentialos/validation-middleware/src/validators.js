@@ -12,4 +12,19 @@ const maxLength = (len, field) => (value) => value?.length > len ? createValidat
 const match = (regex, field) => (value) => !regex.test(value) ? createValidationError(field, `${field} format invalid`) : null;
 const enum_ = (values, field) => (value) => !values.includes(value) ? createValidationError(field, `${field} must be one of: ${values.join(', ')}`) : null;
 
+export function createFieldValidator(sourceExtractor) {
+  return (schema) => {
+    return (req, res, next) => {
+      for (const [field, validators] of Object.entries(schema)) {
+        const value = sourceExtractor(req)?.[field];
+        for (const validator of Array.isArray(validators) ? validators : [validators]) {
+          const error = typeof validator === 'function' ? validator(value, field) : null;
+          if (error) return next(error);
+        }
+      }
+      next();
+    };
+  };
+}
+
 export { required, string, array, object, number, boolean, custom, minLength, maxLength, match, enum_ };

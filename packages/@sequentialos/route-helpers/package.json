@@ -1,0 +1,19 @@
+{
+  "name": "@sequentialos/route-helpers",
+  "version": "1.0.0",
+  "description": "Route helper utilities for Express routes in Sequential OS",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "keywords": [
+    "express",
+    "routes",
+    "helpers",
+    "pagination",
+    "validation"
+  ],
+  "author": "lanmower",
+  "license": "MIT"
+}

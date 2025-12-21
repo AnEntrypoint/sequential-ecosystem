@@ -1,0 +1,21 @@
+{
+  "name": "@sequentialos/error-handling",
+  "version": "1.0.0",
+  "description": "Error handling utilities and error factories for Sequential OS",
+  "type": "module",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    }
+  },
+  "keywords": [
+    "error-handling",
+    "errors",
+    "validation"
+  ],
+  "author": "lanmower",
+  "license": "MIT"
+}
