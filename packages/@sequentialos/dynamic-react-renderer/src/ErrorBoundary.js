@@ -6,6 +6,7 @@
  */
 
 import React from 'react';
+import logger from '@sequentialos/sequential-logging';
 
 /**
  * Error Boundary Component
@@ -25,7 +26,7 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('DynamicRenderer Error:', error, errorInfo);
+    logger.error('DynamicRenderer Error:', error, errorInfo);
   }
 
   render() {

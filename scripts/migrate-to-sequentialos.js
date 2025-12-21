@@ -3,21 +3,22 @@
 import fs from 'fs';
 import path from 'path';
 import { getDirname } from '@sequentialos/es-module-utils';
+import logger from '@sequentialos/sequential-logging';
 
 const __dirname = getDirname(import.meta.url);
 const PACKAGES_DIR = path.resolve(__dirname, '../packages');
 const SEQUENTIALOS_DIR = path.join(PACKAGES_DIR, '@sequentialos');
 
 function log(msg) {
-  console.log(`[migrate] ${msg}`);
+  logger.info(`[migrate] ${msg}`);
 }
 
 function logSuccess(msg) {
-  console.log(`✓ ${msg}`);
+  logger.info(`✓ ${msg}`);
 }
 
 function logError(msg) {
-  console.error(`✗ ${msg}`);
+  logger.error(`✗ ${msg}`);
 }
 
 // Create @sequentialos directory if it doesn't exist

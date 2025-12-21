@@ -22,6 +22,7 @@ import {
 import fs from 'fs';
 import path from 'path';
 import { getDirname } from '@sequentialos/es-module-utils';
+import logger from '@sequentialos/sequential-logging';
 
 const __dirname = getDirname(import.meta.url);
 
@@ -53,7 +54,7 @@ program
         description: options.description || ''
       });
     } catch (e) {
-      console.error('Error:', e instanceof Error ? e.message : String(e));
+      logger.error('Error:', e instanceof Error ? e.message : String(e));
       process.exit(1);
     }
   });
@@ -73,7 +74,7 @@ program
         category: options.category || 'Custom'
       });
     } catch (e) {
-      console.error('Error:', e instanceof Error ? e.message : String(e));
+      logger.error('Error:', e instanceof Error ? e.message : String(e));
       process.exit(1);
     }
   });
@@ -91,7 +92,7 @@ program
         description: options.description || ''
       });
     } catch (e) {
-      console.error('Error:', e instanceof Error ? e.message : String(e));
+      logger.error('Error:', e instanceof Error ? e.message : String(e));
       process.exit(1);
     }
   });
@@ -109,7 +110,7 @@ program
         description: options.description || ''
       });
     } catch (e) {
-      console.error('Error:', e instanceof Error ? e.message : String(e));
+      logger.error('Error:', e instanceof Error ? e.message : String(e));
       process.exit(1);
     }
   });
@@ -133,10 +134,10 @@ program
       });
 
       if (!options.dryRun) {
-        console.log(JSON.stringify(result, null, 2));
+        logger.info(JSON.stringify(result, null, 2));
       }
     } catch (e) {
-      console.error('Error:', e instanceof Error ? e.message : String(e));
+      logger.error('Error:', e instanceof Error ? e.message : String(e));
       process.exit(1);
     }
   });
@@ -193,7 +194,7 @@ program
         verbose: options.verbose || false
       });
     } catch (e) {
-      console.error('Error:', e instanceof Error ? e.message : String(e));
+      logger.error('Error:', e instanceof Error ? e.message : String(e));
       process.exit(1);
     }
   });
@@ -214,20 +215,20 @@ program
             throw new Error('--key required for get');
           }
           const value = getConfig(options.key);
-          console.log(value);
+          logger.info(value);
           break;
         case 'set':
           if (!options.key || !options.value) {
             throw new Error('--key and --value required for set');
           }
           setConfig(options.key, options.value);
-          console.log(`✓ Set ${options.key} = ${options.value}`);
+          logger.info(`✓ Set ${options.key} = ${options.value}`);
           break;
         default:
           throw new Error(`Unknown config action: ${action}`);
       }
     } catch (e) {
-      console.error('Error:', e instanceof Error ? e.message : String(e));
+      logger.error('Error:', e instanceof Error ? e.message : String(e));
       process.exit(1);
     }
   });

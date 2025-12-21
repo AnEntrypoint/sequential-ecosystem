@@ -1,3 +1,5 @@
+import logger from '@sequentialos/sequential-logging';
+
 export class Subscribers {
   constructor() {
     this.subscribers = new Map();
@@ -22,7 +24,7 @@ export class Subscribers {
         try {
           cb(value);
         } catch (err) {
-          console.error('Subscriber error:', err);
+          logger.error('Subscriber error:', err);
         }
       });
     }
