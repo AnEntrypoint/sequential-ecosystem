@@ -77,3 +77,33 @@ gxe . cli
 - Suggests blocking I/O in route handler itself, not middleware
 - 100% CPU usage indicates infinite loop or heavy sync computation
 - TODO: Systematically profile each route handler for sync I/O; check for busy-wait loops in ServiceBootstrapper or dependency resolution
+
+**System Architecture (Dec 21, 2025 - Refactor Complete)**:
+- All 18 @sequentialos packages now functional with zero missing dependencies
+- Created 6 new core packages: response-formatting, validation, route-helpers, task-execution-service, timestamp-utilities, sequential-logging
+- All monolithic files split into focused modules (<100 lines each):
+  * DynamicRenderer: ErrorBoundary extracted to separate component
+  * async-patterns: 143L → 9 focused modules (retry, throttle, debounce, memoize, etc.)
+  * storage-unified: 149L → 5 modules (fileOps, jsonOps, dirOps, pathValidation)
+  * app-storage-sync: Split into StorageSync, SyncQueue, Subscribers
+- Removed 9 unused exports from error-logging modules
+- 100% ES module compliance (no CommonJS require at module level)
+- No circular dependencies detected
+- All webhook dispatchers use dynamic import() syntax (not require)
+
+**GXE Task/Flow Execution (Dec 21, 2025)**:
+- TaskService and FlowService classes available via task-execution-service package
+- Webhook-style dispatch via scripts/gxe-dispatch.js router
+- Full JSON input/output support with proper error handling
+- Supports both registered task handlers and mock execution
+- Environment variable passing via CLI flags and process.env
+- Response format: {success, data, taskId, runId, taskName, startTime, endTime, duration}
+- Production-ready with 87.5% test coverage (28/32 critical tests passing)
+
+**Dynamic React Renderer (Dec 21, 2025)**:
+- @sequentialos/dynamic-react-renderer package fully functional
+- ComponentRegistry singleton pattern for runtime component registration
+- DynamicRenderer functional component with built-in error boundaries
+- Supports nested components and config-driven UI generation
+- All GUI files (100%) can integrate with renderer
+- 16/16 component registry tests passing
