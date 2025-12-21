@@ -4,7 +4,7 @@
 
 import fs from 'fs-extra';
 import path from 'path';
-import { randomUUID } from 'crypto';
+import { writeAtomic } from '@sequentialos/atomic-file-operations';
 
 /**
  * Read a file
@@ -25,20 +25,7 @@ export async function readFile(filePath, encoding = 'utf8') {
  * @param {string} encoding - File encoding (default: utf8)
  */
 export async function writeFileAtomic(filePath, data, encoding = 'utf8') {
-  const dir = path.dirname(filePath);
-  await fs.ensureDir(dir);
-
-  const tempFile = path.join(dir, `.tmp-${randomUUID()}`);
-
-  try {
-    await fs.writeFile(tempFile, data, encoding);
-    await fs.move(tempFile, filePath, { overwrite: true });
-  } catch (err) {
-    try {
-      await fs.remove(tempFile);
-    } catch {}
-    throw err;
-  }
+  return writeAtomic(filePath, data, { encoding });
 }
 
 /**

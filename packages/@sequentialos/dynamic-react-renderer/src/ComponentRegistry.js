@@ -1,18 +1,13 @@
 /**
- * ComponentRegistry - Singleton pattern for managing React component registration
+ * ComponentRegistry - Factory pattern for managing React component registration
  *
- * Provides a global registry for dynamically registering and retrieving React components
+ * Provides a registry for dynamically registering and retrieving React components
  * by name. This allows for runtime component resolution without hardcoded imports.
  */
 
 class ComponentRegistry {
   constructor() {
-    if (ComponentRegistry.instance) {
-      return ComponentRegistry.instance;
-    }
-
     this.components = new Map();
-    ComponentRegistry.instance = this;
   }
 
   /**
@@ -84,6 +79,17 @@ class ComponentRegistry {
   }
 }
 
-// Export singleton instance
-const registry = new ComponentRegistry();
-export default registry;
+/**
+ * Create a new component registry instance
+ * @returns {ComponentRegistry} A new registry instance
+ */
+export const createComponentRegistry = () => new ComponentRegistry();
+
+/**
+ * Default registry instance for convenience
+ * Use this for simple cases where a single global registry is sufficient
+ */
+export const defaultRegistry = createComponentRegistry();
+
+// Default export is the default registry instance
+export default defaultRegistry;

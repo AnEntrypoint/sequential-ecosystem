@@ -4,7 +4,7 @@
  * Unified file storage operations with atomic writes and path validation
  */
 
-import { validateSecurePath } from './pathValidation.js';
+import { validateSecurePath } from '@sequentialos/path-validation';
 import { readFile, writeFileAtomic, deleteFile, exists, appendFile, copyFile, getStats } from './fileOperations.js';
 import { readJson, writeJson } from './jsonOperations.js';
 import { mkdir, list } from './directoryOperations.js';

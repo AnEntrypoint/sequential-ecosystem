@@ -21,10 +21,9 @@ import {
 } from '@sequentialos/cli-commands';
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { getDirname } from '@sequentialos/es-module-utils';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = getDirname(import.meta.url);
 
 const pkg = JSON.parse(
   fs.readFileSync(path.join(__dirname, 'package.json'), 'utf-8')

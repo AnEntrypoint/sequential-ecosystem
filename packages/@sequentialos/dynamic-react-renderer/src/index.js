@@ -21,7 +21,7 @@
  * />
  */
 
-export { default as ComponentRegistry } from './ComponentRegistry.js';
+export { default as ComponentRegistry, createComponentRegistry, defaultRegistry } from './ComponentRegistry.js';
 export { default as DynamicRenderer } from './DynamicRenderer.js';
 export { default as ErrorBoundary } from './ErrorBoundary.js';
 export { default } from './DynamicRenderer.js';

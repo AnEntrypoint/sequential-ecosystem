@@ -13,10 +13,10 @@
 
 import { spawn } from 'child_process';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { getModulePaths } from '@sequentialos/es-module-utils';
+import logger from '@sequentialos/sequential-logging';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const { __dirname, __filename } = getModulePaths(import.meta.url);
 
 const args = process.argv.slice(2);
 const command = args[0] || 'desktop-server';
@@ -33,8 +33,8 @@ const dispatchers = {
 const dispatcher = dispatchers[command];
 
 if (!dispatcher) {
-  console.error(`Unknown command: ${command}`);
-  console.error(`Available commands: ${Object.keys(dispatchers).join(', ')}`);
+  logger.error(`Unknown command: ${command}`);
+  logger.error(`Available commands: ${Object.keys(dispatchers).join(', ')}`);
   process.exit(1);
 }
 
@@ -48,6 +48,6 @@ proc.on('exit', (code) => {
 });
 
 proc.on('error', (err) => {
-  console.error(`Error running ${command}:`, err.message);
+  logger.error(`Error running ${command}:`, err.message);
   process.exit(1);
 });

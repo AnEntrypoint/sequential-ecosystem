@@ -8,7 +8,9 @@
     ".": "./src/index.js",
     "./ComponentRegistry": "./src/ComponentRegistry.js",
     "./DynamicRenderer": "./src/DynamicRenderer.js",
-    "./ErrorBoundary": "./src/ErrorBoundary.js"
+    "./ErrorBoundary": "./src/ErrorBoundary.js",
+    "./createComponentRegistry": "./src/ComponentRegistry.js",
+    "./defaultRegistry": "./src/ComponentRegistry.js"
   },
   "files": [
     "src"

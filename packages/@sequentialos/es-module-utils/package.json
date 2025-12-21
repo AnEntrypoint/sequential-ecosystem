@@ -1,0 +1,22 @@
+{
+  "name": "@sequentialos/es-module-utils",
+  "version": "1.0.0",
+  "description": "ES module utilities for __dirname and __filename replacement",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "keywords": [
+    "esm",
+    "es-module",
+    "dirname",
+    "filename",
+    "import.meta.url"
+  ],
+  "author": "Sequential Ecosystem",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

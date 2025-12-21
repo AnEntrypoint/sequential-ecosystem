@@ -2,9 +2,9 @@
 
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { getDirname } from '@sequentialos/es-module-utils';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const __dirname = getDirname(import.meta.url);
 const PACKAGES_DIR = path.resolve(__dirname, '../packages');
 const SEQUENTIALOS_DIR = path.join(PACKAGES_DIR, '@sequentialos');
 

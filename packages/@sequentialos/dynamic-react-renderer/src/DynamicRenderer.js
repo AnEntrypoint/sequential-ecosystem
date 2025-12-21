@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import ComponentRegistry from './ComponentRegistry.js';
+import { defaultRegistry } from './ComponentRegistry.js';
 import ErrorBoundary from './ErrorBoundary.js';
 
 /**
@@ -17,8 +17,9 @@ import ErrorBoundary from './ErrorBoundary.js';
  * @param {Object} props.props - Props to pass to the rendered component
  * @param {React.ReactNode} props.fallback - Custom fallback UI for errors
  * @param {React.ReactNode} props.notFoundFallback - Custom UI when component not found
+ * @param {ComponentRegistry} props.registry - Optional registry instance (defaults to defaultRegistry)
  */
-const DynamicRenderer = ({ type, props = {}, fallback, notFoundFallback }) => {
+const DynamicRenderer = ({ type, props = {}, fallback, notFoundFallback, registry = defaultRegistry }) => {
   // Validate type prop
   if (!type || typeof type !== 'string') {
     return (
@@ -40,7 +41,7 @@ const DynamicRenderer = ({ type, props = {}, fallback, notFoundFallback }) => {
   }
 
   // Get component from registry
-  const Component = ComponentRegistry.get(type);
+  const Component = registry.get(type);
 
   // Handle component not found
   if (!Component) {
@@ -64,10 +65,10 @@ const DynamicRenderer = ({ type, props = {}, fallback, notFoundFallback }) => {
         </p>
         <details style={{ fontSize: '12px' }}>
           <summary style={{ cursor: 'pointer', fontWeight: 500 }}>
-            Available components ({ComponentRegistry.size})
+            Available components ({registry.size})
           </summary>
           <ul style={{ margin: '8px 0 0 0', paddingLeft: '20px' }}>
-            {ComponentRegistry.list().map(name => (
+            {registry.list().map(name => (
               <li key={name}>{name}</li>
             ))}
           </ul>
@@ -77,7 +78,7 @@ const DynamicRenderer = ({ type, props = {}, fallback, notFoundFallback }) => {
   }
 
   // Process props to support nested DynamicRenderer components
-  const processedProps = processNestedComponents(props);
+  const processedProps = processNestedComponents(props, registry);
 
   // Render component with error boundary
   return (
@@ -90,9 +91,10 @@ const DynamicRenderer = ({ type, props = {}, fallback, notFoundFallback }) => {
 /**
  * Process props to recursively render nested dynamic components
  * @param {Object} props - Props object to process
+ * @param {ComponentRegistry} registry - Registry instance to use for nested components
  * @returns {Object} Processed props with nested DynamicRenderer components
  */
-const processNestedComponents = (props) => {
+const processNestedComponents = (props, registry) => {
   if (!props || typeof props !== 'object') {
     return props;
   }
@@ -111,6 +113,7 @@ const processNestedComponents = (props) => {
         <DynamicRenderer
           type={value.type}
           props={value.props || {}}
+          registry={registry}
         />
       );
     }
@@ -118,10 +121,10 @@ const processNestedComponents = (props) => {
     else if (value && typeof value === 'object' && !React.isValidElement(value)) {
       if (Array.isArray(value)) {
         processed[key] = value.map(item =>
-          item && typeof item === 'object' ? processNestedComponents(item) : item
+          item && typeof item === 'object' ? processNestedComponents(item, registry) : item
         );
       } else {
-        processed[key] = processNestedComponents(value);
+        processed[key] = processNestedComponents(value, registry);
       }
     }
     // Keep primitive values and React elements as-is

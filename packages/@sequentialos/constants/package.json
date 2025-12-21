@@ -1,0 +1,23 @@
+{
+  "name": "@sequentialos/constants",
+  "version": "1.0.0",
+  "description": "Centralized constants for Sequential OS (ports, timeouts, error templates)",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": {
+      "default": "./src/index.js"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "keywords": [
+    "constants",
+    "configuration",
+    "ports",
+    "timeouts"
+  ],
+  "author": "lanmower",
+  "license": "MIT"
+}
