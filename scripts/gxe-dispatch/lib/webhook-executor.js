@@ -7,7 +7,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { getDirname } from '@sequentialos/es-module-utils';
 import logger from '@sequentialos/sequential-logging';
 
 /**
@@ -69,7 +69,7 @@ function parseJsonInput(input) {
  * @returns {Promise<any>} Imported service class
  */
 async function importService(servicePath) {
-  const __dirname = path.dirname(fileURLToPath(import.meta.url));
+  const __dirname = getDirname(import.meta.url);
   const absolutePath = path.join(__dirname, '../../../', servicePath);
 
   const serviceModule = await import(`file://${absolutePath}`);

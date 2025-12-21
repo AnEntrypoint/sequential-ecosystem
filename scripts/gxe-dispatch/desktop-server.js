@@ -8,11 +8,10 @@
 
 import { spawn } from 'child_process';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { getModulePaths } from '@sequentialos/es-module-utils';
 import logger from '@sequentialos/sequential-logging';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const { __dirname, __filename } = getModulePaths(import.meta.url);
 
 async function startServer() {
   const port = process.env.PORT || process.argv.find(arg => arg.startsWith('--port='))?.split('=')[1] || '8003';
