@@ -25,6 +25,8 @@
   ],
   "author": "Sequential Ecosystem <contact@sequential.dev>",
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "@sequentialos/execution-service-base": "file:../execution-service-base"
+  },
   "owner": "Core Services"
 }

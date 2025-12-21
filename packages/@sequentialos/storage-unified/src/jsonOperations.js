@@ -3,8 +3,7 @@
  */
 
 import fs from 'fs-extra';
-import path from 'path';
-import { randomUUID } from 'crypto';
+import { writeJsonAtomic } from '@sequentialos/atomic-file-operations';
 
 /**
  * Read and parse JSON file
@@ -29,19 +28,5 @@ export async function readJson(filePath) {
  * @param {Object} obj - Object to serialize
  */
 export async function writeJson(filePath, obj) {
-  const dir = path.dirname(filePath);
-  await fs.ensureDir(dir);
-
-  const data = JSON.stringify(obj, null, 2);
-  const tempFile = path.join(dir, `.tmp-${randomUUID()}`);
-
-  try {
-    await fs.writeFile(tempFile, data, 'utf8');
-    await fs.move(tempFile, filePath, { overwrite: true });
-  } catch (err) {
-    try {
-      await fs.remove(tempFile);
-    } catch {}
-    throw err;
-  }
+  return writeJsonAtomic(filePath, obj);
 }

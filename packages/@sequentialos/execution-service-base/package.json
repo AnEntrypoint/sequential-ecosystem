@@ -1,0 +1,28 @@
+{
+  "name": "@sequentialos/execution-service-base",
+  "version": "1.0.0",
+  "description": "Base execution service class providing common functionality for task and flow execution",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test.js"
+  },
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-ecosystem"
+  },
+  "keywords": [
+    "sequential",
+    "execution-service",
+    "base-class",
+    "task-execution",
+    "flow-execution"
+  ],
+  "author": "Sequential Ecosystem <contact@sequential.dev>",
+  "license": "MIT",
+  "dependencies": {},
+  "owner": "Core Services"
+}

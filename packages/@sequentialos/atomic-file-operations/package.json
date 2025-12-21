@@ -1,0 +1,22 @@
+{
+  "name": "@sequentialos/atomic-file-operations",
+  "version": "1.0.0",
+  "description": "Atomic file write operations to prevent partial writes and race conditions",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "keywords": [
+    "atomic",
+    "file",
+    "write",
+    "filesystem",
+    "race-condition"
+  ],
+  "author": "Sequential Ecosystem",
+  "license": "MIT",
+  "dependencies": {
+    "fs-extra": "^11.1.1"
+  }
+}

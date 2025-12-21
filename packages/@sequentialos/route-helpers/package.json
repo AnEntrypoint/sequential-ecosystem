@@ -5,7 +5,12 @@
   "type": "module",
   "main": "./src/index.js",
   "exports": {
-    ".": "./src/index.js"
+    ".": "./src/index.js",
+    "./request": "./src/request/require-resource.js",
+    "./query": "./src/query/parse-pagination.js",
+    "./query/parse-sort": "./src/query/parse-sort.js",
+    "./transform": "./src/transform/normalize-id.js",
+    "./url": "./src/url/build-resource-url.js"
   },
   "keywords": [
     "express",

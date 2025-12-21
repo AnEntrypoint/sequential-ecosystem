@@ -1,14 +1,22 @@
 /**
  * TaskService - Handles task execution for GXE webhook dispatch
  *
- * Provides task execution with lifecycle management, input/output handling,
- * and consistent response formatting for webhook-style invocations.
+ * Extends ExecutionService with task-specific execution logic.
  */
 
-export class TaskService {
-  constructor() {
-    this.tasks = new Map();
-    this.executionHistory = [];
+import { ExecutionService } from '@sequentialos/execution-service-base';
+import logger from '@sequentialos/sequential-logging';
+
+export class TaskService extends ExecutionService {
+  /**
+   * Create a new TaskService instance
+   * @param {Object} options - Configuration options
+   * @param {boolean} options.debug - Enable debug logging (defaults to false)
+   * @param {boolean} options.exitOnError - Exit process on task errors (defaults to false)
+   * @param {number} options.timeout - Default timeout in milliseconds (defaults to 30000)
+   */
+  constructor(options = {}) {
+    super('task', options);
   }
 
   /**
@@ -17,7 +25,15 @@ export class TaskService {
    * @param {Function} handler - Async function to execute the task
    */
   registerTask(taskName, handler) {
-    this.tasks.set(taskName, handler);
+    this.registerHandler(taskName, handler);
+  }
+
+  /**
+   * Get registered tasks
+   * @returns {Array<string>} List of registered task names
+   */
+  getRegisteredTasks() {
+    return this.getRegisteredHandlers();
   }
 
   /**
@@ -32,21 +48,19 @@ export class TaskService {
    */
   async executeTask(taskName, input = {}, options = {}) {
     const {
-      runId = this.generateRunId(),
+      runId = this.generateId(),
       broadcast = false,
-      timeout = 30000
+      timeout = this.timeout
     } = options;
 
     const startTime = new Date().toISOString();
     const taskId = `task-${runId}`;
 
     try {
-      // Check if task is registered
-      const taskHandler = this.tasks.get(taskName);
+      const taskHandler = this.handlers.get(taskName);
 
       if (!taskHandler) {
         // Task not registered - return mock success for testing
-        // In production, this would throw an error or load task dynamically
         const result = {
           success: true,
           data: {
@@ -125,81 +139,13 @@ export class TaskService {
         this.broadcastEvent('task:failed', errorResult);
       }
 
+      // Exit on error if configured
+      if (this.exitOnError) {
+        logger.error(`[TaskService] Task failed: ${taskName}`, error);
+        process.exit(1);
+      }
+
       throw error;
     }
-  }
-
-  /**
-   * Execute a promise with timeout
-   * @param {Promise} promise - The promise to execute
-   * @param {number} timeoutMs - Timeout in milliseconds
-   * @returns {Promise} The promise result or timeout error
-   */
-  async executeWithTimeout(promise, timeoutMs) {
-    return Promise.race([
-      promise,
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error(`Task execution timeout after ${timeoutMs}ms`)), timeoutMs)
-      )
-    ]);
-  }
-
-  /**
-   * Generate a unique run ID
-   * @returns {string} Unique run identifier
-   */
-  generateRunId() {
-    return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-  }
-
-  /**
-   * Broadcast an event (placeholder for event system integration)
-   * @param {string} eventName - Name of the event
-   * @param {Object} data - Event data
-   */
-  broadcastEvent(eventName, data) {
-    // Placeholder for event broadcasting
-    // In production, this would integrate with an event bus or WebSocket system
-    if (process.env.DEBUG) {
-      console.log(`[TaskService] Event: ${eventName}`, data);
-    }
-  }
-
-  /**
-   * Get execution history
-   * @param {Object} filters - Optional filters (taskName, runId, success)
-   * @returns {Array} Filtered execution history
-   */
-  getExecutionHistory(filters = {}) {
-    let history = [...this.executionHistory];
-
-    if (filters.taskName) {
-      history = history.filter(h => h.taskName === filters.taskName);
-    }
-
-    if (filters.runId) {
-      history = history.filter(h => h.runId === filters.runId);
-    }
-
-    if (filters.success !== undefined) {
-      history = history.filter(h => h.success === filters.success);
-    }
-
-    return history;
-  }
-
-  /**
-   * Clear execution history
-   */
-  clearHistory() {
-    this.executionHistory = [];
-  }
-
-  /**
-   * Get registered tasks
-   * @returns {Array<string>} List of registered task names
-   */
-  getRegisteredTasks() {
-    return Array.from(this.tasks.keys());
   }
 }

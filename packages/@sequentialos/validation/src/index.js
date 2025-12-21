@@ -6,132 +6,139 @@
 import { createValidationError } from '@sequentialos/error-handling';
 
 /**
+ * Higher-order function to create validators with consistent structure
+ * @param {string} name - Name of the field being validated
+ * @param {function} checkFn - Validation function that returns error message or null if valid
+ * @param {string} defaultErrorMsg - Default error message if checkFn doesn't provide one
+ * @returns {function} Validator function
+ */
+export const createValidator = (name, checkFn, defaultErrorMsg = null) => {
+  return (value, ...args) => {
+    // Null/undefined check
+    if (value === null || value === undefined) {
+      return { valid: false, error: `${name} is required` };
+    }
+
+    // Type check for string validators
+    if (typeof value !== 'string' && checkFn.toString().includes('string')) {
+      return { valid: false, error: `${name} must be a string` };
+    }
+
+    // Empty string check
+    if (typeof value === 'string' && value.trim() === '') {
+      return { valid: false, error: `${name} cannot be empty` };
+    }
+
+    // Run custom validation logic
+    const error = checkFn(value, ...args);
+    if (error) {
+      return { valid: false, error };
+    }
+
+    return { valid: true };
+  };
+};
+
+/**
  * Validate relative path format (no absolute paths, no traversal attempts)
  * @param {string} path - Path to validate
  * @returns {{valid: boolean, error?: string}}
  */
-export function validatePathRelative(path) {
-  if (path === null || path === undefined) {
-    return { valid: false, error: 'Path is required' };
-  }
+export const validatePathRelative = createValidator(
+  'Path',
+  (path) => {
+    // Check for absolute paths
+    if (path.startsWith('/') || /^[a-zA-Z]:[/\\]/.test(path)) {
+      return 'Path must be relative, not absolute';
+    }
 
-  if (typeof path !== 'string') {
-    return { valid: false, error: 'Path must be a string' };
-  }
+    // Check for path traversal attempts
+    if (path.includes('..')) {
+      return 'Path traversal sequences (..) are not allowed';
+    }
 
-  if (path.trim() === '') {
-    return { valid: false, error: 'Path cannot be empty' };
-  }
+    // Check for dangerous patterns
+    if (path.includes('\0')) {
+      return 'Null bytes are not allowed in paths';
+    }
 
-  // Check for absolute paths
-  if (path.startsWith('/') || /^[a-zA-Z]:[/\\]/.test(path)) {
-    return { valid: false, error: 'Path must be relative, not absolute' };
+    return null;
   }
-
-  // Check for path traversal attempts
-  if (path.includes('..')) {
-    return { valid: false, error: 'Path traversal sequences (..) are not allowed' };
-  }
-
-  // Check for dangerous patterns
-  if (path.includes('\0')) {
-    return { valid: false, error: 'Null bytes are not allowed in paths' };
-  }
-
-  return { valid: true };
-}
+);
 
 /**
  * Validate task name format (kebab-case, no spaces)
  * @param {string} name - Task name to validate
  * @returns {{valid: boolean, error?: string}}
  */
-export function validateTaskName(name) {
-  if (name === null || name === undefined) {
-    return { valid: false, error: 'Task name is required' };
-  }
+export const validateTaskName = createValidator(
+  'Task name',
+  (name) => {
+    // Check for spaces
+    if (name.includes(' ')) {
+      return 'Task name must not contain spaces (use kebab-case)';
+    }
 
-  if (typeof name !== 'string') {
-    return { valid: false, error: 'Task name must be a string' };
-  }
+    // Validate kebab-case format: lowercase letters, numbers, hyphens only
+    const kebabCaseRegex = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+    if (!kebabCaseRegex.test(name)) {
+      return 'Task name must be kebab-case (lowercase letters, numbers, and hyphens only)';
+    }
 
-  if (name.trim() === '') {
-    return { valid: false, error: 'Task name cannot be empty' };
-  }
+    // Ensure it doesn't start or end with hyphen
+    if (name.startsWith('-') || name.endsWith('-')) {
+      return 'Task name cannot start or end with a hyphen';
+    }
 
-  // Check for spaces
-  if (name.includes(' ')) {
-    return { valid: false, error: 'Task name must not contain spaces (use kebab-case)' };
+    return null;
   }
-
-  // Validate kebab-case format: lowercase letters, numbers, hyphens only
-  const kebabCaseRegex = /^[a-z0-9]+(-[a-z0-9]+)*$/;
-  if (!kebabCaseRegex.test(name)) {
-    return { valid: false, error: 'Task name must be kebab-case (lowercase letters, numbers, and hyphens only)' };
-  }
-
-  // Ensure it doesn't start or end with hyphen
-  if (name.startsWith('-') || name.endsWith('-')) {
-    return { valid: false, error: 'Task name cannot start or end with a hyphen' };
-  }
-
-  return { valid: true };
-}
+);
 
 /**
  * Validate file name safety (no path separators, no special chars)
  * @param {string} name - File name to validate
  * @returns {{valid: boolean, error?: string}}
  */
-export function validateFileName(name) {
-  if (name === null || name === undefined) {
-    return { valid: false, error: 'File name is required' };
-  }
+export const validateFileName = createValidator(
+  'File name',
+  (name) => {
+    // Check for path separators
+    if (name.includes('/') || name.includes('\\')) {
+      return 'File name cannot contain path separators';
+    }
 
-  if (typeof name !== 'string') {
-    return { valid: false, error: 'File name must be a string' };
-  }
+    // Check for dangerous characters
+    if (name.includes('\0')) {
+      return 'Null bytes are not allowed in file names';
+    }
 
-  if (name.trim() === '') {
-    return { valid: false, error: 'File name cannot be empty' };
-  }
+    // Check for reserved names (Windows)
+    const reservedNames = ['CON', 'PRN', 'AUX', 'NUL', 'COM1', 'COM2', 'COM3', 'COM4', 'COM5',
+                            'COM6', 'COM7', 'COM8', 'COM9', 'LPT1', 'LPT2', 'LPT3', 'LPT4',
+                            'LPT5', 'LPT6', 'LPT7', 'LPT8', 'LPT9'];
+    const nameWithoutExt = name.split('.')[0].toUpperCase();
+    if (reservedNames.includes(nameWithoutExt)) {
+      return `File name "${name}" is reserved by the system`;
+    }
 
-  // Check for path separators
-  if (name.includes('/') || name.includes('\\')) {
-    return { valid: false, error: 'File name cannot contain path separators' };
-  }
+    // Check for dots at start (hidden files are ok, but just dot or double dot are not)
+    if (name === '.' || name === '..') {
+      return 'File name cannot be "." or ".."';
+    }
 
-  // Check for dangerous characters
-  if (name.includes('\0')) {
-    return { valid: false, error: 'Null bytes are not allowed in file names' };
-  }
+    // Check for control characters
+    if (/[\x00-\x1f\x7f]/.test(name)) {
+      return 'File name contains invalid control characters';
+    }
 
-  // Check for reserved names (Windows)
-  const reservedNames = ['CON', 'PRN', 'AUX', 'NUL', 'COM1', 'COM2', 'COM3', 'COM4', 'COM5',
-                          'COM6', 'COM7', 'COM8', 'COM9', 'LPT1', 'LPT2', 'LPT3', 'LPT4',
-                          'LPT5', 'LPT6', 'LPT7', 'LPT8', 'LPT9'];
-  const nameWithoutExt = name.split('.')[0].toUpperCase();
-  if (reservedNames.includes(nameWithoutExt)) {
-    return { valid: false, error: `File name "${name}" is reserved by the system` };
-  }
+    // Check for dangerous characters (< > : " | ? *)
+    if (/[<>:"|?*]/.test(name)) {
+      return 'File name contains invalid characters: < > : " | ? *';
+    }
 
-  // Check for dots at start (hidden files are ok, but just dot or double dot are not)
-  if (name === '.' || name === '..') {
-    return { valid: false, error: 'File name cannot be "." or ".."' };
+    return null;
   }
-
-  // Check for control characters
-  if (/[\x00-\x1f\x7f]/.test(name)) {
-    return { valid: false, error: 'File name contains invalid control characters' };
-  }
-
-  // Check for dangerous characters (< > : " | ? *)
-  if (/[<>:"|?*]/.test(name)) {
-    return { valid: false, error: 'File name contains invalid characters: < > : " | ? *' };
-  }
-
-  return { valid: true };
-}
+);
 
 /**
  * Check if a required field is present and not empty
@@ -140,6 +147,7 @@ export function validateFileName(name) {
  * @returns {{valid: boolean, error?: string}}
  */
 export function validateRequired(value, fieldName) {
+  // Null/undefined check
   if (value === null || value === undefined) {
     return { valid: false, error: `${fieldName} is required` };
   }
@@ -170,6 +178,7 @@ export function validateRequired(value, fieldName) {
  * @returns {{valid: boolean, error?: string}}
  */
 export function validateType(value, expectedType, fieldName) {
+  // Null/undefined check
   if (value === null || value === undefined) {
     return { valid: false, error: `${fieldName} must be of type ${expectedType}` };
   }
@@ -263,11 +272,11 @@ export function validateInputSchema(input, schema) {
  */
 export function validateAndSanitizeMetadata(metadata) {
   if (metadata === null || metadata === undefined) {
-    return { valid: true, data: {} };
+    return buildSanitizerResult(true, {});
   }
 
   if (typeof metadata !== 'object' || Array.isArray(metadata)) {
-    return { valid: false, error: 'Metadata must be an object' };
+    return buildSanitizerResult(false, null, 'Metadata must be an object');
   }
 
   const sanitized = {};
@@ -275,17 +284,17 @@ export function validateAndSanitizeMetadata(metadata) {
   for (const [key, value] of Object.entries(metadata)) {
     // Validate key format
     if (typeof key !== 'string' || key.trim() === '') {
-      return { valid: false, error: 'Metadata keys must be non-empty strings' };
+      return buildSanitizerResult(false, null, 'Metadata keys must be non-empty strings');
     }
 
     // Disallow dangerous key names (prototype pollution attacks)
     if (key.startsWith('__') || key.startsWith('$') || key === 'constructor' || key === 'prototype') {
-      return { valid: false, error: `Metadata key "${key}" is not allowed` };
+      return buildSanitizerResult(false, null, `Metadata key "${key}" is not allowed`);
     }
 
     // Only allow primitive values and simple objects
     if (typeof value === 'function') {
-      return { valid: false, error: `Metadata value for "${key}" cannot be a function` };
+      return buildSanitizerResult(false, null, `Metadata value for "${key}" cannot be a function`);
     }
 
     // Sanitize strings
@@ -299,22 +308,36 @@ export function validateAndSanitizeMetadata(metadata) {
         typeof v === 'object' && v !== null || typeof v === 'function'
       );
       if (hasNonPrimitive) {
-        return { valid: false, error: `Metadata array for "${key}" can only contain primitive values` };
+        return buildSanitizerResult(false, null, `Metadata array for "${key}" can only contain primitive values`);
       }
       sanitized[key] = value;
     } else if (typeof value === 'object') {
       // Allow one level of nested objects with primitive values only
       for (const [nestedKey, nestedValue] of Object.entries(value)) {
         if (typeof nestedValue === 'object' && nestedValue !== null || typeof nestedValue === 'function') {
-          return { valid: false, error: `Metadata for "${key}.${nestedKey}" cannot be an object or function` };
+          return buildSanitizerResult(false, null, `Metadata for "${key}.${nestedKey}" cannot be an object or function`);
         }
       }
       sanitized[key] = value;
     }
   }
 
-  return { valid: true, data: sanitized };
+  return buildSanitizerResult(true, sanitized);
 }
+
+/**
+ * Build validation result for sanitizer functions
+ * @param {boolean} isValid - Whether the validation passed
+ * @param {any} data - Sanitized data
+ * @param {string|null} error - Error message if invalid
+ * @returns {{valid: boolean, error?: string, data?: any}}
+ */
+const buildSanitizerResult = (isValid, data = null, error = null) => {
+  if (isValid) {
+    return { valid: true, data };
+  }
+  return { valid: false, error };
+};
 
 /**
  * Escape HTML entities to prevent XSS
@@ -323,11 +346,11 @@ export function validateAndSanitizeMetadata(metadata) {
  */
 export function escapeHtml(text) {
   if (text === null || text === undefined) {
-    return { valid: true, data: '' };
+    return buildSanitizerResult(true, '');
   }
 
   if (typeof text !== 'string') {
-    return { valid: false, error: 'Input must be a string' };
+    return buildSanitizerResult(false, null, 'Input must be a string');
   }
 
   const escaped = text
@@ -338,7 +361,7 @@ export function escapeHtml(text) {
     .replace(/'/g, '&#x27;')
     .replace(/\//g, '&#x2F;');
 
-  return { valid: true, data: escaped };
+  return buildSanitizerResult(true, escaped);
 }
 
 /**
@@ -348,11 +371,11 @@ export function escapeHtml(text) {
  */
 export function sanitizeInput(input) {
   if (input === null || input === undefined) {
-    return { valid: true, data: '' };
+    return buildSanitizerResult(true, '');
   }
 
   if (typeof input !== 'string') {
-    return { valid: false, error: 'Input must be a string' };
+    return buildSanitizerResult(false, null, 'Input must be a string');
   }
 
   // Remove null bytes
@@ -364,7 +387,7 @@ export function sanitizeInput(input) {
   // Trim whitespace
   sanitized = sanitized.trim();
 
-  return { valid: true, data: sanitized };
+  return buildSanitizerResult(true, sanitized);
 }
 
 /**

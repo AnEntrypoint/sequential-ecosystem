@@ -7,8 +7,30 @@ Route helper utilities for Express routes in Sequential OS.
 This package is part of the Sequential OS monorepo and is available locally:
 
 ```javascript
+// Import all utilities from main entry point
 import { requireResource, parsePagination, normalizeId, buildResourceUrl, parseSort } from '@sequentialos/route-helpers';
+
+// Or use subpath imports for better tree-shaking
+import { requireResource } from '@sequentialos/route-helpers/request';
+import { parsePagination } from '@sequentialos/route-helpers/query';
+import { parseSort } from '@sequentialos/route-helpers/query/parse-sort';
+import { normalizeId } from '@sequentialos/route-helpers/transform';
+import { buildResourceUrl } from '@sequentialos/route-helpers/url';
 ```
+
+## Package Structure
+
+The package is organized into functional subdirectories:
+
+- `request/` - Request validation helpers
+  - `require-resource.js` - Validate required request properties
+- `query/` - Query parameter parsing
+  - `parse-pagination.js` - Parse pagination params
+  - `parse-sort.js` - Parse sort params
+- `transform/` - Data transformation utilities
+  - `normalize-id.js` - ID format normalization
+- `url/` - URL building utilities
+  - `build-resource-url.js` - Safe URL construction
 
 ## API
 

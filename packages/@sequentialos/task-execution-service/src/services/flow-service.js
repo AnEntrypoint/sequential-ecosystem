@@ -1,14 +1,27 @@
 /**
  * FlowService - Handles flow execution for GXE webhook dispatch
  *
- * Provides flow execution with lifecycle management, step orchestration,
- * and consistent response formatting for webhook-style invocations.
+ * Extends ExecutionService with flow-specific execution logic including step orchestration.
  */
 
-export class FlowService {
-  constructor() {
-    this.flows = new Map();
-    this.executionHistory = [];
+import { ExecutionService } from '@sequentialos/execution-service-base';
+import logger from '@sequentialos/sequential-logging';
+
+export class FlowService extends ExecutionService {
+  /**
+   * Create a new FlowService instance
+   * @param {Object} options - Configuration options
+   * @param {boolean} options.debug - Enable debug logging (defaults to false)
+   * @param {boolean} options.exitOnError - Exit process on flow errors (defaults to false)
+   * @param {number} options.timeout - Default timeout in milliseconds (defaults to 60000 for flows)
+   */
+  constructor(options = {}) {
+    // Flows typically need longer timeout than tasks, so default to 60000ms
+    const flowOptions = {
+      timeout: 60000,
+      ...options
+    };
+    super('flow', flowOptions);
   }
 
   /**
@@ -17,7 +30,15 @@ export class FlowService {
    * @param {Function} handler - Async function to execute the flow
    */
   registerFlow(flowName, handler) {
-    this.flows.set(flowName, handler);
+    this.registerHandler(flowName, handler);
+  }
+
+  /**
+   * Get registered flows
+   * @returns {Array<string>} List of registered flow names
+   */
+  getRegisteredFlows() {
+    return this.getRegisteredHandlers();
   }
 
   /**
@@ -32,20 +53,18 @@ export class FlowService {
    */
   async executeFlow(flowName, input = {}, options = {}) {
     const {
-      flowId = this.generateFlowId(),
+      flowId = this.generateId(),
       broadcast = false,
-      timeout = 60000 // Flows typically need longer timeout than tasks
+      timeout = this.timeout
     } = options;
 
     const startTime = new Date().toISOString();
 
     try {
-      // Check if flow is registered
-      const flowHandler = this.flows.get(flowName);
+      const flowHandler = this.handlers.get(flowName);
 
       if (!flowHandler) {
         // Flow not registered - return mock success for testing
-        // In production, this would throw an error or load flow dynamically
         const result = {
           success: true,
           data: {
@@ -122,82 +141,14 @@ export class FlowService {
         this.broadcastEvent('flow:failed', errorResult);
       }
 
+      // Exit on error if configured
+      if (this.exitOnError) {
+        logger.error(`[FlowService] Flow failed: ${flowName}`, error);
+        process.exit(1);
+      }
+
       throw error;
     }
-  }
-
-  /**
-   * Execute a promise with timeout
-   * @param {Promise} promise - The promise to execute
-   * @param {number} timeoutMs - Timeout in milliseconds
-   * @returns {Promise} The promise result or timeout error
-   */
-  async executeWithTimeout(promise, timeoutMs) {
-    return Promise.race([
-      promise,
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error(`Flow execution timeout after ${timeoutMs}ms`)), timeoutMs)
-      )
-    ]);
-  }
-
-  /**
-   * Generate a unique flow ID
-   * @returns {string} Unique flow identifier
-   */
-  generateFlowId() {
-    return `flow-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-  }
-
-  /**
-   * Broadcast an event (placeholder for event system integration)
-   * @param {string} eventName - Name of the event
-   * @param {Object} data - Event data
-   */
-  broadcastEvent(eventName, data) {
-    // Placeholder for event broadcasting
-    // In production, this would integrate with an event bus or WebSocket system
-    if (process.env.DEBUG) {
-      console.log(`[FlowService] Event: ${eventName}`, data);
-    }
-  }
-
-  /**
-   * Get execution history
-   * @param {Object} filters - Optional filters (flowName, flowId, success)
-   * @returns {Array} Filtered execution history
-   */
-  getExecutionHistory(filters = {}) {
-    let history = [...this.executionHistory];
-
-    if (filters.flowName) {
-      history = history.filter(h => h.flowName === filters.flowName);
-    }
-
-    if (filters.flowId) {
-      history = history.filter(h => h.flowId === filters.flowId);
-    }
-
-    if (filters.success !== undefined) {
-      history = history.filter(h => h.success === filters.success);
-    }
-
-    return history;
-  }
-
-  /**
-   * Clear execution history
-   */
-  clearHistory() {
-    this.executionHistory = [];
-  }
-
-  /**
-   * Get registered flows
-   * @returns {Array<string>} List of registered flow names
-   */
-  getRegisteredFlows() {
-    return Array.from(this.flows.keys());
   }
 
   /**

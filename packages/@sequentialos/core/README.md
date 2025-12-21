@@ -1,6 +1,6 @@
 # @sequential/core
 
-Core utilities package consolidating error-handling, param-validation, and response-formatting for the Sequential Ecosystem.
+Core utilities package consolidating error-handling and response-formatting for the Sequential Ecosystem.
 
 **Status**: Production-ready
 **Version**: 1.0.0
@@ -8,13 +8,14 @@ Core utilities package consolidating error-handling, param-validation, and respo
 
 ## Overview
 
-`@sequential/core` provides three main modules:
+`@sequential/core` provides two main modules:
 
 1. **Error Handling** - Error serialization, categorization, logging, and detailed error responses
-2. **Validation** - Parameter validation, schema validation, file path security, and metadata validation
-3. **Response Formatting** - Standardized response formatting for success, errors, pagination, metrics, and batches
+2. **Response Formatting** - Standardized response formatting for success, errors, pagination, metrics, and batches
 
 All modules follow consistent patterns and integrate seamlessly with Express.js applications.
+
+**Note**: Validation functionality has been moved to `@sequentialos/validation` package for better separation of concerns.
 
 ## Installation
 
@@ -22,7 +23,7 @@ This package is part of the sequential-ecosystem monorepo and is available local
 
 ```javascript
 // Available in monorepo packages
-import { validation, response } from '@sequentialos/core';
+import { response } from '@sequentialos/core';
 ```
 
 For standalone usage (if published to npm):
@@ -91,106 +92,6 @@ import { ErrorCategories } from '@sequential/core';
 
 // FILE_NOT_FOUND, PERMISSION_DENIED, PATH_TRAVERSAL, INVALID_INPUT,
 // FILE_TOO_LARGE, ENCODING_ERROR, DISK_SPACE, OPERATION_FAILED, UNKNOWN
-```
-
-### Validation (`./validation`)
-
-Parameter and schema validation with security checks.
-
-#### Functions
-
-**`validateFilePath(filePath)`**
-Validate file path with symlink protection and path traversal detection.
-
-```javascript
-import { validation } from '@sequential/core';
-
-const safePath = validation.validateFilePath(userProvidedPath);
-// Throws if:
-// - Path is invalid
-// - Path traversal detected
-// - Access denied
-```
-
-**`validateTaskName(taskName)`**
-Validate task names (alphanumeric, dot, dash, underscore; max 100 chars).
-
-```javascript
-import { validation } from '@sequential/core';
-
-const name = validation.validateTaskName('my-task_v1.0');
-// Throws if: invalid characters, too long, not a string
-```
-
-**`validateFileName(fileName)`**
-Validate file names (no slashes, no leading dot; max 255 chars).
-
-```javascript
-import { validation } from '@sequential/core';
-
-const name = validation.validateFileName('document.pdf');
-// Throws if: contains path separators, starts with dot, too long
-```
-
-**`validateParam(value, name, type)`**
-Simple parameter validation.
-
-```javascript
-import { validation } from '@sequential/core';
-
-const userId = validation.validateParam(req.params.userId, 'userId', 'string');
-// Throws if required or wrong type
-```
-
-**`validateRequired(...params)`**
-Check multiple required parameters.
-
-```javascript
-import { validation } from '@sequential/core';
-
-validation.validateRequired(
-  { name: 'email', value: req.body.email },
-  { name: 'password', value: req.body.password }
-);
-// Throws if any are missing
-```
-
-**`validateType(value, name, expectedType)`**
-Type validation with error message.
-
-```javascript
-import { validation } from '@sequential/core';
-
-const age = validation.validateType(input.age, 'age', 'number');
-// Throws: "age must be a number, got string"
-```
-
-**`validateInputSchema(input, schema)`**
-Validate input against schema definition.
-
-```javascript
-import { validation } from '@sequential/core';
-
-const schema = [
-  { name: 'email', type: 'string', required: true },
-  { name: 'age', type: 'number', required: false },
-  { name: 'tags', type: 'array', required: false }
-];
-
-const errors = validation.validateInputSchema(input, schema);
-if (errors) {
-  // errors is array of error messages
-}
-```
-
-**`validateAndSanitizeMetadata(metadata, maxSize = 10 * 1024 * 1024)`**
-Validate metadata is JSON-serializable and within size limits.
-
-```javascript
-import { validation } from '@sequential/core';
-
-const safe = validation.validateAndSanitizeMetadata(metadata, 5 * 1024 * 1024);
-// Throws if not an object, not serializable, or exceeds max size
 ```
 
 ### Response Formatting (`./response`)
@@ -309,11 +210,11 @@ app.use((err, req, res, next) => {
 
 ```javascript
 import { createDetailedErrorResponse } from '@sequential/core';
-import { validation } from '@sequential/core';
+import { validateFilePath } from '@sequentialos/validation';
 
 app.post('/api/files/upload', (req, res) => {
   try {
-    const filePath = validation.validateFilePath(req.body.path);
+    const filePath = validateFilePath(req.body.path);
     fs.writeFileSync(filePath, req.body.content);
     res.json({ success: true, path: filePath });
   } catch (err) {
@@ -326,11 +227,12 @@ app.post('/api/files/upload', (req, res) => {
 ### Input Validation
 
 ```javascript
-import { validation, response } from '@sequential/core';
+import { response } from '@sequential/core';
+import { validateRequired, validateInputSchema } from '@sequentialos/validation';
 
 app.post('/api/users', (req, res) => {
   try {
-    validation.validateRequired(
+    validateRequired(
       { name: 'email', value: req.body.email },
       { name: 'password', value: req.body.password }
     );
@@ -340,7 +242,7 @@ app.post('/api/users', (req, res) => {
       { name: 'age', type: 'number', required: false }
     ];
 
-    const errors = validation.validateInputSchema(req.body, schema);
+    const errors = validateInputSchema(req.body, schema);
     if (errors) {
       return res.status(400).json(
         response.createErrorResponse('VALIDATION_ERROR', 'Validation failed', { errors })
@@ -372,9 +274,8 @@ import {
 ### Namespace imports (recommended)
 
 ```javascript
-import { validation, response } from '@sequential/core';
+import { response } from '@sequential/core';
 
-validation.validateFilePath(path);
 response.createSuccessResponse(data);
 ```
 
@@ -382,7 +283,6 @@ response.createSuccessResponse(data);
 
 ```javascript
 import * as errorHandling from '@sequential/core/error';
-import * as validation from '@sequential/core/validation';
 import * as response from '@sequential/core/response';
 ```
 
@@ -391,7 +291,6 @@ import * as response from '@sequential/core/response';
 All exports are stable and production-ready:
 
 - **Error Handling**: Stable - actively used in error-logging.test.js
-- **Validation**: Stable - actively used across desktop-server routes
 - **Response Formatting**: Stable - standardized HTTP response format
 
 ## Dependencies

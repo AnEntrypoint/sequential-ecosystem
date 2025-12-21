@@ -1,0 +1,18 @@
+{
+  "name": "@sequentialos/id-generator",
+  "version": "1.0.0",
+  "description": "ID generation utilities for Sequential OS",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "keywords": [
+    "id",
+    "generator",
+    "uuid",
+    "nanoid"
+  ],
+  "author": "lanmower",
+  "license": "MIT"
+}
