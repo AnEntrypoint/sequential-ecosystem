@@ -49,7 +49,9 @@ async function executeTool() {
     }
     
     // Import ToolRegistry
-    const ToolRegistryModule = require(path.join(__dirname, '../../packages/@sequentialos/app-sdk/src/tool-registry.js'));
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
+    const toolRegistryPath = path.join(__dirname, '../../packages/@sequentialos/app-sdk/src/tool-registry.js');
+    const ToolRegistryModule = await import(`file://${toolRegistryPath}`);
     const ToolRegistry = ToolRegistryModule.ToolRegistry || ToolRegistryModule.default;
     
     if (!ToolRegistry) {

@@ -47,7 +47,9 @@ async function executeFlow() {
     }
     
     // Import FlowService
-    const FlowServiceModule = require(path.join(__dirname, '../../packages/@sequentialos/task-execution-service/src/services/flow-service.js'));
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
+    const flowServicePath = path.join(__dirname, '../../packages/@sequentialos/task-execution-service/src/services/flow-service.js');
+    const FlowServiceModule = await import(`file://${flowServicePath}`);
     const FlowService = FlowServiceModule.FlowService || FlowServiceModule.default;
     
     if (!FlowService) {

@@ -1,0 +1,17 @@
+{
+  "name": "@sequentialos/timestamp-utilities",
+  "version": "1.0.0",
+  "description": "Timestamp formatting and utility functions for Sequential OS",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "keywords": [
+    "timestamp",
+    "datetime",
+    "formatting"
+  ],
+  "author": "lanmower",
+  "license": "MIT"
+}

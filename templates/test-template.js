@@ -1,8 +1,8 @@
-const { test, describe, before, after } = require('node:test');
-const assert = require('node:assert');
+import { test, describe, before, after } from 'node:test';
+import assert from 'node:assert';
 
 // Import the module you're testing
-// const { YourClass, yourFunction } = require('../src/index.js');
+// import { YourClass, yourFunction } from '../src/index.js';
 
 describe('Package Name Tests', () => {
 

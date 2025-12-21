@@ -18,6 +18,14 @@ All modules follow consistent patterns and integrate seamlessly with Express.js 
 
 ## Installation
 
+This package is part of the sequential-ecosystem monorepo and is available locally:
+
+```javascript
+// Available in monorepo packages
+import { validation, response } from '@sequentialos/core';
+```
+
+For standalone usage (if published to npm):
 ```bash
 npm install @sequential/core
 ```
@@ -59,49 +67,6 @@ normalizeError(null)              // returns null
 normalizeError('string')          // returns SerializedError
 normalizeError({message: 'x'})    // returns SerializedError
 normalizeError(new Error('x'))    // returns SerializedError
-```
-
-**`logFileOperation(operation, filePath, error, context = {})`**
-Log a file operation error with categorization and context.
-
-```javascript
-import { logFileOperation, ErrorCategories } from '@sequential/core';
-
-try {
-  await fs.readFile(path);
-} catch (err) {
-  const log = logFileOperation('read', path, err, { userId: 123 });
-  // Returns: { timestamp, operation, category, filePath, error, context, severity }
-}
-```
-
-**`logFileSuccess(operation, filePath, duration = 0, metadata = {})`**
-Log successful file operations with timing.
-
-```javascript
-import { logFileSuccess } from '@sequential/core';
-
-const startTime = Date.now();
-await fs.writeFile(path, data);
-const duration = Date.now() - startTime;
-logFileSuccess('write', path, duration, { size: data.length });
-```
-
-**`logBatchFileOperation(operation, fileCount, error, duration = 0)`**
-Log batch operations affecting multiple files.
-
-```javascript
-import { logBatchFileOperation } from '@sequential/core';
-
-const startTime = Date.now();
-try {
-  for (const file of files) {
-    await fs.unlink(file);
-  }
-  logBatchFileOperation('delete', files.length, null, Date.now() - startTime);
-} catch (err) {
-  logBatchFileOperation('delete', files.length, err, Date.now() - startTime);
-}
 ```
 
 **`createDetailedErrorResponse(operation, filePath, error, statusCode = 500)`**
@@ -340,25 +305,20 @@ app.use((err, req, res, next) => {
 });
 ```
 
-### File Operation with Logging
+### File Operation with Error Handling
 
 ```javascript
-import { logFileSuccess, logFileOperation, createDetailedErrorResponse } from '@sequential/core';
+import { createDetailedErrorResponse } from '@sequential/core';
 import { validation } from '@sequential/core';
 
 app.post('/api/files/upload', (req, res) => {
   try {
     const filePath = validation.validateFilePath(req.body.path);
-    const startTime = Date.now();
-
     fs.writeFileSync(filePath, req.body.content);
-    logFileSuccess('upload', filePath, Date.now() - startTime);
-
     res.json({ success: true, path: filePath });
   } catch (err) {
-    const log = logFileOperation('upload', req.body.path, err);
     const response = createDetailedErrorResponse('upload', req.body.path, err);
-    res.status(400).json(response);
+    res.status(response.statusCode).json(response.error);
   }
 });
 ```
@@ -404,7 +364,6 @@ import {
   SerializedError,
   serializeError,
   normalizeError,
-  logFileOperation,
   createDetailedErrorResponse,
   ErrorCategories
 } from '@sequential/core';

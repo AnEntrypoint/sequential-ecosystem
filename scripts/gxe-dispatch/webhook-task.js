@@ -58,7 +58,9 @@ async function executeTask() {
     }
     
     // Import TaskService
-    const TaskServiceModule = require(path.join(__dirname, '../../packages/@sequentialos/task-execution-service/src/services/task-service.js'));
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
+    const taskServicePath = path.join(__dirname, '../../packages/@sequentialos/task-execution-service/src/services/task-service.js');
+    const TaskServiceModule = await import(`file://${taskServicePath}`);
     const TaskService = TaskServiceModule.TaskService || TaskServiceModule.default;
     
     if (!TaskService) {

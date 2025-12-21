@@ -1,0 +1,30 @@
+{
+  "name": "@sequentialos/task-execution-service",
+  "version": "1.0.0",
+  "description": "Task and flow execution service for Sequential OS GXE webhook dispatch",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test.js"
+  },
+  "exports": {
+    ".": "./src/index.js",
+    "./task-service": "./src/services/task-service.js",
+    "./flow-service": "./src/services/flow-service.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-ecosystem"
+  },
+  "keywords": [
+    "sequential",
+    "task-execution",
+    "flow-execution",
+    "webhook",
+    "gxe"
+  ],
+  "author": "Sequential Ecosystem <contact@sequential.dev>",
+  "license": "MIT",
+  "dependencies": {},
+  "owner": "Core Services"
+}
