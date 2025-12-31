@@ -99,7 +99,7 @@ export class UnifiedExecutionService extends ExecutionService {
       const handler = this.handlers.get(name);
 
       if (!handler) {
-        return this.mockExecution(name, input, executionId, startTime);
+        throw new Error(`${this.label} '${name}' not found or not registered`);
       }
 
       let result;
@@ -128,26 +128,6 @@ export class UnifiedExecutionService extends ExecutionService {
     ]);
   }
 
-  mockExecution(name, input, id, startTime) {
-    const result = {
-      success: true,
-      data: {
-        message: `${this.label} '${name}' executed (mock - handler not registered)`,
-        input,
-        name,
-        mock: true
-      },
-      id,
-      name,
-      type: this.type,
-      startTime,
-      endTime: new Date().toISOString(),
-      duration: 0
-    };
-    this.executionHistory.push(result);
-    logger.warn(`[${this.label}Service] Using mock execution for: ${name}`);
-    return result;
-  }
 
   _buildSuccessResult(name, data, id, startTime, broadcast) {
     const endTime = new Date().toISOString();
@@ -184,7 +164,7 @@ export class UnifiedExecutionService extends ExecutionService {
       duration: new Date(endTime) - new Date(startTime)
     };
     this.executionHistory.push(result);
-    logger.error(`[${this.label}Service] Failed: ${name}`, error);
+    logger.error(`[${this.label}Service] Failed: ${name} - ${error.message}`);
     if (broadcast) this._broadcastEvent(`${this.type}:failed`, result);
     return result;
   }

@@ -21,7 +21,14 @@ for (let i = 0; i < process.argv.length; i++) {
     try {
       args.input = JSON.parse(arg.split('=').slice(1).join('='));
     } catch (e) {
-      args.input = {};
+      console.error(JSON.stringify({
+        success: false,
+        error: {
+          message: `Invalid JSON input: ${e.message}`,
+          code: 'JSON_PARSE_ERROR'
+        }
+      }, null, 2));
+      process.exit(1);
     }
   }
   if (arg.startsWith('--taskId=')) args.taskId = arg.split('=')[1];
@@ -29,8 +36,13 @@ for (let i = 0; i < process.argv.length; i++) {
 
 // Validate required arguments
 if (!args.taskName) {
-  logger.error('Error: taskName is required');
-  logger.error('Usage: gxe . webhook:task --taskName=myTask --input=\'{...}\'');
+  console.error(JSON.stringify({
+    success: false,
+    error: {
+      message: 'taskName is required',
+      code: 'MISSING_REQUIRED_PARAMETER'
+    }
+  }, null, 2));
   process.exit(1);
 }
 

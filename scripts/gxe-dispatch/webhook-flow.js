@@ -21,7 +21,14 @@ for (let i = 0; i < process.argv.length; i++) {
     try {
       args.input = JSON.parse(arg.split('=').slice(1).join('='));
     } catch (e) {
-      args.input = {};
+      console.error(JSON.stringify({
+        success: false,
+        error: {
+          message: `Invalid JSON input: ${e.message}`,
+          code: 'JSON_PARSE_ERROR'
+        }
+      }, null, 2));
+      process.exit(1);
     }
   }
   if (arg.startsWith('--flowId=')) args.flowId = arg.split('=')[1];
@@ -29,8 +36,13 @@ for (let i = 0; i < process.argv.length; i++) {
 
 // Validate required arguments
 if (!args.flowName) {
-  logger.error('Error: flowName is required');
-  logger.error('Usage: gxe . webhook:flow --flowName=myFlow --input=\'{...}\'');
+  console.error(JSON.stringify({
+    success: false,
+    error: {
+      message: 'flowName is required',
+      code: 'MISSING_REQUIRED_PARAMETER'
+    }
+  }, null, 2));
   process.exit(1);
 }
 
@@ -40,7 +52,13 @@ await taskRegistry.loadAll();
 
 const flowEntry = flowRegistry.get(args.flowName);
 if (!flowEntry) {
-  logger.error(`Flow not found: ${args.flowName}`);
+  console.error(JSON.stringify({
+    success: false,
+    error: {
+      message: `Flow not found: ${args.flowName}`,
+      code: 'FLOW_NOT_FOUND'
+    }
+  }, null, 2));
   process.exit(1);
 }
 
@@ -66,7 +84,10 @@ try {
   const endTime = new Date().toISOString();
   const result = {
     success: false,
-    error: { message: err.message },
+    error: {
+      message: err.message,
+      code: 'FLOW_EXECUTION_ERROR'
+    },
     id: `flow-${args.flowId || nanoid(9)}`,
     name: args.flowName,
     type: 'flow',

@@ -1,8 +1,6 @@
-import { createToolService } from '@sequentialos/execution-service-unified';
 import { toolRegistry } from '@sequentialos/tool-registry';
+import { executeTool } from '@sequentialos/tool-executor';
 import logger from '@sequentialos/sequential-logging';
-
-const toolService = createToolService();
 
 export async function __callHostTool__(category, toolName, input = {}) {
   const fullName = `${category}:${toolName}`;
@@ -16,13 +14,9 @@ export async function __callHostTool__(category, toolName, input = {}) {
       throw new Error(`Tool not found: ${fullName}. Available tools: ${Array.from(toolRegistry.list()).join(', ')}`);
     }
 
-    const result = await toolService.execute(fullName, input);
+    const result = await executeTool(category, toolName, input);
 
-    if (!result.success) {
-      throw new Error(result.error?.message || 'Tool execution failed');
-    }
-
-    return result.data;
+    return result;
 
   } catch (error) {
     logger.error(`[ToolDispatcher] Tool failed: ${fullName}`, error);
@@ -30,7 +24,7 @@ export async function __callHostTool__(category, toolName, input = {}) {
   }
 }
 
-export { toolRegistry, toolService };
+export { toolRegistry };
 
 // Make globally available for task code
 globalThis.__callHostTool__ = __callHostTool__;

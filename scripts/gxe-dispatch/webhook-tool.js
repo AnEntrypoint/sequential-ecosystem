@@ -21,7 +21,14 @@ for (let i = 0; i < process.argv.length; i++) {
     try {
       args.input = JSON.parse(arg.split('=').slice(1).join('='));
     } catch (e) {
-      args.input = {};
+      console.error(JSON.stringify({
+        success: false,
+        error: {
+          message: `Invalid JSON input: ${e.message}`,
+          code: 'JSON_PARSE_ERROR'
+        }
+      }, null, 2));
+      process.exit(1);
     }
   }
   if (arg.startsWith('--toolId=')) args.toolId = arg.split('=')[1];
@@ -32,8 +39,13 @@ args.category = args.category || 'default';
 
 // Validate required arguments
 if (!args.toolName) {
-  logger.error('Error: toolName is required');
-  logger.error('Usage: gxe . webhook:tool --category=myCategory --toolName=myTool --input=\'{...}\'');
+  console.error(JSON.stringify({
+    success: false,
+    error: {
+      message: 'toolName is required',
+      code: 'MISSING_REQUIRED_PARAMETER'
+    }
+  }, null, 2));
   process.exit(1);
 }
 
@@ -63,7 +75,10 @@ try {
   const endTime = new Date().toISOString();
   const result = {
     success: false,
-    error: { message: err.message },
+    error: {
+      message: err.message,
+      code: 'TOOL_EXECUTION_ERROR'
+    },
     id: `tool-${args.toolId || nanoid(9)}`,
     name: args.toolName,
     category: args.category,
