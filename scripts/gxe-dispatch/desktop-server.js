@@ -8,10 +8,10 @@
 
 import { spawn } from 'child_process';
 import path from 'path';
-import { getModulePaths } from '@sequentialos/es-module-utils';
+import { fileURLToPath } from 'url';
 import logger from '@sequentialos/sequential-logging';
 
-const { __dirname, __filename } = getModulePaths(import.meta.url);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 async function startServer() {
   const port = process.env.PORT || process.argv.find(arg => arg.startsWith('--port='))?.split('=')[1] || '8003';
@@ -19,7 +19,6 @@ async function startServer() {
 
   logger.info(`Starting Sequential Ecosystem desktop server on ${host}:${port}`);
 
-  // Start the server using the package's server.js
   const serverPath = path.join(__dirname, '../../packages/@sequentialos/desktop-server/src/server.js');
 
   const proc = spawn('node', [serverPath], {

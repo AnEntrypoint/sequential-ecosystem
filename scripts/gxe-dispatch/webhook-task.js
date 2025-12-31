@@ -8,6 +8,8 @@
 
 import { createTaskService } from '@sequentialos/execution-service-unified';
 import { taskRegistry } from '@sequentialos/task-registry';
+import { toolRegistry } from '@sequentialos/tool-registry';
+import '@sequentialos/tool-dispatcher';
 import logger from '@sequentialos/sequential-logging';
 
 // Parse arguments
@@ -32,8 +34,9 @@ if (!args.taskName) {
   process.exit(1);
 }
 
-// Load task registry and execute
+// Load registries and execute
 await taskRegistry.loadAll();
+await toolRegistry.loadAll();
 const taskService = createTaskService();
 
 // Register tasks from registry
