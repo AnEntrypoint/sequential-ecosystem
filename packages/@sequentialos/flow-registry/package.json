@@ -1,0 +1,26 @@
+{
+  "name": "@sequentialos/flow-registry",
+  "version": "1.0.0",
+  "description": "Flow registry with file-first loading and dynamic import",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@sequentialos/storage-unified": "*",
+    "@sequentialos/sequential-logging": "*"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "flows",
+    "registry",
+    "sequential"
+  ],
+  "license": "MIT"
+}

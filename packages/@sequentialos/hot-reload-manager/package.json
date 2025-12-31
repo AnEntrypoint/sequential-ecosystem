@@ -1,0 +1,29 @@
+{
+  "name": "@sequentialos/hot-reload-manager",
+  "version": "1.0.0",
+  "description": "Hot reload manager orchestrating file watchers and registries",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@sequentialos/file-watcher": "*",
+    "@sequentialos/task-registry": "*",
+    "@sequentialos/flow-registry": "*",
+    "@sequentialos/tool-registry": "*",
+    "@sequentialos/sequential-logging": "*"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "hot-reload",
+    "file-watcher",
+    "sequential"
+  ],
+  "license": "MIT"
+}

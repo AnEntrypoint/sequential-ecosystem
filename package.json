@@ -71,11 +71,22 @@
     "GXE_DISPATCH.md"
   ],
   "dependencies": {
+    "body-parser": "^1.20.2",
+    "chokidar": "^5.0.0",
     "commander": "^11.0.0",
-    "express": "^4.18.2",
-    "ws": "^8.14.2",
     "cors": "^2.8.5",
-    "body-parser": "^1.20.2"
+    "eventemitter3": "^5.0.1",
+    "express": "^4.18.2",
+    "nanoid": "^5.1.6",
+    "p-debounce": "^5.1.0",
+    "p-memoize": "^8.0.0",
+    "p-queue": "^9.0.1",
+    "p-retry": "^7.1.1",
+    "p-throttle": "^8.1.0",
+    "p-timeout": "^7.0.1",
+    "ws": "^8.14.2",
+    "xstate": "^5.25.0",
+    "zod": "^4.3.2"
   },
   "devDependencies": {
     "c8": "^8.0.1",

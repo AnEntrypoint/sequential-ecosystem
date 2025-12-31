@@ -1,0 +1,50 @@
+{
+  "name": "@sequentialos/sequential-fetch",
+  "version": "1.0.0",
+  "description": "Pure JavaScript VM that pauses on every fetch() call. Drop-in replacement for fetchflow. Works in Node.js, Bun, Deno, and Google Apps Script with zero dependencies.",
+  "main": "sequential-fetch-vm-lib.cjs",
+  "type": "module",
+  "scripts": {
+    "test": "node test-commonjs.js"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "keywords": [
+    "fetchflow",
+    "sequential-fetch",
+    "vm",
+    "fetch",
+    "pause-resume",
+    "cross-runtime",
+    "nodejs",
+    "bun",
+    "deno",
+    "google-apps-script",
+    "javascript",
+    "zero-dependencies"
+  ],
+  "author": "Claude Code",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnEntrypoint/sequential-fetch.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AnEntrypoint/sequential-fetch/issues"
+  },
+  "homepage": "https://github.com/AnEntrypoint/sequential-fetch#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "sequential-fetch-vm-lib.cjs",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "require": "./sequential-fetch-vm-lib.cjs"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "@sequentialos/tool-registry",
+  "version": "1.0.0",
+  "description": "Tool registry for sequential-ecosystem with file-based loading",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@sequentialos/storage-unified": "*",
+    "@sequentialos/sequential-logging": "*"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "tools",
+    "registry",
+    "sequential"
+  ],
+  "license": "MIT"
+}

@@ -1,0 +1,28 @@
+{
+  "name": "@sequentialos/file-watcher",
+  "version": "1.0.0",
+  "description": "Chokidar-based file watcher for hot reload support",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "chokidar": "^5.0.0",
+    "eventemitter3": "^5.0.1",
+    "@sequentialos/sequential-logging": "*"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "file-watcher",
+    "chokidar",
+    "hot-reload",
+    "sequential"
+  ],
+  "license": "MIT"
+}
