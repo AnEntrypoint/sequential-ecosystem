@@ -1,0 +1,11 @@
+{
+  "name": "sample-flow",
+  "description": "Sample flow for testing",
+  "steps": [
+    {
+      "id": "step1",
+      "type": "task",
+      "name": "hello-world"
+    }
+  ]
+}

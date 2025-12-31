@@ -15,8 +15,9 @@ export class TaskRegistry {
     try {
       const taskDirs = await storage.list(this.basePath);
 
-      for (const dir of taskDirs) {
-        const taskPath = path.join(this.basePath, dir);
+      for (const entry of taskDirs) {
+        const dirName = entry.name || entry;
+        const taskPath = path.join(this.basePath, dirName);
         const taskIndexPath = path.join(taskPath, 'index.js');
         await this.load(taskIndexPath);
       }

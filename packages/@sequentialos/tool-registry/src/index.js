@@ -15,9 +15,10 @@ export class ToolRegistry {
     try {
       const toolFiles = await storage.list(this.basePath);
 
-      for (const file of toolFiles) {
-        if (file.endsWith('.json')) {
-          const toolPath = path.join(this.basePath, file);
+      for (const entry of toolFiles) {
+        const fileName = entry.name || entry;
+        if (fileName.endsWith('.json') && !entry.isDirectory) {
+          const toolPath = path.join(this.basePath, fileName);
           await this.load(toolPath);
         }
       }

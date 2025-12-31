@@ -15,8 +15,9 @@ export class FlowRegistry {
     try {
       const flowDirs = await storage.list(this.basePath);
 
-      for (const dir of flowDirs) {
-        const flowPath = path.join(this.basePath, dir);
+      for (const entry of flowDirs) {
+        const dirName = entry.name || entry;
+        const flowPath = path.join(this.basePath, dirName);
         const flowConfigPath = path.join(flowPath, 'config.json');
         await this.load(flowConfigPath);
       }
