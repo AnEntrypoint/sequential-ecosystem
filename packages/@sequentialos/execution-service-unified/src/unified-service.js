@@ -1,6 +1,60 @@
-import { ExecutionService } from '@sequentialos/execution-service-base';
 import { nanoid } from 'nanoid';
 import logger from '@sequentialos/sequential-logging';
+
+class ExecutionService {
+  constructor(entityName = 'entity', options = {}) {
+    this.entityName = entityName;
+    this.handlers = new Map();
+    this.executionHistory = [];
+    this.debug = options.debug ?? false;
+    this.exitOnError = options.exitOnError ?? false;
+    this.timeout = options.timeout ?? 30000;
+  }
+
+  async executeWithTimeout(promise, timeoutMs) {
+    return Promise.race([
+      promise,
+      new Promise((_, reject) =>
+        setTimeout(
+          () => reject(new Error(`${this.entityName} execution timeout after ${timeoutMs}ms`)),
+          timeoutMs
+        )
+      )
+    ]);
+  }
+
+  generateId() {
+    return `${this.entityName}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  broadcastEvent(eventName, data) {
+    if (this.debug) {
+      logger.info(`[${this.constructor.name}] Event: ${eventName}`, data);
+    }
+  }
+
+  getExecutionHistory(filters = {}) {
+    let history = [...this.executionHistory];
+    for (const [key, value] of Object.entries(filters)) {
+      if (value !== undefined) {
+        history = history.filter(h => h[key] === value);
+      }
+    }
+    return history;
+  }
+
+  registerHandler(name, handler) {
+    this.handlers.set(name, handler);
+  }
+
+  getRegisteredHandlers() {
+    return Array.from(this.handlers.keys());
+  }
+
+  clearHistory() {
+    this.executionHistory = [];
+  }
+}
 
 export class UnifiedExecutionService extends ExecutionService {
   constructor(type = 'task', options = {}) {

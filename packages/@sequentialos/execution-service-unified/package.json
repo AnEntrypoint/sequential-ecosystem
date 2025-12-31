@@ -13,7 +13,6 @@
     "src"
   ],
   "dependencies": {
-    "@sequentialos/execution-service-base": "*",
     "@sequentialos/sequential-logging": "*",
     "nanoid": "^5.1.6"
   },
