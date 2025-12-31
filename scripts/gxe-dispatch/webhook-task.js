@@ -6,22 +6,48 @@
  * Usage: gxe . webhook:task --taskName=myTask --input='{"data":"value"}'
  */
 
-import { executeWebhook } from './lib/webhook-executor.js';
+import { createTaskService } from '@sequentialos/execution-service-unified';
+import { taskRegistry } from '@sequentialos/task-registry';
+import logger from '@sequentialos/sequential-logging';
 
-executeWebhook({
-  argMapping: {
-    taskName: 'TASK_NAME',
-    input: 'TASK_INPUT',
-    taskId: 'TASK_ID'
-  },
-  requiredArgs: ['taskName'],
-  usageExample: 'gxe . webhook:task --taskName=myTask --input=\'{...}\'',
-  servicePath: 'packages/@sequentialos/task-execution-service/src/services/task-service.js',
-  methodName: 'executeTask',
-  errorCode: 'TASK_EXECUTION_ERROR',
-  buildMethodArgs: (args) => [
-    args.taskName,
-    args.input || {},
-    { runId: args.taskId, broadcast: true }
-  ]
+// Parse arguments
+const args = {};
+for (let i = 0; i < process.argv.length; i++) {
+  const arg = process.argv[i];
+  if (arg.startsWith('--taskName=')) args.taskName = arg.split('=')[1];
+  if (arg.startsWith('--input=')) {
+    try {
+      args.input = JSON.parse(arg.split('=').slice(1).join('='));
+    } catch (e) {
+      args.input = {};
+    }
+  }
+  if (arg.startsWith('--taskId=')) args.taskId = arg.split('=')[1];
+}
+
+// Validate required arguments
+if (!args.taskName) {
+  logger.error('Error: taskName is required');
+  logger.error('Usage: gxe . webhook:task --taskName=myTask --input=\'{...}\'');
+  process.exit(1);
+}
+
+// Load task registry and execute
+await taskRegistry.loadAll();
+const taskService = createTaskService();
+
+// Register tasks from registry
+for (const taskName of taskRegistry.list()) {
+  const taskDef = taskRegistry.get(taskName);
+  if (taskDef?.handler) {
+    taskService.register(taskName, taskDef.handler);
+  }
+}
+
+const result = await taskService.execute(args.taskName, args.input || {}, {
+  id: args.taskId,
+  broadcast: true
 });
+
+logger.info(JSON.stringify(result, null, 2));
+process.exit(result.success ? 0 : 1);

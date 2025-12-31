@@ -1,14 +1,46 @@
 # Technical Caveats
 
-**Memory Management**: Server requires `--max-old-space-size=4096` to avoid heap OOM on extended runs.
+**Architecture (Dec 31, 2025)**: Complete refactoring with:
+- Restored core packages: sequential-fetch, sequential-flow, sequential-runner, sequential-adaptor from GitHub
+- Library replacements: validation→zod, async-patterns→p-*, id-generator→nanoid, event-emitter→eventemitter3 (saved 700 LOC)
+- Unified execution model: UnifiedExecutionService consolidates TaskService/FlowService (saved 239 LOC)
+- File-first storage: Removed memory layer (app-storage-sync), direct file operations via storage-unified
+- Universal hot reload: Chokidar-based file watcher + registries with automatic reload on changes
+- Tool interface: Unified __callHostTool__() available to xstate runner and task code
+- 29 focused packages, buildless (100% ES modules), no CommonJS
 
-**StateKit Module Loading**: sequential-machine has mixed module types (CommonJS/ES Module). Server gracefully continues without StateKit initialization.
+**File-First Storage**:
+- Tasks/Flows/Tools directories are ground truth
+- registries: taskRegistry, flowRegistry, toolRegistry load from filesystem
+- Dynamic import with cache busting for module reloading
+- Storage via storage-unified (atomic writes, path validation)
 
-**Sequential-OS API**: `/api/sequential-os/*` endpoints return 503 when StateKit unavailable. Apps must handle gracefully.
+**Hot Reload System**:
+- HotReloadManager orchestrates FileWatcher + all registries
+- File changes trigger automatic registry reloads
+- Debouncing (300ms) prevents thundering herd
+- Enabled by default, disable with HOT_RELOAD=false
 
-**Path Validation**: Use `fs.realpathSync()` for validation to prevent symlink/traversal attacks.
+**Unified Execution**:
+- UnifiedExecutionService handles tasks, flows, tools uniformly
+- execute(name, input, {id, timeout, broadcast}) method signature
+- Mock execution for unregistered entities
+- Execution history tracking with getHistory() and clearHistory()
+- createTaskService(), createFlowService(), createToolService() factories
 
-**Concurrent File Operations**: Parent directories created atomically via `fs.ensureDir()` to prevent race conditions.
+**Tool Invocation**:
+- __callHostTool__(category, toolName, input) interface
+- Tools register in toolRegistry from JSON definitions
+- Same interface for task code, xstate runners, and CLI
+- Tool dispatcher validates and executes via toolService
+
+**Validation**: Zod schemas via validation-schemas package, replaces 413 LOC custom validation
+
+**Memory Management**: Server requires `--max-old-space-size=4096` for extended runs.
+
+**Path Validation**: Use `fs.realpathSync()` to prevent symlink/traversal attacks.
+
+**Concurrent File Operations**: Parent directories created atomically via `fs.ensureDir()`.
 
 **Error Responses**: Stack traces never included (security). Only error messages sent to clients.
 
@@ -18,12 +50,8 @@
 
 **Process Management**: Never use `&` or `run_in_background`. Breaks tool access. Keep servers in foreground.
 
-**Service Locator**: Use direct DI via `container.resolve('ServiceName')` instead of factory functions.
-
-**Package Resolution**: All `@sequentialos/package` imports refer to local `packages/@sequentialos/package`. Node 18+ required for ES module support. Cannot use CommonJS `require()` at module level.
+**Package Resolution**: All `@sequentialos/package` imports refer to local `packages/@sequentialos/package`. Node 18+ required. Cannot use CommonJS `require()` at module level.
 
 **API Response Format**: All endpoints return wrapped: `{success: boolean, data: {...}}`. Clients must unwrap data property.
 
-**Task/Flow Execution**: Response format: `{success, data, taskId, runId, taskName, startTime, endTime, duration}`.
-
-**Dynamic React Renderer**: Supports config-driven UI via ComponentRegistry singleton pattern with built-in error boundaries.
+**Dynamic React Renderer**: Supports config-driven UI via ComponentRegistry singleton pattern with error boundaries.

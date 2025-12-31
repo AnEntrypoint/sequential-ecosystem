@@ -3,54 +3,48 @@
  * GXE Dispatcher: Webhook Tool Trigger
  * Triggers tool execution via webhook-style invocation
  *
- * Usage: gxe . webhook:tool --appId=app-myapp --toolName=myTool --params='{"data":"value"}'
- *
- * Note: Tool execution service not yet implemented in monorepo.
- * This dispatcher returns a mock response until ToolService is available.
+ * Usage: gxe . webhook:tool --category=myCategory --toolName=myTool --input='{"data":"value"}'
  */
 
+import { createToolService } from '@sequentialos/execution-service-unified';
+import { toolRegistry } from '@sequentialos/tool-registry';
+import { nanoid } from 'nanoid';
 import logger from '@sequentialos/sequential-logging';
-import { generateId } from '@sequentialos/id-generator';
-import { nowISO } from '@sequentialos/timestamp-utilities';
 
 // Parse arguments
 const args = {};
 for (let i = 0; i < process.argv.length; i++) {
   const arg = process.argv[i];
-  if (arg.startsWith('--appId=')) args.appId = arg.split('=')[1];
+  if (arg.startsWith('--category=')) args.category = arg.split('=')[1];
   if (arg.startsWith('--toolName=')) args.toolName = arg.split('=')[1];
-  if (arg.startsWith('--params=')) {
+  if (arg.startsWith('--input=')) {
     try {
-      args.params = JSON.parse(arg.split('=')[1]);
+      args.input = JSON.parse(arg.split('=').slice(1).join('='));
     } catch (e) {
-      args.params = {};
+      args.input = {};
     }
   }
+  if (arg.startsWith('--toolId=')) args.toolId = arg.split('=')[1];
 }
 
+// Default category
+args.category = args.category || 'default';
+
 // Validate required arguments
-if (!args.appId || !args.toolName) {
-  logger.error('Error: appId and toolName required');
-  logger.error('Usage: gxe . webhook:tool --appId=app-myapp --toolName=myTool --params=\'{...}\'');
+if (!args.toolName) {
+  logger.error('Error: toolName is required');
+  logger.error('Usage: gxe . webhook:tool --category=myCategory --toolName=myTool --input=\'{...}\'');
   process.exit(1);
 }
 
-// Return mock response (tool execution service not yet implemented)
-const response = {
-  success: true,
-  data: {
-    message: `Tool '${args.toolName}' executed (mock)`,
-    appId: args.appId,
-    toolName: args.toolName,
-    params: args.params || {},
-    mock: true,
-    note: 'Tool execution service not yet implemented in monorepo'
-  },
-  toolId: generateId('tool'),
-  appId: args.appId,
-  toolName: args.toolName,
-  timestamp: nowISO()
-};
+// Load tool registry and execute
+await toolRegistry.loadAll();
+const toolService = createToolService();
 
-logger.info(JSON.stringify(response, null, 2));
-process.exit(0);
+const result = await toolService.execute(`${args.category}:${args.toolName}`, args.input || {}, {
+  id: args.toolId,
+  broadcast: true
+});
+
+logger.info(JSON.stringify(result, null, 2));
+process.exit(result.success ? 0 : 1);

@@ -13,10 +13,10 @@
 
 import { spawn } from 'child_process';
 import path from 'path';
-import { getModulePaths } from '@sequentialos/es-module-utils';
+import { fileURLToPath } from 'url';
 import logger from '@sequentialos/sequential-logging';
 
-const { __dirname, __filename } = getModulePaths(import.meta.url);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const args = process.argv.slice(2);
 const command = args[0] || 'desktop-server';
