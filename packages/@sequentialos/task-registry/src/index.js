@@ -51,10 +51,10 @@ export class TaskRegistry {
   }
 
   async reload(taskPath) {
-    const taskDir = path.dirname(path.dirname(taskPath));
+    const taskDir = path.dirname(taskPath);
     const taskName = path.basename(taskDir);
     logger.info(`[TaskRegistry] Reloading task: ${taskName}`);
-    await this.load(path.join(taskDir, 'index.js'));
+    await this.load(taskPath);
   }
 
   get(taskName) {
