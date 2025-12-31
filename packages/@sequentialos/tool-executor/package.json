@@ -1,0 +1,10 @@
+{
+  "name": "@sequentialos/tool-executor",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/index.js",
+  "dependencies": {
+    "@sequentialos/sequential-logging": "^1.0.0",
+    "@sequentialos/tool-registry": "^1.0.0"
+  }
+}

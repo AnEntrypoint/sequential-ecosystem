@@ -32,7 +32,8 @@ export class ToolRegistry {
   async load(toolPath) {
     try {
       const toolDef = await storage.readJson(toolPath);
-      const fullName = `${toolDef.category || 'default'}:${toolDef.name}`;
+      const toolId = toolDef.id || toolDef.name;
+      const fullName = `${toolDef.category || 'default'}:${toolId}`;
 
       this.tools.set(fullName, {
         ...toolDef,

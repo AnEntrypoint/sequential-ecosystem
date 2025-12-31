@@ -6,8 +6,8 @@
  * Usage: gxe . webhook:tool --category=myCategory --toolName=myTool --input='{"data":"value"}'
  */
 
-import { createToolService } from '@sequentialos/execution-service-unified';
 import { toolRegistry } from '@sequentialos/tool-registry';
+import { executeTool } from '@sequentialos/tool-executor';
 import { nanoid } from 'nanoid';
 import logger from '@sequentialos/sequential-logging';
 
@@ -39,12 +39,41 @@ if (!args.toolName) {
 
 // Load tool registry and execute
 await toolRegistry.loadAll();
-const toolService = createToolService();
 
-const result = await toolService.execute(`${args.category}:${args.toolName}`, args.input || {}, {
-  id: args.toolId,
-  broadcast: true
-});
+const startTime = new Date().toISOString();
+try {
+  const toolResult = await executeTool(args.category, args.toolName, args.input || {});
+  const endTime = new Date().toISOString();
 
-logger.info(JSON.stringify(result, null, 2));
-process.exit(result.success ? 0 : 1);
+  const result = {
+    success: true,
+    data: toolResult,
+    id: `tool-${args.toolId || nanoid(9)}`,
+    name: args.toolName,
+    category: args.category,
+    type: 'tool',
+    startTime,
+    endTime,
+    duration: new Date(endTime) - new Date(startTime)
+  };
+
+  logger.info(JSON.stringify(result, null, 2));
+  process.exit(0);
+} catch (err) {
+  const endTime = new Date().toISOString();
+  const result = {
+    success: false,
+    error: { message: err.message },
+    id: `tool-${args.toolId || nanoid(9)}`,
+    name: args.toolName,
+    category: args.category,
+    type: 'tool',
+    startTime,
+    endTime,
+    duration: new Date(endTime) - new Date(startTime)
+  };
+
+  logger.error(`Tool execution failed: ${err.message}`);
+  logger.info(JSON.stringify(result, null, 2));
+  process.exit(1);
+}
