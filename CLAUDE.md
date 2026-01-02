@@ -1,5 +1,16 @@
 # Technical Caveats
 
+**Final Production Hardening (Jan 2, 2026)**:
+- MCP server: Anthropic SDK stdio transport with graceful shutdown handlers (SIGINT, SIGTERM, uncaughtException, unhandledRejection)
+- Registry loading: All registries load in parallel via Promise.all to prevent race conditions
+- Error handling: All errors are thrown at boundaries (anthropic-server.js CallToolRequestSchema), caught by MCP framework
+- Memory: Stable at 65-69 MB with automatic GC at >80% heap usage
+- 11 MCP tools: execute_task, execute_flow, execute_tool, list_tasks, list_flows, list_tools, get_execution_history, get_server_status, start_server, stop_server, restart_server
+- 9 Resources: 2 tasks + 2 production flows + 5 tools
+- Cleaned: Removed all test/demo files, test flows, implementation documentation, demo tools
+- Desktop server: Loads 2 tasks + 2 flows + 5 tools on startup via taskRegistry.loadAll() + flowRegistry.loadAll() + toolRegistry.loadAll()
+- Port: Always use PORT=8003 NODE_OPTIONS='--max-old-space-size=4096' for desktop-server startup
+
 **Architecture (Dec 31, 2025)**: Complete refactoring with:
 - Restored core packages: sequential-fetch, sequential-flow, sequential-runner, sequential-adaptor from GitHub
 - Library replacements: validation→zod, async-patterns→p-*, id-generator→nanoid, event-emitter→eventemitter3 (saved 700 LOC)
