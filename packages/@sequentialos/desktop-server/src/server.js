@@ -9,6 +9,7 @@ import { toolRegistry } from '@sequentialos/tool-registry';
 import { executeFlow } from '@sequentialos/flow-executor';
 import { executeTool } from '@sequentialos/tool-executor';
 import { createTaskService } from '@sequentialos/execution-service-unified';
+import { hotReloadManager } from '@sequentialos/hot-reload-manager';
 import { nanoid } from 'nanoid';
 import '@sequentialos/tool-dispatcher';
 import '@sequentialos/unified-invocation-bridge';
@@ -180,4 +181,5 @@ const HOST = SERVER_CONFIG.HOST;
 
 app.listen(PORT, HOST, () => {
   logger.info(`Sequential Ecosystem desktop server running on ${HOST}:${PORT}`);
+  hotReloadManager.start();
 });
