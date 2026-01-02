@@ -6,6 +6,11 @@
   "scripts": {
     "start": "node scripts/gxe-dispatch.js desktop-server",
     "server": "node scripts/gxe-dispatch.js desktop-server",
+    "mcp": "node packages/execution-mcp-server/src/cli.js",
+    "mcp:status": "node packages/execution-mcp-server/src/cli.js status",
+    "mcp:start": "node packages/execution-mcp-server/src/cli.js start",
+    "mcp:stop": "node packages/execution-mcp-server/src/cli.js stop",
+    "mcp:restart": "node packages/execution-mcp-server/src/cli.js restart",
     "cli": "node cli.js",
     "init": "node cli.js init",
     "create": "node cli.js create-task",
@@ -49,7 +54,10 @@
   "homepage": "https://github.com/AnEntrypoint/sequential-ecosystem#readme",
   "bin": {
     "sequential-ecosystem": "./scripts/gxe-dispatch.js",
-    "seq": "./cli.js"
+    "seq": "./cli.js",
+    "task": "./scripts/task.js",
+    "flow": "./scripts/flow.js",
+    "tool": "./scripts/tool.js"
   },
   "workspaces": [
     "packages/*"
@@ -58,6 +66,12 @@
     "cli.js",
     "scripts/gxe-dispatch.js",
     "scripts/gxe-dispatch/",
+    "scripts/task.js",
+    "scripts/task",
+    "scripts/flow.js",
+    "scripts/flow",
+    "scripts/tool.js",
+    "scripts/tool",
     "packages/",
     "flows/",
     "tools/",

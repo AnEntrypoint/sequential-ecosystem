@@ -1,0 +1,41 @@
+{
+  "name": "execution-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for sequential-ecosystem execution mechanisms",
+  "type": "module",
+  "main": "src/mcp-server.js",
+  "exports": {
+    ".": "./src/mcp-server.js",
+    "./lifecycle": "./src/server-lifecycle.js",
+    "./resources": "./src/mcp-resources.js",
+    "./tools": "./src/mcp-tools.js"
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "sequential-logging": "*",
+    "core-config": "^1.0.0",
+    "execution-service-unified": "^1.0.0",
+    "task-registry": "^1.0.0",
+    "flow-registry": "^1.0.0",
+    "tool-registry": "^1.0.0",
+    "tool-executor": "^1.0.0",
+    "flow-executor": "^1.0.0",
+    "hot-reload-manager": "^1.0.0",
+    "nanoid": "^5.1.6"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "execution",
+    "tasks",
+    "flows",
+    "tools",
+    "sequential"
+  ],
+  "license": "MIT"
+}
