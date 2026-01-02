@@ -10,6 +10,8 @@ import { executeFlow } from '@sequentialos/flow-executor';
 import { executeTool } from '@sequentialos/tool-executor';
 import { createTaskService } from '@sequentialos/execution-service-unified';
 import { nanoid } from 'nanoid';
+import '@sequentialos/tool-dispatcher';
+import '@sequentialos/unified-invocation-bridge';
 
 const app = express();
 

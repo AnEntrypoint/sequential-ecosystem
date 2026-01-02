@@ -8,6 +8,7 @@ export async function __callHostTool__(category, toolName, input = {}) {
   logger.debug(`[ToolDispatcher] Calling: ${fullName}`, { input });
 
   try {
+    await toolRegistry.loadAll();
     const tool = toolRegistry.get(fullName);
 
     if (!tool) {
