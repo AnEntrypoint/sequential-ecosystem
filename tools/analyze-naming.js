@@ -7,7 +7,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { getDirname } from '@sequentialos/es-module-utils';
+import { getDirname } from 'es-module-utils';
 
 const __dirname = getDirname(import.meta.url);
 

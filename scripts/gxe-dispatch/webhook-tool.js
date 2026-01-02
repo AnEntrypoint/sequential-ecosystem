@@ -6,10 +6,10 @@
  * Usage: gxe . webhook:tool --category=myCategory --toolName=myTool --input='{"data":"value"}'
  */
 
-import { toolRegistry } from '@sequentialos/tool-registry';
-import { executeTool } from '@sequentialos/tool-executor';
+import { toolRegistry } from 'tool-registry';
+import { executeTool } from 'tool-executor';
 import { nanoid } from 'nanoid';
-import logger from '@sequentialos/sequential-logging';
+import logger from 'sequential-logging';
 
 // Parse arguments
 const args = {};

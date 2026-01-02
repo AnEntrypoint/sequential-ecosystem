@@ -1,0 +1,30 @@
+{
+  "name": "validation-schemas",
+  "version": "1.0.0",
+  "description": "Zod-based validation schemas for sequential-ecosystem",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./task": "./src/task.js",
+    "./file": "./src/file.js",
+    "./path": "./src/path.js",
+    "./input": "./src/input.js"
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "zod": "^4.3.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "validation",
+    "zod",
+    "schemas",
+    "sequential"
+  ],
+  "license": "MIT"
+}

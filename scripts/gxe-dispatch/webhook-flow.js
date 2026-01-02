@@ -6,10 +6,10 @@
  * Usage: gxe . webhook:flow --flowName=myFlow --input='{"data":"value"}'
  */
 
-import { flowRegistry } from '@sequentialos/flow-registry';
-import { executeFlow } from '@sequentialos/flow-executor';
-import { taskRegistry } from '@sequentialos/task-registry';
-import logger from '@sequentialos/sequential-logging';
+import { flowRegistry } from 'flow-registry';
+import { executeFlow } from 'flow-executor';
+import { taskRegistry } from 'task-registry';
+import logger from 'sequential-logging';
 import { nanoid } from 'nanoid';
 
 // Parse arguments

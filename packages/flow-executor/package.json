@@ -1,0 +1,11 @@
+{
+  "name": "flow-executor",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/index.js",
+  "dependencies": {
+    "sequential-logging": "^1.0.0",
+    "task-registry": "^1.0.0",
+    "execution-service-unified": "^1.0.0"
+  }
+}

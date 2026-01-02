@@ -2,8 +2,8 @@
 
 import fs from 'fs';
 import path from 'path';
-import { getDirname } from '@sequentialos/es-module-utils';
-import logger from '@sequentialos/sequential-logging';
+import { getDirname } from 'es-module-utils';
+import logger from 'sequential-logging';
 
 const __dirname = getDirname(import.meta.url);
 const PACKAGES_DIR = path.resolve(__dirname, '../packages');
@@ -40,7 +40,7 @@ function findPackagesToMigrate() {
     if (!fs.existsSync(pkgPath)) return;
 
     const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-    if (pkg.name && pkg.name.startsWith('@sequentialos/')) {
+    if (pkg.name && pkg.name.startsWith('')) {
       unscoped.push({ dir: name, name: pkg.name });
     }
   });
@@ -53,7 +53,7 @@ function findPackagesToMigrate() {
       if (!fs.existsSync(pkgPath)) return;
 
       const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-      if (pkg.name && pkg.name.startsWith('@sequentialos/')) {
+      if (pkg.name && pkg.name.startsWith('')) {
         sequential.push({ dir: name, oldScope: '@sequential', name: pkg.name });
       }
     });
@@ -76,7 +76,7 @@ function migrateUnscoped(packages) {
     }
 
     fs.renameSync(src, dest);
-    logSuccess(`Moved ${dir} → @sequentialos/${dir}`);
+    logSuccess(`Moved ${dir} → ${dir}`);
   });
 }
 
@@ -94,7 +94,7 @@ function migrateSequential(packages) {
     }
 
     fs.renameSync(src, dest);
-    logSuccess(`Moved ${dir} → @sequentialos/${dir}`);
+    logSuccess(`Moved ${dir} → ${dir}`);
   });
 
   // Remove @sequential directory if empty
@@ -140,26 +140,26 @@ function updateImports() {
       // Update imports
       content = content.replace(
         /from\s+['"]@sequential\//g,
-        'from \'@sequentialos/'
+        'from \''
       );
       content = content.replace(
         /require\(['"]@sequential\//g,
-        'require(\'@sequentialos/'
+        'require(\''
       );
       content = content.replace(
         /import\s+.*from\s+['"]@sequential\//g,
-        (match) => match.replace('@sequential/', '@sequentialos/')
+        (match) => match.replace('@sequential/', '')
       );
 
       // Update file: references in package.json
       if (file.endsWith('package.json')) {
         content = content.replace(
           /"file:.*?@sequential\//g,
-          '"file:../../@sequentialos/'
+          '"file:../../'
         );
         content = content.replace(
           /"file:.*?\/packages\/@sequential\//g,
-          '"file:../../@sequentialos/'
+          '"file:../../'
         );
       }
 
@@ -184,7 +184,7 @@ function updateWorkspaces() {
 
   if (pkg.workspaces) {
     pkg.workspaces = [
-      'packages/@sequentialos/*'
+      'packages/*'
     ];
     fs.writeFileSync(rootPkg, JSON.stringify(pkg, null, 2) + '\n', 'utf8');
     logSuccess(`Updated root package.json workspaces`);

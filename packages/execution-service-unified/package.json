@@ -1,0 +1,30 @@
+{
+  "name": "execution-service-unified",
+  "version": "1.0.0",
+  "description": "Unified execution service for tasks, flows, and tools",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./service": "./src/unified-service.js",
+    "./factories": "./src/factories.js"
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "sequential-logging": "*",
+    "nanoid": "^5.1.6"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "execution",
+    "tasks",
+    "flows",
+    "tools",
+    "sequential"
+  ],
+  "license": "MIT"
+}

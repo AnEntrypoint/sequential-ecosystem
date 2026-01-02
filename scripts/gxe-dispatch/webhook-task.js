@@ -6,11 +6,11 @@
  * Usage: gxe . webhook:task --taskName=myTask --input='{"data":"value"}'
  */
 
-import { createTaskService } from '@sequentialos/execution-service-unified';
-import { taskRegistry } from '@sequentialos/task-registry';
-import { toolRegistry } from '@sequentialos/tool-registry';
-import '@sequentialos/tool-dispatcher';
-import logger from '@sequentialos/sequential-logging';
+import { createTaskService } from 'execution-service-unified';
+import { taskRegistry } from 'task-registry';
+import { toolRegistry } from 'tool-registry';
+import 'tool-dispatcher';
+import logger from 'sequential-logging';
 
 // Parse arguments
 const args = {};

@@ -1,0 +1,27 @@
+{
+  "name": "tool-dispatcher",
+  "version": "1.0.0",
+  "description": "Tool dispatcher for sequential-ecosystem with __callHostTool__ interface",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "execution-service-unified": "*",
+    "tool-registry": "*",
+    "sequential-logging": "*"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "tools",
+    "dispatch",
+    "sequential"
+  ],
+  "license": "MIT"
+}

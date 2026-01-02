@@ -1,0 +1,26 @@
+{
+  "name": "async-event-emitter",
+  "version": "1.0.0",
+  "description": "Async-compatible event emitter wrapper around eventemitter3",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "eventemitter3": "^5.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "event-emitter",
+    "async",
+    "eventemitter3",
+    "sequential"
+  ],
+  "license": "MIT"
+}

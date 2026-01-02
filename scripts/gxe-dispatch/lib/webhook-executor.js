@@ -7,8 +7,8 @@
 
 import fs from 'fs';
 import path from 'path';
-import { getDirname } from '@sequentialos/es-module-utils';
-import logger from '@sequentialos/sequential-logging';
+import { getDirname } from 'es-module-utils';
+import logger from 'sequential-logging';
 
 /**
  * Parse command-line arguments in --key=value format

@@ -12,8 +12,8 @@
     "run": "node cli.js run",
     "list": "node cli.js list",
     "sync": "node cli.js sync-tasks",
-    "zellous": "node packages/@sequentialos/zellous/server.js",
-    "dev": "nodemon --delay 1000 --ignore '**/runs/**' packages/@sequentialos/desktop-server/src/server.js",
+    "zellous": "node packages/zellous/server.js",
+    "dev": "nodemon --delay 1000 --ignore '**/runs/**' packages/desktop-server/src/server.js",
     "gxe:task": "node scripts/gxe-dispatch.js webhook:task",
     "gxe:flow": "node scripts/gxe-dispatch.js webhook:flow",
     "gxe:tool": "node scripts/gxe-dispatch.js webhook:tool",
@@ -52,8 +52,7 @@
     "seq": "./cli.js"
   },
   "workspaces": [
-    "packages/@sequentialos/*",
-    "packages/desktop-server"
+    "packages/*"
   ],
   "files": [
     "cli.js",

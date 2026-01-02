@@ -9,7 +9,7 @@
 import { spawn } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import logger from '@sequentialos/sequential-logging';
+import logger from 'sequential-logging';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -19,7 +19,7 @@ async function startServer() {
 
   logger.info(`Starting Sequential Ecosystem desktop server on ${host}:${port}`);
 
-  const serverPath = path.join(__dirname, '../../packages/@sequentialos/desktop-server/src/server.js');
+  const serverPath = path.join(__dirname, '../../packages/desktop-server/src/server.js');
 
   const proc = spawn('node', [serverPath], {
     env: {

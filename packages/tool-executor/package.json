@@ -1,0 +1,10 @@
+{
+  "name": "tool-executor",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/index.js",
+  "dependencies": {
+    "sequential-logging": "^1.0.0",
+    "tool-registry": "^1.0.0"
+  }
+}

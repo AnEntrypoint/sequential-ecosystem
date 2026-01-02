@@ -14,7 +14,7 @@
 import { spawn } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import logger from '@sequentialos/sequential-logging';
+import logger from 'sequential-logging';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
