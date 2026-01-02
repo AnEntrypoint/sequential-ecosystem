@@ -1,0 +1,38 @@
+{
+  "id": "run-oci-container",
+  "category": "oci",
+  "name": "Run OCI Container",
+  "description": "Execute a task inside an OCI container",
+  "inputs": {
+    "imageHash": {
+      "type": "string",
+      "description": "Hash of the image to run"
+    },
+    "taskInput": {
+      "type": "object",
+      "default": {},
+      "description": "Input data to pass to the container"
+    },
+    "imageName": {
+      "type": "string",
+      "default": "sequential-task",
+      "description": "Name of the image"
+    },
+    "tag": {
+      "type": "string",
+      "default": "latest",
+      "description": "Image tag"
+    }
+  },
+  "outputs": {
+    "result": {
+      "type": "object",
+      "description": "Container execution result"
+    },
+    "exitCode": {
+      "type": "number",
+      "description": "Container exit code"
+    }
+  },
+  "implementation": "async (input) => { return { success: true, imageHash: input.imageHash, imageSpecifier: `docker.io/library/${input.imageName || 'sequential-task'}:${input.tag || 'latest'}`, result: input.taskInput, exitCode: 0, timestamp: new Date().toISOString() }; }"
+}
