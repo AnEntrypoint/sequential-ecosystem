@@ -8,7 +8,17 @@ export class MCPResources {
     const resources = [];
 
     try {
-      await taskRegistry.loadAll();
+      await Promise.all([
+        taskRegistry.loadAll(),
+        flowRegistry.loadAll(),
+        toolRegistry.loadAll()
+      ]);
+    } catch (err) {
+      logger.error('[MCPResources] Failed to load registries:', err);
+      throw err;
+    }
+
+    try {
       const tasks = taskRegistry.list();
       for (const taskName of tasks) {
         const task = taskRegistry.get(taskName);
@@ -25,10 +35,10 @@ export class MCPResources {
       }
     } catch (err) {
       logger.error('[MCPResources] Failed to list tasks:', err);
+      throw err;
     }
 
     try {
-      await flowRegistry.loadAll();
       const flows = flowRegistry.list();
       for (const flowName of flows) {
         const flow = flowRegistry.get(flowName);
@@ -45,10 +55,10 @@ export class MCPResources {
       }
     } catch (err) {
       logger.error('[MCPResources] Failed to list flows:', err);
+      throw err;
     }
 
     try {
-      await toolRegistry.loadAll();
       const tools = toolRegistry.list();
       for (const fullName of tools) {
         const tool = toolRegistry.get(fullName);
@@ -68,6 +78,7 @@ export class MCPResources {
       }
     } catch (err) {
       logger.error('[MCPResources] Failed to list tools:', err);
+      throw err;
     }
 
     return { resources };

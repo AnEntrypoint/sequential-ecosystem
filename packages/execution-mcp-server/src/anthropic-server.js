@@ -110,6 +110,26 @@ async function main() {
     logger.error('[AnthropicServer] Failed to connect:', err);
     process.exit(1);
   }
+
+  process.on('SIGINT', () => {
+    logger.info('[AnthropicServer] SIGINT received, shutting down gracefully');
+    process.exit(0);
+  });
+
+  process.on('SIGTERM', () => {
+    logger.info('[AnthropicServer] SIGTERM received, shutting down gracefully');
+    process.exit(0);
+  });
+
+  process.on('uncaughtException', (err) => {
+    logger.error('[AnthropicServer] Uncaught exception:', err);
+    process.exit(1);
+  });
+
+  process.on('unhandledRejection', (reason, promise) => {
+    logger.error('[AnthropicServer] Unhandled rejection at:', promise, 'reason:', reason);
+    process.exit(1);
+  });
 }
 
 main().catch(err => {

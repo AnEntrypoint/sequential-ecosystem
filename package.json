@@ -6,25 +6,7 @@
   "scripts": {
     "start": "PORT=8003 node scripts/gxe-dispatch.js desktop-server",
     "server": "PORT=8003 node scripts/gxe-dispatch.js desktop-server",
-    "mcp": "node packages/execution-mcp-server/src/anthropic-server.js",
-    "mcp:status": "PORT=8003 node packages/execution-mcp-server/src/cli.js status",
-    "mcp:start": "PORT=8003 node packages/execution-mcp-server/src/cli.js start",
-    "mcp:stop": "PORT=8003 node packages/execution-mcp-server/src/cli.js stop",
-    "mcp:restart": "PORT=8003 node packages/execution-mcp-server/src/cli.js restart",
-    "cli": "node cli.js",
-    "init": "node cli.js init",
-    "create": "node cli.js create-task",
-    "run": "node cli.js run",
-    "list": "node cli.js list",
-    "sync": "node cli.js sync-tasks",
-    "zellous": "node packages/zellous/server.js",
-    "dev": "nodemon --delay 1000 --ignore '**/runs/**' packages/desktop-server/src/server.js",
-    "gxe:task": "node scripts/gxe-dispatch.js webhook:task",
-    "gxe:flow": "node scripts/gxe-dispatch.js webhook:flow",
-    "gxe:tool": "node scripts/gxe-dispatch.js webhook:tool",
-    "lint": "eslint packages --ext .js --ignore-path .gitignore || true",
-    "lint:fix": "eslint packages --ext .js --ignore-path .gitignore --fix || true",
-    "build": "find packages -name package.json -exec dirname {} \\; | xargs -I {} sh -c 'cd {} && npm run build 2>/dev/null || true'"
+    "mcp": "node packages/execution-mcp-server/src/anthropic-server.js"
   },
   "keywords": [
     "sequential",
@@ -75,10 +57,7 @@
     "packages/",
     "flows/",
     "tools/",
-    "CLAUDE.md",
-    "CHANGELOG.md",
-    "README.md",
-    "GXE_DISPATCH.md"
+    "CLAUDE.md"
   ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.25.1",
