@@ -36,7 +36,8 @@ async function runServer() {
 
         switch (trimmed) {
           case '/status':
-            console.log(JSON.stringify(serverLifecycle.getStatus(), null, 2));
+            const status = await serverLifecycle.getStatus();
+            console.log(JSON.stringify(status, null, 2));
             break;
 
           case '/start':
@@ -104,7 +105,8 @@ async function runCommand(cmd) {
 
     switch (cmd) {
       case 'status':
-        console.log(JSON.stringify(serverLifecycle.getStatus(), null, 2));
+        const status = await serverLifecycle.getStatus();
+        console.log(JSON.stringify(status, null, 2));
         break;
 
       case 'start':

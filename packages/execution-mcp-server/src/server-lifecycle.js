@@ -1,4 +1,5 @@
 import { spawn } from 'child_process';
+import { createConnection } from 'net';
 import logger from 'sequential-logging';
 import { SERVER_CONFIG } from 'core-config';
 
@@ -6,11 +7,32 @@ export class ServerLifecycle {
   constructor() {
     this.process = null;
     this.isRunning = false;
-    this.port = SERVER_CONFIG.PORT || 8003;
-    this.host = SERVER_CONFIG.HOST || 'localhost';
+    this.port = process.env.PORT ? parseInt(process.env.PORT) : 8003;
+    this.host = process.env.HOST || 'localhost';
     this.startTime = null;
     this.restartCount = 0;
     this.startupAttempts = 0;
+  }
+
+  async checkPortInUse() {
+    return new Promise((resolve) => {
+      const socket = createConnection(this.port, this.host);
+
+      socket.on('connect', () => {
+        socket.destroy();
+        resolve(true);
+      });
+
+      socket.on('error', () => {
+        socket.destroy();
+        resolve(false);
+      });
+
+      setTimeout(() => {
+        socket.destroy();
+        resolve(false);
+      }, 1000);
+    });
   }
 
   async start() {
@@ -21,6 +43,20 @@ export class ServerLifecycle {
         message: 'Server already running',
         status: 'running',
         uptime: Date.now() - this.startTime
+      };
+    }
+
+    const portInUse = await this.checkPortInUse();
+    if (portInUse) {
+      logger.warn(`[ServerLifecycle] Port ${this.port} already in use, assuming server running`);
+      this.isRunning = true;
+      this.startTime = Date.now() - 60000;
+      return {
+        success: true,
+        message: 'Server already running on port',
+        status: 'running',
+        port: this.port,
+        host: this.host
       };
     }
 
@@ -122,11 +158,39 @@ export class ServerLifecycle {
   }
 
   async stop() {
-    if (!this.process || !this.isRunning) {
+    if (!this.isRunning && !await this.checkPortInUse()) {
       logger.warn('[ServerLifecycle] Server not running, skipping stop');
       return {
         success: true,
         message: 'Server not running',
+        status: 'stopped'
+      };
+    }
+
+    const portInUse = await this.checkPortInUse();
+    if (portInUse && !this.process) {
+      logger.info('[ServerLifecycle] Killing processes on port ' + this.port);
+      const { exec } = await import('child_process');
+      return new Promise((resolve) => {
+        exec(`lsof -ti:${this.port} | xargs -r kill -9 2>/dev/null`, (err) => {
+          this.isRunning = false;
+          const uptime = this.startTime ? Date.now() - this.startTime : 0;
+          logger.info('[ServerLifecycle] Desktop-server stopped');
+          resolve({
+            success: true,
+            message: 'Server stopped',
+            status: 'stopped',
+            uptime: Math.floor(uptime / 1000)
+          });
+        });
+      });
+    }
+
+    if (!this.process) {
+      this.isRunning = false;
+      return {
+        success: true,
+        message: 'Server stopped',
         status: 'stopped'
       };
     }
@@ -173,7 +237,17 @@ export class ServerLifecycle {
     }
   }
 
-  getStatus() {
+  async getStatus() {
+    if (!this.isRunning) {
+      const portInUse = await this.checkPortInUse();
+      if (portInUse) {
+        this.isRunning = true;
+        if (!this.startTime) {
+          this.startTime = Date.now() - 60000;
+        }
+      }
+    }
+
     const uptime = this.isRunning && this.startTime ? Date.now() - this.startTime : 0;
     return {
       isRunning: this.isRunning,
