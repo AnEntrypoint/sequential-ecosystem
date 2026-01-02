@@ -49,9 +49,20 @@ app.get('/health', (req, res) => {
   });
 });
 
+let registriesLoaded = false;
+
+const ensureRegistriesLoaded = async () => {
+  if (!registriesLoaded) {
+    await taskRegistry.loadAll();
+    await flowRegistry.loadAll();
+    await toolRegistry.loadAll();
+    registriesLoaded = true;
+  }
+};
+
 app.get('/api/tasks', async (req, res) => {
   try {
-    await taskRegistry.loadAll();
+    await ensureRegistriesLoaded();
     const tasks = taskRegistry.list().map(name => ({
       name,
       loaded: true
@@ -64,7 +75,7 @@ app.get('/api/tasks', async (req, res) => {
 
 app.get('/api/flows', async (req, res) => {
   try {
-    await flowRegistry.loadAll();
+    await ensureRegistriesLoaded();
     const flows = flowRegistry.list().map(name => {
       const flow = flowRegistry.get(name);
       return {
@@ -81,7 +92,7 @@ app.get('/api/flows', async (req, res) => {
 
 app.get('/api/tools', async (req, res) => {
   try {
-    await toolRegistry.loadAll();
+    await ensureRegistriesLoaded();
     const tools = toolRegistry.list().map(fullName => {
       const tool = toolRegistry.get(fullName);
       return {
@@ -100,7 +111,7 @@ app.get('/api/tools', async (req, res) => {
 
 app.post('/api/tasks/:taskName/execute', async (req, res) => {
   try {
-    await taskRegistry.loadAll();
+    await ensureRegistriesLoaded();
     const { taskName } = req.params;
     const input = req.body || {};
 
@@ -122,8 +133,7 @@ app.post('/api/tasks/:taskName/execute', async (req, res) => {
 
 app.post('/api/flows/:flowName/execute', async (req, res) => {
   try {
-    await flowRegistry.loadAll();
-    await taskRegistry.loadAll();
+    await ensureRegistriesLoaded();
 
     const { flowName } = req.params;
     const input = req.body || {};
@@ -151,7 +161,7 @@ app.post('/api/flows/:flowName/execute', async (req, res) => {
 
 app.post('/api/tools/:category/:toolName/execute', async (req, res) => {
   try {
-    await toolRegistry.loadAll();
+    await ensureRegistriesLoaded();
     const { category, toolName } = req.params;
     const input = req.body || {};
 
@@ -179,7 +189,17 @@ app.use((err, req, res, next) => {
 const PORT = SERVER_CONFIG.PORT;
 const HOST = SERVER_CONFIG.HOST;
 
-app.listen(PORT, HOST, () => {
+app.listen(PORT, HOST, async () => {
   logger.info(`Sequential Ecosystem desktop server running on ${HOST}:${PORT}`);
+
+  await taskRegistry.loadAll();
+  await flowRegistry.loadAll();
+  await toolRegistry.loadAll();
+  registriesLoaded = true;
+
+  hotReloadManager.on('reload', () => {
+    registriesLoaded = false;
+  });
+
   hotReloadManager.start();
 });
