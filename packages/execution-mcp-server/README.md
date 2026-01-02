@@ -71,6 +71,29 @@ npm run mcp:stop      # Stop desktop-server
 npm run mcp:restart   # Restart desktop-server
 ```
 
+### HTTP Server (Claude Code Compatible)
+
+Start the HTTP JSON-RPC 2.0 server for Claude Code and other clients:
+
+```bash
+npm run mcp:http      # Start HTTP server on port 9000
+```
+
+The HTTP server implements JSON-RPC 2.0 protocol and accepts POST requests:
+
+```bash
+curl -X POST http://localhost:9000 \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize"}'
+```
+
+**Port Configuration**:
+- Default: `9000` (for Claude Code integration)
+- Configure via: `PORT_MCP=9001 npm run mcp:http`
+
+**Claude Code Integration**:
+Configure Claude Code to connect to this server at `http://localhost:9000` for full access to tasks, flows, and tools.
+
 ### Direct Import
 
 ```javascript
@@ -178,6 +201,51 @@ The server exposes 11 MCP tools:
 11. **restart_server**
     - Restart the desktop-server
     - No inputs required
+
+## HTTP JSON-RPC 2.0 Server
+
+The HTTP server provides a complete JSON-RPC 2.0 interface for remote MCP clients, including Claude Code.
+
+### Features
+- Full JSON-RPC 2.0 protocol compliance
+- POST-only interface for maximum compatibility
+- Automatic MCP server initialization
+- Graceful shutdown via signal handlers
+- Configurable port via `PORT_MCP` environment variable
+
+### Response Format
+
+All responses follow JSON-RPC 2.0 specification:
+
+**Success Response**:
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": { ... }
+}
+```
+
+**Error Response**:
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "error": {
+    "code": -32603,
+    "message": "Error description"
+  }
+}
+```
+
+### HTTP Server Code
+
+Located in `src/http-server.js`:
+- Creates Node.js HTTP server
+- Parses incoming JSON-RPC 2.0 requests
+- Delegates to MCPServer for protocol handling
+- Returns properly formatted JSON responses
+- Handles parse errors and internal errors gracefully
 
 ## JSON-RPC Interface
 

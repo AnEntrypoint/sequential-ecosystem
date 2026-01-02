@@ -11,6 +11,7 @@
     "mcp:start": "PORT=8003 node packages/execution-mcp-server/src/cli.js start",
     "mcp:stop": "PORT=8003 node packages/execution-mcp-server/src/cli.js stop",
     "mcp:restart": "PORT=8003 node packages/execution-mcp-server/src/cli.js restart",
+    "mcp:http": "PORT_MCP=9000 node packages/execution-mcp-server/src/http-server.js",
     "cli": "node cli.js",
     "init": "node cli.js init",
     "create": "node cli.js create-task",
