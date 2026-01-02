@@ -1,0 +1,30 @@
+{
+  "name": "@sequentialos/sequential-wrapped-services",
+  "version": "1.0.0",
+  "description": "Runtime-agnostic wrapped services for sequential-ecosystem (Google APIs, keystore, database, etc.)",
+  "type": "module",
+  "main": "cli.js",
+  "exports": {
+    ".": "./cli.js"
+  },
+  "bin": {
+    "sequential-services": "./cli.js"
+  },
+  "scripts": {
+    "start": "node cli.js",
+    "start:deno": "deno run --allow-all cli.ts",
+    "start:bun": "bun cli.ts"
+  },
+  "keywords": [
+    "sequential",
+    "wrapped",
+    "services",
+    "runtime-agnostic"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@sequentialos/sequential-fetch": "*",
+    "@sequentialos/sequential-adaptor": "*"
+  }
+}
