@@ -1,5 +1,5 @@
-const { TaskVFS } = require('./vfs.js');
-const { validator } = require('@sequential/core-config');
+import { TaskVFS } from './vfs.js';
+import { validator } from '@sequentialos/core-config';
 
 class HostTools {
   constructor(ecosystemPath, taskId, runId) {
@@ -233,4 +233,4 @@ class HostTools {
   }
 }
 
-module.exports = { HostTools };
+export { HostTools };

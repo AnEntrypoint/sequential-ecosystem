@@ -26,8 +26,7 @@ const dispatchers = {
   'desktop-server': 'desktop-server.js',
   'webhook:task': 'webhook-task.js',
   'webhook:flow': 'webhook-flow.js',
-  'webhook:tool': 'webhook-tool.js',
-  'cli': 'cli.js'
+  'webhook:tool': 'webhook-tool.js'
 };
 
 const dispatcher = dispatchers[command];

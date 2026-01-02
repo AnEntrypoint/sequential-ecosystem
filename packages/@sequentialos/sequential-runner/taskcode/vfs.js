@@ -1,9 +1,12 @@
-import logger from '@sequential/sequential-logging';
-import { nowISO, createTimestamps, updateTimestamp } from '@sequential/timestamp-utilities';
-const fs = require('fs');
-const path = require('path');
-const { EventEmitter } = require('events');
-const { validator } = require('@sequential/core-config');
+import fs from 'fs';
+import path from 'path';
+import { EventEmitter } from 'events';
+import logger from '@sequentialos/sequential-logging';
+import { validator } from '@sequentialos/core-config';
+
+const nowISO = () => new Date().toISOString();
+const createTimestamps = () => ({ createdAt: nowISO(), updatedAt: nowISO() });
+const updateTimestamp = (obj) => ({ ...obj, updatedAt: nowISO() });
 
 class TaskVFS extends EventEmitter {
   constructor(ecosystemPath, taskId, runId) {
@@ -37,8 +40,7 @@ class TaskVFS extends EventEmitter {
   _ensureDirectories() {
     Object.entries(this.scopes).forEach(async ([scopeName, dir]) => {
       if (!fs.existsSync(dir)) {
-        const fsPromises = require('fs').promises;
-        await fsPromises.mkdir(dir, { recursive: true });
+        await fs.promises.mkdir(dir, { recursive: true });
         this._log(`Created scope directory: ${scopeName}`, { dir });
       }
     });
@@ -404,4 +406,4 @@ class TaskVFS extends EventEmitter {
   }
 }
 
-module.exports = { TaskVFS };
+export { TaskVFS };

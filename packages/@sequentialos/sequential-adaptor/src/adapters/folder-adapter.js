@@ -4,7 +4,6 @@ import { randomUUID } from 'crypto';
 import { validatePath } from '@sequentialos/core';
 import { StorageAdapter } from '../interfaces/storage-adapter.js';
 import { CRUDPatterns, Serializer } from '@sequentialos/sequential-storage-utils';
-import { nowISO } from '@sequentialos/sequential-utils/timestamps';
 import { nowISO, createTimestamps, updateTimestamp } from '@sequentialos/timestamp-utilities';
 import {
   readJsonFile,

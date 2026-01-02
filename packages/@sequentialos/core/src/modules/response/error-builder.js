@@ -5,7 +5,7 @@
  */
 
 import { getStatusCode } from './error-codes.js';
-import { nowISO } from '@sequentialos/timestamp-utilities';
+const nowISO = () => new Date().toISOString();
 
 export function buildErrorResponse(code, message, details = {}) {
   const statusCode = getStatusCode(code);

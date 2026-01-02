@@ -2,10 +2,13 @@
   "name": "@sequentialos/sequential-flow",
   "version": "1.0.0",
   "description": "JavaScript execution library with automatic pause/resume on fetch calls and custom storage. Built for edge functions, serverless environments, and cross-runtime compatibility. Lightweight alternative to FlowState.",
-  "main": "lib/edge-functions.cjs",
+  "main": "src/index.js",
   "type": "module",
   "exports": {
-    ".": "./lib/edge-functions.cjs",
+    ".": {
+      "import": "./src/index.js",
+      "require": "./lib/edge-functions.cjs"
+    },
     "./storage": "./lib/storage.cjs"
   },
   "scripts": {
@@ -62,6 +65,7 @@
     "deno": ">=1.40.0"
   },
   "files": [
+    "src/",
     "lib/",
     "README.md"
   ]
