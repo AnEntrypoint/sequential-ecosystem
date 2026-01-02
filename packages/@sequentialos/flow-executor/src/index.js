@@ -5,6 +5,7 @@ import logger from '@sequentialos/sequential-logging';
 export class FlowExecutor {
   constructor() {
     this.taskService = createTaskService();
+    this.conditionCache = new Map();
   }
 
   async execute(flowConfig, input = {}) {
@@ -121,7 +122,12 @@ export class FlowExecutor {
   _evaluateCondition(condition, data) {
     if (typeof condition === 'string') {
       try {
-        return new Function('data', `return ${condition}`)(data);
+        let conditionFn = this.conditionCache.get(condition);
+        if (!conditionFn) {
+          conditionFn = new Function('data', `return ${condition}`);
+          this.conditionCache.set(condition, conditionFn);
+        }
+        return conditionFn(data);
       } catch (err) {
         logger.error('[FlowExecutor] Condition evaluation failed:', err);
         return false;

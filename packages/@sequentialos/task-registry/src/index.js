@@ -33,7 +33,10 @@ export class TaskRegistry {
       const taskDir = path.dirname(taskPath);
       const taskName = path.basename(taskDir);
 
-      // Dynamic import with cache busting
+      if (this.tasks.has(taskName) && this.tasks.get(taskName).path === taskPath) {
+        return;
+      }
+
       const taskModule = await import(`${taskPath}?v=${Date.now()}`);
 
       this.tasks.set(taskName, {
@@ -77,6 +80,17 @@ export class TaskRegistry {
 
   unregister(taskName) {
     this.tasks.delete(taskName);
+  }
+
+  clear() {
+    this.tasks.clear();
+  }
+
+  getMemoryUsage() {
+    return {
+      count: this.tasks.size,
+      bytes: this.tasks.size * 100
+    };
   }
 }
 

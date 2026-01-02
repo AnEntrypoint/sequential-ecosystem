@@ -6,6 +6,7 @@ class ExecutionService {
     this.entityName = entityName;
     this.handlers = new Map();
     this.executionHistory = [];
+    this.maxHistorySize = options.maxHistorySize ?? 100;
     this.debug = options.debug ?? false;
     this.exitOnError = options.exitOnError ?? false;
     this.timeout = options.timeout ?? 30000;
@@ -141,7 +142,7 @@ export class UnifiedExecutionService extends ExecutionService {
       endTime,
       duration: new Date(endTime) - new Date(startTime)
     };
-    this.executionHistory.push(result);
+    this._addToHistory(result);
     logger.debug(`[${this.label}Service] Completed: ${name}`, { duration: result.duration });
     if (broadcast) this._broadcastEvent(`${this.type}:completed`, result);
     return result;
@@ -163,10 +164,17 @@ export class UnifiedExecutionService extends ExecutionService {
       endTime,
       duration: new Date(endTime) - new Date(startTime)
     };
-    this.executionHistory.push(result);
+    this._addToHistory(result);
     logger.error(`[${this.label}Service] Failed: ${name} - ${error.message}`);
     if (broadcast) this._broadcastEvent(`${this.type}:failed`, result);
     return result;
+  }
+
+  _addToHistory(result) {
+    this.executionHistory.push(result);
+    if (this.executionHistory.length > this.maxHistorySize) {
+      this.executionHistory.shift();
+    }
   }
 
   _broadcastEvent(event, data) {

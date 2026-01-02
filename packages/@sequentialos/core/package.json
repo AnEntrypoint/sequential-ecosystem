@@ -4,9 +4,6 @@
   "description": "Core utilities package consolidating error-handling, param-validation, and response-formatting",
   "main": "src/index.js",
   "type": "module",
-  "scripts": {
-    "test": "node --test test.js"
-  },
   "exports": {
     ".": "./src/index.js",
     "./error": "./src/modules/error/index.js",

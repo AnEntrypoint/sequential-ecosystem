@@ -17,9 +17,6 @@
     "gxe:task": "node scripts/gxe-dispatch.js webhook:task",
     "gxe:flow": "node scripts/gxe-dispatch.js webhook:flow",
     "gxe:tool": "node scripts/gxe-dispatch.js webhook:tool",
-    "test": "node scripts/test-all.js",
-    "test:watch": "find packages -name package.json -exec dirname {} \\; | xargs -I {} sh -c 'cd {} && npm run test:watch 2>/dev/null || true'",
-    "test:coverage": "c8 node scripts/test-all.js",
     "lint": "eslint packages --ext .js --ignore-path .gitignore || true",
     "lint:fix": "eslint packages --ext .js --ignore-path .gitignore --fix || true",
     "build": "find packages -name package.json -exec dirname {} \\; | xargs -I {} sh -c 'cd {} && npm run build 2>/dev/null || true'"
@@ -89,7 +86,6 @@
     "zod": "^4.3.2"
   },
   "devDependencies": {
-    "c8": "^8.0.1",
     "eslint": "^8.54.0",
     "nodemon": "^3.0.2"
   },

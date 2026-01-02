@@ -35,6 +35,10 @@ export class ToolRegistry {
       const toolId = toolDef.id || toolDef.name;
       const fullName = `${toolDef.category || 'default'}:${toolId}`;
 
+      if (this.tools.has(fullName) && this.tools.get(fullName).path === toolPath) {
+        return;
+      }
+
       this.tools.set(fullName, {
         ...toolDef,
         path: toolPath,
@@ -66,6 +70,17 @@ export class ToolRegistry {
 
   unregister(fullName) {
     this.tools.delete(fullName);
+  }
+
+  clear() {
+    this.tools.clear();
+  }
+
+  getMemoryUsage() {
+    return {
+      count: this.tools.size,
+      bytes: this.tools.size * 120
+    };
   }
 }
 

@@ -33,6 +33,10 @@ export class FlowRegistry {
       const flowDir = path.dirname(flowConfigPath);
       const flowName = path.basename(flowDir);
 
+      if (this.flows.has(flowName) && this.flows.get(flowName).path === flowConfigPath) {
+        return;
+      }
+
       const flowConfig = await storage.readJson(flowConfigPath);
 
       this.flows.set(flowName, {
@@ -74,6 +78,17 @@ export class FlowRegistry {
 
   unregister(flowName) {
     this.flows.delete(flowName);
+  }
+
+  clear() {
+    this.flows.clear();
+  }
+
+  getMemoryUsage() {
+    return {
+      count: this.flows.size,
+      bytes: this.flows.size * 150
+    };
   }
 }
 

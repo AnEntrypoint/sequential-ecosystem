@@ -11,9 +11,6 @@
     },
     "./storage": "./lib/storage.cjs"
   },
-  "scripts": {
-    "test": "node test.js"
-  },
   "keywords": [
     "javascript",
     "execution",

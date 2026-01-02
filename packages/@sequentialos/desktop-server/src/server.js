@@ -15,11 +15,37 @@ import '@sequentialos/unified-invocation-bridge';
 
 const app = express();
 
+const taskService = createTaskService({ maxHistorySize: 100 });
+
+const getMemoryStatus = () => {
+  const mem = process.memoryUsage();
+  return {
+    heapUsedMB: (mem.heapUsed / 1024 / 1024).toFixed(2),
+    rssMB: (mem.rss / 1024 / 1024).toFixed(2),
+    heapPercent: ((mem.heapUsed / mem.heapTotal) * 100).toFixed(2)
+  };
+};
+
+setInterval(() => {
+  if (global.gc) {
+    const mem = process.memoryUsage();
+    const heapPercent = mem.heapUsed / mem.heapTotal;
+    if (heapPercent > 0.8) {
+      global.gc();
+    }
+  }
+}, 60000);
+
 app.use(cors({ origin: SERVER_CONFIG.CORS_ORIGIN }));
 app.use(bodyParser.json({ limit: SERVER_CONFIG.REQUEST_SIZE_LIMIT }));
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  const memory = getMemoryStatus();
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    memory
+  });
 });
 
 app.get('/api/tasks', async (req, res) => {
@@ -77,7 +103,6 @@ app.post('/api/tasks/:taskName/execute', async (req, res) => {
     const { taskName } = req.params;
     const input = req.body || {};
 
-    const taskService = createTaskService();
     const task = taskRegistry.get(taskName);
     if (task?.handler) {
       taskService.register(taskName, task.handler);
