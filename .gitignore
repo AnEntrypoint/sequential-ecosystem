@@ -43,3 +43,6 @@ yarn-error.log*
 .vexify.db
 .next/
 tasks/
+.service-registry.json
+.sequential-vfs/
+.runs/
