@@ -12,7 +12,6 @@
   ],
   "dependencies": {
     "fs-extra": "^11.2.0",
-    "@sequentialos/path-validation": "*",
     "@sequentialos/error-handling": "*",
     "@sequentialos/atomic-file-operations": "*"
   },
