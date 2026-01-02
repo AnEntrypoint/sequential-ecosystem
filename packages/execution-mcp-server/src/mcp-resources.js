@@ -8,6 +8,7 @@ export class MCPResources {
     const resources = [];
 
     try {
+      await taskRegistry.loadAll();
       const tasks = taskRegistry.list();
       for (const taskName of tasks) {
         const task = taskRegistry.get(taskName);
@@ -27,6 +28,7 @@ export class MCPResources {
     }
 
     try {
+      await flowRegistry.loadAll();
       const flows = flowRegistry.list();
       for (const flowName of flows) {
         const flow = flowRegistry.get(flowName);
@@ -46,6 +48,7 @@ export class MCPResources {
     }
 
     try {
+      await toolRegistry.loadAll();
       const tools = toolRegistry.list();
       for (const fullName of tools) {
         const tool = toolRegistry.get(fullName);
