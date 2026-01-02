@@ -14,6 +14,7 @@
     "src"
   ],
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.2.0",
     "sequential-logging": "*",
     "core-config": "^1.0.0",
     "execution-service-unified": "^1.0.0",
@@ -24,6 +25,11 @@
     "flow-executor": "^1.0.0",
     "hot-reload-manager": "^1.0.0",
     "nanoid": "^5.1.6"
+  },
+  "scripts": {
+    "mcp": "node src/anthropic-server.js",
+    "mcp:http": "node src/http-server.js",
+    "dev": "node src/cli.js"
   },
   "engines": {
     "node": ">=18.0.0"

@@ -6,7 +6,7 @@
   "scripts": {
     "start": "PORT=8003 node scripts/gxe-dispatch.js desktop-server",
     "server": "PORT=8003 node scripts/gxe-dispatch.js desktop-server",
-    "mcp": "node packages/execution-mcp-server/src/stdio-server.js",
+    "mcp": "node packages/execution-mcp-server/src/anthropic-server.js",
     "mcp:status": "PORT=8003 node packages/execution-mcp-server/src/cli.js status",
     "mcp:start": "PORT=8003 node packages/execution-mcp-server/src/cli.js start",
     "mcp:stop": "PORT=8003 node packages/execution-mcp-server/src/cli.js stop",
@@ -81,6 +81,7 @@
     "GXE_DISPATCH.md"
   ],
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.25.1",
     "body-parser": "^1.20.2",
     "chokidar": "^5.0.0",
     "commander": "^11.0.0",
