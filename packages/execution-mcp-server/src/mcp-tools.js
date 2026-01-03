@@ -16,98 +16,58 @@ export class MCPTools {
   getToolDefinitions() {
     return [
       {
-        name: 'execute_task',
-        description: 'Execute a task by name with input parameters',
+        name: 'execute',
+        description: 'Execute a task, flow, or tool by type and name',
         inputSchema: {
           type: 'object',
           properties: {
-            taskName: {
+            type: {
               type: 'string',
-              description: 'Name of the task to execute'
+              enum: ['task', 'flow', 'tool'],
+              description: 'Type of entity to execute'
+            },
+            name: {
+              type: 'string',
+              description: 'Name of the entity to execute'
             },
             input: {
               type: 'object',
-              description: 'Input parameters for the task',
+              description: 'Input parameters for execution',
               additionalProperties: true
             },
-            timeout: {
-              type: 'number',
-              description: 'Execution timeout in milliseconds (optional, default 30000)',
-              default: 30000
-            }
-          },
-          required: ['taskName']
-        }
-      },
-      {
-        name: 'execute_flow',
-        description: 'Execute a flow by name with input parameters',
-        inputSchema: {
-          type: 'object',
-          properties: {
-            flowName: {
-              type: 'string',
-              description: 'Name of the flow to execute'
-            },
-            input: {
-              type: 'object',
-              description: 'Input parameters for the flow',
-              additionalProperties: true
-            },
-            timeout: {
-              type: 'number',
-              description: 'Execution timeout in milliseconds (optional, default 60000)',
-              default: 60000
-            }
-          },
-          required: ['flowName']
-        }
-      },
-      {
-        name: 'execute_tool',
-        description: 'Execute a tool by category and name with input parameters',
-        inputSchema: {
-          type: 'object',
-          properties: {
             category: {
               type: 'string',
-              description: 'Tool category'
+              description: 'Tool category (required when type is "tool")'
             },
-            toolName: {
+            id: {
               type: 'string',
-              description: 'Tool name'
+              description: 'Optional execution ID'
             },
-            input: {
-              type: 'object',
-              description: 'Input parameters for the tool',
-              additionalProperties: true
+            timeout: {
+              type: 'number',
+              description: 'Execution timeout in milliseconds'
+            },
+            broadcast: {
+              type: 'boolean',
+              description: 'Whether to broadcast execution events'
             }
           },
-          required: ['category', 'toolName']
+          required: ['type', 'name']
         }
       },
       {
-        name: 'list_tasks',
-        description: 'List all available tasks',
+        name: 'list',
+        description: 'List all available entities of a specific type',
         inputSchema: {
           type: 'object',
-          properties: {}
-        }
-      },
-      {
-        name: 'list_flows',
-        description: 'List all available flows',
-        inputSchema: {
-          type: 'object',
-          properties: {}
-        }
-      },
-      {
-        name: 'list_tools',
-        description: 'List all available tools',
-        inputSchema: {
-          type: 'object',
-          properties: {}
+          properties: {
+            type: {
+              type: 'string',
+              enum: ['task', 'flow', 'tool'],
+              description: 'Type of entities to list'
+            }
+          },
+          required: ['type']
         }
       },
       {
@@ -155,14 +115,6 @@ export class MCPTools {
         }
       },
       {
-        name: 'restart_server',
-        description: 'Restart the desktop-server (deprecated: use start_server instead, it auto-restarts if running)',
-        inputSchema: {
-          type: 'object',
-          properties: {}
-        }
-      },
-      {
         name: 'get_server_logs',
         description: 'Get latest server logs from the running process',
         inputSchema: {
@@ -181,131 +133,125 @@ export class MCPTools {
             }
           }
         }
-      },
-      {
-        name: 'clear_server_logs',
-        description: 'Clear server log history',
-        inputSchema: {
-          type: 'object',
-          properties: {}
-        }
       }
     ];
   }
 
-  async executeTask(taskName, input = {}, timeout = 30000) {
-    logger.debug('[MCPTools] Executing task:', taskName);
+  async execute(type, name, input = {}, options = {}) {
+    const { category, id = nanoid(9), timeout, broadcast = true } = options;
+
+    logger.debug('[MCPTools] Executing', type, ':', name);
 
     try {
-      const task = taskRegistry.get(taskName);
-      if (task?.handler) {
-        taskService.register(taskName, task.handler);
+      if (type === 'task') {
+        const task = taskRegistry.get(name);
+        if (task?.handler) {
+          taskService.register(name, task.handler);
+        }
+
+        const timeoutMs = timeout || 30000;
+        const result = await taskService.execute(name, input, {
+          id,
+          timeout: timeoutMs,
+          broadcast
+        });
+
+        return {
+          success: result.success,
+          type: 'task',
+          name,
+          result: result.data || result.error,
+          executionId: result.id,
+          duration: result.duration,
+          timestamp: result.endTime
+        };
+      } else if (type === 'flow') {
+        const flowEntry = flowRegistry.get(name);
+        if (!flowEntry) {
+          throw new Error(`Flow not found: ${name}`);
+        }
+
+        const timeoutMs = timeout || 60000;
+        const flowResult = await executeFlow(flowEntry.config, input);
+        return {
+          success: flowResult.success,
+          type: 'flow',
+          name,
+          result: flowResult.data || flowResult.error,
+          executionId: `flow-${id}`,
+          timestamp: new Date().toISOString()
+        };
+      } else if (type === 'tool') {
+        if (!category) {
+          throw new Error('Tool execution requires category parameter');
+        }
+
+        const toolResult = await executeTool(category, name, input);
+        return {
+          success: true,
+          type: 'tool',
+          category,
+          name,
+          result: toolResult,
+          executionId: `tool-${id}`,
+          timestamp: new Date().toISOString()
+        };
+      } else {
+        throw new Error(`Unknown execution type: ${type}`);
       }
-
-      const result = await taskService.execute(taskName, input, {
-        id: nanoid(9),
-        timeout,
-        broadcast: true
-      });
-
-      return {
-        success: result.success,
-        taskName,
-        result: result.data || result.error,
-        executionId: result.id,
-        duration: result.duration,
-        timestamp: result.endTime
-      };
     } catch (err) {
-      logger.error('[MCPTools] Task execution failed:', err);
+      logger.error('[MCPTools] Execution failed:', err);
       throw err;
     }
   }
 
-  async executeFlow(flowName, input = {}, timeout = 60000) {
-    logger.debug('[MCPTools] Executing flow:', flowName);
+  async list(type) {
+    logger.debug('[MCPTools] Listing', type + 's');
 
     try {
-      const flowEntry = flowRegistry.get(flowName);
-      if (!flowEntry) {
-        throw new Error(`Flow not found: ${flowName}`);
+      if (type === 'task') {
+        await taskRegistry.loadAll();
+        const tasks = taskRegistry.list().map(name => {
+          const task = taskRegistry.get(name);
+          return {
+            name,
+            loadedAt: task?.loadedAt?.toISOString(),
+            hasConfig: !!task?.config
+          };
+        });
+        return { type: 'task', items: tasks, count: tasks.length };
+      } else if (type === 'flow') {
+        await flowRegistry.loadAll();
+        const flows = flowRegistry.list().map(name => {
+          const flow = flowRegistry.get(name);
+          return {
+            name,
+            loadedAt: flow?.loadedAt?.toISOString(),
+            hasConfig: !!flow?.config
+          };
+        });
+        return { type: 'flow', items: flows, count: flows.length };
+      } else if (type === 'tool') {
+        await toolRegistry.loadAll();
+        const tools = toolRegistry.list().map(fullName => {
+          const tool = toolRegistry.get(fullName);
+          const [category, toolName] = fullName.split(':');
+          return {
+            fullName,
+            category: category || 'default',
+            name: toolName,
+            id: tool?.id,
+            loadedAt: tool?.loadedAt?.toISOString()
+          };
+        });
+        return { type: 'tool', items: tools, count: tools.length };
+      } else {
+        throw new Error(`Unknown list type: ${type}`);
       }
-
-      const flowResult = await executeFlow(flowEntry.config, input);
-      const result = {
-        success: flowResult.success,
-        flowName,
-        result: flowResult.data || flowResult.error,
-        executionId: `flow-${nanoid(9)}`,
-        timestamp: new Date().toISOString()
-      };
-
-      return result;
     } catch (err) {
-      logger.error('[MCPTools] Flow execution failed:', err);
+      logger.error('[MCPTools] List failed:', err);
       throw err;
     }
-  }
-
-  async executeTool(category, toolName, input = {}) {
-    logger.debug('[MCPTools] Executing tool:', category, toolName);
-
-    try {
-      const toolResult = await executeTool(category, toolName, input);
-      return {
-        success: true,
-        category,
-        toolName,
-        result: toolResult,
-        executionId: `tool-${nanoid(9)}`,
-        timestamp: new Date().toISOString()
-      };
-    } catch (err) {
-      logger.error('[MCPTools] Tool execution failed:', err);
-      throw err;
-    }
-  }
-
-  async listTasks() {
-    await taskRegistry.loadAll();
-    const tasks = taskRegistry.list().map(name => {
-      const task = taskRegistry.get(name);
-      return {
-        name,
-        loadedAt: task?.loadedAt?.toISOString(),
-        hasConfig: !!task?.config
-      };
-    });
-    return { tasks, count: tasks.length };
-  }
-
-  async listFlows() {
-    await flowRegistry.loadAll();
-    const flows = flowRegistry.list().map(name => {
-      const flow = flowRegistry.get(name);
-      return {
-        name,
-        loadedAt: flow?.loadedAt?.toISOString(),
-        hasConfig: !!flow?.config
-      };
-    });
-    return { flows, count: flows.length };
-  }
-
-  async listTools() {
-    await toolRegistry.loadAll();
-    const tools = toolRegistry.list().map(fullName => {
-      const tool = toolRegistry.get(fullName);
-      const [category, toolName] = fullName.split(':');
-      return {
-        fullName,
-        category: category || 'default',
-        name: toolName,
-        id: tool?.id,
-        loadedAt: tool?.loadedAt?.toISOString()
-      };
-    });
-    return { tools, count: tools.length };
   }
 
   getExecutionHistory(entityType, limit = 10) {
@@ -355,10 +301,6 @@ export class MCPTools {
     return await serverLifecycle.stop();
   }
 
-  async restartServer() {
-    return await serverLifecycle.restart();
-  }
-
   getServerLogs(limit = null, level = 'all') {
     let logs = logManager.getLogs(limit);
 
@@ -388,36 +330,20 @@ export class MCPTools {
     return result;
   }
 
-  clearServerLogs() {
-    logManager.clear();
-    return {
-      success: true,
-      message: 'Server logs cleared',
-      stats: logManager.getStats()
-    };
-  }
-
   async handleToolCall(toolName, input) {
     logger.debug('[MCPTools] Handling tool call:', toolName);
 
     switch (toolName) {
-      case 'execute_task':
-        return await this.executeTask(input.taskName, input.input, input.timeout);
+      case 'execute':
+        return await this.execute(input.type, input.name, input.input, {
+          category: input.category,
+          id: input.id,
+          timeout: input.timeout,
+          broadcast: input.broadcast
+        });
 
-      case 'execute_flow':
-        return await this.executeFlow(input.flowName, input.input, input.timeout);
-
-      case 'execute_tool':
-        return await this.executeTool(input.category, input.toolName, input.input);
-
-      case 'list_tasks':
-        return await this.listTasks();
-
-      case 'list_flows':
-        return await this.listFlows();
-
-      case 'list_tools':
-        return await this.listTools();
+      case 'list':
+        return await this.list(input.type);
 
       case 'get_execution_history':
         return this.getExecutionHistory(input.entityType, input.limit);
@@ -431,14 +357,8 @@ export class MCPTools {
       case 'stop_server':
         return await this.stopServer();
 
-      case 'restart_server':
-        return await this.restartServer();
-
       case 'get_server_logs':
         return this.getServerLogs(input.limit, input.level);
-
-      case 'clear_server_logs':
-        return this.clearServerLogs();
 
       default:
         throw new Error(`Unknown tool: ${toolName}`);

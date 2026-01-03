@@ -4,12 +4,14 @@
 - Protocol: MCP 2024-11-05, JSON-RPC 2.0 over stdio
 - Transport: Direct stdin/stdout handling (no readline wrapper) with request queue for rapid requests
 - Startup: Instant (<10ms) with lazy registry loading on first use
-- 11 MCP tools: execute_task, execute_flow, execute_tool, list_tasks, list_flows, list_tools, get_execution_history, get_server_status, start_server, stop_server, restart_server
+- 7 MCP tools: execute, list, get_execution_history, get_server_status, start_server, stop_server, get_server_logs
+  - execute(type: 'task'|'flow'|'tool', name, input?, options?) consolidates task/flow/tool execution
+  - list(type: 'task'|'flow'|'tool') consolidates registry listings
 - 9 Resources: 2 tasks + 2 flows + 5 tools discoverable via resources/list
 - Registry loading: Lazy on-demand via ensureRegistriesLoaded() to minimize startup latency
 - Shutdown: Graceful SIGTERM/SIGINT handlers with queue flushing, exit code 0/1
 - Error handling: JSON-RPC error responses with proper codes (-32700 parse, -32601 method not found, -32603 internal)
-- Server management: start_server automatically restarts if server already running; restart_server kept for backward compatibility but deprecated
+- Server management: start_server automatically restarts if server already running
 - Response format: start_server includes action field ('start' or 'restart') and wasAlreadyRunning boolean for client clarity
 
 **Architecture (Dec 31, 2025)**: Complete refactoring with:
