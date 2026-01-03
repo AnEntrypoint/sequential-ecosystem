@@ -1,43 +1,46 @@
-import readline from 'readline';
 import logger from 'sequential-logging';
 import { mcpServer } from './mcp-server.js';
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-  terminal: false
-});
+let buffer = '';
+const requestQueue = [];
+let isProcessing = false;
 
-async function handleLine(line) {
-  if (!line.trim()) {
-    return;
-  }
+async function processQueue() {
+  while (requestQueue.length > 0) {
+    isProcessing = true;
+    const line = requestQueue.shift();
 
-  let request;
-  try {
-    request = JSON.parse(line);
-  } catch (err) {
-    const response = {
-      jsonrpc: '2.0',
-      id: null,
-      error: { code: -32700, message: 'Parse error' }
-    };
-    process.stdout.write(JSON.stringify(response) + '\n');
-    return;
-  }
+    if (!line.trim()) {
+      continue;
+    }
 
-  try {
-    const response = await mcpServer.handleJsonRpc(request);
-    process.stdout.write(JSON.stringify(response) + '\n');
-  } catch (err) {
-    logger.error('[MCP] Request handling error:', err);
-    const response = {
-      jsonrpc: '2.0',
-      id: request.id || null,
-      error: { code: -32603, message: 'Internal server error' }
-    };
-    process.stdout.write(JSON.stringify(response) + '\n');
+    let request;
+    try {
+      request = JSON.parse(line);
+    } catch (err) {
+      const response = {
+        jsonrpc: '2.0',
+        id: null,
+        error: { code: -32700, message: 'Parse error' }
+      };
+      process.stdout.write(JSON.stringify(response) + '\n');
+      continue;
+    }
+
+    try {
+      const response = await mcpServer.handleJsonRpc(request);
+      process.stdout.write(JSON.stringify(response) + '\n');
+    } catch (err) {
+      logger.error('[MCP] Request handling error:', err);
+      const response = {
+        jsonrpc: '2.0',
+        id: request.id || null,
+        error: { code: -32603, message: 'Internal server error' }
+      };
+      process.stdout.write(JSON.stringify(response) + '\n');
+    }
   }
+  isProcessing = false;
 }
 
 async function main() {
@@ -51,28 +54,45 @@ async function main() {
     process.exit(1);
   }
 
-  rl.on('line', async (line) => {
-    try {
-      await handleLine(line);
-    } catch (err) {
-      logger.error('[MCP] Unhandled error:', err);
+  process.stdin.on('data', (chunk) => {
+    buffer += chunk.toString();
+    const lines = buffer.split('\n');
+    buffer = lines.pop() || '';
+
+    for (const line of lines) {
+      if (line.trim()) {
+        requestQueue.push(line);
+      }
+    }
+
+    if (!isProcessing) {
+      processQueue().catch(err => {
+        logger.error('[MCP] Queue processing error:', err);
+      });
     }
   });
 
-  rl.on('close', () => {
-    logger.info('[MCP] Input stream closed, shutting down');
+  process.stdin.on('end', async () => {
+    if (buffer.trim()) {
+      requestQueue.push(buffer);
+    }
+    logger.info('[MCP] Input stream closed, flushing queue...');
+    while (requestQueue.length > 0 || isProcessing) {
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+    logger.info('[MCP] Shutting down');
     process.exit(0);
   });
 
   process.on('SIGTERM', () => {
     logger.info('[MCP] SIGTERM received, shutting down');
-    rl.close();
+    process.stdin.destroy();
     process.exit(0);
   });
 
   process.on('SIGINT', () => {
     logger.info('[MCP] SIGINT received, shutting down');
-    rl.close();
+    process.stdin.destroy();
     process.exit(0);
   });
 
