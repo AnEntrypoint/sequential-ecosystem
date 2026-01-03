@@ -8,7 +8,8 @@
     ".": "./src/mcp-server.js",
     "./lifecycle": "./src/server-lifecycle.js",
     "./resources": "./src/mcp-resources.js",
-    "./tools": "./src/mcp-tools.js"
+    "./tools": "./src/mcp-tools.js",
+    "./logs": "./src/log-manager.js"
   },
   "files": [
     "src"

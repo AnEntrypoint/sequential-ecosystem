@@ -2,6 +2,7 @@ import { spawn } from 'child_process';
 import { createConnection } from 'net';
 import logger from 'sequential-logging';
 import { SERVER_CONFIG } from 'core-config';
+import { logManager } from './log-manager.js';
 
 export class ServerLifecycle {
   constructor() {
@@ -65,6 +66,8 @@ export class ServerLifecycle {
 
     return new Promise((resolve, reject) => {
       try {
+        logManager.startCapture();
+
         this.process = spawn('node', [
           'packages/desktop-server/src/server.js'
         ], {
@@ -90,9 +93,11 @@ export class ServerLifecycle {
 
           if (this.process.stdout) {
             this.process.stdout.removeListener('data', stdoutHandler);
+            this.process.stdout.on('data', continuousStdoutHandler);
           }
           if (this.process.stderr) {
             this.process.stderr.removeListener('data', stderrHandler);
+            this.process.stderr.on('data', continuousStderrHandler);
           }
 
           resolve({
@@ -107,7 +112,9 @@ export class ServerLifecycle {
         };
 
         const stdoutHandler = (data) => {
-          readyBuffer += data.toString();
+          const msg = data.toString();
+          logManager.addLog(msg.trim(), 'stdout');
+          readyBuffer += msg;
           if (readyBuffer.includes('desktop server running') || readyBuffer.includes('listening')) {
             onReady();
           }
@@ -115,11 +122,26 @@ export class ServerLifecycle {
 
         const stderrHandler = (data) => {
           const msg = data.toString();
+          logManager.addLog(msg.trim(), 'stderr');
           logger.error('[ServerLifecycle] Startup error:', msg);
           if (!errorOccurred) {
             errorOccurred = true;
             if (setupTimeout) clearTimeout(setupTimeout);
             reject(new Error(`Server startup failed: ${msg.slice(0, 200)}`));
+          }
+        };
+
+        const continuousStdoutHandler = (data) => {
+          const msg = data.toString().trim();
+          if (msg) {
+            logManager.addLog(msg, 'stdout');
+          }
+        };
+
+        const continuousStderrHandler = (data) => {
+          const msg = data.toString().trim();
+          if (msg) {
+            logManager.addLog(msg, 'stderr');
           }
         };
 
@@ -158,6 +180,7 @@ export class ServerLifecycle {
   }
 
   async stop() {
+    logManager.stopCapture();
     if (!this.isRunning && !await this.checkPortInUse()) {
       logger.warn('[ServerLifecycle] Server not running, skipping stop');
       return {

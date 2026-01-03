@@ -7,6 +7,7 @@ import { executeTool } from 'tool-executor';
 import { executeFlow } from 'flow-executor';
 import { nanoid } from 'nanoid';
 import { serverLifecycle } from './server-lifecycle.js';
+import { logManager } from './log-manager.js';
 
 const taskService = createTaskService({ maxHistorySize: 100 });
 const flowService = createFlowService({ maxHistorySize: 100 });
@@ -160,6 +161,34 @@ export class MCPTools {
           type: 'object',
           properties: {}
         }
+      },
+      {
+        name: 'get_server_logs',
+        description: 'Get latest server logs from the running process',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Number of latest log lines to return (optional, default all)',
+              default: null
+            },
+            level: {
+              type: 'string',
+              enum: ['all', 'stdout', 'stderr'],
+              description: 'Filter logs by level (optional, default all)',
+              default: 'all'
+            }
+          }
+        }
+      },
+      {
+        name: 'clear_server_logs',
+        description: 'Clear server log history',
+        inputSchema: {
+          type: 'object',
+          properties: {}
+        }
       }
     ];
   }
@@ -306,6 +335,41 @@ export class MCPTools {
     return await serverLifecycle.restart();
   }
 
+  getServerLogs(limit = null, level = 'all') {
+    let logs = logManager.getLogs(limit);
+
+    if (level !== 'all') {
+      logs = logs.filter(log => log.level === level);
+    }
+
+    const stats = logManager.getStats();
+    return {
+      success: true,
+      logs: logs.map(log => ({
+        timestamp: log.timestamp,
+        level: log.level,
+        message: log.message
+      })),
+      count: logs.length,
+      stats: {
+        totalLines: stats.totalLines,
+        maxLines: stats.maxLines,
+        isFull: stats.isFull,
+        isCapturing: stats.isCapturing,
+        levelCounts: stats.levelCounts
+      }
+    };
+  }
+
+  clearServerLogs() {
+    logManager.clear();
+    return {
+      success: true,
+      message: 'Server logs cleared',
+      stats: logManager.getStats()
+    };
+  }
+
   async handleToolCall(toolName, input) {
     logger.debug('[MCPTools] Handling tool call:', toolName);
 
@@ -342,6 +406,12 @@ export class MCPTools {
 
       case 'restart_server':
         return await this.restartServer();
+
+      case 'get_server_logs':
+        return this.getServerLogs(input.limit, input.level);
+
+      case 'clear_server_logs':
+        return this.clearServerLogs();
 
       default:
         throw new Error(`Unknown tool: ${toolName}`);
