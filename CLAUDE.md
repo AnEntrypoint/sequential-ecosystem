@@ -9,7 +9,8 @@
 - Registry loading: Lazy on-demand via ensureRegistriesLoaded() to minimize startup latency
 - Shutdown: Graceful SIGTERM/SIGINT handlers with queue flushing, exit code 0/1
 - Error handling: JSON-RPC error responses with proper codes (-32700 parse, -32601 method not found, -32603 internal)
-- InitializeResult: Correctly wraps server name/version in serverInfo object per MCP spec
+- Server management: start_server automatically restarts if server already running; restart_server kept for backward compatibility but deprecated
+- Response format: start_server includes action field ('start' or 'restart') and wasAlreadyRunning boolean for client clarity
 
 **Architecture (Dec 31, 2025)**: Complete refactoring with:
 - Restored core packages: sequential-fetch, sequential-flow, sequential-runner, sequential-adaptor from GitHub

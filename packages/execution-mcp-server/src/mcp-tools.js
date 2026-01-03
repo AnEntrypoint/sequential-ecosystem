@@ -140,7 +140,7 @@ export class MCPTools {
       },
       {
         name: 'start_server',
-        description: 'Start the desktop-server',
+        description: 'Start the desktop-server or restart it if already running',
         inputSchema: {
           type: 'object',
           properties: {}
@@ -156,7 +156,7 @@ export class MCPTools {
       },
       {
         name: 'restart_server',
-        description: 'Restart the desktop-server',
+        description: 'Restart the desktop-server (deprecated: use start_server instead, it auto-restarts if running)',
         inputSchema: {
           type: 'object',
           properties: {}
@@ -324,7 +324,31 @@ export class MCPTools {
   }
 
   async startServer() {
-    return await serverLifecycle.start();
+    const status = serverLifecycle.getStatus();
+    if (status.isRunning) {
+      logger.info('[MCPTools] Server already running, initiating automatic restart');
+      try {
+        await serverLifecycle.stop();
+        await new Promise(resolve => setTimeout(resolve, 500));
+        const startResult = await serverLifecycle.start();
+        return {
+          ...startResult,
+          action: 'restart',
+          wasAlreadyRunning: true,
+          message: 'Server was already running, restarted automatically'
+        };
+      } catch (err) {
+        logger.error('[MCPTools] Auto-restart failed:', err);
+        throw err;
+      }
+    }
+
+    const startResult = await serverLifecycle.start();
+    return {
+      ...startResult,
+      action: 'start',
+      wasAlreadyRunning: false
+    };
   }
 
   async stopServer() {
