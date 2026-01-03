@@ -367,7 +367,7 @@ export class MCPTools {
     }
 
     const stats = logManager.getStats();
-    return {
+    const result = {
       success: true,
       logs: logs.map(log => ({
         timestamp: log.timestamp,
@@ -383,6 +383,9 @@ export class MCPTools {
         levelCounts: stats.levelCounts
       }
     };
+
+    logManager.clear();
+    return result;
   }
 
   clearServerLogs() {
