@@ -9,7 +9,7 @@
 - Registry loading: Lazy on-demand via ensureRegistriesLoaded() to minimize startup latency
 - Shutdown: Graceful SIGTERM/SIGINT handlers with queue flushing, exit code 0/1
 - Error handling: JSON-RPC error responses with proper codes (-32700 parse, -32601 method not found, -32603 internal)
-- Note: Claude Code's "Failed to connect" appears to be a detection/health-check issue; server is fully functional and all JSON-RPC operations work correctly
+- InitializeResult: Correctly wraps server name/version in serverInfo object per MCP spec
 
 **Architecture (Dec 31, 2025)**: Complete refactoring with:
 - Restored core packages: sequential-fetch, sequential-flow, sequential-runner, sequential-adaptor from GitHub
