@@ -111,11 +111,7 @@ export class MCPServer {
       await this.initialize();
       const info = this.getServerInfo();
       logger.info(`[MCPServer] Server ready: ${info.serverName}/${info.serverVersion}`);
-      return {
-        success: true,
-        message: 'MCP server initialized successfully',
-        serverInfo: info
-      };
+      return info;
     } catch (err) {
       logger.error('[MCPServer] Startup failed:', err);
       throw err;

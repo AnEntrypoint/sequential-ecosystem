@@ -51,10 +51,12 @@ async function main() {
     process.exit(1);
   }
 
-  rl.on('line', (line) => {
-    handleLine(line).catch(err => {
+  rl.on('line', async (line) => {
+    try {
+      await handleLine(line);
+    } catch (err) {
       logger.error('[MCP] Unhandled error:', err);
-    });
+    }
   });
 
   rl.on('close', () => {
