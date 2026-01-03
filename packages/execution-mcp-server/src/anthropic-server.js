@@ -55,7 +55,9 @@ async function main() {
   }
 
   process.stdin.on('data', (chunk) => {
-    buffer += chunk.toString();
+    const str = chunk.toString();
+    logger.info('[MCP] Data received:', str.substring(0, 120));
+    buffer += str;
     const lines = buffer.split('\n');
     buffer = lines.pop() || '';
 
@@ -72,16 +74,12 @@ async function main() {
     }
   });
 
-  process.stdin.on('end', async () => {
+  process.stdin.on('end', () => {
     if (buffer.trim()) {
       requestQueue.push(buffer);
     }
-    logger.info('[MCP] Input stream closed, flushing queue...');
-    while (requestQueue.length > 0 || isProcessing) {
-      await new Promise(resolve => setTimeout(resolve, 10));
-    }
-    logger.info('[MCP] Shutting down');
-    process.exit(0);
+    logger.info('[MCP] Input stream closed (keeping process alive for new connections)');
+    process.stdin.pause();
   });
 
   process.on('SIGTERM', () => {

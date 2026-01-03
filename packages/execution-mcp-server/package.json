@@ -27,7 +27,7 @@
     "nanoid": "^5.1.6"
   },
   "scripts": {
-    "mcp": "node src/anthropic-server.js"
+    "mcp": "node src/anthropic-server-fixed.js"
   },
   "engines": {
     "node": ">=18.0.0"
