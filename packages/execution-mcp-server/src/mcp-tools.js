@@ -8,9 +8,42 @@ import { executeFlow } from 'flow-executor';
 import { nanoid } from 'nanoid';
 import { serverLifecycle } from './server-lifecycle.js';
 import { logManager } from './log-manager.js';
+import { z } from 'zod';
 
 const taskService = createTaskService({ maxHistorySize: 100 });
 const flowService = createFlowService({ maxHistorySize: 100 });
+
+const executeSchema = z.object({
+  type: z.enum(['task', 'flow', 'tool']),
+  name: z.string().min(1, 'Name cannot be empty'),
+  input: z.record(z.any()).optional(),
+  category: z.string().optional(),
+  id: z.string().optional(),
+  timeout: z.number().positive().optional(),
+  broadcast: z.boolean().optional()
+});
+
+const listSchema = z.object({
+  type: z.enum(['task', 'flow', 'tool'])
+});
+
+const historySchema = z.object({
+  entityType: z.enum(['task', 'flow']),
+  limit: z.number().positive().optional().default(10)
+});
+
+const logsSchema = z.object({
+  level: z.enum(['all', 'stdout', 'stderr']).optional().default('all'),
+  limit: z.number().positive().optional()
+});
+
+class ValidationError extends Error {
+  constructor(message, code = 'VALIDATION_ERROR') {
+    super(message);
+    this.code = code;
+    this.name = 'ValidationError';
+  }
+}
 
 export class MCPTools {
   getToolDefinitions() {
@@ -138,19 +171,34 @@ export class MCPTools {
   }
 
   async execute(type, name, input = {}, options = {}) {
-    const { category, id = nanoid(9), timeout, broadcast = true } = options;
-
-    logger.debug('[MCPTools] Executing', type, ':', name);
-
     try {
-      if (type === 'task') {
-        const task = taskRegistry.get(name);
+      const validated = executeSchema.parse({
+        type,
+        name,
+        input: input || {},
+        category: options?.category,
+        id: options?.id,
+        timeout: options?.timeout,
+        broadcast: options?.broadcast
+      });
+
+      const { category, id = nanoid(9), timeout, broadcast = true } = {
+        category: validated.category,
+        id: validated.id || nanoid(9),
+        timeout: validated.timeout,
+        broadcast: validated.broadcast !== false
+      };
+
+      logger.debug('[MCPTools] Executing', type, ':', name);
+
+      if (validated.type === 'task') {
+        const task = taskRegistry.get(validated.name);
         if (task?.handler) {
-          taskService.register(name, task.handler);
+          taskService.register(validated.name, task.handler);
         }
 
         const timeoutMs = timeout || 30000;
-        const result = await taskService.execute(name, input, {
+        const result = await taskService.execute(validated.name, validated.input || {}, {
           id,
           timeout: timeoutMs,
           broadcast
@@ -159,57 +207,65 @@ export class MCPTools {
         return {
           success: result.success,
           type: 'task',
-          name,
+          name: validated.name,
           result: result.data || result.error,
           executionId: result.id,
           duration: result.duration,
           timestamp: result.endTime
         };
-      } else if (type === 'flow') {
-        const flowEntry = flowRegistry.get(name);
+      } else if (validated.type === 'flow') {
+        const flowEntry = flowRegistry.get(validated.name);
         if (!flowEntry) {
-          throw new Error(`Flow not found: ${name}`);
+          throw new ValidationError(`Flow not found: ${validated.name}`, 'NOT_FOUND');
         }
 
         const timeoutMs = timeout || 60000;
-        const flowResult = await executeFlow(flowEntry.config, input);
+        const flowResult = await executeFlow(flowEntry.config, validated.input || {});
         return {
           success: flowResult.success,
           type: 'flow',
-          name,
+          name: validated.name,
           result: flowResult.data || flowResult.error,
           executionId: `flow-${id}`,
           timestamp: new Date().toISOString()
         };
-      } else if (type === 'tool') {
-        if (!category) {
-          throw new Error('Tool execution requires category parameter');
+      } else if (validated.type === 'tool') {
+        if (!validated.category) {
+          throw new ValidationError('Tool execution requires category parameter', 'MISSING_PARAM');
         }
 
-        const toolResult = await executeTool(category, name, input);
+        const toolResult = await executeTool(validated.category, validated.name, validated.input || {});
         return {
           success: true,
           type: 'tool',
-          category,
-          name,
+          category: validated.category,
+          name: validated.name,
           result: toolResult,
           executionId: `tool-${id}`,
           timestamp: new Date().toISOString()
         };
-      } else {
-        throw new Error(`Unknown execution type: ${type}`);
       }
     } catch (err) {
+      if (err instanceof z.ZodError) {
+        const message = err.errors[0]?.message || 'Invalid input parameters';
+        logger.error('[MCPTools] Validation failed:', message);
+        throw new ValidationError(message, 'VALIDATION_ERROR');
+      }
+      if (err instanceof ValidationError) {
+        logger.error('[MCPTools] Validation error:', err.message);
+        throw err;
+      }
       logger.error('[MCPTools] Execution failed:', err);
       throw err;
     }
   }
 
   async list(type) {
-    logger.debug('[MCPTools] Listing', type + 's');
-
     try {
-      if (type === 'task') {
+      const validated = listSchema.parse({ type });
+      logger.debug('[MCPTools] Listing', validated.type + 's');
+
+      if (validated.type === 'task') {
         await taskRegistry.loadAll();
         const tasks = taskRegistry.list().map(name => {
           const task = taskRegistry.get(name);
@@ -220,7 +276,7 @@ export class MCPTools {
           };
         });
         return { type: 'task', items: tasks, count: tasks.length };
-      } else if (type === 'flow') {
+      } else if (validated.type === 'flow') {
         await flowRegistry.loadAll();
         const flows = flowRegistry.list().map(name => {
           const flow = flowRegistry.get(name);
@@ -231,7 +287,7 @@ export class MCPTools {
           };
         });
         return { type: 'flow', items: flows, count: flows.length };
-      } else if (type === 'tool') {
+      } else if (validated.type === 'tool') {
         await toolRegistry.loadAll();
         const tools = toolRegistry.list().map(fullName => {
           const tool = toolRegistry.get(fullName);
@@ -245,24 +301,46 @@ export class MCPTools {
           };
         });
         return { type: 'tool', items: tools, count: tools.length };
-      } else {
-        throw new Error(`Unknown list type: ${type}`);
       }
     } catch (err) {
+      if (err instanceof z.ZodError) {
+        const message = err.errors[0]?.message || 'Invalid list type parameter';
+        logger.error('[MCPTools] Validation failed:', message);
+        throw new ValidationError(message, 'VALIDATION_ERROR');
+      }
+      if (err instanceof ValidationError) {
+        logger.error('[MCPTools] Validation error:', err.message);
+        throw err;
+      }
       logger.error('[MCPTools] List failed:', err);
       throw err;
     }
   }
 
   getExecutionHistory(entityType, limit = 10) {
-    const service = entityType === 'task' ? taskService : flowService;
-    const history = service.getHistory(limit);
-    return {
-      entityType,
-      history,
-      count: history.length,
-      totalCount: service.executionHistory.length
-    };
+    try {
+      const validated = historySchema.parse({ entityType, limit });
+      const service = validated.entityType === 'task' ? taskService : flowService;
+      const history = service.getHistory(validated.limit);
+      return {
+        entityType: validated.entityType,
+        history,
+        count: history.length,
+        totalCount: service.executionHistory.length
+      };
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        const message = err.errors[0]?.message || 'Invalid execution history parameters';
+        logger.error('[MCPTools] Validation failed:', message);
+        throw new ValidationError(message, 'VALIDATION_ERROR');
+      }
+      if (err instanceof ValidationError) {
+        logger.error('[MCPTools] Validation error:', err.message);
+        throw err;
+      }
+      logger.error('[MCPTools] Get execution history failed:', err);
+      throw err;
+    }
   }
 
   getServerStatus() {
@@ -302,32 +380,47 @@ export class MCPTools {
   }
 
   getServerLogs(limit = null, level = 'all') {
-    let logs = logManager.getLogs(limit);
+    try {
+      const validated = logsSchema.parse({ limit, level });
+      let logs = logManager.getLogs(validated.limit);
 
-    if (level !== 'all') {
-      logs = logs.filter(log => log.level === level);
-    }
-
-    const stats = logManager.getStats();
-    const result = {
-      success: true,
-      logs: logs.map(log => ({
-        timestamp: log.timestamp,
-        level: log.level,
-        message: log.message
-      })),
-      count: logs.length,
-      stats: {
-        totalLines: stats.totalLines,
-        maxLines: stats.maxLines,
-        isFull: stats.isFull,
-        isCapturing: stats.isCapturing,
-        levelCounts: stats.levelCounts
+      if (validated.level !== 'all') {
+        logs = logs.filter(log => log.level === validated.level);
       }
-    };
 
-    logManager.clear();
-    return result;
+      const stats = logManager.getStats();
+      const result = {
+        success: true,
+        logs: logs.map(log => ({
+          timestamp: log.timestamp,
+          level: log.level,
+          message: log.message
+        })),
+        count: logs.length,
+        stats: {
+          totalLines: stats.totalLines,
+          maxLines: stats.maxLines,
+          isFull: stats.isFull,
+          isCapturing: stats.isCapturing,
+          levelCounts: stats.levelCounts
+        }
+      };
+
+      logManager.clear();
+      return result;
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        const message = err.errors[0]?.message || 'Invalid server logs parameters';
+        logger.error('[MCPTools] Validation failed:', message);
+        throw new ValidationError(message, 'VALIDATION_ERROR');
+      }
+      if (err instanceof ValidationError) {
+        logger.error('[MCPTools] Validation error:', err.message);
+        throw err;
+      }
+      logger.error('[MCPTools] Get server logs failed:', err);
+      throw err;
+    }
   }
 
   async handleToolCall(toolName, input) {

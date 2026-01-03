@@ -1,5 +1,12 @@
 # Technical Caveats
 
+**⚠️ CRITICAL**: CLI commands are forbidden. Use MCP tools only:
+- `start_server()` - Launch desktop-server
+- `stop_server()` - Stop desktop-server
+- `get_server_status()` - Check server state
+- `get_server_logs()` - Retrieve logs
+Never use `npm start`, `npm run mcp`, or any shell commands to manage the application.
+
 **MCP Server (Jan 3, 2026)**: Production-ready, fully functional
 - Protocol: MCP 2024-11-05, JSON-RPC 2.0 over stdio
 - Transport: Direct stdin/stdout handling (no readline wrapper) with request queue for rapid requests
@@ -62,9 +69,9 @@
 
 **Hot Reload**: ES modules cannot use function declarations at module level. Use const assignments.
 
-**Process Management**: Never use `&` or `run_in_background`. Breaks tool access. Keep servers in foreground.
+**Process Management**: Always use MCP tools for server management. Never use CLI commands, shell `&`, `npm start`, `npm run mcp`, or `run_in_background`. MCP tools handle all lifecycle operations.
 
-**Package Resolution**: All `@sequentialos/package` imports refer to local `packages/@sequentialos/package`. Node 18+ required. Cannot use CommonJS `require()` at module level.
+**Package Resolution**: All packages in `packages/` are linked via npm workspaces. Use bare imports (e.g., `import from 'sequential-logging'`). Node 18+ required. Cannot use CommonJS `require()` at module level.
 
 **API Response Format**: All endpoints return wrapped: `{success: boolean, data: {...}}`. Clients must unwrap data property.
 

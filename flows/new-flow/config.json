@@ -1,5 +1,13 @@
 {
   "name": "new-flow",
+  "description": "Test flow with XState runner support",
   "runner": "flow",
-  "inputs": []
+  "inputs": [],
+  "steps": [
+    {
+      "id": "step1",
+      "type": "task",
+      "name": "hello-world"
+    }
+  ]
 }

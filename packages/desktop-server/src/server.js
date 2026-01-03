@@ -40,6 +40,35 @@ setInterval(() => {
 app.use(cors({ origin: SERVER_CONFIG.CORS_ORIGIN }));
 app.use(bodyParser.json({ limit: SERVER_CONFIG.REQUEST_SIZE_LIMIT }));
 
+const getErrorStatusCode = (error) => {
+  if (!error) return 500;
+  const msg = error.message || '';
+  if (msg.includes('timeout') || msg.includes('Timeout')) return 408;
+  if (msg.includes('not found') || msg.includes('Not found')) return 404;
+  if (msg.includes('Invalid') || msg.includes('invalid') || msg.includes('Validation') || msg.includes('validation')) return 400;
+  if (msg.includes('syntax') || msg.includes('Syntax') || msg.includes('parse') || msg.includes('Parse')) return 400;
+  if (msg.includes('required') || msg.includes('Required') || msg.includes('missing') || msg.includes('Missing')) return 400;
+  return 500;
+};
+
+const inputValidationMiddleware = (req, res, next) => {
+  if (req.method === 'POST' && req.path.includes('/execute')) {
+    const input = req.body;
+    if (input !== null && input !== undefined && typeof input !== 'object') {
+      return res.status(400).json({
+        success: false,
+        error: 'Input must be a JSON object'
+      });
+    }
+    if (input === null || input === undefined) {
+      req.body = {};
+    }
+  }
+  next();
+};
+
+app.use(inputValidationMiddleware);
+
 app.get('/health', (req, res) => {
   const memory = getMemoryStatus();
   res.json({
@@ -115,7 +144,15 @@ app.post('/api/tasks/:taskName/execute', async (req, res) => {
     const { taskName } = req.params;
     const input = req.body || {};
 
+    if (!taskName || typeof taskName !== 'string') {
+      return res.status(400).json({ success: false, error: 'Task name is required and must be a string' });
+    }
+
     const task = taskRegistry.get(taskName);
+    if (!task) {
+      return res.status(404).json({ success: false, error: `Task not found: ${taskName}` });
+    }
+
     if (task?.handler) {
       taskService.register(taskName, task.handler);
     }
@@ -125,9 +162,15 @@ app.post('/api/tasks/:taskName/execute', async (req, res) => {
       broadcast: true
     });
 
+    if (!result.success && result.error) {
+      const statusCode = getErrorStatusCode(result.error);
+      return res.status(statusCode).json({ success: false, error: result.error?.message || result.error });
+    }
+
     res.json({ success: result.success, data: result });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    const statusCode = getErrorStatusCode(err);
+    res.status(statusCode).json({ success: false, error: err.message });
   }
 });
 
@@ -138,6 +181,10 @@ app.post('/api/flows/:flowName/execute', async (req, res) => {
     const { flowName } = req.params;
     const input = req.body || {};
 
+    if (!flowName || typeof flowName !== 'string') {
+      return res.status(400).json({ success: false, error: 'Flow name is required and must be a string' });
+    }
+
     const flowEntry = flowRegistry.get(flowName);
     if (!flowEntry) {
       return res.status(404).json({
@@ -147,6 +194,16 @@ app.post('/api/flows/:flowName/execute', async (req, res) => {
     }
 
     const flowResult = await executeFlow(flowEntry.config, input);
+
+    if (!flowResult.success && flowResult.errors?.length > 0) {
+      const firstError = flowResult.errors[0];
+      const statusCode = getErrorStatusCode({ message: firstError.error });
+      return res.status(statusCode).json({
+        success: false,
+        error: firstError.error
+      });
+    }
+
     const result = {
       success: flowResult.success,
       data: flowResult,
@@ -155,7 +212,8 @@ app.post('/api/flows/:flowName/execute', async (req, res) => {
 
     res.json({ success: result.success, data: result });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    const statusCode = getErrorStatusCode(err);
+    res.status(statusCode).json({ success: false, error: err.message });
   }
 });
 
@@ -164,6 +222,14 @@ app.post('/api/tools/:category/:toolName/execute', async (req, res) => {
     await ensureRegistriesLoaded();
     const { category, toolName } = req.params;
     const input = req.body || {};
+
+    if (!category || typeof category !== 'string') {
+      return res.status(400).json({ success: false, error: 'Tool category is required and must be a string' });
+    }
+
+    if (!toolName || typeof toolName !== 'string') {
+      return res.status(400).json({ success: false, error: 'Tool name is required and must be a string' });
+    }
 
     const toolResult = await executeTool(category, toolName, input);
     const result = {
@@ -174,7 +240,8 @@ app.post('/api/tools/:category/:toolName/execute', async (req, res) => {
 
     res.json({ success: result.success, data: result });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    const statusCode = getErrorStatusCode(err);
+    res.status(statusCode).json({ success: false, error: err.message });
   }
 });
 

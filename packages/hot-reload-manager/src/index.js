@@ -15,8 +15,10 @@ export class HotReloadManager extends EventEmitter {
     this.basePath = options.basePath || process.cwd();
     this.watcher = null;
     this.enabled = options.enabled !== false;
-    this.debounceMs = 300;
+    this.debounceMs = 100;
     this.changeTimers = new Map();
+    this.pendingChanges = new Map();
+    this.batchTimer = null;
   }
 
   start() {
@@ -31,7 +33,7 @@ export class HotReloadManager extends EventEmitter {
       path.join(this.basePath, 'tools')
     ];
 
-    this.watcher = createFileWatcher(watchPaths, { debounceMs: 300 });
+    this.watcher = createFileWatcher(watchPaths, { debounceMs: 50 });
 
     this.watcher.on('file:changed', (filePath) => {
       this._handleFileChange(filePath, 'changed');
@@ -46,19 +48,25 @@ export class HotReloadManager extends EventEmitter {
   }
 
   async _handleFileChange(filePath, eventType) {
-    const key = `${eventType}:${filePath}`;
-    const existingTimer = this.changeTimers.get(key);
+    this.pendingChanges.set(filePath, eventType);
 
-    if (existingTimer) {
-      clearTimeout(existingTimer);
+    if (this.batchTimer) {
+      clearTimeout(this.batchTimer);
     }
 
-    const timer = setTimeout(async () => {
-      this.changeTimers.delete(key);
-      await this._processFileChange(filePath, eventType);
+    this.batchTimer = setTimeout(async () => {
+      this.batchTimer = null;
+      await this._processPendingChanges();
     }, this.debounceMs);
+  }
 
-    this.changeTimers.set(key, timer);
+  async _processPendingChanges() {
+    const changes = Array.from(this.pendingChanges.entries());
+    this.pendingChanges.clear();
+
+    for (const [filePath, eventType] of changes) {
+      await this._processFileChange(filePath, eventType);
+    }
   }
 
   async _processFileChange(filePath, eventType) {

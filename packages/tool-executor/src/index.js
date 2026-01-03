@@ -13,8 +13,24 @@ export class ToolExecutor {
     return this._executeTool(tool, input);
   }
 
+  _hasCircularReferences(obj, seen = new WeakSet()) {
+    if (obj === null || typeof obj !== 'object') return false;
+    if (seen.has(obj)) return true;
+    seen.add(obj);
+
+    for (const value of Object.values(obj)) {
+      if (this._hasCircularReferences(value, seen)) return true;
+    }
+
+    return false;
+  }
+
   async _executeTool(tool, input) {
     try {
+      if (this._hasCircularReferences(input)) {
+        throw new Error('Invalid tool input: contains circular references');
+      }
+
       if (tool.handler) {
         return await tool.handler(input);
       }
