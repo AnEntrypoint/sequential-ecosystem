@@ -10,6 +10,7 @@ import { hotReloadManager } from 'hot-reload-manager';
 export class MCPServer {
   constructor() {
     this.isInitialized = false;
+    this.registriesLoaded = false;
     this.protocolVersion = '2024-11-05';
     this.serverName = 'sequential-ecosystem';
     this.serverVersion = '1.0.0';
@@ -24,18 +25,28 @@ export class MCPServer {
     logger.info('[MCPServer] Initializing MCP server...');
 
     try {
-      await taskRegistry.loadAll();
-      await flowRegistry.loadAll();
-      await toolRegistry.loadAll();
-
+      this.isInitialized = true;
+      logger.info('[MCPServer] Initialization complete');
       hotReloadManager.on('reload', async () => {
         logger.info('[MCPServer] Registry reload triggered, updating resources');
       });
-
-      this.isInitialized = true;
-      logger.info('[MCPServer] Initialization complete');
     } catch (err) {
       logger.error('[MCPServer] Initialization failed:', err);
+      throw err;
+    }
+  }
+
+  async ensureRegistriesLoaded() {
+    if (this.registriesLoaded) return;
+    logger.info('[MCPServer] Loading registries...');
+    try {
+      await taskRegistry.loadAll();
+      await flowRegistry.loadAll();
+      await toolRegistry.loadAll();
+      this.registriesLoaded = true;
+      logger.info('[MCPServer] Registries loaded');
+    } catch (err) {
+      logger.error('[MCPServer] Registry loading failed:', err);
       throw err;
     }
   }
@@ -59,11 +70,13 @@ export class MCPServer {
 
   async listResources() {
     await this.ensureInitialized();
+    await this.ensureRegistriesLoaded();
     return await mcpResources.getResourcesList();
   }
 
   async readResource(uri) {
     await this.ensureInitialized();
+    await this.ensureRegistriesLoaded();
     return await mcpResources.readResource(uri);
   }
 
@@ -76,6 +89,7 @@ export class MCPServer {
 
   async callTool(toolName, input) {
     await this.ensureInitialized();
+    await this.ensureRegistriesLoaded();
     logger.info('[MCPServer] Calling tool:', toolName);
 
     try {
