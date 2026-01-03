@@ -55,9 +55,7 @@ async function main() {
   }
 
   process.stdin.on('data', (chunk) => {
-    const str = chunk.toString();
-    logger.info('[MCP] Data received:', str.substring(0, 120));
-    buffer += str;
+    buffer += chunk.toString();
     const lines = buffer.split('\n');
     buffer = lines.pop() || '';
 
@@ -81,6 +79,8 @@ async function main() {
     logger.info('[MCP] Input stream closed (keeping process alive for new connections)');
     process.stdin.pause();
   });
+
+  setInterval(() => {}, 60000);
 
   process.on('SIGTERM', () => {
     logger.info('[MCP] SIGTERM received, shutting down');
