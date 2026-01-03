@@ -63,8 +63,10 @@ export class MCPServer {
           listChanged: true
         }
       },
-      serverName: this.serverName,
-      serverVersion: this.serverVersion
+      serverInfo: {
+        name: this.serverName,
+        version: this.serverVersion
+      }
     };
   }
 
