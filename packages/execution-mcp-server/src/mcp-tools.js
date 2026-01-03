@@ -237,7 +237,8 @@ export class MCPTools {
     }
   }
 
-  listTasks() {
+  async listTasks() {
+    await taskRegistry.loadAll();
     const tasks = taskRegistry.list().map(name => {
       const task = taskRegistry.get(name);
       return {
@@ -249,7 +250,8 @@ export class MCPTools {
     return { tasks, count: tasks.length };
   }
 
-  listFlows() {
+  async listFlows() {
+    await flowRegistry.loadAll();
     const flows = flowRegistry.list().map(name => {
       const flow = flowRegistry.get(name);
       return {
@@ -261,7 +263,8 @@ export class MCPTools {
     return { flows, count: flows.length };
   }
 
-  listTools() {
+  async listTools() {
+    await toolRegistry.loadAll();
     const tools = toolRegistry.list().map(fullName => {
       const tool = toolRegistry.get(fullName);
       const [category, toolName] = fullName.split(':');
@@ -317,13 +320,13 @@ export class MCPTools {
         return await this.executeTool(input.category, input.toolName, input.input);
 
       case 'list_tasks':
-        return this.listTasks();
+        return await this.listTasks();
 
       case 'list_flows':
-        return this.listFlows();
+        return await this.listFlows();
 
       case 'list_tools':
-        return this.listTools();
+        return await this.listTools();
 
       case 'get_execution_history':
         return this.getExecutionHistory(input.entityType, input.limit);
