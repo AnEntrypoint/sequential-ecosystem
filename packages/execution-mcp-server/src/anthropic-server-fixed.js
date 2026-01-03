@@ -13,7 +13,6 @@ import { mcpTools } from './mcp-tools.js';
 import { mcpServer } from './mcp-server.js';
 
 let serverInstance;
-let transportInstance;
 
 async function createAndConnectServer() {
   serverInstance = new Server({
@@ -126,12 +125,12 @@ async function createAndConnectServer() {
     }
   });
 
-  transportInstance = new StdioServerTransport();
+  const transport = new StdioServerTransport();
 
   logger.info('[MCP] Starting MCP stdio server...');
 
   try {
-    await serverInstance.connect(transportInstance);
+    await serverInstance.connect(transport);
     logger.info('[MCP] MCP server connected to stdio transport');
   } catch (err) {
     logger.error('[MCP] Failed to connect:', err);
